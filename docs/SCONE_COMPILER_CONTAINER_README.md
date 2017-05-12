@@ -4,7 +4,7 @@ SCONE comes with cross-compilers for popular languages: C, C++, GO, Rust as well
 The objective of these cross compilers are to compile applications - generally without source code changes - such
 that they can run inside of SGX enclaves.
 
-To simplify the use of these cross-compilers, SCONE maintains curated container image that includes these cross-compilers (see Section [SCONE Compiler Image](SCONE_CROSS_COMPILER_INSTALLER.md))
+To simplify the use of these cross-compilers, SCONE maintains curated container image that includes these cross-compilers.
 
 
 # Using the C/C++ compiler container
