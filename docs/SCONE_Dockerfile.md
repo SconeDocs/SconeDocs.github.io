@@ -27,9 +27,13 @@ Clone the tutorial:
 git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
 ```
 
+### Access to SCONE Curated Images
+
+Right now, access to the curated images is still restricted. Please, send email to scone.containers@gmail.com to request access.
+
 ## Generate HelloAgain image
 
-We generate a *hello agsin* container image. 
+We generate a *hello again* container image. 
 
 ```bash
 cd SCONE_TUTORIAL/Dockerfile
