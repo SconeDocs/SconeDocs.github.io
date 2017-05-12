@@ -2,8 +2,7 @@
 
 # Generating Container Image with SCONE
 
-We show how to generate a Docker image that contains our *hello world* running inside of an enclave
-and pushing this to docker hub. We show this 
+We show how to generate a Docker image that contains our *hello world* running inside of an enclave and pushing this to docker hub. We show this 
 
 ## Prerequisites
 
