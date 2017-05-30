@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>SCONE Curated Images - SCONE</title>
+  <title>SCONE Swarm - SCONE</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,9 +17,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "SCONE Curated Images";
-    var mkdocs_page_input_path = "SCONE_Curated_Images.md";
-    var mkdocs_page_url = "/SCONE_Curated_Images/";
+    var mkdocs_page_name = "SCONE Swarm";
+    var mkdocs_page_input_path = "SCONE_Swarm.md";
+    var mkdocs_page_url = "/SCONE_Swarm/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -75,27 +75,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">SCONE Curated Images</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#scone-curated-images">SCONE Curated Images</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#scone-documentation">Scone Documentation</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#login-in">Login in</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#scone-cross-compilers">Scone Cross-Compilers</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#scone-hello-world">Scone Hello World</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_Curated_Images/">SCONE Curated Images</a>
         
     </li>
 <li>
@@ -122,8 +103,21 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_Swarm/">SCONE Swarm</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">SCONE Swarm</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#scone-swarm">SCONE SWARM</a></li>
+                
+                    <li><a class="toctree-l4" href="#installation">Installation</a></li>
+                
+                    <li><a class="toctree-l4" href="#setting-node-labels">Setting Node Labels</a></li>
+                
+                    <li><a class="toctree-l4" href="#assign-labels-to-all-nodes">Assign labels to all nodes</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -164,7 +158,7 @@
     
       
     
-    <li>SCONE Curated Images</li>
+    <li>SCONE Swarm</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -174,63 +168,73 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="scone-curated-images">SCONE Curated Images</h1>
-<p>We provide a set of curated SCONE container images on a (private) repositories on Docker hub:</p>
+                <h1 id="scone-swarm">SCONE SWARM</h1>
+<h2 id="installation">Installation</h2>
+<p>Our <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a> script will typically set up a docker swarm. You can skip this section, if you have already a swarm running. </p>
+<p>To manually set up a Docker swarm, log into designated manage node and execute:</p>
+<pre><code class="bash">export MANAGER_IP=`hostname --ip-address`
+docker swarm init --advertise-addr $MANAGER_IP
+</code></pre>
+
+<p>We determine the address of the swarm manager and the token to join the swarm as follows</p>
+<pre><code class="bash">export manager_addr=`docker info --format '{{(index .Swarm.RemoteManagers 0).Addr}}'`
+export token=`docker swarm join-token -q worker`
+echo export token=$token
+echo export manager_addr=$manager_addr
+</code></pre>
+
+<p>On each node that should join the swarm, ensure that you installed our patched Docker engine (which makes the isgx device available to all containers).</p>
+<p>Add a new node to the swarm by setting <em>$token</em>  and <em>$manager_addr</em> to the values determined above and
+execute on the new node:</p>
+<pre><code class="bash">docker swarm join --token $token $manager_addr
+</code></pre>
+
+<h2 id="setting-node-labels">Setting Node Labels</h2>
+<p>Docker Swarm supports the labeling of nodes. In our case, we define a label <em>"sgx"</em> that permits us to determine if a node supports sgx and what version of sgx. </p>
+<p>We define the following node labels:</p>
 <ul>
-<li><strong>sconecuratedimages/sconedocu</strong>: contains containers related to our SCONE documentation </li>
-<li><strong>sconecuratedimages/crosscompilers</strong>: contains container images of the SCONE cross compilers </li>
-<li><strong>sconecuratedimages/tutorial</strong>: contains containers related to our SCONE tutorial </li>
+<li>
+<p>sgx == "0" iff the node does not support sgx</p>
+</li>
+<li>
+<p>sgx == "1" iff the node supports sgx version 1</p>
+</li>
+<li>
+<p>sgx == "2" iff the node supports sgx version 2 (which is not yet available)</p>
+</li>
 </ul>
-<h1 id="scone-documentation">Scone Documentation</h1>
-<p>To run a local copy of the SCONE documentation, just perform the following steps:</p>
-<pre><code class="bash">docker pull sconecuratedimages/sconedocu
-docker run -d -p 8080:80  sconecuratedimages/sconedocu
+<p>To assign a label, we need to figure out the node ID. An easy way to do so, is via the following command:</p>
+<pre><code class="bash">&gt; docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS
+91a1vvex4dgozfrzy1y136gmg *   alice               Ready               Active              Leader
+ocwyg135npgpsrpe2ncuw542x     beatrix             Ready               Active              
+
 </code></pre>
 
-<p>View the documentation in your browser at http://127.0.0.1:8080 .
-On a MAC, just type:</p>
-<pre><code class="bash">open http://127.0.0.1:8080
+<p>One can now manually update a label as follows:</p>
+<pre><code class="bash">&gt; docker node update --label-add sgx=&quot;1&quot; 91a1vvex4dgozfrzy1y136gmg
+91a1vvex4dgozfrzy1y136gmg
 </code></pre>
 
-<p>to view this docu.</p>
-<h1 id="login-in">Login in</h1>
-<p>Access to some SCONE images is still restricted. First, get access
-to the images by sending email to scone.containers@gmail.com. 
-Second, log into to docker hub via:</p>
-<pre><code class="bash">docker login
+<p>For large clusters, we can automate the labeling
+as described in the next subsection.</p>
+<h2 id="assign-labels-to-all-nodes">Assign labels to all nodes</h2>
+<p>Docker swarm keeps listing nodes nodes that are down - even if the host running the node has in meantime rejoined as a new node.</p>
+<p>To purge all down nodes, execute the following:</p>
+<pre><code class="bash">docker node rm $(docker node ls -q)
 </code></pre>
 
-<p>before you pull any of the curated images.</p>
-<h1 id="scone-cross-compilers">Scone Cross-Compilers</h1>
-<p>To run a local copy of the SCONE cross compilers, just pull the appropriate image on your computer.</p>
-<p>In case you do not have SGX CPU extension / no SGX driver installed on your computer,
-you can use our simulation environment. This runs the SCONE software but provides <strong>no protection
-of the confidentiality nor integrity</strong> of your application:</p>
-<pre><code class="bash">sudo docker pull sconecuratedimages/crosscompilers:gcc-sim
+<p>Assuming that all nodes in your swarm support sgx, we assign SGX label "1" to all (remaining) nodes:</p>
+<pre><code class="bash">export nodes=$(docker node ls -q)
+for node in $nodes ; do
+    docker node update --label-add sgx=&quot;1&quot; $node
+done
 </code></pre>
 
-<p>To install our standard scone C / C++ cross compiler, just perform the following
-steps.</p>
-<pre><code class="bash">sudo docker pull sconecuratedimages/crosscompilers
+<p>We can check that all sgx labels are "1" by executing the following:</p>
+<pre><code class="bash">docker inspect --format '{{(index  .Spec.Labels &quot;sgx&quot;)}}' $nodes
 </code></pre>
 
-<h1 id="scone-hello-world">Scone Hello World</h1>
-<p>You can pull the following image:</p>
-<pre><code class="bash">sudo docker pull sconecuratedimages/helloworld
-</code></pre>
-
-<p>and run the helloworld program inside of an enclave via</p>
-<pre><code class="bash">&gt; sudo docker run --device=/dev/isgx sconecuratedimages/helloworld
-Hello World
-</code></pre>
-
-<p>this will fail, in case you do not provide the container with the sgx device:</p>
-<pre><code class="bash">&gt; sudo docker run sconecuratedimages/helloworld
-error opening sgx device: No such file or directory
-</code></pre>
-
-<p>Note, if you installed the modified Docker Engine that we provide, a container gets
-by default access to device <em>/dev/isgx</em>, i.e., in this case no error would occur.</p>
 <p>Author: Christof Fetzer, 2017</p>
               
             </div>
@@ -239,10 +243,10 @@ by default access to device <em>/dev/isgx</em>, i.e., in this case no error woul
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_TUTORIAL/" class="btn btn-neutral float-right" title="SCONE Tutorial">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../SCONE_Swarm_Example/" class="btn btn-neutral float-right" title="SCONE Swarm Example">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_COMPILER_CONTAINER_README/" class="btn btn-neutral" title="SCONE SGX toolchain"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../SCONE_Dockerfile/" class="btn btn-neutral" title="SCONE Dockerfile"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -268,10 +272,10 @@ by default access to device <em>/dev/isgx</em>, i.e., in this case no error woul
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_COMPILER_CONTAINER_README/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../SCONE_Dockerfile/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_TUTORIAL/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../SCONE_Swarm_Example/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
