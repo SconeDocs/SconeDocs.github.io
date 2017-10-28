@@ -57,6 +57,20 @@
 <li>
           
             <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../outline/">Outline</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../appsecurity/">Application-oriented security</a>
+        
+    </li>
+<li>
+          
+            <li>
     <li class="toctree-l1 current">
         <a class="current" href="./">SCONE Background</a>
         
@@ -70,6 +84,13 @@
                 
             
             </ul>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_CLI/">SCONE CLI</a>
         
     </li>
 <li>
@@ -132,6 +153,20 @@
           
             <li>
     <li class="toctree-l1 ">
+        <a class="" href="../SCONE_Compose/">SCONE Compose</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_OpenStack/">SCONE OpenStack Support</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
         <a class="" href="../SCONE_Publications/">SCONE Publications</a>
         
     </li>
@@ -171,17 +206,21 @@
               
                 <h1 id="scone-background">SCONE Background</h1>
 <ul>
-<li><strong>Application-oriented security</strong>. The objective of SCONE is to help service providers to build secure applications for public, private or hybrid clouds. This means that the focus of SCONE is on application-oriented security and not on the security of the underlying cloud system. Of course, SCONE-based applications benefit from strong security properties of the underlying cloud because this minimizes, for example, the attack surface of SCONE-based applications and by providing higher availability. SCONE helps to ensure the security of an application, i.e., the application's integrity and confidentiality, even if the security of the underlying cloud or system software would be compromised. The security of applications is ensured with the help of Intel SGX enclaves. </li>
+<li><strong>Cloud Security</strong>. The objective of SCONE is to help service providers to build secure applications for public, private or hybrid clouds. This means that the focus of SCONE is on application-oriented security and not on the security of the underlying cloud system. Of course, SCONE-based applications benefit from strong security properties of the underlying cloud because this minimizes, for example, the attack surface of SCONE-based applications and by providing higher availability. SCONE helps to ensure the security of an application, i.e., the application's integrity and confidentiality, even if the security of the underlying cloud or system software would be compromised. The security of applications is ensured with the help of Intel SGX enclaves. </li>
 </ul>
 <p><img alt="SCONE cloud native applications" src="../img/SCONE-aosec.png" /></p>
 <ul>
-<li><strong>Ease of use</strong>. SCONE combines strong security with the ease of use of Docker. SCONE supports a workflow very similar to that of Docker. It supports the construction of applications consisting of multiple containers while ensuring end-to-end encryption between all application components in the sense that all network traffic, all files and even all computation is encrypted. A service provider can ensure the confidentiality and integrity of all application data. In particular, SCONE supports the construction of applications such that no higher privileged software like the operating system or the hypervisor, nor any system administrator with root access nor cold boot attacks can gain access to application data.</li>
+<li><strong>Workflow</strong>. SCONE combines strong security with the ease of use of Docker. SCONE supports a workflow very similar to that of Docker. It supports the construction of applications consisting of multiple containers while ensuring end-to-end encryption between all application components in the sense that all network traffic, all files and even all computation is encrypted. A service provider can ensure the confidentiality and integrity of all application data. In particular, SCONE supports the construction of applications such that no higher privileged software like the operating system or the hypervisor, nor any system administrator with root access nor cold boot attacks can gain access to application data.</li>
 </ul>
 <p><img alt="SCONE end-to-end encryption" src="../img/SCONE-e2e.png" /></p>
+<ul>
+<li><strong>Side Channel Attacks</strong>. Side Channel attacks on Intel SGX are the focus of a several recent research papers. First, mounting a successful side-channels is much more difficult than just dumping the memory of an existing application. In SCONE, we provide scheduling within enclaves which makes it more difficult for an attacker to determine which core is executing what function. Moreover, we are working on a compiler extension that will harden applications against side channel attacks. Until will release this extension, a pragmatic solution would be to run applications that might be suceptible to side channel attacks either on <a href="../SCONE_OpenStack/">isolated hosts</a> or on <a href="../SCONE_OpenStack/">baremetal clouds</a>.</li>
+</ul>
 <h2 id="problem-defenders-dilemma">Problem: Defender's Dilemma</h2>
 <p>Traditionally, one ensures the security of an application by ensuring that the system software, i.e., the hypervisor, operating system and cloud software is trustworthy. This not only protects the integrity and confidentiality of the system data but also protects the security of the applications. A service provider running applications in the cloud must trust all system software and also all administrators who have root or physical access to these systems.</p>
-<p>For an attacker it might be sufficient to exploit a single vulnerability in either the application or the system software to violate the application security. The problem of this approach is that the defenders must protect against the exploitation of every single vulnerability that might exist in the source code. A service provider might not have access to the source code of the system software that the cloud provider uses to operate the cloud. Even if the source code were available, this will typically be too large to be inspected. </p>
-<p>To show how large this problem is, let's look at the number of lines of source code of common system software components. While lines of source code is not an ideal  indicator for the number of vulnerabilities, it gives some indication of the problem we are facing. Some security researchers state that given the current state of the art, only code with up to 10,000s of lines of code can be reasonably inspected. Just the system software itself - which all needs to be protected - contains millions of lines of code. This is orders of magnitudes more than we can reasonably expect to be able to inspect.</p>
+<p>A popular way to intrude into a system is to steal the credentials of a system administrator. With these root credentials, one gains access to all data being processed in this system as well as all keys that are kept in main memory or in some plain text files. If stealing credentials would be too difficult, an attacker will look for other ways to attack a system, like, exploiting known code vulnerabilities.</p>
+<p>For an attacker, it might be sufficient to exploit a single vulnerability in either the application or the system software to violate the application security. The problem is that the defenders must protect against the exploitation of all code vulnerabilities that might exist in the source code. A service provider might not have access to all source code of the system software that the cloud provider uses to operate the cloud. Even if the source code were available, this will typically be too large to be inspected.</p>
+<p>To show that this is a difficult problem, let's look at the number of lines of source code of common system software components. While lines of source code is not an ideal  indicator for the number of vulnerabilities, it gives some indication of the problem we are facing. Some security researchers state that given the current state of the art, only code with up to 10,000s of lines of code can be reasonably inspected. Just the system software itself contains millions of lines of code. This is orders of magnitudes more than we can reasonably expect to be able to inspect.</p>
 <p>SCONE runs on top of Linux - which contains millions of lines of code and is still growing in size with each release:</p>
 <p><img alt="" src="../IMG/LinuxLoC.png" />
 <em>Linux Lines of Code (StefanPohl, CC0, <a href="https://commons.wikimedia.org/w/index.php?curid=41549243">original</a>}</em></p>
@@ -193,10 +232,10 @@
 <em>Docker Lines of Code (OpenHub <a href="https://www.openhub.net/p/openstack/analyses/latest/languages_summary">original</a>)</em></p>
 <p><strong>Code complexity</strong>.There is no one-to-one correlation between lines of codes and bugs. Static analysis of open source code repositories indicates approximately 0.61 defects per 1,000 LOC. A recent analysis of Linux shows that, despite an increasing number of defects being fixed, there are always approximately 5,000 defects waiting to be fixed. Not all of these defects can, however, be exploited for security attacks. Another analysis found that approximately 500 security-relevant bugs were fixed in Linux over the past five years - bugs that had been in the kernel for five years before being discovered and fixed. Commercial code had a slightly higher defect density than open source projects. Hence, we need to expect vulnerabilities in commercial software too.</p>
 <h2 id="scone-approach">SCONE Approach</h2>
-<p>The approach of SCONE is to reduce the code size by placing only the essential components of an application inside of enclaves. Our underlying assumption is that it is practically to difficult to split existing code base of a single process into component that run inside an enclave and components that run outside of an enclave. However, many modern applications - like cloud-native applications - are already split in several components running in separate address spaces. These components are typically microservices. </p>
-<p>One can build even critical applications with the help of microservices. Not all microservices of an application need to run in enclaves to protect the application’s integrity and confidentiality. For example, some services might only process encrypted data, like encrypted log data, and do not need to run in enclaves.  Also, the resource manager does not need to run in an enclave either. </p>
-<p>The use of microservices supports horizontal scalability. This helps to cope with limited EPC (extended page cache) by spreading secure microservices across different CPUs.</p>
-<p>Author: Christof Fetzer, 2017</p>
+<p>The approach of SCONE is to partition the code and to place essential components of an application into separate enclaves. Practically, it is quite difficult to split an existing code base of a single process into one component that runs inside an enclave and a component that runs outside of an enclave. However, many modern applications - like cloud-native applications - are already partitioned in several components running in separate address spaces. These components are typically called microservices. This partitioning facilitates a more intelligent scaling of services as well as a scaling of the development team.</p>
+<p>A large application might consist of a variety of microservices. Not all microservices of an application need to run inside enclaves to protect the application’s integrity and confidentiality. For example, some services might only process encrypted data, like encrypted log data, and do not need to run inside enclaves.  Also, the resource manager does not need to run in an enclave either. However, we recommend that each microservice that has the credential to send requests to at least one microservice running inside an enclave, should itself also run inside of an enclave to restrict the access to enclaved microservices.</p>
+<p>Current SGX-capable CPUs have a limited EPC (Extended Page Cache) size. If the working set of a microservice does not fit inside the EPC, overheads can become high. The usage of microservices supports horizontal scalability. This helps to cope with limited EPC (extended page cache) by spreading secure microservices across different hosts.</p>
+<p>Author: Christof Fetzer, October 2017</p>
               
             </div>
           </div>
@@ -204,10 +243,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_HOSTINSTALLER_README/" class="btn btn-neutral float-right" title="SCONE Host Setup"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../SCONE_CLI/" class="btn btn-neutral float-right" title="SCONE CLI"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href=".." class="btn btn-neutral" title="Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../appsecurity/" class="btn btn-neutral" title="Application-oriented security"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -233,10 +272,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../appsecurity/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_HOSTINSTALLER_README/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../SCONE_CLI/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

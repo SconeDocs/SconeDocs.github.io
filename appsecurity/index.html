@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SCONE Create Image - SCONE</title>
+  <title>Application-oriented security - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "SCONE Create Image";
+    var mkdocs_page_name = "Application-oriented security";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -64,8 +64,17 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../appsecurity/">Application-oriented security</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Application-oriented security</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#application-oriented-security">Application-Oriented Security</a></li>
+                
+                    <li><a class="toctree-l4" href="#ease-of-use">Ease of Use</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -113,19 +122,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">SCONE Create Image</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#generating-container-image-with-scone">Generating Container Image with SCONE</a></li>
-                
-                    <li><a class="toctree-l4" href="#prerequisites">Prerequisites</a></li>
-                
-                    <li><a class="toctree-l4" href="#generate-helloworld-image">Generate HelloWorld image</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_GENERATE_IMAGE/">SCONE Create Image</a>
         
     </li>
 <li>
@@ -194,7 +192,7 @@
     
       
     
-    <li>SCONE Create Image</li>
+    <li>Application-oriented security</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -204,54 +202,18 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="generating-container-image-with-scone">Generating Container Image with SCONE</h1>
-<p>We show how to generate a Docker image that contains our <em>hello world</em> running inside of an enclave and pushing this to docker hub. We show this </p>
-<h2 id="prerequisites">Prerequisites</h2>
-<p>Check that all prerequisites from <a href="../SCONE_TUTORIAL/">SCONE Tutorial</a> are satisfied. 
-Clone the SCONE_TUTORIAL before you start creating a <em>hello world</em> image.</p>
-<h2 id="generate-helloworld-image">Generate HelloWorld image</h2>
-<p>We generate a <em>hello world</em> container image. </p>
-<pre><code class="bash">cd SCONE_TUTORIAL/CreateImage
-</code></pre>
-
-<p>You can either execute all step manually by copy&amp;pasting all instructions or you can just execute</p>
-<pre><code class="bash">docker login
-sudo ./Dockerfile.sh
-</code></pre>
-
-<p>and watch the outputs.</p>
-<p>Please change the image name to a repository on docker hub to which you can write:</p>
-<pre><code class="bash">export TAG=&quot;latest&quot;
-export IMAGE_NAME=&quot;sconecuratedimages/helloworld&quot;
-</code></pre>
-
-<p>We generate container and compile hello world inside of this container with the help of our standard SCONE cross compiler:</p>
-<pre><code class="bash">
-CONTAINER_ID=`docker run -d -it --device=/dev/isgx  -v $(pwd):/mnt sconecuratedimages/crosscompilers bash -c &quot;
-set -e
-sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
-&quot;`
-</code></pre>
-
-<p>Note that above will fail if you do not have access to the SGX device <em>/dev/isgx</em>.</p>
-<p>Turn the container into an image:</p>
-<pre><code class="bash">IMAGE_ID=$(docker commit -p -c 'CMD sgx_hello_world' $CONTAINER_ID $IMAGE_NAME:$TAG)
-</code></pre>
-
-<p>You can run this image by executing:</p>
-<pre><code class="bash">sudo docker run --device=/dev/isgx $IMAGE_NAME:$TAG
-</code></pre>
-
-<p>You can push this image to Docker. However, ensure that you first login to docker:</p>
-<pre><code class="bash">sudo docker login
-</code></pre>
-
-<p>before you push the image to docker hub:</p>
-<pre><code class="bash">sudo docker push $IMAGE_NAME:$TAG
-</code></pre>
-
-<p>Note: this will fail in case you do not have the permission to push to this repository. </p>
-<p>Author: Christof Fetzer, April 2017</p>
+                <h1 id="application-oriented-security">Application-Oriented Security</h1>
+<p>SCONE supports <em>service providers</em> (i.e., companies operating applications accessible via the Internet)
+to protect the confidentiality and integrity of their applications - even when running in clouds that
+cannot be completely trusted. SCONE's focus is on supporting the development of <strong>microservice-based applications</strong> as well as <strong>cloud-native applications</strong>. However, SCONE can protect almost any program running on top of Linux.</p>
+<p>SCONE supports service providers to ensure end-to-end encryption in the sense that <em>data is always encrypted</em>, i.e., while being transmitted,
+while being at rest and even while being processed. The latter has only recently become possible with the help of a novel CPU extension by Intel (SGX). To reduce the required computing resources, a service provider can decide what to protect and what not to protect.  For example, a service that operates only on encrypted data might not need to be protected with SGX.</p>
+<p><em>Our general recommendation is, however, that service providers should protect all parts of an application. The cost of computing resources have been dropping dramatically and hence, the reduction in cost might not be justified when compared with the potential costs - and also loss of reputation - by data breaches.</em></p>
+<h2 id="ease-of-use">Ease of Use</h2>
+<p>SCONE supports strong application-oriented security with a workflow like Docker, i.e., SCONE supports <a href="../SCONE_Dockerfile/">Dockerfiles</a> as well as extended Docker <a href="../SCONE_Compose/">compose</a> files. This simplifies the construction and operation of applications consisting of a set of containers. This fits, in particular, modern cloud-native applications consisting of microservices and each microservice runs either in a standard or a secure container.</p>
+<p>The Docker Engine itself is not protected. The Docker Engine, like the operating system, never sees any plain text data. This facilitates that the Docker Engine or the Docker Swarm can be managed by a cloud provider. SCONE helps a service providers to ensure the confidentiality and integrity of the application data while the cloud provider will ensure the availability of the service. For example, with the help of Docker Swarm, failed containers will automatically be restarted on an appropriate host.</p>
+<p><img alt="SCONE architecture figure" src="../img/SCONE-CNAPP.png" /></p>
+<p>Author: Christof Fetzer, October 2017</p>
               
             </div>
           </div>
@@ -259,10 +221,10 @@ sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_Dockerfile/" class="btn btn-neutral float-right" title="SCONE Dockerfile"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../background/" class="btn btn-neutral float-right" title="SCONE Background"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_TUTORIAL/" class="btn btn-neutral" title="SCONE Tutorial"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../outline/" class="btn btn-neutral" title="Outline"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -288,10 +250,10 @@ sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_TUTORIAL/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../outline/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_Dockerfile/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../background/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

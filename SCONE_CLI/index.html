@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SCONE Create Image - SCONE</title>
+  <title>SCONE CLI - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "SCONE Create Image";
+    var mkdocs_page_name = "SCONE CLI";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -78,8 +78,23 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_CLI/">SCONE CLI</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">SCONE CLI</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#scone-cli">SCONE CLI</a></li>
+                
+                    <li><a class="toctree-l4" href="#help">Help</a></li>
+                
+                    <li><a class="toctree-l4" href="#bash-auto-completion">bash auto-completion</a></li>
+                
+                    <li><a class="toctree-l4" href="#installation-of-scone">Installation of scone</a></li>
+                
+                    <li><a class="toctree-l4" href="#installation-of-scone-deb-package">Installation of SCONE Deb Package</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -113,19 +128,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">SCONE Create Image</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#generating-container-image-with-scone">Generating Container Image with SCONE</a></li>
-                
-                    <li><a class="toctree-l4" href="#prerequisites">Prerequisites</a></li>
-                
-                    <li><a class="toctree-l4" href="#generate-helloworld-image">Generate HelloWorld image</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_GENERATE_IMAGE/">SCONE Create Image</a>
         
     </li>
 <li>
@@ -194,7 +198,7 @@
     
       
     
-    <li>SCONE Create Image</li>
+    <li>SCONE CLI</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -204,54 +208,88 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="generating-container-image-with-scone">Generating Container Image with SCONE</h1>
-<p>We show how to generate a Docker image that contains our <em>hello world</em> running inside of an enclave and pushing this to docker hub. We show this </p>
-<h2 id="prerequisites">Prerequisites</h2>
-<p>Check that all prerequisites from <a href="../SCONE_TUTORIAL/">SCONE Tutorial</a> are satisfied. 
-Clone the SCONE_TUTORIAL before you start creating a <em>hello world</em> image.</p>
-<h2 id="generate-helloworld-image">Generate HelloWorld image</h2>
-<p>We generate a <em>hello world</em> container image. </p>
-<pre><code class="bash">cd SCONE_TUTORIAL/CreateImage
+                <h1 id="scone-cli">SCONE CLI</h1>
+<p>We maintain a single unified command line interface (CLI) <em>scone</em> that helps to to start and stop secure containers as well as secure applications. <em>scone</em> also provides functionality to install and monitor SCONE hosts.</p>
+<p>The <em>scone</em> command is structured similar as the <em>docker</em> CLI or the <em>infinit</em> CLI:</p>
+<p><img alt="SCONE CLI" src="../img/CLI.png" /></p>
+<p>One needs to specify an <strong>object</strong> (like <em>host</em>) and a <strong>command</strong> (like <em>install</em>) and some options. For some commands, some of the options are actually not optional but mandatory.</p>
+<p>See below how to install scone. The <em>scone</em> command is located in directory <em>/opt/scone/bin/</em>. In what follows, we assume that
+you have to add this directory to your <em>PATH</em>:</p>
+<pre><code class="bash">PATH=/opt/scone/bin/:$PATH
 </code></pre>
 
-<p>You can either execute all step manually by copy&amp;pasting all instructions or you can just execute</p>
-<pre><code class="bash">docker login
-sudo ./Dockerfile.sh
+<p>For convenience, you might want to add above statement to your <em>.bashrc</em> script (- in case you are using bash).</p>
+<h2 id="help">Help</h2>
+<p><em>scone</em> has a built in help. To get a list of all <strong>objects</strong>, just type:</p>
+<pre><code class="bash">scone --help
 </code></pre>
 
-<p>and watch the outputs.</p>
-<p>Please change the image name to a repository on docker hub to which you can write:</p>
-<pre><code class="bash">export TAG=&quot;latest&quot;
-export IMAGE_NAME=&quot;sconecuratedimages/helloworld&quot;
+<p>To get a list of all <strong>commands</strong> for a given <strong>object</strong> (like host), execute:</p>
+<pre><code class="bash">scone host --help
 </code></pre>
 
-<p>We generate container and compile hello world inside of this container with the help of our standard SCONE cross compiler:</p>
-<pre><code class="bash">
-CONTAINER_ID=`docker run -d -it --device=/dev/isgx  -v $(pwd):/mnt sconecuratedimages/crosscompilers bash -c &quot;
-set -e
-sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
-&quot;`
+<p>To get a list of all options for a given <strong>object</strong> and <strong>command</strong> (e.g., host install) and some examples, just execute:</p>
+<pre><code class="bash">scone host install --help
 </code></pre>
 
-<p>Note that above will fail if you do not have access to the SGX device <em>/dev/isgx</em>.</p>
-<p>Turn the container into an image:</p>
-<pre><code class="bash">IMAGE_ID=$(docker commit -p -c 'CMD sgx_hello_world' $CONTAINER_ID $IMAGE_NAME:$TAG)
+<h2 id="bash-auto-completion">bash auto-completion</h2>
+<p>If you are using <em>bash</em> as your shell, <em>scone</em> supports auto-completion. This means that instead you can use the <strong>TAB</strong> key to see the options. For example,</p>
+<pre><code class="bash">scone &lt;TAB&gt;
 </code></pre>
 
-<p>You can run this image by executing:</p>
-<pre><code class="bash">sudo docker run --device=/dev/isgx $IMAGE_NAME:$TAG
+<p>will show all available objects. If you have already specified an object, auto-completion helps you to list all commands:</p>
+<pre><code class="bash">scone host &lt;TAB&gt;
 </code></pre>
 
-<p>You can push this image to Docker. However, ensure that you first login to docker:</p>
-<pre><code class="bash">sudo docker login
+<p>If you also specified an command, it will provide you with a list of options (that you have not specified yet):</p>
+<pre><code class="bash">scone host install &lt;TAB&gt;
 </code></pre>
 
-<p>before you push the image to docker hub:</p>
-<pre><code class="bash">sudo docker push $IMAGE_NAME:$TAG
+<p>Of course, it also supports auto-completion:</p>
+<pre><code class="bash">scone host install -n&lt;TAB&gt;
 </code></pre>
 
-<p>Note: this will fail in case you do not have the permission to push to this repository. </p>
-<p>Author: Christof Fetzer, April 2017</p>
+<p>will result in </p>
+<pre><code class="bash">scone host install -name 
+</code></pre>
+
+<h2 id="installation-of-scone">Installation of scone</h2>
+<p>On Ubuntu platform, you can just execute</p>
+<pre><code class="bash">curl -L https://sconecontainers.github.io/install.sh | bash
+</code></pre>
+
+<h2 id="installation-of-scone-deb-package">Installation of SCONE Deb Package</h2>
+<p>You can just run <strong>./install-scone.sh"</strong> or execute the following commands:</p>
+<pre><code class="bash">KEYNAME=&quot;96B9BADB&quot;
+REPO=&quot;deb https://sconecontainers.github.io/SCONE ./&quot;
+
+sudo apt-get update
+sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual
+
+sudo sudo apt-get install -y apt-transport-https ca-certificates
+sudo apt-key adv \
+  --keyserver hkp://ha.pool.sks-keyservers.net:80 \
+  --recv-keys $KEYNAME
+
+echo $REPO | sudo tee /etc/apt/sources.list.d/scone.list
+
+sudo apt-get clean
+sudo apt-get update
+
+apt-cache policy scone
+
+sudo apt-get install -y scone
+</code></pre>
+
+<p>The <em>scone</em> utility will be installed at <em>/opt/scone/bin</em>. Hence, it makes sense to add this path to your <em>PATH</em>:</p>
+<pre><code class="bash">export PATH=/opt/scone/bin:$PATH
+</code></pre>
+
+<p>You can then execute some scone commands:</p>
+<pre><code class="bash">scone --version
+scone --help
+scone volume --help
+</code></pre>
               
             </div>
           </div>
@@ -259,10 +297,10 @@ sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_Dockerfile/" class="btn btn-neutral float-right" title="SCONE Dockerfile"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../SCONE_HOSTINSTALLER_README/" class="btn btn-neutral float-right" title="SCONE Host Setup"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_TUTORIAL/" class="btn btn-neutral" title="SCONE Tutorial"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../background/" class="btn btn-neutral" title="SCONE Background"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -288,10 +326,10 @@ sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_TUTORIAL/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../background/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_Dockerfile/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../SCONE_HOSTINSTALLER_README/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
