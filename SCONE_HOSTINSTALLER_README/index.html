@@ -92,17 +92,13 @@
             
                 <li class="toctree-l3"><a href="#scone-host-installation-guide">SCONE: Host Installation Guide</a></li>
                 
-                    <li><a class="toctree-l4" href="#alternative-installation-methods">Alternative Installation Methods</a></li>
-                
-                    <li><a class="toctree-l4" href="#patched-docker-engine-moby">Patched Docker Engine (Moby)</a></li>
-                
-                    <li><a class="toctree-l4" href="#patched-sgx-driver">Patched SGX Driver</a></li>
+                    <li><a class="toctree-l4" href="#ssh">SSH</a></li>
                 
                     <li><a class="toctree-l4" href="#installation-of-a-single-host">Installation of a single host</a></li>
                 
                     <li><a class="toctree-l4" href="#installation-of-a-swarm">Installation of a swarm</a></li>
                 
-                    <li><a class="toctree-l4" href="#manual-installation-deprecated">Manual Installation (deprecated)</a></li>
+                    <li><a class="toctree-l4" href="#background-information">Background Information</a></li>
                 
             
             </ul>
@@ -215,39 +211,87 @@
                 <h1 id="scone-host-installation-guide">SCONE: Host Installation Guide</h1>
 <p>This page describes how </p>
 <ul>
-<li>to set up a host such that it can run SCONE secure containers, i.e., containers in which processes run inside of SGX enclaves,</li>
+<li>
+<p>to set up a host such that it can run SCONE secure containers, i.e., containers in which processes run inside of SGX enclaves, and</p>
+</li>
+<li>
+<p>we remind you of how to set up your <em>ssh</em> configuration.</p>
+</li>
 </ul>
-<p>The installation script</p>
+<p>During this setup, we</p>
 <ul>
 <li>
-<p>installs a <em>patched</em> Intel SGX driver,</p>
+<p>install a <em>patched</em> Intel SGX driver - required for better monitoring support,</p>
 </li>
 <li>
-<p>installs a <em>patched</em> docker engine, and</p>
+<p>install a <em>patched</em> docker engine - to ensure that all containers have access to SGX, and</p>
 </li>
 <li>
-<p>starts/joins a docker swarm - if requested by command line options.</p>
+<p>start or join a docker swarm - if requested by command line options.</p>
 </li>
 </ul>
-<p><strong>Prerequisite</strong>:  We assume that you have already Ubuntu 16.04LTS (or later) installed on the host.</p>
-<h2 id="alternative-installation-methods">Alternative Installation Methods</h2>
-<p>The easiest alternative to prepare a host for the use of SCONE is to use the  <strong>scone</strong> <a href="../SCONE_CLI/">command line interface</a>. <em>scone</em> is executed on the developer machine but requires that ssh to the host is already running.</p>
-<p>An alternative is to clone a publicrepository that contains scripts to install a host. </p>
-<p>We describe the details of both alternative installation methods below.</p>
+<p><strong>Prerequisite</strong>:  We assume that you have set up the <strong>scone</strong> <a href="../SCONE_CLI/">command line interface</a>.
+The <em>scone</em> CLI can run on your developer machine, a virtual machine or inside a container. 
+The easiest way to get started is to run <em>scone</em> in a Docker container.</p>
+<p>Independent of where <em>scone</em> runs, it requires that <em>ssh</em> is properly installed.</p>
+<h2 id="ssh">SSH</h2>
+<p>The <em>scone</em> utility executes commands via <em>ssh</em> on the SGX-capable machine that should be installed.</p>
 <p><img alt="SCONE Installation Alternatives" src="../img/alternativeInstallationMethods.png" /></p>
-<h2 id="patched-docker-engine-moby">Patched Docker Engine (Moby)</h2>
-<p>For an container to be able to use SGX, it has to have access to a device (/dev/isgx). This device permits the container to talk to the SGX driver. This driver is needed, for example, to create SGX enclaves. </p>
-<p>Some docker commands (like <em>docker run</em>) support an option --device (i.e., <em>--device /dev/isgx</em>) which allows us to give a container access to the SGX device. We need to point out that some docker commands (like <em>docker build</em>) do, however, not yet support the device option. Therefore, we maintain and install a slightly patched docker engine (i.e., a variant of moby): this engine ensures that each container has access to the SGX device (/dev/isgx).  With the help of this patched engine, we can use Dockerfiles to generate container images (see this <a href="../SCONE_Dockerfile/">Tutorial</a>).</p>
-<p>Right now we provide a patched version of the currently active branch of Moby (a.k.a., the Docker engine): 17.06.0-dev, build f9a45b7</p>
-<h2 id="patched-sgx-driver">Patched SGX Driver</h2>
-<p>We also maintain a patched version of the SGX driver. This version adds some additional monitoring like the number of <em>available</em> and <em>free</em> EPC (Extended Page Cache) pages.</p>
-<p>Right now, we provide a patched version of the latest Intel SGX driver from August 3, 2017 (commit cd516380e5ffa008505dc0e86ddbf45276021219).</p>
+<p>Since we potentially execute many <em>ssh</em> commands, you need to configure <em>ssh</em> such that</p>
+<ul>
+<li>
+<p>you can log into the SGX machines with having to type a password, </p>
+</li>
+<li>
+<p>you can use simple basename for your SGX machines, and</p>
+</li>
+<li>
+<p>you want ssh to reuse connection to reduce the execution time of the <em>scone</em> commands.</p>
+</li>
+</ul>
+<h3 id="passwordless-ssh">Passwordless ssh</h3>
+<p>To set up passwordless ssh authentication, you need to ensure that you have a pair of authentication keys.
+If there exists no public key <em>$HOME/.ssh/id_rsa.pub</em> (often the case if you use a container), you can generate a new pair
+by executing:</p>
+<pre><code class="bash">ssh-keygen -b 4096 -t rsa
+</code></pre>
+
+<p>Append the generated public key <em>$HOME/.ssh/id_rsa.pub</em> to file <em>$HOME/.ssh/authorized_keys</em> on the SGX hosts for which you to be able to log in without a password.</p>
+<p>Additionally, you need to start a ssh-agent:</p>
+<pre><code class="bash">SA=`ssh-agent`
+eval &quot;$SA&quot;
+</code></pre>
+
+<p>and add your authentication keys by executing:</p>
+<pre><code class="bash">ssh-add
+</code></pre>
+
+<h3 id="host-alias">Host alias</h3>
+<p>To reduce your typing overhead, you can use the basename of a host - if you configure ssh appropriately. For example, instead of typing <em>node2.my.very.long.domain.com</em>, you could configure  <em>ssh</em> such that <em>node2</em> refers to <em>node2.my.very.long.domain.com</em>.</p>
+<p>As a caveat, this basename must be sufficient for other hosts in the <em>same swarm</em> to reach <em>node2</em>. In the above figure, <em>manager</em> must be able to resolve <em>node2</em> to <em>node2.my.very.long.domain.com</em>.</p>
+<p>To add an alias, you could add the following lines to your <em>ssh config</em> (stored in <em>$HOME/.ssh/config</em>):</p>
+<pre><code class="bash">Host node2
+     HostName node2.my.very.long.domain.com
+     Port 22
+     User scone
+     IdentityFile ~/.ssh/id_rsa
+</code></pre>
+
+<h3 id="ssh-connection-reuse">ssh connection reuse</h3>
+<p>To reuse the connection establishment, you can configure ssh to reuse connections. To do so, you need to set <em>ControlMaster</em> to <em>auto</em> and you have to specify a control path via option <em>ControlPath</em>. You can define a generic path like <em>~/.ssh/ssh_mux_%h_%p_%r</em> that can be the same for all hosts. For example, for some host <em>alice</em> you might add the following lines to <em>$HOME/.ssh/config</em>:</p>
+<pre><code class="bash">Host alice
+        ControlMaster auto
+        ControlPath ~/.ssh/ssh_mux_%h_%p_%r
+        user ubuntu
+        port 10101
+        hostname sshproxy.cloudprovider.com
+</code></pre>
+
 <h2 id="installation-of-a-single-host">Installation of a single host</h2>
-<p>The recommended way to install the necessary software to run Scone, is to install the <a href="../SCONE_CLI/">scone CLI</a> first. With the <em>scone</em> utility, you can install a new host, say, <em>alice</em> as follows:</p>
+<p>After you set up the <a href="../SCONE_CLI/">scone CLI</a> and your passwordless ssh works, you can install the scone related software on a new host, say, <em>alice</em> as follows:</p>
 <pre><code class="bash">scone host install --name alice
 </code></pre>
 
-<p>This assumes that you have ssh connectivity to host alice. Typically, you would need an entry for <em>alice</em> in your ssh config (see <a href="../SCONE_CLI/">scone CLI</a> for details).</p>
 <p>To verify that a host is properly installed for SCONE and contains the newest patched Docker engine and SGX driver, just execute:</p>
 <pre><code class="bash">scone host check --name alice
 </code></pre>
@@ -261,53 +305,20 @@ scone host install --name caroline  --join alice
 </code></pre>
 
 <p>Note that the hosts must be able to communicate with each other (i.e., not partitioned through firewalls). Docker recommends/expects  that they will be in the same local area network.</p>
-<h2 id="manual-installation-deprecated">Manual Installation (deprecated)</h2>
-<pre><code class="bash">git clone https://github.com/christoffetzer/SCONE_HOSTINSTALLER.git
-</code></pre>
-
-<p>ensure that you are permitted to execute sudo and execute the following command:</p>
-<pre><code class="bash">cd SCONE_HOSTINSTALLER
-</code></pre>
-
-<p>In case you have already a docker engine installed, executing the
-<strong>installation script will remove the installed docker engine first.</strong></p>
-<h4 id="installing-the-swarm-manager">Installing the Swarm Manager</h4>
-<p>Each Docker Swarm requires at least one manager. The installation script
-can set up the first manager via:</p>
-<pre><code class="bash">./install.sh --manager
-</code></pre>
-
-<p>The IP address of this manager is used for the nodes of the swarm to find each other. The above script will output how to install other nodes and 'OK' on success:</p>
-<pre><code class="bash"># to install another machine and add as a manager, execute
-./install.sh --token SWMTKN-1-2f98skv0z2vdhnyw9liwbqtgocts6comdr81o6e3u6kd9olbrc-48zv9ho4f3poid4d34767nucj 192.168.4.101:2377
-# to install another machine and add as worker, execute
-./install.sh --token SWMTKN-1-2f98skv0z2vdhnyw9liwbqtgocts6comdr81o6e3u6kd9olbrc-91z9bxu0exqli87elwasyjj5w 192.168.4.101:2377
-OK
-</code></pre>
-
-<p>If you do not remember the tokens, you can output the token by executing the following script (on a manager node):</p>
-<pre><code class="bash">./show-tokens.sh 
-</code></pre>
-
-<h4 id="installing-a-swarm-worker">Installing a Swarm Worker</h4>
-<p>To install a new worker node, execute something like this (use the correct worker token - which is printed during the master installation):</p>
-<pre><code class="bash">./install.sh --token SWMTKN-1-2f98skv0z2vdhnyw9liwbqtgocts6comdr81o6e3u6kd9olbrc-91z9bxu0exqli87elwasyjj5w 192.168.4.101:2377
-</code></pre>
-
-<h4 id="installing-another-manager-node">Installing another Manager Node</h4>
-<p>In a small installation, we might only have one manager. However, in
-larger installation it makes sense to have 3 or 5 manager nodes.
-To install a new manager node, execute something like this (use the manager token):</p>
-<pre><code class="bash">./install.sh --token SWMTKN-1-2f98skv0z2vdhnyw9liwbqtgocts6comdr81o6e3u6kd9olbrc-48zv9ho4f3poid4d34767nucj 192.168.4.101:2377
-</code></pre>
-
-<p>The install.sh script outputs 'OK' on success.</p>
 <h4 id="checking-your-installation">Checking your Installation</h4>
 <p>To test the installation, one can run a simple hello-world container:</p>
 <pre><code class="bash">sudo docker run hello-world
 </code></pre>
 
-<p>Author: Christof Fetzer, 2017</p>
+<h2 id="background-information">Background Information</h2>
+<h3 id="patched-docker-engine-moby">Patched Docker Engine (Moby)</h3>
+<p>For an container to be able to use SGX, it has to have access to a device (/dev/isgx). This device permits the container to talk to the SGX driver. This driver is needed, for example, to create SGX enclaves. </p>
+<p>Some docker commands (like <em>docker run</em>) support an option --device (i.e., <em>--device /dev/isgx</em>) which allows us to give a container access to the SGX device. We need to point out that some docker commands (like <em>docker build</em>) do, however, not yet support the device option. Therefore, we maintain and install a slightly patched docker engine (i.e., a variant of moby): this engine ensures that each container has access to the SGX device (/dev/isgx).  With the help of this patched engine, we can use Dockerfiles to generate container images (see this <a href="../SCONE_Dockerfile/">Tutorial</a>).</p>
+<p>Right now we provide a patched version of the currently active branch of Moby (a.k.a., the Docker engine): 17.06.0-dev, build f9a45b7</p>
+<h3 id="patched-sgx-driver">Patched SGX Driver</h3>
+<p>We also maintain a patched version of the SGX driver. This version adds some additional monitoring like the number of <em>available</em> and <em>free</em> EPC (Extended Page Cache) pages.</p>
+<p>Right now, we provide a patched version of the latest Intel SGX driver from August 3, 2017 (commit cd516380e5ffa008505dc0e86ddbf45276021219).</p>
+<p>Author: Christof Fetzer, October 2017</p>
               
             </div>
           </div>
