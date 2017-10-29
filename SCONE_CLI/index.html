@@ -85,13 +85,15 @@
             
                 <li class="toctree-l3"><a href="#scone-cli">SCONE CLI</a></li>
                 
+                    <li><a class="toctree-l4" href="#note">Note</a></li>
+                
                     <li><a class="toctree-l4" href="#help">Help</a></li>
                 
                     <li><a class="toctree-l4" href="#bash-auto-completion">bash auto-completion</a></li>
                 
                     <li><a class="toctree-l4" href="#installation-of-scone">Installation of scone</a></li>
                 
-                    <li><a class="toctree-l4" href="#installation-of-scone-deb-package">Installation of SCONE Deb Package</a></li>
+                    <li><a class="toctree-l4" href="#manual-installation-of-scone-deb-package">Manual installation of SCONE Deb Package</a></li>
                 
             
             </ul>
@@ -213,12 +215,14 @@
 <p>The <em>scone</em> command is structured similar as the <em>docker</em> CLI or the <em>infinit</em> CLI:</p>
 <p><img alt="SCONE CLI" src="../img/CLI.png" /></p>
 <p>One needs to specify an <strong>object</strong> (like <em>host</em>) and a <strong>command</strong> (like <em>install</em>) and some options. For some commands, some of the options are actually not optional but mandatory.</p>
-<p>See below how to install scone. The <em>scone</em> command is located in directory <em>/opt/scone/bin/</em>. In what follows, we assume that
-you have to add this directory to your <em>PATH</em>:</p>
-<pre><code class="bash">PATH=/opt/scone/bin/:$PATH
+<p>See below how to install scone on Ubuntu. Instead of installing <em>scone</em> in a VM or a host, you could just start it in a container. Assuming
+that you have docker installed, you try the following examples by running the following container:  </p>
+<pre><code class="bash">docker run -it  sconecuratedimages/sconecli
 </code></pre>
 
-<p>For convenience, you might want to add above statement to your <em>.bashrc</em> script (- in case you are using bash).</p>
+<h2 id="note">Note</h2>
+<p>The <em>scone</em> utility requires <em>ssh</em> connectivity to your SGX hosts. See <a href="../SCONE_HOSTINSTALLER_README/">SCONE host setup</a> for some more
+information on how to set up ssh.</p>
 <h2 id="help">Help</h2>
 <p><em>scone</em> has a built in help. To get a list of all <strong>objects</strong>, just type:</p>
 <pre><code class="bash">scone --help
@@ -250,7 +254,7 @@ you have to add this directory to your <em>PATH</em>:</p>
 </code></pre>
 
 <p>will result in </p>
-<pre><code class="bash">scone host install -name 
+<pre><code class="bash">scone host install -name
 </code></pre>
 
 <h2 id="installation-of-scone">Installation of scone</h2>
@@ -258,8 +262,14 @@ you have to add this directory to your <em>PATH</em>:</p>
 <pre><code class="bash">curl -L https://sconecontainers.github.io/install.sh | bash
 </code></pre>
 
-<h2 id="installation-of-scone-deb-package">Installation of SCONE Deb Package</h2>
-<p>You can just run <strong>./install-scone.sh"</strong> or execute the following commands:</p>
+<p>You could alternatively first download the above installation script and store it as file <strong>install.sh</strong>, inspect it and then run it <strong>./install.sh"</strong>.</p>
+<p>The <em>scone</em> command is located in directory <em>/opt/scone/bin/</em>. You might want this directory to add this to you <em>PATH</em></p>
+<pre><code class="bash">PATH=/opt/scone/bin/:$PATH
+</code></pre>
+
+<p>For convenience, you might want to add above statement to your <em>.bashrc</em> script (- in case you are using bash).</p>
+<h2 id="manual-installation-of-scone-deb-package">Manual installation of SCONE Deb Package</h2>
+<p>You can execute the following commands (these are the same as in the above installation script):</p>
 <pre><code class="bash">KEYNAME=&quot;96B9BADB&quot;
 REPO=&quot;deb https://sconecontainers.github.io/SCONE ./&quot;
 
@@ -285,11 +295,13 @@ sudo apt-get install -y scone
 <pre><code class="bash">export PATH=/opt/scone/bin:$PATH
 </code></pre>
 
-<p>You can then execute some scone commands:</p>
+<p>You can then execute some scone commands to see if the installation was successful:</p>
 <pre><code class="bash">scone --version
 scone --help
 scone volume --help
 </code></pre>
+
+<p>Author: Christof Fetzer, October 2017</p>
               
             </div>
           </div>
