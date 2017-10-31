@@ -1,0 +1,43 @@
+
+
+docker pull sconecuratedimages/muslgcc
+
+docker pull sconecuratedimages/crosscompilers:runtime
+
+docker pull sconecuratedimages/crosscompilers:sgxmusl-hw-async-gcc
+
+docker pull sconecuratedimages/crosscompilers:gcc-sim
+
+docker pull sconecuratedimages/helloworld
+
+docker run sconecuratedimages/helloworld
+
+ls /dev/isgx 
+
+docker image ls sconecuratedimages/*
+
+git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
+
+cd SCONE_TUTORIAL/HelloWorld/
+
+gcc hello_world.c  -o native_hello_world
+
+./native_hello_world
+
+docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:gcc-sim sgxmusl-sim-gcc hello_world.c  -o sim_hello_world
+
+./sim_hello_world
+
+docker run --rm --device=/dev/isgx -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:sgxmusl-hw-async-gcc sgxmusl-hw-async-gcc hello_world.c  -o sgx_hello_world
+
+./sgx_hello_world
+
+docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_world.c -o dyn_hello_world
+
+docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./dyn_hello_world
+
+docker run --rm  -v "$PWD":/usr/src/myapp -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+
+docker run --cap-add SYS_PTRACE -it --rm --device=/dev/isgx -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world > strace.log
+
+head strace.log
