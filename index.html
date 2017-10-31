@@ -149,21 +149,14 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="SCONE_Compose/">SCONE Compose</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="SCONE_OpenStack/">SCONE OpenStack Support</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
         <a class="" href="SCONE_Publications/">SCONE Publications</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="glossary/">Glossary</a>
         
     </li>
 <li>
@@ -205,22 +198,36 @@
 <p><strong>So, what problems can SCONE help me to solve?</strong></p>
 <ul>
 <li>
-<p><strong>secure application configuration</strong>, i.e., providing applications with secrets in a secure fashion. <em>Why is that a problem?</em> Say, you want to run MySQL and you configure MySQL to encrypt its data at rest. To do so, MySQL requires a key to decrypt and encrypt its files. One can store this key in the MySQL configuration file but this configuration file cannot be encrypted since MySQL would need a key to decrypt the file. SCONE can transparently encrypt this configuration file and ensure that only MySQL can get access to the key. <em>How can SCONE do that?</em> Continue to read to learn about <em>transparent attestation and secure configuration</em>.</p>
+<p><strong>secure application configuration</strong>. SCONE provides applications with secrets in a secure fashion. <em>Why is that a problem?</em>  Say, you want to run MySQL and you configure MySQL to encrypt its data at rest. To do so, MySQL requires a key to decrypt and encrypt its files. One can store this key in the MySQL configuration file but this configuration file cannot be encrypted since MySQL would need a key to decrypt the file. SCONE helps developers to solve such configuration issues in the following ways:</p>
+<ul>
+<li>
+<p><strong>secure configuration files</strong>. SCONE can transparently decrypt encrypted configuration files. It will give access to the plain text only to a given program, like, MySQL. No source code changes are needed for this to work.</p>
 </li>
 <li>
-<p><strong>secure environment variables</strong>, i.e., give applications access to environment variables that are not visible to anybody else - even users with root access. <em>Why would I need this?</em> Consider the MySQL example from above. Instead of storing the key to encrypt files inside the MySQL configuration file, you could pass the key as an environment variable. Hence, we need to protect environment variables from accesses by adversaries.</p>
+<p><strong>secure environment variables</strong>. SCONE gives applications access to environment variables that are not visible to anybody else - even users with root access or the operating system. <em>Why would I need this?</em> Consider the MySQL example from above. You can pass user passwords via environment variables like <em>MYSQL_ROOT_PASSWORD</em> and <em>MYSQL_PASSWORD</em> to the MySQL. We need to protect these environment variables to prevent unauthorized accesses to the MySQL database.</p>
 </li>
 <li>
-<p><strong>secure command line arguments</strong>, i.e., some applications might not use environment variables but command line arguments to pass secrets to the application. SCONE provides a secure way to pass arguments to your application without other privileged parties, like the operating system, being able to see the arguments.</p>
+<p><strong>secure command line arguments</strong>. Some applications might not use environment variables but command line arguments to pass secrets to the application. SCONE provides a secure way to pass arguments to your application without other privileged parties, like the operating system, being able to see the arguments.</p>
+</li>
+</ul>
 </li>
 <li>
-<p><strong>secure main memory</strong>. An adversary with root access can read the memory content of any process. In this way, an adversary can get access the keys that an application is using, for example, to protect its data at rest. SCONE helps to protect the main memory from accesses not only from any adversary but also from the operating system, the hypervisor and even the cloud provider despite having physical access to the machines.</p>
+<p><strong>secure main memory</strong>. An adversary with root access can read the memory content of any process. In this way, an adversary can gain access to keys that an application is using, for example, the keys to protect its data at rest. SCONE helps to <strong>protect the main memory</strong>:</p>
+<ul>
+<li>no access by adversaries even with root access,</li>
+<li>no access by the operating system even if compromised,</li>
+<li>no access by the hypervisor even if compromised, and</li>
+<li>no access by the cloud provider and evil maids despite having physical access to the host.</li>
+</ul>
 </li>
 <li>
-<p><strong>transparent TLS</strong>: some popular applications like memcached do not support TLS out of the box. SCONE can transparently add TLS encryption to TCP connections. Unlike alternatives like <em>stunnel</em> that uses an external process, in SCONE, the plain text is never seen by the operating system. </p>
+<p><strong>integration with secure key store</strong>. Encryption keys must be protected. In many installations, one does not want humans to be able to see encryption keys. Hence, one generates keys and stores these in keystores. SCONE supports the integration with a keystore.</p>
 </li>
 <li>
-<p><strong>transparent file protection</strong>, i.e., SCONE can protect the integrity and confidentiality of files. A file can either be <em>integrity-protected</em> (i.e., the file is stored in plain text but modifications are detected) or <em>confidentiality-</em> and <em>integrity-protected</em> (i.e., the file is encrypted and modifications are detected).</p>
+<p><strong>transparent TLS encryption</strong>. Some popular applications like memcached do not support TLS out of the box. SCONE can transparently add TLS encryption to TCP connections. In SCONE, we never uses an external process for TLS termination. In this way, the plain text is never seen by the operating system or any adversary.</p>
+</li>
+<li>
+<p><strong>transparent file protection</strong>, i.e., SCONE can protect the integrity and confidentiality of not only configuration files but any file. This protection does not require any source code changes. A file can either be <em>integrity-protected</em> only (i.e., the file is stored in plain text but modifications are detected) or <em>confidentiality-</em> and <em>integrity-protected</em> (i.e., the file is encrypted and modifications are detected).</p>
 </li>
 </ul>
 <p>Author: Christof Fetzer, October 2017</p>
@@ -269,5 +276,5 @@
 
 <!--
 MkDocs version : 0.14.0
-Build Date UTC : 2017-10-29 16:39:29.718870
+Build Date UTC : 2017-10-31 20:05:58.520775
 -->

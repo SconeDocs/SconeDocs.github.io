@@ -129,7 +129,9 @@
                 
                     <li><a class="toctree-l4" href="#prerequisites">Prerequisites</a></li>
                 
-                    <li><a class="toctree-l4" href="#generate-helloagain-image">Generate HelloAgain image</a></li>
+                    <li><a class="toctree-l4" href="#generate-helloagain-image-dynamically-linked">Generate HelloAgain image (dynamically-linked)</a></li>
+                
+                    <li><a class="toctree-l4" href="#generate-helloagain-image-statically-linked">Generate HelloAgain image (statically-linked)</a></li>
                 
             
             </ul>
@@ -153,21 +155,14 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_Compose/">SCONE Compose</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_OpenStack/">SCONE OpenStack Support</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
         <a class="" href="../SCONE_Publications/">SCONE Publications</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../glossary/">Glossary</a>
         
     </li>
 <li>
@@ -205,7 +200,7 @@
             <div class="section">
               
                 <h1 id="dockerfile">Dockerfile</h1>
-<p>We show how to generate a Docker image with the help of a Dockerfile.</p>
+<p>We show how to generate a first secure container image with the help of a Dockerfile.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <h3 id="ensure-that-the-sgx-driver-is-installed">Ensure that the sgx driver is installed</h3>
 <pre><code class="bash">&gt; ls /dev/isgx 
@@ -221,13 +216,58 @@
 </code></pre>
 
 <h3 id="access-to-scone-curated-images">Access to SCONE Curated Images</h3>
-<p>Right now, access to the curated images is still restricted. Please, send email to scone.containers@gmail.com to request access.</p>
-<h2 id="generate-helloagain-image">Generate HelloAgain image</h2>
+<p>Right now, access to the curated images is still restricted. Please, send email to scontain.ceo@gmail.com to request access.</p>
+<h2 id="generate-helloagain-image-dynamically-linked">Generate HelloAgain image (dynamically-linked)</h2>
+<p>We first generate a <em>hello again</em> container image with a dynamically-linked secure program:</p>
+<pre><code class="bash">cd SCONE_TUTORIAL/DLDockerFile
+</code></pre>
+
+<p>The Dockerfile to generate the new image looks like this:</p>
+<pre><code class="Dockerfile">FROM sconecuratedimages/crosscompilers:runtime
+
+MAINTAINER Christof Fetzer &quot;christof.fetzer@gmail.com&quot;
+
+RUN mkdir /hello
+
+COPY dyn_hello_again /hello/
+
+
+CMD SCONE_ALPINE=1 SCONE_VERSION=1 /hello/dyn_hello_again
+</code></pre>
+
+<p>This assumes that we already generated the dynamically linked binary with
+an appropriately configured gcc. We generate this with the provided gcc image:</p>
+<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_again.c -o dyn_hello_again
+</code></pre>
+
+<p>We provide a little script that generates the image and pushes it to Docker hub (which should fail since you should not have the credentials):</p>
+<pre><code class="bash">./generate.sh
+</code></pre>
+
+<p>You can run this program inside of enclave (with the output of debug messages):</p>
+<pre><code class="bash">docker run -it sconecuratedimages/helloworld:dynamic
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=67108864
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=hw
+Configure parameters: 
+1.1.15
+Hello Again
+</code></pre>
+
+<p>This image is nicely small (only 11MB) since it only contains the runtime environment and no development environment.</p>
+<h2 id="generate-helloagain-image-statically-linked">Generate HelloAgain image (statically-linked)</h2>
 <p>We generate a <em>hello again</em> container image. </p>
 <pre><code class="bash">cd SCONE_TUTORIAL/Dockerfile
 </code></pre>
 
-<p>The Dockerfile looks, feels like a standard docker image:</p>
+<p>The Dockerfile is quite straight forward:</p>
 <pre><code class="Dockerfile">FROM sconecuratedimages/crosscompilers:sgxmusl-hw-async-gcc
 
 MAINTAINER Christof Fetzer &quot;christof.fetzer@gmail.com&quot;

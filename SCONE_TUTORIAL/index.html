@@ -119,13 +119,13 @@
                 
                     <li><a class="toctree-l4" href="#native-hello-world">Native Hello World</a></li>
                 
-                    <li><a class="toctree-l4" href="#sim-hello-world">SIM Hello World</a></li>
+                    <li><a class="toctree-l4" href="#statically-linked-simulated-hello-world">Statically-Linked Simulated Hello World</a></li>
                 
-                    <li><a class="toctree-l4" href="#sgx-async-hello-world">SGX ASYNC Hello World</a></li>
+                    <li><a class="toctree-l4" href="#statically-linked-hello-world">Statically-Linked Hello World</a></li>
+                
+                    <li><a class="toctree-l4" href="#dynamically-linked-hello-world">Dynamically-Linked Hello World</a></li>
                 
                     <li><a class="toctree-l4" href="#run-strace">Run STRACE</a></li>
-                
-                    <li><a class="toctree-l4" href="#run-shellscript">Run ShellScript</a></li>
                 
             
             </ul>
@@ -163,21 +163,14 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_Compose/">SCONE Compose</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_OpenStack/">SCONE OpenStack Support</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
         <a class="" href="../SCONE_Publications/">SCONE Publications</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../glossary/">Glossary</a>
         
     </li>
 <li>
@@ -217,20 +210,23 @@
                 <h1 id="scone-tutorial">SCONE Tutorial</h1>
 <h2 id="prerequisites">Prerequisites</h2>
 <h3 id="ensure-that-the-sgx-driver-is-installed">Ensure that the sgx driver is installed</h3>
-<pre><code class="bash">&gt; ls /dev/isgx 
+<pre><code class="bash">ls /dev/isgx 
 /dev/isgx
 </code></pre>
 
 <p>If the driver is not installed, read Section <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a> to learn how to install the SGX driver.</p>
 <h3 id="install-sgxmusl-cross-compiler-image">Install sgxmusl cross compiler image</h3>
-<p>Ensure that you installed the sgxmusl:draft container image:</p>
-<pre><code class="bash">&gt; docker image ls sconecuratedimages/crosscompilers
-REPOSITORY                          TAG                 IMAGE ID            CREATED             SIZE
-sconecuratedimages/crosscompilers   gcc-sim             e5cabb3682d6        17 hours ago        1.18 GB
-sconecuratedimages/crosscompilers   gcc-sync            a4768b000fcc        18 hours ago        1.18 GB
+<p>Ensure that you installed the various sconecuratedimages/crosscompilers container image:</p>
+<pre><code class="bash">docker image ls sconecuratedimages/*
+REPOSITORY                          TAG                    IMAGE ID            CREATED             SIZE
+sconecuratedimages/crosscompilers   runtime                6fc289114b8f        About an hour ago   21.2MB
+sconecuratedimages/muslgcc          latest                 ba4438bfc021        46 hours ago        178MB
+sconecuratedimages/crosscompilers   sgxmusl-hw-async-gcc   ca8706b312d0        5 months ago        1.18GB
+sconecuratedimages/crosscompilers   gcc-sim                e5cabb3682d6        7 months ago        1.18GB
 </code></pre>
 
 <p>If the cross compiler image is not yet installed, read Section <a href="../SCONE_Curated_Images/">SCONE Curated Container Images</a> to learn how to install the SCONE cross compiler image.</p>
+<p>If the docker command fails, please ensure that docker is indeed installed (see <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a>. Also, on some systems you might need to use <em>sodo</em> to run docker commands.</p>
 <h2 id="install-the-tutorial">Install the tutorial</h2>
 <p>Clone the tutorial: </p>
 <pre><code class="bash">git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
@@ -244,36 +240,72 @@ gcc hello_world.c  -o native_hello_world
 Hello World
 </code></pre>
 
-<h2 id="sim-hello-world">SIM Hello World</h2>
+<h2 id="statically-linked-simulated-hello-world">Statically-Linked <em>Simulated</em> Hello World</h2>
 <p>Now, let us compile <em>hello world</em> with the help of a cross compiler image that creates binaries that include all SCONE software 
 but the services run actually outside of enclave. We call this variant <em>sim</em> and made available in image <em>sconecuratedimages/crosscompilers:gcc-sim</em>
 that you can pull from docker hub.</p>
 <p>The sim variant simplifies debugging. <em>sim</em> is, however, not 100% identical with the <em>async</em> branch (i.e., the recommended branch to run applications inside of enclaves).
 Hence, debugging using <em>sim</em> might not be possible for all bugs. </p>
-<pre><code class="bash">sudo docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:gcc-sim sgxmusl-sim-gcc /usr/src/myapp/hello_world.c  -o sim_hello_world
+<pre><code class="bash">docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:gcc-sim sgxmusl-sim-gcc /usr/src/myapp/hello_world.c  -o sim_hello_world
 ./sim_hello_world
 Hello World
 </code></pre>
 
 <p>Note that the generated executable, i.e., <em>sim_hello_world</em>, will only run on Linux. </p>
-<h2 id="sgx-async-hello-world">SGX ASYNC Hello World</h2>
+<h2 id="statically-linked-hello-world">Statically-Linked Hello World</h2>
 <p>The default cross compiler variant that runs <em>hello world</em> inside of an enclave is <em>sgxmusl-hw-async-gcc</em> and you can find this in container <em>sconecuratedimages/crosscompilers</em>. 
 This variant requires access to the SGX device. 
 In Linux, the SGX device is made available as <em>/dev/isgx</em> and we can give the cross compiler inside of an container access via option <em>--device=/dev/isgx</em>:</p>
-<pre><code class="bash">sudo docker run --rm --device=/dev/isgx -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers sgxmusl-hw-async-gcc /usr/src/myapp/hello_world.c  -o sgx_hello_world
+<pre><code class="bash">docker run --rm --device=/dev/isgx -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:sgxmusl-hw-async-gcc sgxmusl-hw-async-gcc /usr/src/myapp/hello_world.c  -o sgx_hello_world
 ./sgx_hello_world
 Hello World
 </code></pre>
 
 <p>The compilation as well as the hello world program will fail in case you do not have the appropriate driver installed.</p>
+<h2 id="dynamically-linked-hello-world">Dynamically-Linked Hello World</h2>
+<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_world.c -o dyn_hello_world
+</code></pre>
+
+<p>To run this natively, just execute the following:</p>
+<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./dyn_hello_world
+</code></pre>
+
+<p>To run a dynamically-linked binary in an enclave, you need to run this in a special runtime environment. In this environment you can ask binaries to run inside of enclaves by setting environment <em>SCONE_ALPINE=1</em>. To indicate that we are indeed running inside an enclave, we ask to issue some debug messages from inside the enclave by setting environment variable <em>SCONE_VERSION=1</em>:</p>
+<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=67108864
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=hw
+Configure parameters: 
+1.1.15
+Hello World
+</code></pre>
+
 <h2 id="run-strace">Run STRACE</h2>
 <p>Lets see how we can trace the program. Say, you have compile the program as shown above. After that you enter a cross compiler container and strace hello world as follows:</p>
 <pre><code class="bash">sudo docker run --cap-add SYS_PTRACE -it --rm --device=/dev/isgx -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers bash
-strace  -f /usr/src/myapp/sgx_sync_hello_world
+strace  -f /usr/src/myapp/sgx_hello_world 2&gt; strace.log
+Hello World
+head strace.log
+execve(&quot;/usr/src/myapp/sgx_hello_world&quot;, [&quot;/usr/src/myapp/sgx_hello_world&quot;], [/* 10 vars */]) = 0
+brk(NULL)                               = 0x10e8000
+access(&quot;/etc/ld.so.nohwcap&quot;, F_OK)      = -1 ENOENT (No such file or directory)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f17f07f1000
+access(&quot;/etc/ld.so.preload&quot;, R_OK)      = -1 ENOENT (No such file or directory)
+open(&quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=18506, ...}) = 0
+mmap(NULL, 18506, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f17f07ec000
+close(3)                                = 0
+access(&quot;/etc/ld.so.nohwcap&quot;, F_OK)      = -1 ENOENT (No such file or directory)
 </code></pre>
 
-<h2 id="run-shellscript">Run ShellScript</h2>
-<p>Author: Christof Fetzer, April 2017</p>
+<p>Author: Christof Fetzer, October 2017</p>
               
             </div>
           </div>

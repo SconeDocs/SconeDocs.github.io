@@ -141,20 +141,15 @@
             
                 <li class="toctree-l3"><a href="#starting-a-scone-application-on-a-swarm">Starting a SCONE Application on a Swarm</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#stopping-the-service">Stopping the service</a></li>
+                    <li><a class="toctree-l4" href="#stopping-the-service">Stopping the service</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#scalable-fault-tolerant-service">Scalable Fault-Tolerant Service</a></li>
+                    <li><a class="toctree-l4" href="#scalable-fault-tolerant-service">Scalable Fault-Tolerant Service</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#draining-a-node">Draining a node</a></li>
+                    <li><a class="toctree-l4" href="#draining-a-node">Draining a node</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#running-your-own-registry">Running your own registry</a></li>
+                    <li><a class="toctree-l4" href="#running-your-own-registry">Running your own registry</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#updating-the-image-of-a-service">Updating the image of a service</a></li>
+                    <li><a class="toctree-l4" href="#updating-the-image-of-a-service">Updating the image of a service</a></li>
                 
             
             </ul>
@@ -164,21 +159,14 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_Compose/">SCONE Compose</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_OpenStack/">SCONE OpenStack Support</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
         <a class="" href="../SCONE_Publications/">SCONE Publications</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../glossary/">Glossary</a>
         
     </li>
 <li>
@@ -215,11 +203,14 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="starting-a-scone-application-on-a-swarm">Starting a SCONE Application on a Swarm</h2>
+                <h1 id="starting-a-scone-application-on-a-swarm">Starting a SCONE Application on a Swarm</h1>
+<p>We show how to run a <em>secure nginx</em> version, i.e., one that runs inside an enclave in a
+docker swarm with automatic restarts. Docker takes care of failures by restarting failed services
+if you run <em>nginx</em> as a service:</p>
 <pre><code class="bash"> docker service create --name &quot;ha&quot; --detach=true -p 80:80 -p 443:443 --constraint 'node.labels.sgx != 0'  sconecuratedimages/nginx:noshielding
 </code></pre>
 
-<p>If this fails, you get a status as follows: </p>
+<p>If this service would fail, you get a status like this: </p>
 <pre><code class="bash">&gt; docker service ps ha
 ID                  NAME                IMAGE                      NODE                DESIRED STATE       CURRENT STATE           ERROR                       PORTS
 f65id6ow5n6w        ha.1                sconecuratedimages/nginx   beatrix             Ready               Ready 1 second ago                                  
@@ -243,6 +234,11 @@ x2xq1c3aede7        ha.1       sconecuratedimages/nginx:noshielding   alice     
 </code></pre>
 
 <h2 id="scalable-fault-tolerant-service">Scalable Fault-Tolerant Service</h2>
+<p>For the next steps, make sure that all nodes have access to image <em>sconecuratedimages/sconetainer:noshielding</em> 
+by executing on all nodes of the Swarm:</p>
+<pre><code class="bash">docker pull sconecuratedimages/sconetainer:noshielding
+</code></pre>
+
 <p>We start a nginx service this time with the scontain.com website. We start two replicas, each
 of these need to run on  a SGXv1 machines:</p>
 <pre><code class="bash">&gt; docker service create --name &quot;sconeweb&quot; --detach=true  --publish 80:80 --publish 443:443 --constraint 'node.labels.sgx == 1'  --replicas=2 sconecuratedimages/sconetainer:noshielding
@@ -257,11 +253,6 @@ mg4xdq868syq         \_ sconeweb.1      sconecuratedimages/sconetainer:noshieldi
 ry1pqen9jgan         \_ sconeweb.1      sconecuratedimages/sconetainer:noshielding   beatrix             Shutdown            Rejected 4 hours ago   &quot;No such image: sconecuratedim…&quot;   
 q05ti7gkxc7r         \_ sconeweb.1      sconecuratedimages/sconetainer:noshielding   beatrix             Shutdown            Rejected 4 hours ago   &quot;No such image: sconecuratedim…&quot;   
 zxj74inh2zdf        sconeweb.2          sconecuratedimages/sconetainer:noshielding   alice               Running             Running 4 hours ago                                       
-</code></pre>
-
-<p>For the next steps, make sure that all nodes have access to image <em>sconecuratedimages/sconetainer:noshielding</em> 
-by executing on all nodes:</p>
-<pre><code class="bash">docker pull sconecuratedimages/sconetainer:noshielding
 </code></pre>
 
 <h2 id="draining-a-node">Draining a node</h2>
@@ -322,7 +313,7 @@ docker push localhost:5000/sconetainer
 <pre><code class="bash">docker service update --image  localhost:5000/sconetainer ha
 </code></pre>
 
-<p>Author: Christof Fetzer,  2017</p>
+<p>Author: Christof Fetzer,  October 2017</p>
               
             </div>
           </div>
@@ -330,7 +321,7 @@ docker push localhost:5000/sconetainer
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_Compose/" class="btn btn-neutral float-right" title="SCONE Compose"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../SCONE_Publications/" class="btn btn-neutral float-right" title="SCONE Publications"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../SCONE_Swarm/" class="btn btn-neutral" title="SCONE Swarm"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -362,7 +353,7 @@ docker push localhost:5000/sconetainer
         <span><a href="../SCONE_Swarm/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_Compose/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../SCONE_Publications/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

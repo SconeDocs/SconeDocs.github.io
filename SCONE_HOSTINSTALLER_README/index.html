@@ -157,21 +157,14 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_Compose/">SCONE Compose</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_OpenStack/">SCONE OpenStack Support</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
         <a class="" href="../SCONE_Publications/">SCONE Publications</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../glossary/">Glossary</a>
         
     </li>
 <li>
@@ -209,13 +202,13 @@
             <div class="section">
               
                 <h1 id="scone-host-installation-guide">SCONE: Host Installation Guide</h1>
-<p>This page describes how </p>
+<p>This page describes how</p>
 <ul>
 <li>
 <p>to set up a host such that it can run SCONE secure containers, i.e., containers in which processes run inside of SGX enclaves, and</p>
 </li>
 <li>
-<p>we remind you of how to set up your <em>ssh</em> configuration.</p>
+<p>we remind you of how to set up your <em>ssh</em> configuration to be able to use your scone CLI.</p>
 </li>
 </ul>
 <p>During this setup, we</p>
@@ -230,34 +223,34 @@
 <p>start or join a docker swarm - if requested by command line options.</p>
 </li>
 </ul>
-<p><strong>Prerequisite</strong>:  We assume that you have set up the <strong>scone</strong> <a href="../SCONE_CLI/">command line interface</a>.
-The <em>scone</em> CLI can run on your developer machine, a virtual machine or inside a container. 
-The easiest way to get started is to run <em>scone</em> in a Docker container.</p>
-<p>Independent of where <em>scone</em> runs, it requires that <em>ssh</em> is properly installed.</p>
+<p><strong>Prerequisite</strong>:
+We assume that you have set up the <strong>scone</strong> <a href="../SCONE_CLI/">command line interface</a>.
+The <em>scone</em> CLI can run on your developer machine, a virtual machine or inside a container.
+The easiest way to get started is to run <em>scone</em> in a Docker container.
+No matter where <em>scone</em> is running, it requires that <em>ssh</em> be properly installed.</p>
+<p><strong>NOTE</strong> This host setup will enable the execution of <em>SCONE secure containers</em> on SGX-enabled machines. These containers can run one or more <em>secure programs</em>, i.e., programs that are executed inside SGX enclaves.   The secure programs of secure containers can be statically-linked or dynamically-linked (see <a href="../SCONE_COMPILER_CONTAINER_README/">SCONE SGX Toolchain</a>). The host itself runs statically-linked secure programs only - this is to avoid failures do to library versioning issues.</p>
 <h2 id="ssh">SSH</h2>
 <p>The <em>scone</em> utility executes commands via <em>ssh</em> on the SGX-capable machine that should be installed.</p>
 <p><img alt="SCONE Installation Alternatives" src="../img/alternativeInstallationMethods.png" /></p>
 <p>Since we potentially execute many <em>ssh</em> commands, you need to configure <em>ssh</em> such that</p>
 <ul>
 <li>
-<p>you can log into the SGX machines with having to type a password, </p>
+<p>you can log into the SGX machines <em>without</em>  having to type a password, </p>
 </li>
 <li>
-<p>you can use simple basename for your SGX machines, and</p>
+<p>you can use the basename of your SGX machines to log in , and</p>
 </li>
 <li>
-<p>you want ssh to reuse connection to reduce the execution time of the <em>scone</em> commands.</p>
+<p>ssh is permitted to reuse connections to reduce the execution time of the <em>scone</em> commands.</p>
 </li>
 </ul>
 <h3 id="passwordless-ssh">Passwordless ssh</h3>
-<p>To set up passwordless ssh authentication, you need to ensure that you have a pair of authentication keys.
-If there exists no public key <em>$HOME/.ssh/id_rsa.pub</em> (often the case if you use a container), you can generate a new pair
-by executing:</p>
+<p>To set up passwordless ssh authentication, you need to ensure that you have a pair of authentication keys. If there exists no public key <em>$HOME/.ssh/id_rsa.pub</em> (often the case if you use a container), you can generate a new pair by executing:</p>
 <pre><code class="bash">ssh-keygen -b 4096 -t rsa
 </code></pre>
 
 <p>Append the generated public key <em>$HOME/.ssh/id_rsa.pub</em> to file <em>$HOME/.ssh/authorized_keys</em> on the SGX hosts for which you to be able to log in without a password.</p>
-<p>Additionally, you need to start a ssh-agent:</p>
+<p>Additionally, you need to start a ssh-agent (on your developer machine):</p>
 <pre><code class="bash">SA=`ssh-agent`
 eval &quot;$SA&quot;
 </code></pre>
@@ -268,8 +261,8 @@ eval &quot;$SA&quot;
 
 <h3 id="host-alias">Host alias</h3>
 <p>To reduce your typing overhead, you can use the basename of a host - if you configure ssh appropriately. For example, instead of typing <em>node2.my.very.long.domain.com</em>, you could configure  <em>ssh</em> such that <em>node2</em> refers to <em>node2.my.very.long.domain.com</em>.</p>
-<p>As a caveat, this basename must be sufficient for other hosts in the <em>same swarm</em> to reach <em>node2</em>. In the above figure, <em>manager</em> must be able to resolve <em>node2</em> to <em>node2.my.very.long.domain.com</em>.</p>
-<p>To add an alias, you could add the following lines to your <em>ssh config</em> (stored in <em>$HOME/.ssh/config</em>):</p>
+<p>As a caveat, this basename must be sufficient for other hosts in the <em>same swarm</em> to reach <em>node2</em>. In the above figure, <em>manager</em> must be able to resolve <em>node2</em> to the IP address of <em>node2.my.very.long.domain.com</em>.</p>
+<p>To add an alias for <em>node2.my.very.long.domain.com</em>, you could add the following lines to your <em>ssh config</em> (stored in <em>$HOME/.ssh/config</em>):</p>
 <pre><code class="bash">Host node2
      HostName node2.my.very.long.domain.com
      Port 22
@@ -278,7 +271,7 @@ eval &quot;$SA&quot;
 </code></pre>
 
 <h3 id="ssh-connection-reuse">ssh connection reuse</h3>
-<p>To reuse the connection establishment, you can configure ssh to reuse connections. To do so, you need to set <em>ControlMaster</em> to <em>auto</em> and you have to specify a control path via option <em>ControlPath</em>. You can define a generic path like <em>~/.ssh/ssh_mux_%h_%p_%r</em> that can be the same for all hosts. For example, for some host <em>alice</em> you might add the following lines to <em>$HOME/.ssh/config</em>:</p>
+<p>To be able to reuse a ssh connection, you must configure ssh appropriately. You should set <em>ControlMaster</em> to <em>auto</em> and you have to specify a control path via option <em>ControlPath</em>. You can define a generic path like <em>~/.ssh/ssh_mux_%h_%p_%r</em> - this can be the same for all hosts. For example, for some host <em>alice</em> you might add the following lines to <em>$HOME/.ssh/config</em>:</p>
 <pre><code class="bash">Host alice
         ControlMaster auto
         ControlPath ~/.ssh/ssh_mux_%h_%p_%r
@@ -312,7 +305,7 @@ scone host install --name caroline  --join alice
 
 <h2 id="background-information">Background Information</h2>
 <h3 id="patched-docker-engine-moby">Patched Docker Engine (Moby)</h3>
-<p>For an container to be able to use SGX, it has to have access to a device (/dev/isgx). This device permits the container to talk to the SGX driver. This driver is needed, for example, to create SGX enclaves. </p>
+<p>For an container to be able to use SGX, it has to have access to a device (/dev/isgx). This device permits the container to talk to the SGX driver. This driver is needed, in particular, to create SGX enclaves. </p>
 <p>Some docker commands (like <em>docker run</em>) support an option --device (i.e., <em>--device /dev/isgx</em>) which allows us to give a container access to the SGX device. We need to point out that some docker commands (like <em>docker build</em>) do, however, not yet support the device option. Therefore, we maintain and install a slightly patched docker engine (i.e., a variant of moby): this engine ensures that each container has access to the SGX device (/dev/isgx).  With the help of this patched engine, we can use Dockerfiles to generate container images (see this <a href="../SCONE_Dockerfile/">Tutorial</a>).</p>
 <p>Right now we provide a patched version of the currently active branch of Moby (a.k.a., the Docker engine): 17.06.0-dev, build f9a45b7</p>
 <h3 id="patched-sgx-driver">Patched SGX Driver</h3>

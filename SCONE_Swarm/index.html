@@ -155,21 +155,14 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_Compose/">SCONE Compose</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_OpenStack/">SCONE OpenStack Support</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
         <a class="" href="../SCONE_Publications/">SCONE Publications</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../glossary/">Glossary</a>
         
     </li>
 <li>
@@ -208,25 +201,7 @@
               
                 <h1 id="scone-swarm">SCONE SWARM</h1>
 <h2 id="installation">Installation</h2>
-<p>Our <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a> script will typically set up a docker swarm. You can skip this section, if you have already a swarm running. </p>
-<p>To manually set up a Docker swarm, log into designated manage node and execute:</p>
-<pre><code class="bash">export MANAGER_IP=`hostname --ip-address`
-docker swarm init --advertise-addr $MANAGER_IP
-</code></pre>
-
-<p>We determine the address of the swarm manager and the token to join the swarm as follows</p>
-<pre><code class="bash">export manager_addr=`docker info --format '{{(index .Swarm.RemoteManagers 0).Addr}}'`
-export token=`docker swarm join-token -q worker`
-echo export token=$token
-echo export manager_addr=$manager_addr
-</code></pre>
-
-<p>On each node that should join the swarm, ensure that you installed our patched Docker engine (which makes the isgx device available to all containers).</p>
-<p>Add a new node to the swarm by setting <em>$token</em>  and <em>$manager_addr</em> to the values determined above and
-execute on the new node:</p>
-<pre><code class="bash">docker swarm join --token $token $manager_addr
-</code></pre>
-
+<p>Typically, you might want to set up a docker swarm with our <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a> script.</p>
 <h2 id="setting-node-labels">Setting Node Labels</h2>
 <p>Docker Swarm supports the labeling of nodes. In our case, we define a label <em>"sgx"</em> that permits us to determine if a node supports sgx and what version of sgx. </p>
 <p>We define the following node labels:</p>
@@ -273,7 +248,7 @@ done
 <pre><code class="bash">docker inspect --format '{{(index  .Spec.Labels &quot;sgx&quot;)}}' $nodes
 </code></pre>
 
-<p>Author: Christof Fetzer, 2017</p>
+<p>Author: Christof Fetzer, October 2017</p>
               
             </div>
           </div>
