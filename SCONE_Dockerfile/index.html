@@ -262,13 +262,15 @@ Hello Again
 </code></pre>
 
 <p>This image is nicely small (only 11MB) since it only contains the runtime environment and no development environment.</p>
+<h3 id="screencast">Screencast</h3>
+<p><a href="https://asciinema.org/a/hg9jwPbAZSFjAIkwagf95z9Sj"><img alt="asciicast" src="https://asciinema.org/a/hg9jwPbAZSFjAIkwagf95z9Sj.png" /></a></p>
 <h2 id="generate-helloagain-image-statically-linked">Generate HelloAgain image (statically-linked)</h2>
 <p>We generate a <em>hello again</em> container image. </p>
 <pre><code class="bash">cd SCONE_TUTORIAL/Dockerfile
 </code></pre>
 
 <p>The Dockerfile is quite straight forward:</p>
-<pre><code class="Dockerfile">FROM sconecuratedimages/crosscompilers:sgxmusl-hw-async-gcc
+<pre><code class="Dockerfile">FROM sconecuratedimages/crosscompilers:scone
 
 MAINTAINER Christof Fetzer &quot;christof.fetzer@gmail.com&quot;
 
@@ -276,7 +278,7 @@ RUN mkdir /hello
 
 COPY hello_again.c /hello/
 
-RUN cd /hello &amp;&amp; gcc hello_again.c -o again
+RUN cd /hello &amp;&amp; scone-gcc hello_again.c -o again
 
 CMD [&quot;/hello/again&quot;]
 </code></pre>
@@ -296,6 +298,9 @@ export FULLTAG=&quot;sconecuratedimages/helloworld:$TAG&quot;
 <pre><code class="bash">docker build --pull -t $FULLTAG .
 </code></pre>
 
+<pre><code class="bash">docker run -it $FULLTAG
+</code></pre>
+
 <p>We push it to docker hub (will fail unless you have the right to push <em>$FULLTAG</em>):</p>
 <pre><code class="bash">docker push $FULLTAG
 </code></pre>
@@ -305,7 +310,9 @@ export FULLTAG=&quot;sconecuratedimages/helloworld:$TAG&quot;
 export IMAGE_NAME=&quot;sconecuratedimages/helloAgain&quot;
 </code></pre>
 
-<p>Author: Christof Fetzer, 2017</p>
+<h3 id="screencast_1">Screencast</h3>
+<p><a href="https://asciinema.org/a/9JhNIJsE4rnwwPdhbae1l41Lr"><img alt="asciicast" src="https://asciinema.org/a/9JhNIJsE4rnwwPdhbae1l41Lr.png" /></a></p>
+<p>Author: Christof Fetzer, November 2017</p>
               
             </div>
           </div>
