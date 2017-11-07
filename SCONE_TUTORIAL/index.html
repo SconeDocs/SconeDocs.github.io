@@ -221,16 +221,15 @@
 <p>Ensure that you installed the various sconecuratedimages/crosscompilers container image:</p>
 <pre><code class="bash">docker image ls sconecuratedimages/*
 REPOSITORY                          TAG                    IMAGE ID            CREATED             SIZE
-sconecuratedimages/crosscompilers   runtime                6fc289114b8f        About an hour ago   21.2MB
-sconecuratedimages/muslgcc          latest                 ba4438bfc021        46 hours ago        178MB
-sconecuratedimages/crosscompilers   sgxmusl-hw-async-gcc   ca8706b312d0        5 months ago        1.18GB
+sconecuratedimages/crosscompilers   latest                 dff7975b7f32        7 hours ago         1.57GB
+sconecuratedimages/crosscompilers   scone                  dff7975b7f32        7 hours ago         1.57GB
 sconecuratedimages/crosscompilers   gcc-sim                e5cabb3682d6        7 months ago        1.18GB
 </code></pre>
 
 <p>If the cross compiler image is not yet installed, read Section <a href="../SCONE_Curated_Images/">SCONE Curated Container Images</a> to learn how to install the SCONE cross compiler image.</p>
 <p>If the docker command fails, please ensure that docker is indeed installed (see <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a>. Also, on some systems you might need to use <em>sodo</em> to run docker commands.</p>
 <h2 id="install-the-tutorial">Install the tutorial</h2>
-<p>Clone the tutorial: </p>
+<p>Clone the tutorial:</p>
 <pre><code class="bash">git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
 </code></pre>
 
@@ -273,7 +272,22 @@ Hello World
 </code></pre>
 
 <p>To run a dynamically-linked binary in an enclave, you need to run this in a special runtime environment. In this environment you can ask binaries to run inside of enclaves by setting environment <em>SCONE_ALPINE=1</em>. To indicate that we are indeed running inside an enclave, we ask to issue some debug messages from inside the enclave by setting environment variable <em>SCONE_VERSION=1</em>:</p>
-<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+<h3 id="hardware-mode-vs-simulation-mode">Hardware Mode vs Simulation Mode</h3>
+<p>For debugging, we support three different modes for execution: <em>hardware, simulation, and automatic</em>:</p>
+<ul>
+<li>
+<p><em>hardware</em>: by setting environment variable to <strong>SCONE_MODE=HW</strong>, SCONE will enforce running this application inside an SGX enclave.</p>
+</li>
+<li>
+<p><em>simulation</em>: by setting environment variable to <strong>SCONE_MODE=SIM</strong>, SCONE will enforce running this application in native mode (i.e., outside of an enclave). This will run all SCONE functionality but outside enclaves. This is intended for development and debugging on machines that are not SGX-capable.</p>
+</li>
+<li>
+<p><em>automatic</em>: by setting environment variable to <strong>SCONE_MODE=AUTO</strong>, SCONE will run the application inside of an SGX enclave if available and otherwise in simulation mode. (This is the default mode)</p>
+</li>
+</ul>
+<p><strong>NOTE</strong>: In production mode, you must only permit running in hardware mode. Scone ensures this with the help of <em>remote attestation</em>: the SCONE configuration and attestation service (CAS) will only provide configuration information and secrets to an application only after it has proven (with the help of SGX CPU extensions) that it is indeed running inside an SGX enclave.</p>
+<h3 id="execution-on-a-sgx-capable-machine">Execution on a SGX-capable machine</h3>
+<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
 export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
@@ -287,6 +301,46 @@ export SCONE_MODE=hw
 Configure parameters: 
 1.1.15
 Hello World
+</code></pre>
+
+<h3 id="execution-on-a-non-sgx-machine">Execution on a non-SGX machine</h3>
+<p>If you run this inside a container without access to SGX (/dev/isgx), for example, when running on a Mac, you will see the following error message:</p>
+<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+[Error] Could not create enclave: Error opening SGX device
+</code></pre>
+
+<p>You could run this in simulation mode as follows:</p>
+<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=SIM -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=67108864
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=sim
+Configure parameters: 
+1.1.15
+Hello World
+</code></pre>
+
+<p>Alternatively, you could run this program in automatic mode:</p>
+<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=AUTO -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime 
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=67108864
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=sim
+Configure parameters:
+1.1.15
+HelloWorld
 </code></pre>
 
 <h2 id="run-strace">Run STRACE</h2>
@@ -308,7 +362,7 @@ access(&quot;/etc/ld.so.nohwcap&quot;, F_OK)      = -1 ENOENT (No such file or d
 
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ"><img alt="asciicast" src="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ.png" /></a></p>
-<p>Author: Christof Fetzer, October 2017</p>
+<p>Author: Christof Fetzer, November 2017</p>
               
             </div>
           </div>

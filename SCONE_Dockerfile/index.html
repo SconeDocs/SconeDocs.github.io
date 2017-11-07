@@ -232,7 +232,7 @@ RUN mkdir /hello
 COPY dyn_hello_again /hello/
 
 
-CMD SCONE_ALPINE=1 SCONE_VERSION=1 /hello/dyn_hello_again
+CMD SCONE_MODE=HW SCONE_ALPINE=1 SCONE_VERSION=1 /hello/dyn_hello_again
 </code></pre>
 
 <p>This assumes that we already generated the dynamically linked binary with
@@ -262,11 +262,16 @@ Hello Again
 </code></pre>
 
 <p>This image is nicely small (only 11MB) since it only contains the runtime environment and no development environment.</p>
+<p>Running on a docker engine without access to SGX, we get an error message:</p>
+<pre><code class="bash">docker run -it sconecuratedimages/helloworld:dynamic
+[Error] Could not create enclave: Error opening SGX device 
+</code></pre>
+
 <h3 id="screencast">Screencast</h3>
 <p><a href="https://asciinema.org/a/hg9jwPbAZSFjAIkwagf95z9Sj"><img alt="asciicast" src="https://asciinema.org/a/hg9jwPbAZSFjAIkwagf95z9Sj.png" /></a></p>
 <h2 id="generate-helloagain-image-statically-linked">Generate HelloAgain image (statically-linked)</h2>
 <p>We generate a <em>hello again</em> container image. </p>
-<pre><code class="bash">cd SCONE_TUTORIAL/Dockerfile
+<pre><code class="bash">cd SCONE_TUTORIAL/DockerFile
 </code></pre>
 
 <p>The Dockerfile is quite straight forward:</p>
