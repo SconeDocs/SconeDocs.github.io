@@ -129,8 +129,6 @@
                 
                     <li><a class="toctree-l4" href="#native-hello-world">Native Hello World</a></li>
                 
-                    <li><a class="toctree-l4" href="#statically-linked-simulated-hello-world">Statically-Linked Simulated Hello World</a></li>
-                
                     <li><a class="toctree-l4" href="#statically-linked-hello-world">Statically-Linked Hello World</a></li>
                 
                     <li><a class="toctree-l4" href="#dynamically-linked-hello-world">Dynamically-Linked Hello World</a></li>
@@ -169,6 +167,20 @@
             <li>
     <li class="toctree-l1 ">
         <a class="" href="../SCONE_Swarm_Example/">SCONE Swarm Example</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_Fileshield/">SCONE File Protection</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../Python/">Python</a>
         
     </li>
 <li>
@@ -233,7 +245,6 @@
 REPOSITORY                          TAG                    IMAGE ID            CREATED             SIZE
 sconecuratedimages/crosscompilers   latest                 dff7975b7f32        7 hours ago         1.57GB
 sconecuratedimages/crosscompilers   scone                  dff7975b7f32        7 hours ago         1.57GB
-sconecuratedimages/crosscompilers   gcc-sim                e5cabb3682d6        7 months ago        1.18GB
 </code></pre>
 
 <p>If the cross compiler image is not yet installed, read Section <a href="../SCONE_Curated_Images/">SCONE Curated Container Images</a> to learn how to install the SCONE cross compiler image.</p>
@@ -251,28 +262,47 @@ gcc hello_world.c  -o native_hello_world
 Hello World
 </code></pre>
 
-<h2 id="statically-linked-simulated-hello-world">Statically-Linked <em>Simulated</em> Hello World</h2>
-<p>Now, let us compile <em>hello world</em> with the help of a cross compiler image that creates binaries that include all SCONE software 
-but the services run actually outside of enclave. We call this variant <em>sim</em> and made available in image <em>sconecuratedimages/crosscompilers:gcc-sim</em>
-that you can pull from docker hub.</p>
-<p>The sim variant simplifies debugging. <em>sim</em> is, however, not 100% identical with the <em>async</em> branch (i.e., the recommended branch to run applications inside of enclaves).
-Hence, debugging using <em>sim</em> might not be possible for all bugs. </p>
-<pre><code class="bash">docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:gcc-sim sgxmusl-sim-gcc /usr/src/myapp/hello_world.c  -o sim_hello_world
-./sim_hello_world
-Hello World
-</code></pre>
-
-<p>Note that the generated executable, i.e., <em>sim_hello_world</em>, will only run on Linux. </p>
+<p>Note that the generated executable, i.e., <em>sim_hello_world</em>, will only run on Linux.</p>
 <h2 id="statically-linked-hello-world">Statically-Linked Hello World</h2>
-<p>The default cross compiler variant that runs <em>hello world</em> inside of an enclave is <em>sgxmusl-hw-async-gcc</em> and you can find this in container <em>sconecuratedimages/crosscompilers</em>. 
+<p>The default cross compiler variant that runs <em>hello world</em> inside of an enclave is <em>scone gcc</em> and you can find this in container <em>sconecuratedimages/crosscompilers:scone</em>.
 This variant requires access to the SGX device. 
 In Linux, the SGX device is made available as <em>/dev/isgx</em> and we can give the cross compiler inside of an container access via option <em>--device=/dev/isgx</em>:</p>
-<pre><code class="bash">docker run --rm --device=/dev/isgx -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:sgxmusl-hw-async-gcc sgxmusl-hw-async-gcc /usr/src/myapp/hello_world.c  -o sgx_hello_world
-./sgx_hello_world
+<pre><code class="bash">docker run --rm --device=/dev/isgx -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:scone scone-gcc hello_world.c  -o sgx_hello_world
+</code></pre>
+
+<p>This generates a statically linked binary:</p>
+<pre><code class="bash">ldd sgx_hello_world
+    not a dynamic executable
+</code></pre>
+
+<p>Ensure that file <em>/etc/sgx-musl.conf</em> exists. If not, store default file:</p>
+<pre><code class="bash">sudo printf 'Q 1\ne 0 0 0\ns 1 0 0\n' &gt; /etc/sgx-musl.conf
+</code></pre>
+
+<p>To run <em>sgx_hello_world</em>, in an enclave, just execute:</p>
+<pre><code class="bash">./sgx_hello_world
 Hello World
 </code></pre>
 
-<p>The compilation as well as the hello world program will fail in case you do not have the appropriate driver installed.</p>
+<p>To see some more debug messages, set environment variable <em>SCONE_VERSION=1</em>:</p>
+<pre><code class="bash">SCONE_VERSION=1 ./sgx_hello_world
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=67108864
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=hw
+Configure parameters: 
+1.1.15
+Hello World
+</code></pre>
+
+<p>The debug outputs <strong>SCONE_MODE=hw</strong> shows that <em>sgx_hello_world</em> runs in hardware mode, i.e., inside an SGX enclave.</p>
+<p><strong>Note.</strong> The compilation as well as the hello world program will fail in case you do not have an SGX driver installed.</p>
 <h2 id="dynamically-linked-hello-world">Dynamically-Linked Hello World</h2>
 <pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_world.c -o dyn_hello_world
 </code></pre>

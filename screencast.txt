@@ -190,3 +190,90 @@ docker run -it $FULLTAG ldd /hello/again
 
 docker push $FULLTAG
 
+
+
+
+
+asciinema rec --title="Scone File Protection" --max-wait=1  FSPF_screencast
+
+
+docker run -it -v $PWD:/mnt sconecuratedimages/crosscompilers:scone
+
+mkdir -p /example
+# where native files would be written
+mkdir -p /example/plain/
+# where we store the encrypted files
+mkdir -p /example/protected
+
+# the following might be externally mounted
+cd /example
+scone fspf --help
+# create an empty file system protection file
+scone fspf create --help
+scone fspf create /example/fspf.first
+
+scone fspf addr --help
+# by default make all file changes ephemeral
+scone fspf addr /example/fspf.first / -e --ephemeral
+# add an encrypted region
+scone fspf addr  /example/fspf.first /example/plain  --encrypted  --kernel /example/protected
+cone fspf addf --help
+scone fspf addf /example/fspf.first /example/plain /example/protected
+
+T=`scone fspf encrypt /example/fspf.first`
+export SCONE_FSPF_TAG=`echo $T | awk -- '{print $9}'`
+export SCONE_FSPF_KEY=`echo $T | awk -- '{print $11}'`
+
+echo $SCONE_FSPF_TAG
+echo $SCONE_FSPF_KEY
+
+cat > example.c << EOF
+#include <stdio.h>
+
+int main() {
+    FILE *fp = fopen("/example/plain/protected.txt", "w");
+    fprintf(fp, "protected\n");
+    fclose(fp);
+
+    fp = fopen("/example/notprotected.txt", "w");
+    fprintf(fp, "not protected\n");
+    fclose(fp);
+}
+EOF
+
+gcc example.c -o native
+./native
+cat  /example/plain/protected.txt 
+cat  /example/notprotected.txt 
+
+rm -f /example/plain/protected.txt
+rm -f /example/notprotected.txt 
+
+cat > /etc/sgx-musl.conf << EOF
+Q 4
+e -1 0 0
+s -1 0 0
+e -1 1 0
+s -1 1 0
+e -1 2 0
+s -1 2 0
+e -1 3 0
+s -1 3 0
+EOF
+
+scone gcc example.c -o sgxbin
+SCONE_VERSION=1 ./sgxbin 
+
+cat  /example/plain/protected.txt 
+cat  /example/notprotected.txt 
+
+rm -f /example/plain/protected.txt
+rm -f /example/notprotected.txt 
+
+
+export SCONE_FSPF=/example/fspf.first
+
+SCONE_VERSION=1 ./sgxbin 
+cat  /example/protected/pf.txt 
+cat  /example/notprotected/pf.txt
+
