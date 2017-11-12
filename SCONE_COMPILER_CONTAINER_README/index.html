@@ -234,7 +234,7 @@ The objective of these (cross-) compilers are to compile applications - generall
 can use a standard compiler (dynamic) or you need to use a cross compiler (static). The compiler can run on any system, i.e., does not require SGX to run. To generate a statically-linked binary, you need to run on a SGX-enabled machine (for now).</p>
 <p><strong>Note</strong> Independently, if you use a dynamic or static linking, the hash of an enclave (MRENCLAVE) will encompass the whole code, i.e., includes all libraries. Any updates of a library on your host might prevent the execution of a SCONE binary because of a wrong MRENCLAVE. Hence, we recommend to use only statically-linked programs on the host while in containers, which have a more controlled environment, we support both statically as well as dynamically linked binaries. </p>
 <h3 id="dynamically-linked-binaries">Dynamically-Linked Binaries</h3>
-<p>The easiest to get started is to compile your program with gcc such that</p>
+<p>The easiest to get started is to compile your programs such that</p>
 <ul>
 <li>
 <p>the generated code is position independent (<em>-fPIC</em>),</p>
@@ -249,11 +249,13 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <p>link against musl as your libc (i.e., not glibc or any other libc).</p>
 </li>
 </ul>
+<p><img alt="Dynamic Compilation" src="../img/dynamiccompilation.png" /></p>
+<p>When a program is started, SCONE uses its own dynamic link loader to replace libc by a SCONE libc. The SCONE dynamic linker will load the program inside a new SGX enclave and SCONE libc will enable programs to run inside the SGX enclaves, e.g., execute system calls and protect them from attacks via shields like the <a href="../SCONE_Fileshield/">file system shield</a>.</p>
 <p>To simplify the compiling of your programs for scone, we make available a docker image <em>sconecuratedimages/muslgcc</em> which includes <em>gcc</em> and <em>g++</em> support. The options will by default be set as shown above. You need, however, to make sure that your Makefiles will not overwrite these options.</p>
 <h3 id="statically-linked-binaries">Statically-Linked Binaries</h3>
-<p>For statically linked binaries, we make available a (private) docker image <em>sconecuratedimages/crosscompilers:scone</em> which can produce statically linked binaries.</p>
-<p>To simplify debugging, we provide ve a second cross compiler image (docker pull <em>sconecuratedimages/crosscompilers:gcc-sim</em>) that generates statically linked binaries. However, these binary will run outside an enclave.</p>
-<p>You need to ask me (via email) to gain access to these images. For now, we recommend to use dynamically linked binaries and prepare the binaries using a standard compiler (see above).</p>
+<p>For statically linked binaries, we make available a (private) docker image <em>sconecuratedimages/crosscompilers:scone</em> which can produce statically linked binaries. In the statically linked binaries, we replace the interface to the operating system (i.e., libc) by a variant that enables programs to run inside Intel SGX enclaves.</p>
+<p><img alt="Static Compilation" src="../img/staticcompilation.jpg" /></p>
+<p>To simplify debugging, statically linked binaries can either run inside an enclave or - in simulation mode - natively outside of enclaves.</p>
 <h2 id="using-the-cc-compiler-container">Using the C/C++ compiler container</h2>
 <p>How to use the compiler:</p>
 <ul>
