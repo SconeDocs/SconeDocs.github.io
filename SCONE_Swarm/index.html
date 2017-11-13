@@ -146,9 +146,9 @@
                 
                     <li><a class="toctree-l4" href="#installation">Installation</a></li>
                 
-                    <li><a class="toctree-l4" href="#setting-node-labels">Setting Node Labels</a></li>
+                    <li><a class="toctree-l4" href="#node-labels">Node Labels</a></li>
                 
-                    <li><a class="toctree-l4" href="#assign-labels-to-all-nodes">Assign labels to all nodes</a></li>
+                    <li><a class="toctree-l4" href="#screencast">Screencast</a></li>
                 
             
             </ul>
@@ -225,10 +225,24 @@
               
                 <h1 id="scone-swarm">SCONE SWARM</h1>
 <h2 id="installation">Installation</h2>
-<p>Typically, you might want to set up a docker swarm with our <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a> script.</p>
-<h2 id="setting-node-labels">Setting Node Labels</h2>
-<p>Docker Swarm supports the labeling of nodes. In our case, we define a label <em>"sgx"</em> that permits us to determine if a node supports sgx and what version of sgx. </p>
-<p>We define the following node labels:</p>
+<p>Typically, you might want to set up a docker swarm with the <a href="../SCONE_HOSTINSTALLER_README/">scone host</a> command.</p>
+<h2 id="node-labels">Node Labels</h2>
+<p>Docker Swarm supports the labeling of nodes. SCONE labels the nodes of a Docker swarm with several labels:</p>
+<ul>
+<li>
+<p><strong>sgx</strong>: let's us determine if and what version of SGX the CPU of this node supports.</p>
+</li>
+<li>
+<p><strong>sgxdriver</strong>: shows the version of the SGX driver. It says <strong>SCONE</strong> if the node runs the latest patched SGX driver. Otherwise, it shows the version reported by the SGX driver.</p>
+</li>
+<li>
+<p><strong>dockerversion</strong> shows the version of the docker engine. If it is the latest version of the SCONE patched Docker engine, it will say "SCONE".</p>
+</li>
+<li>
+<p><strong>nodeno</strong>. All nodes have a unique number between 1 and the number of nodes in the swarm.</p>
+</li>
+</ul>
+<p>The value of label <strong>sgx</strong> is set as follows:</p>
 <ul>
 <li>
 <p>sgx == "0" iff the node does not support sgx</p>
@@ -240,39 +254,21 @@
 <p>sgx == "2" iff the node supports sgx version 2 (which is not yet available)</p>
 </li>
 </ul>
-<p>To assign a label, we need to figure out the node ID. An easy way to do so, is via the following command:</p>
-<pre><code class="bash">&gt; docker node ls
-ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS
-91a1vvex4dgozfrzy1y136gmg *   alice               Ready               Active              Leader
-ocwyg135npgpsrpe2ncuw542x     beatrix             Ready               Active              
-
+<p>To check the labels and fix these if not properly set, just run the following command - assuming that the manager of your swarm is called sgx2:</p>
+<pre><code class="bash">scone swarm check --verbose --manager sgx2
 </code></pre>
 
-<p>One can now manually update a label as follows:</p>
-<pre><code class="bash">&gt; docker node update --label-add sgx=&quot;1&quot; 91a1vvex4dgozfrzy1y136gmg
-91a1vvex4dgozfrzy1y136gmg
+<p>To list all labels of the nodes managed by host <strong>sgx2</strong>, just execute the following command:</p>
+<pre><code class="bash">scone swarm ls --manager sgx2
+NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STATUS     AVAILABILITY  MANAGER   
+1             1             SCONE         0.10          sgx2                 Ready      Active        Leader    
+2             1             SCONE         0.10          sgx4                 Ready      Active                  
 </code></pre>
 
-<p>For large clusters, we can automate the labeling
-as described in the next subsection.</p>
-<h2 id="assign-labels-to-all-nodes">Assign labels to all nodes</h2>
-<p>Docker swarm keeps listing nodes nodes that are down - even if the host running the node has in meantime rejoined as a new node.</p>
-<p>To purge all down nodes, execute the following:</p>
-<pre><code class="bash">docker node rm $(docker node ls -q)
-</code></pre>
-
-<p>Assuming that all nodes in your swarm support sgx, we assign SGX label "1" to all (remaining) nodes:</p>
-<pre><code class="bash">export nodes=$(docker node ls -q)
-for node in $nodes ; do
-    docker node update --label-add sgx=&quot;1&quot; $node
-done
-</code></pre>
-
-<p>We can check that all sgx labels are "1" by executing the following:</p>
-<pre><code class="bash">docker inspect --format '{{(index  .Spec.Labels &quot;sgx&quot;)}}' $nodes
-</code></pre>
-
-<p>Author: Christof Fetzer, October 2017</p>
+<h2 id="screencast">Screencast</h2>
+<p>https://asciinema.org/a/MhatVwfLY0hBrPk1d2XNF8pan</p>
+<p><a href="https://asciinema.org/a/euSAIre9DHJvl4SMJ8gLwGRHA"><img alt="asciicast" src="https://asciinema.org/a/euSAIre9DHJvl4SMJ8gLwGRHA.png" /></a></p>
+<p>Author: Christof Fetzer, November 2017</p>
               
             </div>
           </div>
