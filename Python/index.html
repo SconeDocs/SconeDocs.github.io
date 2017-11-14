@@ -230,34 +230,25 @@
 </code></pre>
 
 <h2 id="simple-example">Simple Example</h2>
-<p>Say, you have simple application called <em>myapp.py</em> in your current directory. To run this, you can just execute:</p>
-<pre><code class="bash">docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp -e
-SCONE_MODE=HW -e SCONE_ALPINE=1 -e SCONE_VERSION=1
-sconecuratedimages/crosscompilers:python27 python myapp.py
+<p>Say, you have simple application called <em>myapp.py</em> in your current directory. To run Python inside of an enclave, you can set the environment variable <strong>SCONE_MODE=HW</strong>. </p>
+<p>In general, we only permit the loading of dynamic libraries after the initial loading of the problem, only by explicitly defining <strong>SCONE_ALLOW_DLOPEN</strong>. To enable the loading of dynamic libraries after startup (and without requiring the authentication of this library via the file shield), we set <strong>SCONE_ALLOW_DLOPEN=2</strong>.</p>
+<p>For run a Pyhton 2.7 program inside an enclave and issue some debug messages, you can execute the following command:</p>
+<pre><code class="bash">docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALLOW_DLOPEN=2 -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:python27 python myapp.py
 
 export SCONE_QUEUES=4
-
 export SCONE_SLOTS=256
-
 export SCONE_SIGPIPE=0
-
 export SCONE_MMAP32BIT=0
-
 export SCONE_SSPINS=100
-
 export SCONE_SSLEEP=4000
-
 export SCONE_KERNEL=0
-
 export SCONE_HEAP=67108864
-
 export SCONE_CONFIG=/etc/sgx-musl.conf
-
 export SCONE_MODE=hw
-
-Configure parameters:
-
-1.1.15
+export SCONE_SGXBOUNDS=no
+export SCONE_ALLOW_DLOPEN=yes
+Revision: 855a9693518289bc4d6158a735a90a4fd703309e
+...
 </code></pre>
 
 <p>Author: Christof Fetzer, November 2017</p>
