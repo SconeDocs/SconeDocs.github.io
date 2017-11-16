@@ -304,25 +304,25 @@ zxj74inh2zdf         \_ sconeweb.2      sconecuratedimages/sconetainer:noshieldi
 </code></pre>
 
 <p>To put the node back in service, execute:</p>
-<pre><code class="bash">docker node update --availability active 91a1vvex4dgozfrzy1y136gmg
+<pre><code class="bash">sudo docker node update --availability active 91a1vvex4dgozfrzy1y136gmg
 </code></pre>
 
 <h2 id="running-your-own-registry">Running your own registry</h2>
 <p>In the above example, we have seen that we had to pull images explicitly from docker hub on each node. This is of course not satisfactory solution. Instead, we should run our own local registry with a copy of the image. You can do this as follows: </p>
-<pre><code class="bash">docker service create --name registry --detach=true  --publish 5000:5000 --publish 443:443 --replicas=1 registry
+<pre><code class="bash">sudo docker service create --name registry --detach=true  --publish 5000:5000 --publish 443:443 --replicas=1 registry
 </code></pre>
 
 <p>Now the our local registry is running, we need to pull the images that we want to store in this registry first. Then, we tag the pulled image with the name of our local registry:</p>
-<pre><code class="bash">docker pull sconecuratedimages/sconetainer:noshielding
-docker tag sconecuratedimages/sconetainer:noshielding localhost:5000/sconetainer
+<pre><code class="bash">sudo docker pull sconecuratedimages/sconetainer:noshielding
+sudo docker tag sconecuratedimages/sconetainer:noshielding localhost:5000/sconetainer
 </code></pre>
 
 <p>We then push the tagged image to our local registry:</p>
-<pre><code class="bash">docker push localhost:5000/sconetainer
+<pre><code class="bash">sudo docker push localhost:5000/sconetainer
 </code></pre>
 
 <p>We can now create a service using the image stored in the local registry:</p>
-<pre><code class="bash">docker service create --name &quot;ha&quot; --detach=true  --publish 9080:80 --publish 9443:9443 --constraint 'node.labels.sgx != 0'  --replicas=2 localhost:5000/sconetainer
+<pre><code class="bash">sudo docker service create --name &quot;ha&quot; --detach=true  --publish 9080:80 --publish 9443:9443 --constraint 'node.labels.sgx != 0'  --replicas=2 localhost:5000/sconetainer
 </code></pre>
 
 <h2 id="updating-the-image-of-a-service">Updating the image of a service</h2>
