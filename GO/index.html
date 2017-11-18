@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python - SCONE</title>
+  <title>GO - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Python";
+    var mkdocs_page_name = "GO";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -158,30 +158,27 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">Python</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#python">Python</a></li>
-                
-                    <li><a class="toctree-l4" href="#image">Image</a></li>
-                
-                    <li><a class="toctree-l4" href="#python-interpreter">Python Interpreter</a></li>
-                
-                    <li><a class="toctree-l4" href="#running-an-application">Running an application</a></li>
-                
-                    <li><a class="toctree-l4" href="#example_1">Example</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../Python/">Python</a>
         
     </li>
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../GO/">GO</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">GO</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#go">GO</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#example">Example</a></li>
+                
+                    <li><a class="toctree-l4" href="#debugging">Debugging</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -222,7 +219,7 @@
     
       
     
-    <li>Python</li>
+    <li>GO</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -232,17 +229,39 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="python">Python</h1>
-<p>SCONE supports running Python programs inside of SGX enclaves. To support this, we provide a simple Docker image (you need access rights for that).</p>
-<h2 id="image">Image</h2>
-<p>Currently, we provde a simple Python 2.7 image that is based on the standard Python image python:2.7-alpine.</p>
-<p>You can pull this image as follows:</p>
-<pre><code class="bash">docker pull sconecuratedimages/crosscompilers:python27
+                <h1 id="go">GO</h1>
+<p>SCONE supports cross-compiling GO programs to run these inside of SGX enclaves. The GO cross-compiler is part of image <strong>sconecuratedimages/crosscompilers:scone</strong>.</p>
+<h1 id="example">Example</h1>
+<p>Start the SCONE crosscompiler container:</p>
+<pre><code class="bash">docker run -it -p 8080:8080 sconecuratedimages/crosscompilers:scone
 </code></pre>
 
-<h2 id="python-interpreter">Python Interpreter</h2>
-<p>To run the Python interpreter inside an enclave in interactive mode, just execute:</p>
-<pre><code class="bash">docker run -it -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:python27
+<p>Lets consider a simple GO program (take from some GO tutorial):</p>
+<pre><code class="bash">cat &gt; web-srv.go &lt;&lt; EOF
+package main
+
+import (
+    &quot;fmt&quot;
+    &quot;net/http&quot;
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, &quot;Hi there, I love %s!&quot;, r.URL.Path[1:])
+}
+
+func main() {
+    http.HandleFunc(&quot;/&quot;, handler)
+    http.ListenAndServe(&quot;:8080&quot;, nil)
+}
+EOF
+</code></pre>
+
+<p>You can cross-compile this program as follows:</p>
+<pre><code class="bash">SCONE_HEAP=1G scone-gccgo web-srv.go -O3 -o web-srv-go -g
+</code></pre>
+
+<p>You can start the compiled program (and enable some debug messages) as follows:</p>
+<pre><code class="bash">SCONE_VERSION=1 ./web-srv-go
 export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
@@ -250,62 +269,98 @@ export SCONE_MMAP32BIT=0
 export SCONE_SSPINS=100
 export SCONE_SSLEEP=4000
 export SCONE_KERNEL=0
-export SCONE_HEAP=11000000
+export SCONE_HEAP=1073741824
 export SCONE_CONFIG=/etc/sgx-musl.conf
 export SCONE_MODE=hw
 export SCONE_SGXBOUNDS=no
-export SCONE_ALLOW_DLOPEN=yes
+export SCONE_ALLOW_DLOPEN=no
 Revision: 9b355b99170ad434010353bb9f4dca24e532b1b7
 Branch: master
 Configure options: --enable-file-prot --enable-shared --enable-debug --prefix=/scone/src/built/cross-compiler/x86_64-linux-musl
 
-Python 2.7.14 (default, Nov  4 2017, 00:12:32) 
-[GCC 5.3.0] on linux2
-Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
-&gt;&gt;&gt; 
+
 </code></pre>
 
-<h2 id="running-an-application">Running an application</h2>
-<p>Say, you have a Python application called <em>myapp.py</em> in your current directory.
-To execute this with Pyhton 2.7 inside an enclave, you need to set some environment variables. </p>
-<ul>
-<li>
-<p>To run Python inside of an enclave, you can set the environment variable <strong>SCONE_MODE=HW</strong> and <strong>SCONE_ALPINE=1</strong>.</p>
-</li>
-<li>
-<p>To issue some debug messages that show that we are running inside an enclave, set <strong>SCONE_VERSION=1</strong></p>
-</li>
-<li>
-<p>In general, we only permit the loading of dynamic libraries after the initial loading of the problem, only by explicitly defining <strong>SCONE_ALLOW_DLOPEN</strong>. To enable the loading of dynamic libraries after startup (and without requiring the authentication of this library via the file shield), we set <strong>SCONE_ALLOW_DLOPEN=2</strong>.</p>
-</li>
-</ul>
-<h3 id="example">Example:</h3>
-<pre><code class="bash">docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:python27  myapp.py
-
-```bash
-docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALLOW_DLOPEN=2 -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:python27 python myapp.py
-
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-...
+<p>You can now connect to port 8080, for example, with <em>curl</em>:</p>
+<pre><code class="bash">&gt; curl localhost:8080/SCONE
+Hi there, I love SCONE!
 </code></pre>
 
-<h2 id="example_1">Example</h2>
-<p>Let's look at another example:</p>
-<ul>
-<li>
-<p>We use <em>pip</em> to install a Python chess library.</p>
-</li>
-<li>
-<p>Then we run Python inside of an enclave and  import the chess library. </p>
-</li>
-<li>
-<p>We use the Scholar's mate example from <a href="https://pypi.python.org/pypi/python-chess">https://pypi.python.org/pypi/python-chess</a></p>
-</li>
-</ul>
-<p><a href="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03"><img alt="asciicast" src="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03.png" /></a></p>
+<h2 id="debugging">Debugging</h2>
+<p>You can debug a crosscompiled program, as follows.</p>
+<p>First, you must start a container with <em>SYS_PTRACE</em> capability. For example:</p>
+<pre><code class="bash">docker run --cap-add SYS_PTRACE -it -p 8080:8080 -v &quot;$PWD&quot;/EXAMPLE:/usr/src/myapp -w /usr/src/myapp  sconecuratedimages/crosscompilers:scone
+</code></pre>
+
+<p>When starting the debugger, you need to ensure that signals (e.g., caused by CPUID instructions) are passed to the program:</p>
+<pre><code class="bash">scone-gdb ./web-srv-go
+GNU gdb (Ubuntu 7.12.50.20170314-0ubuntu1.1) 7.12.50.20170314-git
+Copyright (C) 2017 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type &quot;show copying&quot;
+and &quot;show warranty&quot; for details.
+This GDB was configured as &quot;x86_64-linux-gnu&quot;.
+Type &quot;show configuration&quot; for configuration details.
+For bug reporting instructions, please see:
+&lt;http://www.gnu.org/software/gdb/bugs/&gt;.
+Find the GDB manual and other documentation resources online at:
+&lt;http://www.gnu.org/software/gdb/documentation/&gt;.
+For help, type &quot;help&quot;.
+Type &quot;apropos word&quot; to search for commands related to &quot;word&quot;...
+Source directories searched: /opt/scone/scone-gdb/gdb-sgxmusl-plugin:$cdir:$cwd
+Setting environment variable &quot;LD_PRELOAD&quot; to null value.
+Reading symbols from ./web-srv-go...done.
+[SCONE] Initializing...
+(gdb) handle SIGILL nostop pass
+Signal        Stop  Print   Pass to program Description
+SIGILL        No    Yes Yes     Illegal instruction
+(gdb)
+</code></pre>
+
+<p>Since we do not patch the CPUID instructions in this run, you will see something like this:</p>
+<pre><code class="bash">(gdb) run
+Starting program: /usr/src/myapp/web-srv-go 
+warning: Error disabling address space randomization: Operation not permitted
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library &quot;/lib/x86_64-linux-gnu/libthread_db.so.1&quot;.
+[SCONE] Enclave base: 1000000000
+[SCONE] Loaded debug symbols
+[New Thread 0x7f1786d26700 (LWP 105)]
+[New Thread 0x7f1786525700 (LWP 106)]
+[New Thread 0x7f1785d24700 (LWP 107)]
+[New Thread 0x7f1785523700 (LWP 108)]
+[New Thread 0x7f1787502700 (LWP 109)]
+[New Thread 0x7f17874fa700 (LWP 110)]
+[New Thread 0x7f17874f2700 (LWP 111)]
+[New Thread 0x7f17874ea700 (LWP 112)]
+
+Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
+
+Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
+
+Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
+
+Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
+
+Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
+
+Thread 8 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
+
+</code></pre>
+
+<p>You could interrupt this execution via control c:</p>
+<pre><code class="bash">^C
+Thread 1 &quot;web-srv-go&quot; received signal SIGINT, Interrupt.
+0x00007f17870f69dd in pthread_join (threadid=139739022911232, thread_return=0x7ffe1c807928) at pthread_join.c:90
+90  pthread_join.c: No such file or directory.
+(gdb) where
+#0  0x00007f17870f69dd in pthread_join (threadid=139739022911232, thread_return=0x7ffe1c807928) at pthread_join.c:90
+#1  0x0000002000004053 in main (argc=1, argv=0x7ffe1c807c18, envp=0x7ffe1c807c28) at ./tools/starter-exec.c:764
+(gdb) cont
+Continuing.
+</code></pre>
+
 <p>Author: Christof Fetzer, November 2017</p>
               
             </div>
@@ -314,10 +369,10 @@ export SCONE_MMAP32BIT=0
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../GO/" class="btn btn-neutral float-right" title="GO"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../SCONE_Publications/" class="btn btn-neutral float-right" title="SCONE Publications"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_Fileshield/" class="btn btn-neutral" title="SCONE File Protection"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Python/" class="btn btn-neutral" title="Python"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -343,10 +398,10 @@ export SCONE_MMAP32BIT=0
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_Fileshield/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../Python/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../GO/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../SCONE_Publications/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
