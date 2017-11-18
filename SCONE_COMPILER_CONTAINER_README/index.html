@@ -111,7 +111,7 @@
                 
                     <li><a class="toctree-l4" href="#compiler-variants">Compiler variants</a></li>
                 
-                    <li><a class="toctree-l4" href="#using-the-cc-compiler-container">Using the C/C++ compiler container</a></li>
+                    <li><a class="toctree-l4" href="#using-the-cross-compiler-container">Using the cross compiler container</a></li>
                 
                     <li><a class="toctree-l4" href="#example">Example</a></li>
                 
@@ -262,17 +262,26 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <h3 id="statically-linked-binaries">Statically-Linked Binaries</h3>
 <p>For statically linked binaries, we make available a (private) docker image <em>sconecuratedimages/crosscompilers:scone</em> which can produce statically linked binaries. In the statically linked binaries, we replace the interface to the operating system (i.e., libc) by a variant that enables programs to run inside Intel SGX enclaves.</p>
 <p><img alt="Static Compilation" src="../img/staticcompilation.jpg" /></p>
-<p>To simplify debugging, statically linked binaries can either run inside an enclave or - in simulation mode - natively outside of enclaves.</p>
-<h2 id="using-the-cc-compiler-container">Using the C/C++ compiler container</h2>
+<p>Note that a statically linked binaries might look like a dynamically-linked binary. For example, if you look at a statically-linked program <em>web-srv-go</em>, you will still see dynamic dependencies:</p>
+<pre><code class="bash">ldd web-srv-go 
+    linux-vdso.so.1 =&gt;  (0x00007ffe423fd000)
+    libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007effa344f000)
+    libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007effa3085000)
+    /lib64/ld-linux-x86-64.so.2 (0x00007effa366c000)
+</code></pre>
+
+<p>The reason for that is that the statically linked binary that runs inside of an enclave is wrapped in a dynamically linked <em>loader</em> program. The loader program creates the enclave, moves the program code inside the enclave and starts threads that will enter the enclave. The code that is moved inside the enclave is, however, statically linked.</p>
+<h2 id="using-the-cross-compiler-container">Using the cross compiler container</h2>
 <p>How to use the compiler:</p>
 <ul>
 <li>
-<p>use this as a base image and build your programs inside of a container (see <a href="../SCONE_Dockerfile/">Dockerfiles</a>), or</p>
+<p>use this as a base image and build your programs inside of a container we a  <a href="../SCONE_Dockerfile/">Dockerfile</a>), or</p>
 </li>
 <li>
-<p>map volumes such that the compiler can compile files living outside the container (see <a href="../SCONE_TUTORIAL/">SCONE Tutorial</a>). This is probably only practical for small projects.</p>
+<p>map volumes such that the compiler can compile files living outside the container (see <a href="../SCONE_TUTORIAL/">SCONE Tutorial</a>).</p>
 </li>
 </ul>
+<p>For an example how to use the crosscompilers, see how to compile a programs written in <a href="../GO/">GO</a>.</p>
 <h2 id="example">Example</h2>
 <p><strong>Note</strong>  on some systems you will need to run <em>docker</em> with root permissions, i.e., in this case you should prefix a </p>
 <pre><code class="bash">docker ...
@@ -301,6 +310,7 @@ in file <em>myapp.c</em> in your current directory (<em>$PWD</em>). You can comp
 <p>In most cases, you might just set to use one of our crosscompilers in your <em>configure</em> script or <em>Makefile</em>. A simple way is to use the Docker image <em>sconecuratedimages/crosscompilers:scone</em> as a base image and then clone your code inside the container and set one or more of our compilers (<em>scone-gcc, scone-g++, scone-gccgo, scone-gfortran, and scone-rustc</em>) to be used in your build. For Rust, we support also our variant of <em>cargo</em> which is <em>scone-cargo</em>.</p>
 <h2 id="debugger-support">Debugger support</h2>
 <p>We also support <em>gdb</em> to debug applications running inside of enclaves. To get started, we recommend that you first ensure that your program runs natively linked against musl. Most programs will do - after all, the Alpine Linux distribution is completely based on musl. The debugger is available in image <em>sconecuratedimages/crosscompilers:scone</em> as <em>scone-gdb</em>.</p>
+<p>For example on how to use the debugger, see how to debug a program written in  <a href="../GO/">GO</a>.</p>
 <p>Author: Christof Fetzer, November 2017</p>
               
             </div>
