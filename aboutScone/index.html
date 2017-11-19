@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python - SCONE</title>
+  <title>About Scone - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Python";
+    var mkdocs_page_name = "About Scone";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -158,23 +158,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">Python</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#python">Python</a></li>
-                
-                    <li><a class="toctree-l4" href="#image">Image</a></li>
-                
-                    <li><a class="toctree-l4" href="#python-interpreter">Python Interpreter</a></li>
-                
-                    <li><a class="toctree-l4" href="#running-an-application">Running an application</a></li>
-                
-                    <li><a class="toctree-l4" href="#example_1">Example</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../Python/">Python</a>
         
     </li>
 <li>
@@ -201,8 +186,27 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../aboutScone/">About Scone</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">About Scone</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#about-scone">About SCONE</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#computing-resources">Computing Resources</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#consulting-services">Consulting Services</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#contact">Contact</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#legal-notice">Legal Notice</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -229,7 +233,7 @@
     
       
     
-    <li>Python</li>
+    <li>About Scone</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -239,80 +243,37 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="python">Python</h1>
-<p>SCONE supports running Python programs inside of SGX enclaves. To support this, we provide a simple Docker image (you need access rights for that).</p>
-<h2 id="image">Image</h2>
-<p>Currently, we provde a simple Python 2.7 image that is based on the standard Python image python:2.7-alpine.</p>
-<p>You can pull this image as follows:</p>
-<pre><code class="bash">docker pull sconecuratedimages/crosscompilers:python27
-</code></pre>
-
-<h2 id="python-interpreter">Python Interpreter</h2>
-<p>To run the Python interpreter inside an enclave in interactive mode, just execute:</p>
-<pre><code class="bash">docker run -it -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:python27
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-export SCONE_SSPINS=100
-export SCONE_SSLEEP=4000
-export SCONE_KERNEL=0
-export SCONE_HEAP=11000000
-export SCONE_CONFIG=/etc/sgx-musl.conf
-export SCONE_MODE=hw
-export SCONE_SGXBOUNDS=no
-export SCONE_ALLOW_DLOPEN=yes
-Revision: 9b355b99170ad434010353bb9f4dca24e532b1b7
-Branch: master
-Configure options: --enable-file-prot --enable-shared --enable-debug --prefix=/scone/src/built/cross-compiler/x86_64-linux-musl
-
-Python 2.7.14 (default, Nov  4 2017, 00:12:32) 
-[GCC 5.3.0] on linux2
-Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
-&gt;&gt;&gt; 
-</code></pre>
-
-<h2 id="running-an-application">Running an application</h2>
-<p>Say, you have a Python application called <em>myapp.py</em> in your current directory.
-To execute this with Pyhton 2.7 inside an enclave, you need to set some environment variables. </p>
+                <h1 id="about-scone">About SCONE</h1>
+<p>The SCONE platform is commercially supported by <a href="http://www.scontain.com">scontain.com</a>. </p>
+<p>The SCONE platform has been developed at the <a href="https://tu-dresden.de/ing/informatik/sya/se">Systems Engineering group</a> at <a href="https://tu-dresden.de/">TU Dresden</a> in the context of the following EU projects:</p>
 <ul>
 <li>
-<p>To run Python inside of an enclave, you can set the environment variable <strong>SCONE_MODE=HW</strong> and <strong>SCONE_ALPINE=1</strong>.</p>
+<p><a href="https://www.serecaproject.eu/">Sereca</a> which investigates how to use Intel SGX enclave in the context of reactive programs written in <a href="http://vertx.io/">Vert.x</a>.</p>
 </li>
 <li>
-<p>To issue some debug messages that show that we are running inside an enclave, set <strong>SCONE_VERSION=1</strong></p>
-</li>
-<li>
-<p>In general, we only permit the loading of dynamic libraries after the initial loading of the problem, only by explicitly defining <strong>SCONE_ALLOW_DLOPEN</strong>. To enable the loading of dynamic libraries after startup (and without requiring the authentication of this library via the file shield), we set <strong>SCONE_ALLOW_DLOPEN=2</strong>.</p>
+<p><a href="https://www.securecloudproject.eu/">Secure Cloud</a> which focuses on the processing of (big) data in untrusted clouds.</p>
 </li>
 </ul>
-<h3 id="example">Example:</h3>
-<pre><code class="bash">docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:python27  myapp.py
-
-```bash
-docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALLOW_DLOPEN=2 -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:python27 python myapp.py
-
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-...
-</code></pre>
-
-<h2 id="example_1">Example</h2>
-<p>Let's look at another example:</p>
+<p>We investigate use cases and extensions of SCONE in the context of the following EU projects:</p>
 <ul>
 <li>
-<p>We use <em>pip</em> to install a Python chess library.</p>
+<p><a href="../www.selisproject.eu/">SELIS</a>: we investigate how to secure data processing within a <em>Shared European Logistics Intelligent Information Space</em> with the help of SCONE.</p>
 </li>
 <li>
-<p>Then we run Python inside of an enclave and  import the chess library. </p>
+<p><strong>ATMOSPHERE</strong>: a new EU project in which we address secure data management services. This will help to extend the SCONE platform.</p>
 </li>
 <li>
-<p>We use the Scholar's mate example from <a href="https://pypi.python.org/pypi/python-chess">https://pypi.python.org/pypi/python-chess</a></p>
+<p><strong>LEGATO</strong>: a new EU project in which we address <em>high integrity computations</em> inside of enclaves to be able to detect and tolerate miscomputations inside of enclaves.</p>
 </li>
 </ul>
-<p><a href="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03"><img alt="asciicast" src="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03.png" /></a></p>
+<h1 id="computing-resources">Computing Resources</h1>
+<p><a href="http://www.scontain.com">scontain.com</a> can provide access to SGX-capable machines with the help of <a href="https://www.cloudandheat.com/de">CLOUD&amp;HEAT</a>.</p>
+<h1 id="consulting-services">Consulting Services</h1>
+<p><a href="http://www.scontain.com">scontain.com</a> provides consulting services as well as helping you to port your applications to SGX. We also have external partners like <a href="http://www.silistra-systems.com/">SIListra Systems</a> that can port applications to run software inside of SGX enclaves with the help of SCONE.</p>
+<h1 id="contact">Contact</h1>
+<p>If you want to evaluate the SCONE platform, want to rent some SGX-capable computing resources, need SGX and SCONE-related consulting, or have some technical questions, please contact us at <a href="mailto:scontain.info@gmail.com">scontain.info@gmail.com</a>.</p>
+<h1 id="legal-notice">Legal Notice</h1>
+<p>The content of this documentation is maintained by <a href="http://www.scontain.com">scontain.com</a>.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:scontain.info@gmail.com">Questions or Suggestions?</a></p>
               
             </div>
@@ -321,10 +282,8 @@ export SCONE_MMAP32BIT=0
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../GO/" class="btn btn-neutral float-right" title="GO"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
-      
-        <a href="../SCONE_Fileshield/" class="btn btn-neutral" title="SCONE File Protection"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../glossary/" class="btn btn-neutral" title="Glossary"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -350,10 +309,8 @@ export SCONE_MMAP32BIT=0
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_Fileshield/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../glossary/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
-      
-        <span style="margin-left: 15px"><a href="../GO/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

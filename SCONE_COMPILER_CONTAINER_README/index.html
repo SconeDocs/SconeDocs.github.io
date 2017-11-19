@@ -200,6 +200,13 @@
     </li>
 <li>
           
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../aboutScone/">About Scone</a>
+        
+    </li>
+<li>
+          
         </ul>
       </div>
       &nbsp;
@@ -239,7 +246,8 @@ The objective of these (cross-) compilers are to compile applications - generall
 <h2 id="compiler-variants">Compiler variants</h2>
 <p>Depending on if you want to generate a <em>dynamically-linked</em> or a <em>statically-linked</em> binary, you
 can use a standard compiler (dynamic) or you need to use a cross compiler (static). The compiler can run on any system, i.e., does not require SGX to run. To generate a statically-linked binary, you need to run on a SGX-enabled machine (for now).</p>
-<p><strong>Note</strong> Independently, if you use a dynamic or static linking, the hash of an enclave (MRENCLAVE) will encompass the whole code, i.e., includes all libraries. Any updates of a library on your host might prevent the execution of a SCONE binary because of a wrong MRENCLAVE. Hence, we recommend to use only statically-linked programs on the host while in containers, which have a more controlled environment, we support both statically as well as dynamically linked binaries. </p>
+<p><strong>Note</strong> Independently, if you use a dynamic or static linking, the hash of an enclave (MRENCLAVE) will encompass the whole code, i.e., includes all libraries. Any updates of a library on your host might prevent the execution of a SCONE binary because of a wrong MRENCLAVE. Hence, we recommend to use only statically-linked programs on the host. In containers, which have a more controlled environment, we support both statically as well as dynamically linked binaries. The main advantage of dynamic linking is that for many programs we do not change the build process when moved to SCONE.</p>
+<p><strong>Note</strong> also that SCONE supports the loading of dynamic libraries after a program has already started inside of an enclave. This feature is required by modern languages like Java. Enabling general loading of dynamic library introduces the risk that one could load malicious code inside of an enclave. Hence, we switch this feature off by default. For debugging programs, you can enable this feature via an environment variable (<em>export SCONE_ALLOW_DLOPEN=2).</em> For production enclaves, you will need to protect the integrity of the shared libraries with the help of the <a href="../SCONE_Fileshield/">SCONE file shield</a>.</p>
 <h3 id="dynamically-linked-binaries">Dynamically-Linked Binaries</h3>
 <p>The easiest to get started is to compile your programs such that</p>
 <ul>
@@ -311,7 +319,7 @@ in file <em>myapp.c</em> in your current directory (<em>$PWD</em>). You can comp
 <h2 id="debugger-support">Debugger support</h2>
 <p>We also support <em>gdb</em> to debug applications running inside of enclaves. To get started, we recommend that you first ensure that your program runs natively linked against musl. Most programs will do - after all, the Alpine Linux distribution is completely based on musl. The debugger is available in image <em>sconecuratedimages/crosscompilers:scone</em> as <em>scone-gdb</em>.</p>
 <p>For example on how to use the debugger, see how to debug a program written in  <a href="../GO/">GO</a>.</p>
-<p>Author: Christof Fetzer, November 2017</p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:scontain.info@gmail.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
