@@ -247,24 +247,30 @@
               
                 <h1 id="scone-tutorial">SCONE Tutorial</h1>
 <h2 id="prerequisites">Prerequisites</h2>
-<h3 id="ensure-that-the-sgx-driver-is-installed">Ensure that the sgx driver is installed</h3>
-<p>Check on the host as well as inside your containers that device <em>/dev/isgx</em> is visible:</p>
+<h3 id="ensure-that-the-sgx-driver-is-installed">Ensure that the SGX driver is installed</h3>
+<p>Check on the host as well as inside your containers that the SGX device <em>/dev/isgx</em> is visible:</p>
 <pre><code class="bash">ls /dev/isgx 
 /dev/isgx
 </code></pre>
 
 <p>If the driver is not installed, read Section <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a> to learn how to install the SGX driver.</p>
-<h4 id="checking-availability-of-sgx-driver-inside-of-containers">Checking availability of sgx driver inside of containers</h4>
-<p>Sometimes, Docker sometimes does not properly map the sgx device inside of containers. We have a simple check to see how to make the sgx device available inside of containers. Just execute the following:</p>
-<pre><code class="bash"># preferred alternative: required for swarms to work: sgx device is available in all containers by default 
-sudo docker run --rm sconecuratedimages/checksgx || echo &quot;sgx device is not automatically mapped inside of container&quot;
-# alternative: use --device option without --privileged flag
-sudo docker run --device=/dev/isgx --rm sconecuratedimages/checksgx || echo &quot;--device=/dev/isgx: not sufficient to access sgx device inside of container&quot;
-# last alternative: use --device option without --privileged flag
-sudo docker run -v /dev/isgx:/dev/isgx --privileged  --rm sconecuratedimages/checksgx || echo &quot;sgx device inside of container&quot;
+<h4 id="checking-availability-of-sgx-device-inside-of-containers">Checking availability of SGX device inside of containers</h4>
+<p>Sometimes, Docker does not properly map the SGX device inside of containers.  If your node is part of a Docker swarm, we provide a simple check as part of the <em>scone CLI</em>. Say, the leader node of your swarm  is called <em>beatrix</em>, then you could just
+execute:</p>
+<pre><code class="bash">scone swarm check --verbose --manager beatrix
 </code></pre>
 
-<p>Use the alternative that works for your installation.</p>
+<p>In case your node is not part of a Docker swarm, you can run the checks manually. For that, we provide a container image
+that helps to check if the SGX device can be accessed from inside a container. Just execute the following commands to check if your containers have access to the SGX device:</p>
+<pre><code class="bash"># preferred alternative: required for swarms to work: SGX device is available in all containers by default 
+sudo docker run --rm sconecuratedimages/checksgx || echo &quot;SGX device is not automatically mapped inside of container&quot;
+# alternative: use --device option without --privileged flag
+sudo docker run --device=/dev/isgx --rm sconecuratedimages/checksgx || echo &quot;--device=/dev/isgx: not sufficient to access SGX device inside of container&quot;
+# last alternative: use --device option without --privileged flag
+sudo docker run -v /dev/isgx:/dev/isgx --privileged  --rm sconecuratedimages/checksgx || echo &quot;SGX device inside of container&quot;
+</code></pre>
+
+<p>Use the first alternative that works in your installation to give containers access to the SGX device.</p>
 <h3 id="install-sgxmusl-cross-compiler-image">Install sgxmusl cross compiler image</h3>
 <p>Ensure that you installed the various sconecuratedimages/crosscompilers container image:</p>
 <pre><code class="bash">docker image ls sconecuratedimages/*

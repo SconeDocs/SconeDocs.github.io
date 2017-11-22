@@ -151,13 +151,17 @@
             
                 <li class="toctree-l3"><a href="#starting-a-scone-application-on-a-swarm">Starting a SCONE Application on a Swarm</a></li>
                 
+                    <li><a class="toctree-l4" href="#starting-a-service">Starting a Service</a></li>
+                
+                    <li><a class="toctree-l4" href="#registry-support">Registry support</a></li>
+                
                     <li><a class="toctree-l4" href="#stopping-the-service">Stopping the service</a></li>
                 
                     <li><a class="toctree-l4" href="#scalable-fault-tolerant-service">Scalable Fault-Tolerant Service</a></li>
                 
                     <li><a class="toctree-l4" href="#draining-a-node">Draining a node</a></li>
                 
-                    <li><a class="toctree-l4" href="#running-your-own-registry">Running your own registry</a></li>
+                    <li><a class="toctree-l4" href="#registry-support_1">Registry support</a></li>
                 
                     <li><a class="toctree-l4" href="#updating-the-image-of-a-service">Updating the image of a service</a></li>
                 
@@ -243,13 +247,23 @@
               
                 <h1 id="starting-a-scone-application-on-a-swarm">Starting a SCONE Application on a Swarm</h1>
 <p>We show how to run a <em>secure nginx</em> version, i.e., one that runs inside an enclave in a
-docker swarm with automatic restarts. Docker takes care of failures by restarting failed services
+docker swarm with automatic restarts. To simplify the running of services, we provide 
+a simple wrapper around the <strong>docker service</strong> command: the <strong>scone service</strong> executes
+<em>docker service</em> commands on the manager of a swarm. The manager is either specified via
+an option <strong>--manager <host></strong> or via environment variable <strong>SCONE_MANAGER</strong>. This is 
+done in the same way as for command <a href="../SCONE_Swarm/">scone swarm</a>.</p>
+<p>In what follows, we assume that <strong>SCONE_MANAGER</strong> is set to the leader of the swarm.</p>
+<h2 id="starting-a-service">Starting a Service</h2>
+<p>Start a service in a swarm is supported via <strong>scone service create</strong>. Docker takes care of failures by restarting failed services
 if you run <em>nginx</em> as a service:</p>
-<pre><code class="bash"> docker service create --name &quot;ha&quot; --detach=true -p 80:80 -p 443:443 --constraint 'node.labels.sgx != 0'  sconecuratedimages/nginx:noshielding
+<pre><code class="bash">scone service create --name &quot;ha&quot; --detach=true -p 80:80 -p 443:443  sconecuratedimages/nginx:noshielding
 </code></pre>
 
-<p>If this service would fail, you get a status like this: </p>
-<pre><code class="bash">&gt; docker service ps ha
+<p>Scone adds automatically a constraint <strong>--constraint 'node.labels.sgx != 0'</strong> ensuring that services started via scone only run on nodes that support sgx.</p>
+<p>The above command will result in a warning since there is no local registry installed. </p>
+<h2 id="registry-support">Registry support</h2>
+<p>If the service that we started would fail, you might get a status like this:</p>
+<pre><code class="bash">scone service ps ha
 ID                  NAME                IMAGE                      NODE                DESIRED STATE       CURRENT STATE           ERROR                       PORTS
 f65id6ow5n6w        ha.1                sconecuratedimages/nginx   beatrix             Ready               Ready 1 second ago                                  
 jt6wj5e3lso4         \_ ha.1            sconecuratedimages/nginx   beatrix             Shutdown            Failed 3 seconds ago    &quot;task: non-zero exit (1)&quot;   
@@ -258,17 +272,21 @@ p3bw780pu63b         \_ ha.1            sconecuratedimages/nginx   beatrix      
 75zjsesil5k4         \_ ha.1            sconecuratedimages/nginx   beatrix             Shutdown            Failed 22 seconds ago   &quot;task: non-zero exit (1)&quot;   
 </code></pre>
 
-<p>Reasons for failures might be that you do have access to the sgx device. Did you indeed install the patched docker version? Did you indeed label the nodes correctly?</p>
+<p>Reasons for failures might be that you do have access to the sgx device. Did you indeed install the patched docker version? Did you indeed label the nodes correctly? Check this with <strong>scone swarm check</strong>:</p>
+<pre><code class="bash">scone swarm check
+warning:  'sgx device is not automatically mapped inside of container on host beatrix (stack=198 434 0)'  (Line numer: '198')
+warning:  '--device=/dev/isgx: device mapper does not work inside of container on host beatrix (stack=199 434 0)'  (Line numer: '199')
+</code></pre>
+
 <p>In case service correctly starts up, you will see a status like this: </p>
-<pre><code class="bash">&gt; docker service ps ha
-docker service ps nginx_service
+<pre><code class="bash">scone service ps ha
 ID                  NAME       IMAGE                                  NODE                DESIRED STATE       CURRENT STATE            ERROR                              PORTS
 x2xq1c3aede7        ha.1       sconecuratedimages/nginx:noshielding   alice               Running             Running 8 minutes ago         
 </code></pre>
 
 <h2 id="stopping-the-service">Stopping the service</h2>
 <p>Stop the service via:</p>
-<pre><code class="bash">docker service rm ha
+<pre><code class="bash">scone service rm ha
 </code></pre>
 
 <h2 id="scalable-fault-tolerant-service">Scalable Fault-Tolerant Service</h2>
@@ -283,7 +301,7 @@ of these need to run on  a SGXv1 machines:</p>
 </code></pre>
 
 <p>If the image is not available on one of the nodes, you might see the following status:</p>
-<pre><code class="bash">&gt; docker service ps sconeweb
+<pre><code class="bash">scone service ps sconeweb
 ID                  NAME                IMAGE                                        NODE                DESIRED STATE       CURRENT STATE          ERROR                              PORTS
 o79714pw2fpn        sconeweb.1          sconecuratedimages/sconetainer:noshielding   alice               Running             Running 4 hours ago                                       
 t0byepte0fzj         \_ sconeweb.1      sconecuratedimages/sconetainer:noshielding   beatrix             Shutdown            Rejected 4 hours ago   &quot;No such image: sconecuratedim…&quot;   
@@ -294,19 +312,19 @@ zxj74inh2zdf        sconeweb.2          sconecuratedimages/sconetainer:noshieldi
 </code></pre>
 
 <h2 id="draining-a-node">Draining a node</h2>
-<p>To be able to drain all containers from a node, we need to figure out the node's id. We can do this manually by executing the following command:</p>
-<pre><code class="bash">&gt; docker node ls
+<p>To be able to drain all containers from a node, we need to figure out the node's id. We can do this manually by executing the following command on the leader node:</p>
+<pre><code class="bash">docker node ls
 ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS
 91a1vvex4dgozfrzy1y136gmg *   alice               Ready               Active              Leader
 jhrayos9ylu02egwvkxpqtbwb     beatrix             Ready               Active              
 </code></pre>
 
 <p>You can now take node <em>alice</em> out of service by executing:</p>
-<pre><code class="bash">&gt; docker node update --availability drain 91a1vvex4dgozfrzy1y136gmg
+<pre><code class="bash">docker node update --availability drain 91a1vvex4dgozfrzy1y136gmg
 </code></pre>
 
-<p>The status of service might now be as follows:</p>
-<pre><code class="bash">&gt; docker service ps sconeweb
+<p>The status of service might now be as follows (on your development node):</p>
+<pre><code class="bash">scone service ps sconeweb
 ID                  NAME                IMAGE                                        NODE                DESIRED STATE       CURRENT STATE            ERROR                              PORTS
 qaekdszhm8ua        sconeweb.1          sconecuratedimages/sconetainer:noshielding   beatrix             Running             Running 5 seconds ago                                       
 o79714pw2fpn         \_ sconeweb.1      sconecuratedimages/sconetainer:noshielding   alice               Shutdown            Shutdown 7 seconds ago                                      
@@ -321,8 +339,9 @@ zxj74inh2zdf         \_ sconeweb.2      sconecuratedimages/sconetainer:noshieldi
 <pre><code class="bash">sudo docker node update --availability active 91a1vvex4dgozfrzy1y136gmg
 </code></pre>
 
-<h2 id="running-your-own-registry">Running your own registry</h2>
-<p>In the above example, we have seen that we had to pull images explicitly from docker hub on each node. This is of course not satisfactory solution. Instead, we should run our own local registry with a copy of the image. You can do this as follows: </p>
+<h2 id="registry-support_1">Registry support</h2>
+<p>In the above example, we have seen that we had to pull images explicitly from docker hub on each node. This is of course not satisfactory solution. Instead, we should run our own local registry with a copy of the image. You can do this as follows (- note that you
+execute these commands directly on the leader node):</p>
 <pre><code class="bash">sudo docker service create --name registry --detach=true  --publish 5000:5000 --publish 443:443 --replicas=1 registry
 </code></pre>
 
@@ -336,7 +355,7 @@ sudo docker tag sconecuratedimages/sconetainer:noshielding localhost:5000/sconet
 </code></pre>
 
 <p>We can now create a service using the image stored in the local registry:</p>
-<pre><code class="bash">sudo docker service create --name &quot;ha&quot; --detach=true  --publish 9080:80 --publish 9443:9443 --constraint 'node.labels.sgx != 0'  --replicas=2 localhost:5000/sconetainer
+<pre><code class="bash">scone service create --name &quot;ha&quot; --detach=true  --publish 9080:80 --publish 9443:9443 --replicas=2 localhost:5000/sconetainer
 </code></pre>
 
 <h2 id="updating-the-image-of-a-service">Updating the image of a service</h2>
@@ -348,7 +367,7 @@ docker push localhost:5000/sconetainer
 </code></pre>
 
 <p>We can now update the service as follows:</p>
-<pre><code class="bash">docker service update --image  localhost:5000/sconetainer ha
+<pre><code class="bash">scone service update --image  localhost:5000/sconetainer ha
 </code></pre>
 
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
