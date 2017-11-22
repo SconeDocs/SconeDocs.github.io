@@ -287,16 +287,17 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 </li>
 </ul>
 <h3 id="example">Example:</h3>
-<pre><code class="bash">docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:python27  myapp.py
-
-```bash
-docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALLOW_DLOPEN=2 -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:python27 python myapp.py
+<pre><code class="bash">docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALLOW_DLOPEN=2 -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:python27 python myapp.py
 
 export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
 ...
+</code></pre>
+
+<p><strong>NOTE</strong> In some cases the SGX device cannot be opened inside of a container - despite being mapped in the container with <strong>--device</strong> and being visible inside of the container. In this case, try to map the devices inside of the container as a volume via <strong>-v /dev/isgx:/dev/isgx --privileged</strong>. For example, you might execute:</p>
+<pre><code class="bash">sudo docker run -v /dev/isgx:/dev/isgx --privileged -e SCONE_MODE=HW -e SCONE_ALLOW_DLOPEN=2 -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:python27 python -c &quot;print('hello')&quot;
 </code></pre>
 
 <h2 id="example_1">Example</h2>
@@ -313,7 +314,7 @@ export SCONE_MMAP32BIT=0
 </li>
 </ul>
 <p><a href="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03"><img alt="asciicast" src="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03.png" /></a></p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:scontain.info@gmail.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>

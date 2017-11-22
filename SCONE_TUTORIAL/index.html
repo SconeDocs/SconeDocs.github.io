@@ -248,11 +248,23 @@
                 <h1 id="scone-tutorial">SCONE Tutorial</h1>
 <h2 id="prerequisites">Prerequisites</h2>
 <h3 id="ensure-that-the-sgx-driver-is-installed">Ensure that the sgx driver is installed</h3>
+<p>Check on the host as well as inside your containers that device <em>/dev/isgx</em> is visible:</p>
 <pre><code class="bash">ls /dev/isgx 
 /dev/isgx
 </code></pre>
 
 <p>If the driver is not installed, read Section <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a> to learn how to install the SGX driver.</p>
+<h4 id="checking-availability-of-sgx-driver-inside-of-containers">Checking availability of sgx driver inside of containers</h4>
+<p>Sometimes, Docker sometimes does not properly map the sgx device inside of containers. We have a simple check to see how to make the sgx device available inside of containers. Just execute the following:</p>
+<pre><code class="bash"># preferred alternative: required for swarms to work: sgx device is available in all containers by default 
+sudo docker run --rm sconecuratedimages/checksgx || echo &quot;sgx device is not automatically mapped inside of container&quot;
+# alternative: use --device option without --privileged flag
+sudo docker run --device=/dev/isgx --rm sconecuratedimages/checksgx || echo &quot;--device=/dev/isgx: not sufficient to access sgx device inside of container&quot;
+# last alternative: use --device option without --privileged flag
+sudo docker run -v /dev/isgx:/dev/isgx --privileged  --rm sconecuratedimages/checksgx || echo &quot;sgx device inside of container&quot;
+</code></pre>
+
+<p>Use the alternative that works for your installation.</p>
 <h3 id="install-sgxmusl-cross-compiler-image">Install sgxmusl cross compiler image</h3>
 <p>Ensure that you installed the various sconecuratedimages/crosscompilers container image:</p>
 <pre><code class="bash">docker image ls sconecuratedimages/*
@@ -424,7 +436,7 @@ access(&quot;/etc/ld.so.nohwcap&quot;, F_OK)      = -1 ENOENT (No such file or d
 
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ"><img alt="asciicast" src="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ.png" /></a></p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:scontain.info@gmail.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
