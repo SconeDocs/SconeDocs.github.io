@@ -255,19 +255,19 @@
 
 <p>If the driver is not installed, read Section <a href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a> to learn how to install the SGX driver.</p>
 <h4 id="checking-availability-of-sgx-device-inside-of-containers">Checking availability of SGX device inside of containers</h4>
-<p>Sometimes, Docker does not properly map the SGX device inside of containers.  If your node is part of a Docker swarm, we provide a simple check as part of the <em>scone CLI</em>. Say, the leader node of your swarm  is called <em>beatrix</em>, then you could just
-execute:</p>
+<p>Sometimes, Docker does not automatically map the SGX device inside of containers. We provide a patched Docker engine and a patched SGX driver that together permit to automatically open the sgx device inside of containers.</p>
+<p>If your node is part of a Docker swarm, we provide a simple check as part of the <em>scone CLI</em>. Say, the leader node of your swarm  is called <em>beatrix</em>, then you could just execute:</p>
 <pre><code class="bash">scone swarm check --verbose --manager beatrix
 </code></pre>
 
 <p>In case your node is not part of a Docker swarm, you can run the checks manually. For that, we provide a container image
 that helps to check if the SGX device can be accessed from inside a container. Just execute the following commands to check if your containers have access to the SGX device:</p>
-<pre><code class="bash"># preferred alternative: required for swarms to work: SGX device is available in all containers by default 
+<pre><code class="bash"># preferred alternative: required for swarms to work: SGX device is available in all containers by default
 sudo docker run --rm sconecuratedimages/checksgx || echo &quot;SGX device is not automatically mapped inside of container&quot;
 # alternative: use --device option without --privileged flag
 sudo docker run --device=/dev/isgx --rm sconecuratedimages/checksgx || echo &quot;--device=/dev/isgx: not sufficient to access SGX device inside of container&quot;
 # last alternative: use --device option without --privileged flag
-sudo docker run -v /dev/isgx:/dev/isgx --privileged  --rm sconecuratedimages/checksgx || echo &quot;SGX device inside of container&quot;
+sudo docker run -v /dev/isgx:/dev/isgx --privileged  --rm sconecuratedimages/checksgx || echo &quot;SGX device NOT available inside of container&quot;
 </code></pre>
 
 <p>Use the first alternative that works in your installation to give containers access to the SGX device.</p>
