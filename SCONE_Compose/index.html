@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>About Scone - SCONE</title>
+  <title>SCONE Compose - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "About Scone";
+    var mkdocs_page_name = "SCONE Compose";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -151,8 +151,15 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_Compose/">SCONE Compose</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">SCONE Compose</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#scone-compose">SCONE Compose</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -200,27 +207,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">About Scone</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#about-scone">About SCONE</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#computing-resources">Computing Resources</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#consulting-services">Consulting Services</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#contact">Contact</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#legal-notice">Legal Notice</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../aboutScone/">About Scone</a>
         
     </li>
 <li>
@@ -247,7 +235,7 @@
     
       
     
-    <li>About Scone</li>
+    <li>SCONE Compose</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -257,37 +245,48 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="about-scone">About SCONE</h1>
-<p>The SCONE platform is commercially supported by <a href="http://www.scontain.com">scontain.com</a>. </p>
-<p>The SCONE platform has been developed at the <a href="https://tu-dresden.de/ing/informatik/sya/se">Systems Engineering group</a> at <a href="https://tu-dresden.de/">TU Dresden</a> in the context of the following EU projects:</p>
-<ul>
-<li>
-<p><a href="https://www.serecaproject.eu/">Sereca</a> which investigates how to use Intel SGX enclave in the context of reactive programs written in <a href="http://vertx.io/">Vert.x</a>.</p>
-</li>
-<li>
-<p><a href="https://www.securecloudproject.eu/">Secure Cloud</a> which focuses on the processing of (big) data in untrusted clouds.</p>
-</li>
-</ul>
-<p>We investigate use cases and extensions of SCONE in the context of the following EU projects:</p>
-<ul>
-<li>
-<p><a href="../www.selisproject.eu/">SELIS</a>: we investigate how to secure data processing within a <em>Shared European Logistics Intelligent Information Space</em> with the help of SCONE.</p>
-</li>
-<li>
-<p><strong>ATMOSPHERE</strong>: a new EU project in which we address secure data management services. This will help to extend the SCONE platform.</p>
-</li>
-<li>
-<p><strong>LEGATO</strong>: a new EU project in which we address <em>high integrity computations</em> inside of enclaves to be able to detect and tolerate miscomputations inside of enclaves.</p>
-</li>
-</ul>
-<h1 id="computing-resources">Computing Resources</h1>
-<p><a href="http://www.scontain.com">scontain.com</a> can provide access to SGX-capable machines with the help of <a href="https://www.cloudandheat.com/de">CLOUD&amp;HEAT</a>.</p>
-<h1 id="consulting-services">Consulting Services</h1>
-<p><a href="http://www.scontain.com">scontain.com</a> provides consulting services as well as helping you to port your applications to SGX. We also have external partners like <a href="http://www.silistra-systems.com/">SIListra Systems</a> that can port applications to run software inside of SGX enclaves with the help of SCONE.</p>
-<h1 id="contact">Contact</h1>
-<p>If you want to evaluate the SCONE platform, want to rent some SGX-capable computing resources, need SGX and SCONE-related consulting, or have some technical questions, please contact us at <a href="mailto:info@scontain.com">info@scontain.com</a>.</p>
-<h1 id="legal-notice">Legal Notice</h1>
-<p>The content of this documentation is maintained by <a href="http://www.scontain.com">scontain.com</a>.</p>
+                <h1 id="scone-compose">SCONE Compose</h1>
+<p>SCONE supports to run secure applications  consisting of multiple secure containers. To do so, SCONE introduces slightly extended Docker <a href="https://docs.docker.com/compose/"><em>compose</em></a> file. Such an extended compose file defines for each process that runs inside of an enclave, a unique hash value (<strong>MRENCLAVE</strong>). During startup, SCONE performs an <em>attestation</em> for all these <em>secure processes</em> to ensure that the hash of the started program is as expected, i.e., is equal to <strong>MRENCLAVE</strong>. Only if it is equal, the arguments and the environment variables are passed to the process. In this way, we can pass secrets as arguments or environment variables in a secure fashion to a secure process.</p>
+<p>By default, all containers are started with SCONE and the arguments are passed in a secure fashion to the started processes. However, you might not want to run all processes inside of enclaves. For containers that should be directly started with Docker Swarm, you need to set field <strong>not_scone: "true"</strong>. In this case, all arguments and the environment variables are directly passed to the container with Docker Swarm (instead of SCONE).</p>
+<p>Let's consider an example, that consists of a <em>haproxy</em> that runs in native mode and is directly started with Docker Swarm (indicated by line <strong>not_scone: "true"</strong>) Moreover, we start <em>myapp</em> (defined in container image <em>myapp-image</em>) and specify <strong>MRENCLAVE</strong>. Only after ensuring that the program started in the enclave has the expected <strong>MRENCLAVE</strong> the arguments and the environment variables are passed to <em>myapp</em>.</p>
+<pre><code class="YAML">version: &quot;3.1.scone&quot;
+services:
+    primary-service:
+        image: myapp-image:latest
+        command: /myapp arg1 arg2 arg3 $my_password
+        mrenclave: 5764436f08dd4cdb526f082be1a07a3422f79ef2b01a5e24f78f9034a838c335
+        environment:
+            - SECURE_ENV=value
+            - MY_PIN=$my_pin
+            - MY_PASSWORD=$my_password
+        working_dir: /
+    proxy:
+        image: haproxy
+        command: haproxy --read_config_from_environ
+        not_scone: &quot;true&quot;
+        environment:
+            - &quot;HAPROXY_CONFIG=a=b,c=d,3=4&quot;
+secrets:
+    my_pin:
+        kind: numeric
+        length: &quot;4&quot;
+    my_password:
+        kind: ascii
+        length: &quot;8&quot;
+</code></pre>
+
+<p>The extended compose file is split by SCONE into a standard compose file and a configuration information that is stored in the SCONE <em>Configruation and Attestation Service</em> (<strong>CAS</strong>):</p>
+<p><img alt="*scone stack deploy*" src="../IMG/SCONE-compose.png" /></p>
+<p>In the current version of scone, we assume that the compose file is stored on a trusted host. (We plan to support compose files stored on untrusted host in the near future.)</p>
+<p>The <em>split</em> functionality is part of the <strong>scone CLI</strong>, i.e., you can split a compose file via</p>
+<pre><code class="bash">scone cas split &lt;COMPOSE_FILE&gt;
+</code></pre>
+
+<p>This creates a set of services in your Swarm. To be able to use a CAS, you are required to login the CAS first via:</p>
+<pre><code class="bash">scone cas login
+</code></pre>
+
+<p><strong>Note for now, <em>scone cas</em> (unlike the other scone objects) still works on the local swarm</strong>. This will change in a future version of <strong>scone cas</strong>.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
@@ -296,8 +295,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../SCONE_Fileshield/" class="btn btn-neutral float-right" title="SCONE File Protection"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
-        <a href="../glossary/" class="btn btn-neutral" title="Glossary"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+        <a href="../SCONE_Swarm_Example/" class="btn btn-neutral" title="SCONE Swarm Example"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -323,8 +324,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../glossary/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../SCONE_Swarm_Example/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
+      
+        <span style="margin-left: 15px"><a href="../SCONE_Fileshield/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
