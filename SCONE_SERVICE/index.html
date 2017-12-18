@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SCONE Compose - SCONE</title>
+  <title>manual scone service - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "SCONE Compose";
+    var mkdocs_page_name = "manual scone service";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -144,15 +144,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">SCONE Compose</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#scone-compose">SCONE Compose</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_Compose/">SCONE Compose</a>
         
     </li>
 <li>
@@ -193,8 +186,17 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_SERVICE/">manual scone service</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">manual scone service</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#scone-service">scone service</a></li>
+                
+                    <li><a class="toctree-l4" href="#scone-service-commands">scone service commands</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -263,7 +265,7 @@
     
       
     
-    <li>SCONE Compose</li>
+    <li>manual scone service</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -273,49 +275,167 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="scone-compose">SCONE Compose</h1>
-<p>SCONE supports to run secure applications  consisting of multiple secure containers. To do so, SCONE introduces slightly extended Docker <a href="https://docs.docker.com/compose/"><em>compose</em></a> file. Such an extended compose file defines for each process that runs inside of an enclave, a unique hash value (<strong>MRENCLAVE</strong>). During startup, SCONE performs an <em>attestation</em> for all these <em>secure processes</em> to ensure that the hash of the started program is as expected, i.e., is equal to <strong>MRENCLAVE</strong>. Only if it is equal, the arguments and the environment variables are passed to the process. In this way, we can pass secrets as arguments or environment variables in a secure fashion to a secure process.</p>
-<p>By default, all containers are started with SCONE and the arguments are passed in a secure fashion to the started processes. However, you might not want to run all processes inside of enclaves. For containers that should be directly started with Docker Swarm, you need to set field <strong>not_scone: "true"</strong>. In this case, all arguments and the environment variables are directly passed to the container with Docker Swarm (instead of SCONE).</p>
-<p>Let's consider an example, that consists of a <em>haproxy</em> that runs in native mode and is directly started with Docker Swarm (indicated by line <strong>not_scone: "true"</strong>) Moreover, we start <em>myapp</em> (defined in container image <em>myapp-image</em>) and specify <strong>MRENCLAVE</strong>. Only after ensuring that the program started in the enclave has the expected <strong>MRENCLAVE</strong> the arguments and the environment variables are passed to <em>myapp</em>.</p>
-<pre><code class="YAML">version: &quot;3.1.scone&quot;
-services:
-    primary-service:
-        image: myapp-image:latest
-        command: /myapp arg1 arg2 arg3 $my_password
-        mrenclave: 5764436f08dd4cdb526f082be1a07a3422f79ef2b01a5e24f78f9034a838c335
-        environment:
-            - SECURE_ENV=value
-            - MY_PIN=$my_pin
-            - MY_PASSWORD=$my_password
-        working_dir: /
-    proxy:
-        image: haproxy
-        command: haproxy --read_config_from_environ
-        not_scone: &quot;true&quot;
-        environment:
-            - &quot;HAPROXY_CONFIG=a=b,c=d,3=4&quot;
-secrets:
-    my_pin:
-        kind: numeric
-        length: &quot;4&quot;
-    my_password:
-        kind: ascii
-        length: &quot;8&quot;
+                <h1 id="scone-service">scone service</h1>
+<p><strong>scone service</strong> manages remote docker services. <strong>scone service</strong> is mainly a thin wrapper around <strong>docker service</strong>. However, instead of executing commands locally,  it forwards the commands to the manager of a remote swarm.</p>
+<p>The remote swarm is specified via command line option <strong>--manager MANAGER</strong>. Alternatively, one can export an environment variable <strong>SCONE_MANAGER</strong>: this variable defines the default swarm to be used by <strong>scone service</strong> in case option <strong>--manager</strong> is not given.</p>
+<p><strong>scone service</strong> supports all commands and all the options of <strong>docker service</strong>. The semantics of command <strong>create</strong> is, however, slightly modified: <strong>scone service create</strong> only creates services on SGX-enabled nodes. More precisely, it limits the nodes that can run a service to those that have a label <a href="../SCONE_SWARM/">SGX VERSION</a> greater than 0.</p>
+<p>In addition to the docker defined commands, <strong>scone service</strong> supports two new commands:</p>
+<table>
+<thead>
+<tr>
+<th>scone service</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>registry</strong></td>
+<td>checks if a registry service is running in the swarm and if it is not, it starts a new registry service.</td>
+</tr>
+<tr>
+<td><strong>pull</strong></td>
+<td>pulls an image from a repository and stores it in the registry of the swarm.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="scone-service-commands">scone service commands</h2>
+<p>The following commands of scone service are implemented by <strong>docker service</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>scone service</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>create</strong></td>
+<td>Creates a new service <strong>on a SGX-enabled machine</strong>.</td>
+</tr>
+<tr>
+<td><strong>inspect</strong></td>
+<td>Display detailed information on one or more services</td>
+</tr>
+<tr>
+<td><strong>logs</strong></td>
+<td>Fetch the logs of a service or task</td>
+</tr>
+<tr>
+<td><strong>ls</strong></td>
+<td>List services</td>
+</tr>
+<tr>
+<td><strong>ps</strong></td>
+<td>List the tasks of one or more services</td>
+</tr>
+<tr>
+<td><strong>rm</strong></td>
+<td>Remove one or more services</td>
+</tr>
+<tr>
+<td><strong>rollback</strong></td>
+<td>Revert changes to a service's configuration</td>
+</tr>
+<tr>
+<td><strong>scale</strong></td>
+<td>Scale one or multiple replicated services</td>
+</tr>
+<tr>
+<td><strong>update</strong></td>
+<td>Update a service</td>
+</tr>
+</tbody>
+</table>
+<p>The options of the above commands are the same as for <strong>docker service</strong> with the exception that all commands support
+the new option <strong>--manager MANAGER</strong>.</p>
+<h3 id="scone-service-registry-options">scone service registry [OPTIONS]</h3>
+<p>Starts a local registry service in the swarm managed by node <strong>MANAGER</strong>.
+The identity of <strong>MANAGER</strong> is given via option <strong>--manager=MANAGER</strong> or via environment variable <strong>SCONE_MANAGER=MANAGER</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--manager MANAGER</td>
+<td>manager of swarm (required unless SCONE_MANAGER is defined)</td>
+</tr>
+<tr>
+<td>--verbose</td>
+<td>print verbose messages</td>
+</tr>
+<tr>
+<td>--debug</td>
+<td>print debug messages</td>
+</tr>
+<tr>
+<td>--help</td>
+<td>print usage of this command</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scone-service-pull-options-repositoryimagetag">scone service pull [OPTIONS] REPOSITORY/IMAGE[:TAG]</h3>
+<p>Pulls an image from a repository (typically, docker hub) and stores
+the image in the local registry. First, create this local repository with</p>
+<pre><code class="bash">$  scone service registry --manager MANAGER
 </code></pre>
 
-<p>The extended compose file is split by SCONE into a standard compose file and a configuration information that is stored in the SCONE <em>Configruation and Attestation Service</em> (<strong>CAS</strong>):</p>
-<p><img alt="*scone stack deploy*" src="../img/SCONE-compose.png" /></p>
-<p>In the current version of scone, we assume that the compose file is stored on a trusted host. (We plan to support compose files stored on untrusted host in the near future.)</p>
-<p>The <em>split</em> functionality is part of the <strong>scone CLI</strong>, i.e., you can split a compose file via</p>
-<pre><code class="bash">scone cas split &lt;COMPOSE_FILE&gt;
+<p>It is expected that the name of the image to be pulled has the 
+following format:</p>
+<pre><code class="bash">   REPOSITORY/IMAGE[:TAG]
 </code></pre>
 
-<p>This creates a set of services in your Swarm. To be able to use a CAS, you are required to login the CAS first via:</p>
-<pre><code class="bash">scone cas login
+<p>After pulling the image, it is locally available in the swarm.
+The name of the image id now:</p>
+<pre><code class="bash">   localhost:5000/IMAGE[:TAG]
 </code></pre>
 
-<p><strong>Note for now, <em>scone cas</em> (unlike the other scone objects) still works on the local swarm</strong>. This will change in a future version of <strong>scone cas</strong>.</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>The identity of MANAGER is given via option --manager or via
+environment variable SCONE_MANAGER.</p>
+<table>
+<thead>
+<tr>
+<th>Options</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--manager MANAGER</td>
+<td>manager of swarm (required)</td>
+</tr>
+<tr>
+<td>--verbose</td>
+<td>print verbose messages</td>
+</tr>
+<tr>
+<td>--debug</td>
+<td>print debug messages</td>
+</tr>
+<tr>
+<td>--help</td>
+<td>print usage of this command</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example">Example</h3>
+<p>To ensure that a registry is running on the swarm managed by node <strong>faye</strong>, execute:</p>
+<pre><code class="bash">$ export SCONE_MANAGER=faye
+$ scone service registry
+</code></pre>
+
+<p>To pull image <strong>sconecuratedimages/sconetainer:shielded</strong> from docker hub and store it in the local registry, execute</p>
+<pre><code class="bash">$ scone service pull sconecuratedimages/sconetainer:shielded
+</code></pre>
+
+<p>You can then start this image as a service on the swarm managed by <strong>faye</strong> as follows:</p>
+<pre><code class="bash">$ scone service create --name nginx-shielded --detach=true  --publish 8090:8080 --publish 8092:8082 localhost:5000/sconetainer:shielded
+</code></pre>
+
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
@@ -323,10 +443,10 @@ secrets:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_Fileshield/" class="btn btn-neutral float-right" title="SCONE File Protection"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../SCONE_STACK/" class="btn btn-neutral float-right" title="manual scone stack"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_Swarm_Example/" class="btn btn-neutral" title="SCONE Swarm Example"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../SCONE_HOST/" class="btn btn-neutral" title="manual scone host"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -352,10 +472,10 @@ secrets:
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_Swarm_Example/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../SCONE_HOST/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_Fileshield/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../SCONE_STACK/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

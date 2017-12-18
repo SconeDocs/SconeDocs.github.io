@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SCONE Compose - SCONE</title>
+  <title>manual scone stack - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "SCONE Compose";
+    var mkdocs_page_name = "manual scone stack";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -144,15 +144,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">SCONE Compose</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#scone-compose">SCONE Compose</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_Compose/">SCONE Compose</a>
         
     </li>
 <li>
@@ -200,8 +193,21 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_STACK/">manual scone stack</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">manual scone stack</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#scone-stack">scone stack</a></li>
+                
+                    <li><a class="toctree-l4" href="#scone-stack-commands">scone stack commands</a></li>
+                
+                    <li><a class="toctree-l4" href="#scone-stack-deploy">scone stack deploy</a></li>
+                
+                    <li><a class="toctree-l4" href="#example">Example</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -263,7 +269,7 @@
     
       
     
-    <li>SCONE Compose</li>
+    <li>manual scone stack</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -273,49 +279,55 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="scone-compose">SCONE Compose</h1>
-<p>SCONE supports to run secure applications  consisting of multiple secure containers. To do so, SCONE introduces slightly extended Docker <a href="https://docs.docker.com/compose/"><em>compose</em></a> file. Such an extended compose file defines for each process that runs inside of an enclave, a unique hash value (<strong>MRENCLAVE</strong>). During startup, SCONE performs an <em>attestation</em> for all these <em>secure processes</em> to ensure that the hash of the started program is as expected, i.e., is equal to <strong>MRENCLAVE</strong>. Only if it is equal, the arguments and the environment variables are passed to the process. In this way, we can pass secrets as arguments or environment variables in a secure fashion to a secure process.</p>
-<p>By default, all containers are started with SCONE and the arguments are passed in a secure fashion to the started processes. However, you might not want to run all processes inside of enclaves. For containers that should be directly started with Docker Swarm, you need to set field <strong>not_scone: "true"</strong>. In this case, all arguments and the environment variables are directly passed to the container with Docker Swarm (instead of SCONE).</p>
-<p>Let's consider an example, that consists of a <em>haproxy</em> that runs in native mode and is directly started with Docker Swarm (indicated by line <strong>not_scone: "true"</strong>) Moreover, we start <em>myapp</em> (defined in container image <em>myapp-image</em>) and specify <strong>MRENCLAVE</strong>. Only after ensuring that the program started in the enclave has the expected <strong>MRENCLAVE</strong> the arguments and the environment variables are passed to <em>myapp</em>.</p>
-<pre><code class="YAML">version: &quot;3.1.scone&quot;
-services:
-    primary-service:
-        image: myapp-image:latest
-        command: /myapp arg1 arg2 arg3 $my_password
-        mrenclave: 5764436f08dd4cdb526f082be1a07a3422f79ef2b01a5e24f78f9034a838c335
-        environment:
-            - SECURE_ENV=value
-            - MY_PIN=$my_pin
-            - MY_PASSWORD=$my_password
-        working_dir: /
-    proxy:
-        image: haproxy
-        command: haproxy --read_config_from_environ
-        not_scone: &quot;true&quot;
-        environment:
-            - &quot;HAPROXY_CONFIG=a=b,c=d,3=4&quot;
-secrets:
-    my_pin:
-        kind: numeric
-        length: &quot;4&quot;
-    my_password:
-        kind: ascii
-        length: &quot;8&quot;
+                <h1 id="scone-stack">scone stack</h1>
+<p><strong>scone stack</strong> manages remote docker stacks. <strong>scone stack</strong> is mainly a thin wrapper around <strong>docker stack</strong> that  forwards the commands to a remote swarm - instead of executing the commands locally.</p>
+<p>The remote swarm is specified via command line option <strong>--manager MANAGER</strong>. Alternatively, one can export an environment variable <strong>SCONE_MANAGER</strong> - which defines the default swarm to be used by <strong>scone swarm</strong>, in case option <strong>--manager</strong> is not given.</p>
+<h2 id="scone-stack-commands">scone stack commands</h2>
+<table>
+<thead>
+<tr>
+<th>scone stack</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>deploy</strong></td>
+<td>deploy a new stack or update an existing stack</td>
+</tr>
+<tr>
+<td><strong>ls</strong></td>
+<td>list stacks</td>
+</tr>
+<tr>
+<td><strong>ps</strong></td>
+<td>list the tasks in the stack</td>
+</tr>
+<tr>
+<td><strong>rm</strong></td>
+<td>remove one or more stacks</td>
+</tr>
+<tr>
+<td><strong>services</strong></td>
+<td>list the services in the stack</td>
+</tr>
+</tbody>
+</table>
+<h2 id="scone-stack-deploy">scone stack deploy</h2>
+<p>The command <strong>deploy</strong> is used to create a set of services specified by a <em>stack file</em>. </p>
+<p><strong>scone stack deploy</strong> expects the <em>stack file</em> specified via option <strong>-compose-file</strong> or <strong>-c</strong>. We expect this file to reside on your local machine/container (i.e., where you start  <strong>scone stack deploy</strong>).   </p>
+<p><strong>scone stack deploy</strong> copies the stack file to the remote swarm manager before executing <strong>docker stack deploy</strong> on the swarm manager.</p>
+<h2 id="example">Example</h2>
+<p>To deploy a stack that is called <strong>nginx</strong> on a remote swarm managed by node <em>faye</em>, execute the following:</p>
+<pre><code class="bash">$ scone stack deploy --compose-file compose.yml --manager faye nginx
 </code></pre>
 
-<p>The extended compose file is split by SCONE into a standard compose file and a configuration information that is stored in the SCONE <em>Configruation and Attestation Service</em> (<strong>CAS</strong>):</p>
-<p><img alt="*scone stack deploy*" src="../img/SCONE-compose.png" /></p>
-<p>In the current version of scone, we assume that the compose file is stored on a trusted host. (We plan to support compose files stored on untrusted host in the near future.)</p>
-<p>The <em>split</em> functionality is part of the <strong>scone CLI</strong>, i.e., you can split a compose file via</p>
-<pre><code class="bash">scone cas split &lt;COMPOSE_FILE&gt;
+<p>In case you set the environment variable <strong>SCONE_MANAGER</strong> to <strong>faye</strong>, you can drop option <strong>--manager</strong>:</p>
+<pre><code class="bash">$ export SCONE_MANAGER=faye
+$ scone stack deploy --compose-file compose.yml nginx
 </code></pre>
 
-<p>This creates a set of services in your Swarm. To be able to use a CAS, you are required to login the CAS first via:</p>
-<pre><code class="bash">scone cas login
-</code></pre>
-
-<p><strong>Note for now, <em>scone cas</em> (unlike the other scone objects) still works on the local swarm</strong>. This will change in a future version of <strong>scone cas</strong>.</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
@@ -323,10 +335,10 @@ secrets:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_Fileshield/" class="btn btn-neutral float-right" title="SCONE File Protection"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../SCONE_SWARM/" class="btn btn-neutral float-right" title="manual scone swarm"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_Swarm_Example/" class="btn btn-neutral" title="SCONE Swarm Example"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../SCONE_SERVICE/" class="btn btn-neutral" title="manual scone service"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -352,10 +364,10 @@ secrets:
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_Swarm_Example/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../SCONE_SERVICE/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_Fileshield/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../SCONE_SWARM/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
