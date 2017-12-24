@@ -96,14 +96,14 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_HOSTINSTALLER_README/">SCONE Host Setup</a>
+        <a class="" href="../SCONE_HOST_SETUP/">SCONE Host Setup</a>
         
     </li>
 <li>
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_COMPILER_CONTAINER_README/">SCONE SGX toolchain</a>
+        <a class="" href="../SCONE_toolchain/">SCONE SGX toolchain</a>
         
     </li>
 <li>
@@ -152,14 +152,28 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_Fileshield/">SCONE File Protection</a>
+        <a class="" href="../SCONE_EE2EE/">Example E2E encryption</a>
         
     </li>
 <li>
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../Python/">Python</a>
+        <a class="" href="../C/">C</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../C++/">C++</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../Fortran/">Fortran</a>
         
     </li>
 <li>
@@ -185,7 +199,14 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_ENV/">SCONE Environment variables</a>
+        <a class="" href="../Python/">Python</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../Rust/">Rust</a>
         
     </li>
 <li>
@@ -227,7 +248,21 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../SCONE_Publications/">SCONE Publications</a>
+        <a class="" href="../SCONE_Fileshield/">manual scone fspf</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_ENV/">Environment variables</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_Publications/">Publications</a>
         
     </li>
 <li>
@@ -282,11 +317,12 @@
 <p>SCONE supports cross-compiling GO programs to run these inside of SGX enclaves. The GO cross-compiler is part of image <strong>sconecuratedimages/crosscompilers:scone</strong>.</p>
 <h1 id="example">Example</h1>
 <p>Start the SCONE crosscompiler container:</p>
-<pre><code class="bash">docker run -it -p 8080:8080 sconecuratedimages/crosscompilers:scone
+<pre><code class="bash">&gt; docker run -it -p 8080:8080 sconecuratedimages/crosscompilers:scone
+$
 </code></pre>
 
 <p>Lets consider a simple GO program (take from a <a href="https://golang.org/doc/articles/wiki/">GO tutorial</a>):</p>
-<pre><code class="bash">cat &gt; web-srv.go &lt;&lt; EOF
+<pre><code class="bash">$ cat &gt; web-srv.go &lt;&lt; EOF
 package main
 
 import (
@@ -296,6 +332,9 @@ import (
 
 func handler(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, &quot;Hi there, I love %s!&quot;, r.URL.Path[1:])
+    if r.URL.Path[1:] == &quot;EXIT&quot; {
+        os.Exit(0)
+    }
 }
 
 func main() {
@@ -306,11 +345,11 @@ EOF
 </code></pre>
 
 <p>You can cross-compile this program as follows:</p>
-<pre><code class="bash">SCONE_HEAP=1G scone-gccgo web-srv.go -O3 -o web-srv-go -g
+<pre><code class="bash">$ SCONE_HEAP=1G scone-gccgo web-srv.go -O3 -o web-srv-go -g
 </code></pre>
 
 <p>You can start the compiled program (and enable some debug messages) as follows:</p>
-<pre><code class="bash">SCONE_VERSION=1 ./web-srv-go
+<pre><code class="bash">$ SCONE_VERSION=1 ./web-srv-go &amp;
 export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
@@ -331,8 +370,13 @@ Configure options: --enable-file-prot --enable-shared --enable-debug --prefix=/s
 </code></pre>
 
 <p>You can now connect to port 8080, for example, with <em>curl</em>:</p>
-<pre><code class="bash">&gt; curl localhost:8080/SCONE
+<pre><code class="bash">$ curl localhost:8080/SCONE
 Hi there, I love SCONE!
+</code></pre>
+
+<p>You can terminate the server with</p>
+<pre><code class="bash">$ curl localhost:8080/EXIT
+curl: (52) Empty reply from server
 </code></pre>
 
 <h2 id="debugging">Debugging</h2>
@@ -479,10 +523,10 @@ Continuing.
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_ENV/" class="btn btn-neutral float-right" title="SCONE Environment variables"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Python/" class="btn btn-neutral float-right" title="Python"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../Python/" class="btn btn-neutral" title="Python"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Fortran/" class="btn btn-neutral" title="Fortran"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -508,10 +552,10 @@ Continuing.
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../Python/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../Fortran/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_ENV/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../Python/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

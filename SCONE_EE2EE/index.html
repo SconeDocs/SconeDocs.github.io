@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>manual scone fspf - SCONE</title>
+  <title>Example E2E encryption - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "manual scone fspf";
+    var mkdocs_page_name = "Example E2E encryption";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -151,8 +151,15 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../SCONE_EE2EE/">Example E2E encryption</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Example E2E encryption</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#example-end-to-end-encryption">Example: End-to-End Encryption</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -235,21 +242,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">manual scone fspf</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#scone-file-protection">SCONE File Protection</a></li>
-                
-                    <li><a class="toctree-l4" href="#objective">Objective</a></li>
-                
-                    <li><a class="toctree-l4" href="#example">Example</a></li>
-                
-                    <li><a class="toctree-l4" href="#notes">Notes</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_Fileshield/">manual scone fspf</a>
         
     </li>
 <li>
@@ -304,7 +298,7 @@
     
       
     
-    <li>manual scone fspf</li>
+    <li>Example E2E encryption</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -314,99 +308,92 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="scone-file-protection">SCONE File Protection</h1>
-<p>SCONE supports the transparent encryption and/or authenticate files.</p>
-<h2 id="objective">Objective</h2>
-<p>Setting up file encryption takes several steps and we are working on making this simpler.</p>
-<p>The idea of file encryption is that a user can define file regions in which files must be <em>encrypted</em> (which always includes authentication), <em>authenticated</em> (i.e., SCONE ensure that the content is not modified), or <em>unprotected</em>. </p>
-<h2 id="example">Example</h2>
-<p>To show how the file encryption is set up, please have a look at the following screencast.</p>
-<p><a href="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt"><img alt="asciicast" src="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt.png" /></a></p>
-<p>Below is the script that is executed in the screencast:</p>
-<pre><code class="bash">docker run -it -v $PWD:/mnt sconecuratedimages/crosscompilers:scone
-
-mkdir -p /example
-mkdir -p /mnt/authenticated/
-mkdir -p /mnt/encrypted/
-cd /example
-mkdir -p .original
-
-scone fspf create fspf.pb
-scone fspf create authenticated.pb
-scone fspf create encrypted.pb
-
-# add protection regions
-scone fspf addr fspf.pb / -e --ephemeral
-scone fspf addr authenticated.pb /mnt/authenticated -a --kernel /mnt/authenticated
-scone fspf addr encrypted.pb /mnt/encrypted -e --kernel /mnt/encrypted
-
-# add files
-
-# enclave program should expect the files (directories) found by the client in ./original in /mnt/authenticated
-scone fspf addf authenticated.pb /mnt/authenticated ./original
-
-# enclave program should expect the files (directories) found by the client in ./original in encrypted form in /mnt/encrypted
-# the client will write the encrypted files to ./mnt/encrypted
-scone fspf addf encrypted.pb /mnt/encrypted ./original ./mnt/encrypted
-encrypted_key=`scone fspf encrypt encrypted.pb | awk '{print $11}'`
-
-echo &quot;encrypted.pb key: ${encrypted_key}&quot;
-scone fspf addfspf fspf.pb authenticated.pb
-scone fspf addfspf fspf.pb encrypted.pb ${encrypted_key}
-cat &gt; example.c &lt;&lt; EOF
-#include &lt;stdio.h&gt;
-
-int main() {
-    FILE *fp = fopen(&quot;/mnt/authenticated/hello&quot;, &quot;w&quot;);
-    fprintf(fp, &quot;hello world\n&quot;);
-    fclose(fp);
-
-    fp = fopen(&quot;/mnt/encrypted/hello&quot;, &quot;w&quot;);
-    fprintf(fp, &quot;hello world\n&quot;);
-    fclose(fp);
-}
-EOF
-scone gcc example.c -o sgxex
-cat &gt; /etc/sgx-musl.conf &lt;&lt; EOF
-Q 4
-e -1 0 0
-s -1 0 0
-e -1 1 0
-s -1 1 0
-e -1 2 0
-s -1 2 0
-e -1 3 0
-s -1 3 0
-EOF
-SCONE_FSPF=fspf.pb ./sgxex
-cat /mnt/authenticated/hello
-cat /mnt/encrypted/hello 
-cat &gt; cat.c &lt;&lt; EOF
-#include &lt;stdio.h&gt;
-
-int main() {
-    char buf[80];
-    FILE *fp = fopen(&quot;/mnt/authenticated/hello&quot;, &quot;r&quot;);
-    fgets(buf, sizeof(buf), fp);
-    fclose(fp);
-    printf(&quot;read: '%s'\n&quot;, buf);
-
-    fp = fopen(&quot;/mnt/encrypted/hello&quot;, &quot;r&quot;);
-    fgets(buf, sizeof(buf), fp);
-    fclose(fp);
-    printf(&quot;read: '%s'\n&quot;, buf);
-}
-EOF
-
-scone gcc cat.c -o native_cat
-./native_cat
-scone gcc cat.c -o sgxcat
-SCONE_FSPF=fspf.pb ./sgxcat
+                <h1 id="example-end-to-end-encryption">Example: End-to-End Encryption</h1>
+<p>We show how to encrypt an application end-to-end, i.e., all the data in the file system is encrypted, all data in main memory is encrypted and all data on the wire is encrypted.</p>
+<p>In what follows, we only interact with one swarm. Hence, we set environment variable <strong>SCONE_MANAGER</strong> to point to the manager node of the swarm. Say, in our case the manage is called <strong>faye</strong>:</p>
+<pre><code class="bash">$ export SCONE_MANAGER=faye
 </code></pre>
 
-<h2 id="notes">Notes</h2>
-<p>The SCONE File Protection documentation is not yet completed and more information will be provided soon.</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>We have prepared an nginx image that contains this website as encrypted files and nginx is running inside of an enclave reading the encrypted files
+from the file system and decrypting these files inside the enclave.</p>
+<p>Let's assume that we have the newest image in our local swarm registry:</p>
+<pre><code class="bash">$ scone service pull sconecuratedimages/sconetainer:fss
+...
+fss: digest: sha256:2e76b4a0b090cc75c2e56594e20c7ec36bc1abd13e36e2f00d36e2f67b13c1d5 size: 1783
+new tag: localhost:5000/sconetainer:fss
+</code></pre>
+
+<p>We will start this service as a stack. Hence, we define a simple stack/compose file:</p>
+<pre><code class="bash">cat &gt; compose.yml &lt;&lt; EOF
+version: &quot;3.1.scone&quot;
+services:
+    nginx:
+        image: 127.0.0.1:5000/sconetainer:fss
+        command: nginx -p /nginx -c nginx.conf
+        mrenclave: 1516e3d41590cf3842282c6f037535af64336138a6b5eff7e8754e97b4c64ecb
+        fspf_path: /nginx/fspf.pb
+        fspf_key: 970f4925bb7b221461f3d1a3f17450aa42844539de24f5acc1b45b8c140f9467
+        fspf_tag: 5930bffbd9ea2f1317e6872b032334db
+        working_dir: /
+        ports:
+          - 8190:8080
+          - 8192:8082
+EOF
+</code></pre>
+
+<p>For now, this files contains some metadata related to the encrypted files:</p>
+<ul>
+<li><strong>fspf_path</strong> the path of the <em>file system protection file</em></li>
+<li><strong>fspf_key</strong> the key used to encrypt the <em>file system protection file</em></li>
+<li><strong>fspf_tag</strong> the tag (i.e., MAC) of the <em>file system protection file</em></li>
+</ul>
+<p>We provide a low level for encrypting files with the help of <a href="../SCONE_Fileshield/">scone fspf</a>. (We will soon release a higher level support that will simplify the encryption of files). </p>
+<p>In this swarm, we have a CAS (Configuration and Attestation Service running): the CAS helps
+us to to pass some secrets like the <strong>fspf_key</strong> to an enclave and protecting both
+the confidentiality as well as the integrity of this secret.</p>
+<p>Clients can identify the CAS via its certificate. In this example,
+we explicitly specify the certificate of the CAS:</p>
+<pre><code class="bash">cat &gt; ca.pem &lt;&lt; EOF
+-----BEGIN CERTIFICATE-----
+MIICKDCCAc2gAwIBAgIJAMnmUBMT+gOGMAoGCCqGSM49BAMCMHAxCzAJBgNVBAYT
+AlVTMQ8wDQYDVQQIDAZPcmVnb24xETAPBgNVBAcMCFBvcnRsYW5kMRUwEwYDVQQK
+DAxDb21wYW55IE5hbWUxDDAKBgNVBAsMA09yZzEYMBYGA1UEAwwPd3d3LmV4YW1w
+bGUuY29tMB4XDTE3MDQwNzEzNTIyMloXDTE4MDQwNzEzNTIyMlowcDELMAkGA1UE
+BhMCVVMxDzANBgNVBAgMBk9yZWdvbjERMA8GA1UEBwwIUG9ydGxhbmQxFTATBgNV
+BAoMDENvbXBhbnkgTmFtZTEMMAoGA1UECwwDT3JnMRgwFgYDVQQDDA93d3cuZXhh
+bXBsZS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARvkkSOfCGXIyWCCdfj
+Mil6dhw/a2ZsPaBKOl1RS5MZuoN+7gtSqgnaT5KrT4S/Wj7flP+PJqkUf0M6p1gg
+E5wBo1AwTjAdBgNVHQ4EFgQUzPP33ZM7ZMQ7UDb9THNM5Yoma3YwHwYDVR0jBBgw
+FoAUzPP33ZM7ZMQ7UDb9THNM5Yoma3YwDAYDVR0TBAUwAwEB/zAKBggqhkjOPQQD
+AgNJADBGAiEA34tSQI8V+4UaQG1w7nVJEDLWA17zw5Ls8NZBYVi4lpcCIQDgzln/
+1r25fhGzrVbRgAcbmfLsJxuDYpsfAaNL5/5leg==
+-----END CERTIFICATE-----
+EOF
+</code></pre>
+
+<p>and now log into the CAS:</p>
+<pre><code class="bash">export IP=x.y.z.u
+scone cas login -c ca.pem christof cas --host $IP:8081:18765
+</code></pre>
+
+<p>We split our stack file into two parts: public part sent to the docker engine and
+a secret part that is sent to the CAS:</p>
+<pre><code class="bash">scone cas split compose.yml  --stack 283299
+</code></pre>
+
+<p>Show public part:</p>
+<pre><code class="bash">cat compose.yml.docker.yml
+</code></pre>
+
+<p>We can now deploy the service with the help of docker/scone stack:</p>
+<pre><code class="bash">scone stack deploy --compose-file compose.yml  nginx
+</code></pre>
+
+<p>Show running stack:</p>
+<pre><code class="bash">scone stack ls
+</code></pre>
+
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
@@ -414,10 +401,10 @@ SCONE_FSPF=fspf.pb ./sgxcat
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_ENV/" class="btn btn-neutral float-right" title="Environment variables"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../C/" class="btn btn-neutral float-right" title="C"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_VOLUME/" class="btn btn-neutral" title="manual scone volume"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../SCONE_Compose/" class="btn btn-neutral" title="SCONE Compose"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -443,10 +430,10 @@ SCONE_FSPF=fspf.pb ./sgxcat
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_VOLUME/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../SCONE_Compose/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_ENV/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../C/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

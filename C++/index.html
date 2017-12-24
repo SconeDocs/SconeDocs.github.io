@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>manual scone fspf - SCONE</title>
+  <title>C++ - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "manual scone fspf";
+    var mkdocs_page_name = "C++";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -165,8 +165,21 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../C++/">C++</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">C++</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#c-program-language-support">C++ Program Language Support</a></li>
+                
+                    <li><a class="toctree-l4" href="#image">Image</a></li>
+                
+                    <li><a class="toctree-l4" href="#help">Help</a></li>
+                
+                    <li><a class="toctree-l4" href="#example">Example</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -235,21 +248,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">manual scone fspf</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#scone-file-protection">SCONE File Protection</a></li>
-                
-                    <li><a class="toctree-l4" href="#objective">Objective</a></li>
-                
-                    <li><a class="toctree-l4" href="#example">Example</a></li>
-                
-                    <li><a class="toctree-l4" href="#notes">Notes</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_Fileshield/">manual scone fspf</a>
         
     </li>
 <li>
@@ -304,7 +304,7 @@
     
       
     
-    <li>manual scone fspf</li>
+    <li>C++</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -314,99 +314,78 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="scone-file-protection">SCONE File Protection</h1>
-<p>SCONE supports the transparent encryption and/or authenticate files.</p>
-<h2 id="objective">Objective</h2>
-<p>Setting up file encryption takes several steps and we are working on making this simpler.</p>
-<p>The idea of file encryption is that a user can define file regions in which files must be <em>encrypted</em> (which always includes authentication), <em>authenticated</em> (i.e., SCONE ensure that the content is not modified), or <em>unprotected</em>. </p>
-<h2 id="example">Example</h2>
-<p>To show how the file encryption is set up, please have a look at the following screencast.</p>
-<p><a href="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt"><img alt="asciicast" src="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt.png" /></a></p>
-<p>Below is the script that is executed in the screencast:</p>
-<pre><code class="bash">docker run -it -v $PWD:/mnt sconecuratedimages/crosscompilers:scone
-
-mkdir -p /example
-mkdir -p /mnt/authenticated/
-mkdir -p /mnt/encrypted/
-cd /example
-mkdir -p .original
-
-scone fspf create fspf.pb
-scone fspf create authenticated.pb
-scone fspf create encrypted.pb
-
-# add protection regions
-scone fspf addr fspf.pb / -e --ephemeral
-scone fspf addr authenticated.pb /mnt/authenticated -a --kernel /mnt/authenticated
-scone fspf addr encrypted.pb /mnt/encrypted -e --kernel /mnt/encrypted
-
-# add files
-
-# enclave program should expect the files (directories) found by the client in ./original in /mnt/authenticated
-scone fspf addf authenticated.pb /mnt/authenticated ./original
-
-# enclave program should expect the files (directories) found by the client in ./original in encrypted form in /mnt/encrypted
-# the client will write the encrypted files to ./mnt/encrypted
-scone fspf addf encrypted.pb /mnt/encrypted ./original ./mnt/encrypted
-encrypted_key=`scone fspf encrypt encrypted.pb | awk '{print $11}'`
-
-echo &quot;encrypted.pb key: ${encrypted_key}&quot;
-scone fspf addfspf fspf.pb authenticated.pb
-scone fspf addfspf fspf.pb encrypted.pb ${encrypted_key}
-cat &gt; example.c &lt;&lt; EOF
-#include &lt;stdio.h&gt;
-
-int main() {
-    FILE *fp = fopen(&quot;/mnt/authenticated/hello&quot;, &quot;w&quot;);
-    fprintf(fp, &quot;hello world\n&quot;);
-    fclose(fp);
-
-    fp = fopen(&quot;/mnt/encrypted/hello&quot;, &quot;w&quot;);
-    fprintf(fp, &quot;hello world\n&quot;);
-    fclose(fp);
-}
-EOF
-scone gcc example.c -o sgxex
-cat &gt; /etc/sgx-musl.conf &lt;&lt; EOF
-Q 4
-e -1 0 0
-s -1 0 0
-e -1 1 0
-s -1 1 0
-e -1 2 0
-s -1 2 0
-e -1 3 0
-s -1 3 0
-EOF
-SCONE_FSPF=fspf.pb ./sgxex
-cat /mnt/authenticated/hello
-cat /mnt/encrypted/hello 
-cat &gt; cat.c &lt;&lt; EOF
-#include &lt;stdio.h&gt;
-
-int main() {
-    char buf[80];
-    FILE *fp = fopen(&quot;/mnt/authenticated/hello&quot;, &quot;r&quot;);
-    fgets(buf, sizeof(buf), fp);
-    fclose(fp);
-    printf(&quot;read: '%s'\n&quot;, buf);
-
-    fp = fopen(&quot;/mnt/encrypted/hello&quot;, &quot;r&quot;);
-    fgets(buf, sizeof(buf), fp);
-    fclose(fp);
-    printf(&quot;read: '%s'\n&quot;, buf);
-}
-EOF
-
-scone gcc cat.c -o native_cat
-./native_cat
-scone gcc cat.c -o sgxcat
-SCONE_FSPF=fspf.pb ./sgxcat
+                <h1 id="c-program-language-support">C++ Program Language Support</h1>
+<p>SCONE supports native compilation of C++ programs when combined with dynamic linking as well as cross-compilation.  Cross-compilation is required  to support, in particular, statically linked binaries.</p>
+<p>This page focuses on the SCONE C++ cross compiler <strong>scone g++</strong> (a.k.a. <strong>scone-g++</strong>). This cross compiler is based on g++ and hence, the command line options are the same as those of g++.</p>
+<h2 id="image">Image</h2>
+<p>Ensure that you have the newest SCONE cross compiler image:</p>
+<pre><code class="bash">&gt; docker pull sconecuratedimages/crosscompilers:scone
+&gt; docker run -it sconecuratedimages/crosscompilers:scone
+$
 </code></pre>
 
-<h2 id="notes">Notes</h2>
-<p>The SCONE File Protection documentation is not yet completed and more information will be provided soon.</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<h2 id="help">Help</h2>
+<p>If you need some help, just execute in the container:</p>
+<pre><code class="bash">$ scone g++ --help
+Usage: x86_64-linux-musl-g++ [options] file...
+Options:
+...
+</code></pre>
+
+<h2 id="example">Example</h2>
+<p>Let's try to compile a simple program:</p>
+<pre><code class="bash">$ cat &gt; sqrt.cc &lt;&lt; EOF
+#include &lt;iostream&gt;
+#include &lt;cmath&gt;
+
+using namespace std;
+
+int main() {
+    int x = 0;
+    while(x &lt; 10) {
+        double y = sqrt((double)x);
+        cout &lt;&lt; &quot;The square root of &quot; &lt;&lt; x &lt;&lt; &quot; is &quot; &lt;&lt; y &lt;&lt; endl;
+        x++;
+    }
+    return 0;
+}
+EOF
+</code></pre>
+
+<p>We compile the program with <strong>scone gcc</strong> or <strong>scone-gcc</strong>:</p>
+<pre><code class="bash">$ scone g++ sqrt.cc -o sqrt
+</code></pre>
+
+<p>Let's execute the binary:</p>
+<pre><code class="bash">$ SCONE_VERSION=1 ./sqrt
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=67108864
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=hw
+export SCONE_SGXBOUNDS=no
+export SCONE_VARYS=no
+export SCONE_ALLOW_DLOPEN=no
+export SCONE_ALLOW_DLOPEN2=no
+
+The square root of 0 is 0
+The square root of 1 is 1
+The square root of 2 is 1.41421
+The square root of 3 is 1.73205
+The square root of 4 is 2
+The square root of 5 is 2.23607
+The square root of 6 is 2.44949
+The square root of 7 is 2.64575
+The square root of 8 is 2.82843
+The square root of 9 is 3
+</code></pre>
+
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
@@ -414,10 +393,10 @@ SCONE_FSPF=fspf.pb ./sgxcat
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_ENV/" class="btn btn-neutral float-right" title="Environment variables"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Fortran/" class="btn btn-neutral float-right" title="Fortran"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_VOLUME/" class="btn btn-neutral" title="manual scone volume"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../C/" class="btn btn-neutral" title="C"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -443,10 +422,10 @@ SCONE_FSPF=fspf.pb ./sgxcat
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_VOLUME/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../C/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_ENV/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../Fortran/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
