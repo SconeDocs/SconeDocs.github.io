@@ -149,10 +149,17 @@
         
             <ul>
             
-                <li class="toctree-l3"><a href="#scone-compose">SCONE Compose</a></li>
+                <li class="toctree-l3"><a href="#compose-stack-files">Compose / Stack Files</a></li>
                 
             
             </ul>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_CAS/">SCONE CAS</a>
         
     </li>
 <li>
@@ -308,7 +315,7 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="scone-compose">SCONE Compose</h1>
+                <h1 id="compose-stack-files">Compose / Stack Files</h1>
 <p>SCONE supports to run secure applications  consisting of multiple secure containers. To do so, SCONE introduces slightly extended Docker <a href="https://docs.docker.com/compose/"><em>compose</em></a> file. Such an extended compose file defines for each process that runs inside of an enclave, a unique hash value (<strong>MRENCLAVE</strong>). During startup, SCONE performs an <em>attestation</em> for all these <em>secure processes</em> to ensure that the hash of the started program is as expected, i.e., is equal to <strong>MRENCLAVE</strong>. Only if it is equal, the arguments and the environment variables are passed to the process. In this way, we can pass secrets as arguments or environment variables in a secure fashion to a secure process.</p>
 <p>By default, all containers are started with SCONE and the arguments are passed in a secure fashion to the started processes. However, you might not want to run all processes inside of enclaves. For containers that should be directly started with Docker Swarm, you need to set field <strong>not_scone: "true"</strong>. In this case, all arguments and the environment variables are directly passed to the container with Docker Swarm (instead of SCONE).</p>
 <p>Let's consider an example, that consists of a <em>haproxy</em> that runs in native mode and is directly started with Docker Swarm (indicated by line <strong>not_scone: "true"</strong>) Moreover, we start <em>myapp</em> (defined in container image <em>myapp-image</em>) and specify <strong>MRENCLAVE</strong>. Only after ensuring that the program started in the enclave has the expected <strong>MRENCLAVE</strong> the arguments and the environment variables are passed to <em>myapp</em>.</p>
@@ -345,11 +352,13 @@ secrets:
 <pre><code class="bash">$ scone cas split &lt;COMPOSE_FILE&gt;
 </code></pre>
 
-<p>This creates a set of services in your Swarm. To be able to use a CAS, you are required to login the CAS first via:</p>
-<pre><code class="bash">$ scone cas login
+<p>This creates a stack file that can be used to start a set of services in your Swarm. Read <a href="../SCONE_EE2EE/">nginx example</a> for some more details how to do this.</p>
+<p>To be able to use a CAS, you are required to login to a CAS. We assume that your CAS is available at IP address <strong>$IP</strong>. If you have set up the CAS in the way specified in <a href="../SCONE_CAS/">CAS Setup</a>, set environment variable IP to the external IP address of the swarm manager node.</p>
+<p>You can login into CAS via:</p>
+<pre><code class="bash">$ scone cas login --host $IP:8081:18765
 </code></pre>
 
-<p><strong>Note for now, <em>scone cas</em> (unlike the other scone objects) still works on the local swarm</strong>. This will change in a future version of <strong>scone cas</strong>.</p>
+<p>See <a href="../SCONE_EE2EE/">nginx example</a> for some more details and read <a href="../SCONE_CAS/">CAS Setup</a> to learn how to run a CAS service for development.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
@@ -358,7 +367,7 @@ secrets:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_EE2EE/" class="btn btn-neutral float-right" title="Example E2E encryption"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../SCONE_CAS/" class="btn btn-neutral float-right" title="SCONE CAS"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../SCONE_Swarm_Example/" class="btn btn-neutral" title="SCONE Swarm Example"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -390,7 +399,7 @@ secrets:
         <span><a href="../SCONE_Swarm_Example/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_EE2EE/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../SCONE_CAS/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
