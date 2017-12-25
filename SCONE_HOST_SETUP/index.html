@@ -368,17 +368,17 @@ No matter where <em>scone</em> is running, it requires that <em>ssh</em> be prop
 </ul>
 <h3 id="passwordless-ssh">Passwordless ssh</h3>
 <p>To set up passwordless ssh authentication, you need to ensure that you have a pair of authentication keys. If there exists no public key <em>$HOME/.ssh/id_rsa.pub</em> (often the case if you use a container), you can generate a new pair by executing:</p>
-<pre><code class="bash">ssh-keygen -b 4096 -t rsa
+<pre><code class="bash">&gt; ssh-keygen -b 4096 -t rsa
 </code></pre>
 
 <p>Append the generated public key <em>$HOME/.ssh/id_rsa.pub</em> to file <em>$HOME/.ssh/authorized_keys</em> on the SGX hosts for which you to be able to log in without a password.</p>
 <p>Additionally, you need to start a ssh-agent (on your developer machine):</p>
-<pre><code class="bash">SA=`ssh-agent`
-eval &quot;$SA&quot;
+<pre><code class="bash">$ SA=`ssh-agent`
+$ eval &quot;$SA&quot;
 </code></pre>
 
 <p>and add your authentication keys by executing:</p>
-<pre><code class="bash">ssh-add
+<pre><code class="bash">$ ssh-add
 </code></pre>
 
 <h3 id="host-alias">Host alias</h3>
@@ -404,25 +404,25 @@ eval &quot;$SA&quot;
 
 <h2 id="installation-of-a-single-host">Installation of a single host</h2>
 <p>After you set up the <a href="../SCONE_CLI/">scone CLI</a> and your passwordless ssh works, you can install the scone related software on a new host, say, <em>alice</em> as follows:</p>
-<pre><code class="bash">scone host install --name alice
+<pre><code class="bash">$ scone host install --name alice
 </code></pre>
 
 <p>To verify that a host is properly installed for SCONE and contains the newest patched Docker engine and SGX driver, just execute:</p>
-<pre><code class="bash">scone host check --name alice
+<pre><code class="bash">$ scone host check --name alice
 </code></pre>
 
 <p>This command will issue an error unless the newest versions of the patched Docker engine and the patched SGX driver is installed.</p>
 <h2 id="installation-of-a-swarm">Installation of a swarm</h2>
 <p>For a set of hosts to form a (Docker) swarm, you need to decide which hosts should be managers and which should be just members of the swarm. Say, you decided that <em>alice</em> and <em>bob</em> should be managers but <em>caroline</em> a non-manager, execute the following:</p>
-<pre><code class="bash">scone host install --name alice --as-manager
-scone host install --name bob --as-manager --join alice
-scone host install --name caroline  --join alice
+<pre><code class="bash">$ scone host install --name alice --as-manager
+$ scone host install --name bob --as-manager --join alice
+$ scone host install --name caroline  --join alice
 </code></pre>
 
 <p>Note that the hosts must be able to communicate with each other (i.e., not partitioned through firewalls). Docker recommends/expects  that they will be in the same local area network.</p>
 <h4 id="checking-your-installation">Checking your Installation</h4>
 <p>To test the installation, one can run a simple hello-world container:</p>
-<pre><code class="bash">sudo docker run hello-world
+<pre><code class="bash">&gt; sudo docker run hello-world
 </code></pre>
 
 <h2 id="background-information">Background Information</h2>

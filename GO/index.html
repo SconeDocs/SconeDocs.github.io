@@ -383,14 +383,14 @@ curl: (52) Empty reply from server
 <p>SCONE supports debugging of programs running inside of an enclave with the help of gdb.</p>
 <h3 id="debugging-inside-of-a-container">Debugging inside of a container</h3>
 <p>Standard containers have not sufficient rights to use the debugger.  Hence, you must start a container with <em>SYS_PTRACE</em> capability. For example:</p>
-<pre><code class="bash">docker run --cap-add SYS_PTRACE -it -p 8080:8080 -v &quot;$PWD&quot;/EXAMPLE:/usr/src/myapp -w /usr/src/myapp  sconecuratedimages/crosscompilers:scone
+<pre><code class="bash">$ docker run --cap-add SYS_PTRACE -it -p 8080:8080 -v &quot;$PWD&quot;/EXAMPLE:/usr/src/myapp -w /usr/src/myapp  sconecuratedimages/crosscompilers:scone
 </code></pre>
 
 <h3 id="handling-illegal-instructions">Handling Illegal instructions</h3>
 <p>Some instructions, like CPUID, are not permitted inside of enclaves. For some of these instructions, like CPUID, we provide an automatic emulation. However, we recommend not to use any illegal instructions inside of enclaves despite having an automatic emulation of these instructions. For example, we provide static replacements of the CPUID instruction. </p>
 <p>If your program contains some illegal instructions, you need to ask the debugger to forward the signals,
 that these illegal instructions cause, to the program via <strong>handle SIGILL nostop pass</strong>: </p>
-<pre><code class="bash">scone-gdb ./web-srv-go
+<pre><code class="bash">$ scone-gdb ./web-srv-go
 GNU gdb (Ubuntu 7.12.50.20170314-0ubuntu1.1) 7.12.50.20170314-git
 Copyright (C) 2017 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
@@ -461,7 +461,7 @@ Continuing.
 <h3 id="breakpoints">Breakpoints</h3>
 <p>Of course, you might also set breakpoints. Say, we want to get control in the debugger whenever a request is being
 processed by the handler. We would set a breakpoint at function <strong>main.handler</strong> as follows:</p>
-<pre><code class="bash">&gt; scone-gdb ./web-srv-go
+<pre><code class="bash">$ scone-gdb ./web-srv-go
 ...
 [SCONE] Initializing...
 (gdb) handle SIGILL nostop pass

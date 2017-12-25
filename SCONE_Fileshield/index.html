@@ -323,37 +323,37 @@
 <p>To show how the file encryption is set up, please have a look at the following screencast.</p>
 <p><a href="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt"><img alt="asciicast" src="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt.png" /></a></p>
 <p>Below is the script that is executed in the screencast:</p>
-<pre><code class="bash">docker run -it -v $PWD:/mnt sconecuratedimages/crosscompilers:scone
+<pre><code class="bash">&gt; docker run -it -v $PWD:/mnt sconecuratedimages/crosscompilers:scone
 
-mkdir -p /example
-mkdir -p /mnt/authenticated/
-mkdir -p /mnt/encrypted/
-cd /example
-mkdir -p .original
+$ mkdir -p /example
+$ mkdir -p /mnt/authenticated/
+$ mkdir -p /mnt/encrypted/
+$ cd /example
+$ mkdir -p .original
 
-scone fspf create fspf.pb
-scone fspf create authenticated.pb
-scone fspf create encrypted.pb
+$ scone fspf create fspf.pb
+$ scone fspf create authenticated.pb
+$ scone fspf create encrypted.pb
 
 # add protection regions
-scone fspf addr fspf.pb / -e --ephemeral
-scone fspf addr authenticated.pb /mnt/authenticated -a --kernel /mnt/authenticated
-scone fspf addr encrypted.pb /mnt/encrypted -e --kernel /mnt/encrypted
+$ scone fspf addr fspf.pb / -e --ephemeral
+$ scone fspf addr authenticated.pb /mnt/authenticated -a --kernel /mnt/authenticated
+$ scone fspf addr encrypted.pb /mnt/encrypted -e --kernel /mnt/encrypted
 
 # add files
 
 # enclave program should expect the files (directories) found by the client in ./original in /mnt/authenticated
-scone fspf addf authenticated.pb /mnt/authenticated ./original
+$ scone fspf addf authenticated.pb /mnt/authenticated ./original
 
 # enclave program should expect the files (directories) found by the client in ./original in encrypted form in /mnt/encrypted
 # the client will write the encrypted files to ./mnt/encrypted
-scone fspf addf encrypted.pb /mnt/encrypted ./original ./mnt/encrypted
+$ scone fspf addf encrypted.pb /mnt/encrypted ./original ./mnt/encrypted
 encrypted_key=`scone fspf encrypt encrypted.pb | awk '{print $11}'`
 
-echo &quot;encrypted.pb key: ${encrypted_key}&quot;
-scone fspf addfspf fspf.pb authenticated.pb
-scone fspf addfspf fspf.pb encrypted.pb ${encrypted_key}
-cat &gt; example.c &lt;&lt; EOF
+$ echo &quot;encrypted.pb key: ${encrypted_key}&quot;
+$ scone fspf addfspf fspf.pb authenticated.pb
+$ scone fspf addfspf fspf.pb encrypted.pb ${encrypted_key}
+$ cat &gt; example.c &lt;&lt; EOF
 #include &lt;stdio.h&gt;
 
 int main() {
@@ -366,8 +366,9 @@ int main() {
     fclose(fp);
 }
 EOF
-scone gcc example.c -o sgxex
-cat &gt; /etc/sgx-musl.conf &lt;&lt; EOF
+
+$ scone gcc example.c -o sgxex
+$ cat &gt; /etc/sgx-musl.conf &lt;&lt; EOF
 Q 4
 e -1 0 0
 s -1 0 0
@@ -378,10 +379,10 @@ s -1 2 0
 e -1 3 0
 s -1 3 0
 EOF
-SCONE_FSPF=fspf.pb ./sgxex
-cat /mnt/authenticated/hello
-cat /mnt/encrypted/hello 
-cat &gt; cat.c &lt;&lt; EOF
+$ SCONE_FSPF=fspf.pb ./sgxex
+$ cat /mnt/authenticated/hello
+$ cat /mnt/encrypted/hello 
+$ cat &gt; cat.c &lt;&lt; EOF
 #include &lt;stdio.h&gt;
 
 int main() {
@@ -398,10 +399,10 @@ int main() {
 }
 EOF
 
-scone gcc cat.c -o native_cat
-./native_cat
-scone gcc cat.c -o sgxcat
-SCONE_FSPF=fspf.pb ./sgxcat
+$ scone gcc cat.c -o native_cat
+$ ./native_cat
+$ scone gcc cat.c -o sgxcat
+$ SCONE_FSPF=fspf.pb ./sgxcat
 </code></pre>
 
 <h2 id="notes">Notes</h2>

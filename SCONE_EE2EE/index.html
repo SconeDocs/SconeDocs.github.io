@@ -324,7 +324,7 @@ new tag: localhost:5000/sconetainer:fss
 </code></pre>
 
 <p>We will start this service as a stack. Hence, we define a simple stack/compose file:</p>
-<pre><code class="bash">cat &gt; compose.yml &lt;&lt; EOF
+<pre><code class="bash">$ cat &gt; compose.yml &lt;&lt; EOF
 version: &quot;3.1.scone&quot;
 services:
     nginx:
@@ -341,7 +341,7 @@ services:
 EOF
 </code></pre>
 
-<p>For now, this files contains some metadata related to the encrypted files:</p>
+<p>For now, this file contains some metadata related to the encrypted files:</p>
 <ul>
 <li><strong>fspf_path</strong> the path of the <em>file system protection file</em></li>
 <li><strong>fspf_key</strong> the key used to encrypt the <em>file system protection file</em></li>
@@ -353,7 +353,7 @@ us to to pass some secrets like the <strong>fspf_key</strong> to an enclave and 
 the confidentiality as well as the integrity of this secret.</p>
 <p>Clients can identify the CAS via its certificate. In this example,
 we explicitly specify the certificate of the CAS:</p>
-<pre><code class="bash">cat &gt; ca.pem &lt;&lt; EOF
+<pre><code class="bash">$ cat &gt; ca.pem &lt;&lt; EOF
 -----BEGIN CERTIFICATE-----
 MIICKDCCAc2gAwIBAgIJAMnmUBMT+gOGMAoGCCqGSM49BAMCMHAxCzAJBgNVBAYT
 AlVTMQ8wDQYDVQQIDAZPcmVnb24xETAPBgNVBAcMCFBvcnRsYW5kMRUwEwYDVQQK
@@ -372,25 +372,47 @@ EOF
 </code></pre>
 
 <p>and now log into the CAS:</p>
-<pre><code class="bash">export IP=x.y.z.u
-scone cas login -c ca.pem christof cas --host $IP:8081:18765
+<pre><code class="bash">$ export IP=x.y.z.u
+$ scone cas login -c ca.pem christof cas --host $IP:8081:18765
 </code></pre>
 
-<p>We split our stack file into two parts: public part sent to the docker engine and
-a secret part that is sent to the CAS:</p>
-<pre><code class="bash">scone cas split compose.yml  --stack 283299
+<p>We split our stack file into two parts: public part sent to the docker engine and a secret part that is directly sent to the CAS:</p>
+<pre><code class="bash">$ scone cas split compose.yml  --stack 283299
 </code></pre>
 
-<p>Show public part:</p>
-<pre><code class="bash">cat compose.yml.docker.yml
+<p>Show public part that is sent to <strong>docker stack</strong> (which is the original stack file name appended with "docker.yml"):</p>
+<pre><code class="bash">$ cat compose.yml.docker.yml
+---
+services: 
+  nginx: 
+    command: nginx
+    environment: 
+      SCONE_CAS_ADDR: &quot;x.y.z.u:18765&quot;
+      SCONE_CONFIG_ID: christof/283299/nginx
+      SCONE_LAS_ADDR: &quot;172.17.0.1:18766&quot;
+    image: &quot;127.0.0.1:5000/sconetainer:fss&quot;
+    ports: 
+      - &quot;8190:8080&quot;
+      - &quot;8192:8082&quot;
+version: &quot;3.1&quot;
 </code></pre>
 
 <p>We can now deploy the service with the help of docker/scone stack:</p>
-<pre><code class="bash">scone stack deploy --compose-file compose.yml  nginx
+<pre><code class="bash">$ scone stack deploy --compose-file compose.yml  nginx
+Creating network nginx_default
+Creating service nginx_nginx
 </code></pre>
 
 <p>Show running stack:</p>
-<pre><code class="bash">scone stack ls
+<pre><code class="bash">$ scone stack ls
+NAME        SERVICES
+nginx       1
+</code></pre>
+
+<p>We can get some more information about this stack:</p>
+<pre><code class="bash">$ scone stack ps nginx
+ID                  NAME                IMAGE                            NODE                DESIRED STATE       CURRENT STATE             ERROR                       PORTS
+h08r5hmeu9bt        nginx_nginx.1       127.0.0.1:5000/sconetainer:fss   dorothy             Running             Starting 19 seconds ago       
 </code></pre>
 
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
