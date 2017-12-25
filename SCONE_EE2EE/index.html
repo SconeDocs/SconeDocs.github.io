@@ -158,6 +158,8 @@
             
                 <li class="toctree-l3"><a href="#example-end-to-end-encryption">Example: End-to-End Encryption</a></li>
                 
+                    <li><a class="toctree-l4" href="#file-encryption">File Encryption</a></li>
+                
             
             </ul>
         
@@ -413,6 +415,44 @@ nginx       1
 <pre><code class="bash">$ scone stack ps nginx
 ID                  NAME                IMAGE                            NODE                DESIRED STATE       CURRENT STATE             ERROR                       PORTS
 h08r5hmeu9bt        nginx_nginx.1       127.0.0.1:5000/sconetainer:fss   dorothy             Running             Starting 19 seconds ago       
+</code></pre>
+
+<h2 id="file-encryption">File Encryption</h2>
+<p>Let's check that the files inside of nginx container are indeed encrypted. To do so, we ssh to node  <strong>dorothy</strong> and execute the following commands:</p>
+<pre><code class="bash">&gt; sudo docker ps
+CONTAINER ID        IMAGE                                    COMMAND                  CREATED             STATUS              PORTS                      NAMES
+b01ab65e1579        127.0.0.1:5000/sconetainer:fss           &quot;nginx&quot;                  6 minutes ago       Up 6 minutes        8080/tcp, 8082/tcp         nginx_nginx.1.0wh80346mpmm5f3l1rc8dipix
+...
+</code></pre>
+
+<p>Let's look inside the container:</p>
+<pre><code class="bash">&gt; sudo docker exec -it b01ab65e1579 sh
+$ ls
+bin             media           proc            srv
+dev             mnt             root            sys
+etc             nginx           run             tmp
+home            nginx-etc       sbin            usr
+lib             opt             scone-test.key  var
+</code></pre>
+
+<p>The nginx configuration file as well as the html files should be encrypted. Let's verify this:</p>
+<pre><code class="bash">$ cd nginx
+$ ls
+certificate.pem  key.pem          nginx.conf       www_root
+fspf.pb          mime.types       nginx.pid
+$ head -c 80 nginx.conf
+]P?ɟ&quot;4???zS????Ƶ?kjƘ?Ec?!S^!??????8j-?e;?t'?2?L????????y??˲?ߋ   
+</code></pre>
+
+<p>Ok, the nginx configuration file seems to be encrypted. Now, look at the html files too:</p>
+<pre><code class="bash">$ cd www_root
+$ ls 
+4K                               SCONE_TUTORIAL
+GO                               aboutScone
+Python                           appsecurity
+...
+$ head -c 80 index.html 
+????V?ͪ?rhk?&quot;k????$?    .???k?Ь?y&lt;??٠n?+????P2?G;o_'.i?);?I??xFg[???[f?
 </code></pre>
 
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
