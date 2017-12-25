@@ -326,7 +326,7 @@
 <h2 id="prerequisites">Prerequisites</h2>
 <h3 id="ensure-that-the-sgx-driver-is-installed">Ensure that the SGX driver is installed</h3>
 <p>Check on the host as well as inside your containers that the SGX device <em>/dev/isgx</em> is visible:</p>
-<pre><code class="bash">ls /dev/isgx 
+<pre><code class="bash">&gt; ls /dev/isgx 
 /dev/isgx
 </code></pre>
 
@@ -334,23 +334,23 @@
 <h4 id="checking-availability-of-sgx-device-inside-of-containers">Checking availability of SGX device inside of containers</h4>
 <p>Sometimes, Docker does not automatically map the SGX device inside of containers. We provide a patched Docker engine and a patched SGX driver that together permit to automatically open the sgx device inside of containers.</p>
 <p>If your node is part of a Docker swarm, we provide a simple check as part of the <em>scone CLI</em>. Say, the leader node of your swarm  is called <em>beatrix</em>, then you could just execute:</p>
-<pre><code class="bash">scone swarm check --verbose --manager beatrix
+<pre><code class="bash">$ scone swarm check --verbose --manager beatrix
 </code></pre>
 
 <p>In case your node is not part of a Docker swarm, you can run the checks manually. For that, we provide a container image
 that helps to check if the SGX device can be accessed from inside a container. Just execute the following commands to check if your containers have access to the SGX device:</p>
 <pre><code class="bash"># preferred alternative: required for swarms to work: SGX device is available in all containers by default
-sudo docker run --rm sconecuratedimages/checksgx || echo &quot;SGX device is not automatically mapped inside of container&quot;
+&gt; sudo docker run --rm sconecuratedimages/checksgx || echo &quot;SGX device is not automatically mapped inside of container&quot;
 # alternative: use --device option without --privileged flag
-sudo docker run --device=/dev/isgx --rm sconecuratedimages/checksgx || echo &quot;--device=/dev/isgx: not sufficient to access SGX device inside of container&quot;
+&gt; sudo docker run --device=/dev/isgx --rm sconecuratedimages/checksgx || echo &quot;--device=/dev/isgx: not sufficient to access SGX device inside of container&quot;
 # last alternative: use --device option without --privileged flag
-sudo docker run -v /dev/isgx:/dev/isgx --privileged  --rm sconecuratedimages/checksgx || echo &quot;SGX device NOT available inside of container&quot;
+&gt; sudo docker run -v /dev/isgx:/dev/isgx --privileged  --rm sconecuratedimages/checksgx || echo &quot;SGX device NOT available inside of container&quot;
 </code></pre>
 
 <p>Use the first alternative that works in your installation to give containers access to the SGX device.</p>
 <h3 id="install-sgxmusl-cross-compiler-image">Install sgxmusl cross compiler image</h3>
 <p>Ensure that you installed the various sconecuratedimages/crosscompilers container image:</p>
-<pre><code class="bash">docker image ls sconecuratedimages/*
+<pre><code class="bash">&gt; docker image ls sconecuratedimages/*
 REPOSITORY                          TAG                    IMAGE ID            CREATED             SIZE
 sconecuratedimages/crosscompilers   latest                 dff7975b7f32        7 hours ago         1.57GB
 sconecuratedimages/crosscompilers   scone                  dff7975b7f32        7 hours ago         1.57GB
@@ -360,14 +360,14 @@ sconecuratedimages/crosscompilers   scone                  dff7975b7f32        7
 <p>If the docker command fails, please ensure that docker is indeed installed (see <a href="../SCONE_HOST_SETUP/">SCONE Host Setup</a>. Also, on some systems you might need to use <em>sodo</em> to run docker commands.</p>
 <h2 id="install-the-tutorial">Install the tutorial</h2>
 <p>Clone the tutorial:</p>
-<pre><code class="bash">git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
+<pre><code class="bash">&gt; git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
 </code></pre>
 
 <h2 id="native-hello-world">Native Hello World</h2>
 <p>Ensure that <em>hello world</em> runs natively on your machine:</p>
-<pre><code class="bash">cd SCONE_TUTORIAL/HelloWorld/
-gcc hello_world.c  -o native_hello_world
-./native_hello_world
+<pre><code class="bash">&gt; cd SCONE_TUTORIAL/HelloWorld/
+&gt; gcc hello_world.c  -o native_hello_world
+&gt; ./native_hello_world
 Hello World
 </code></pre>
 
@@ -376,12 +376,12 @@ Hello World
 <p>The default cross compiler variant that runs <em>hello world</em> inside of an enclave is <em>scone gcc</em> and you can find this in container <em>sconecuratedimages/crosscompilers:scone</em>.
 This variant requires access to the SGX device. 
 In Linux, the SGX device is made available as <em>/dev/isgx</em> and we can give the cross compiler inside of an container access via option <em>--device=/dev/isgx</em>:</p>
-<pre><code class="bash">docker run --rm --device=/dev/isgx -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:scone scone-gcc hello_world.c  -o sgx_hello_world
+<pre><code class="bash">&gt; docker run --rm --device=/dev/isgx -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:scone scone-gcc hello_world.c  -o sgx_hello_world
 </code></pre>
 
 <p>This generates a statically linked binary. However, as we mentioned above, the binary looks like a dynamically
 linked binary since it is wrapped in a dynamically linked loader program:</p>
-<pre><code class="bash">ldd ./sgx_hello_world 
+<pre><code class="bash">&gt; ldd ./sgx_hello_world 
     linux-vdso.so.1 =&gt;  (0x00007ffcf73ad000)
     libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f7c2a0e9000)
     libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f7c29d1f000)
@@ -389,16 +389,16 @@ linked binary since it is wrapped in a dynamically linked loader program:</p>
 </code></pre>
 
 <p>Ensure that file <em>/etc/sgx-musl.conf</em> exists. If not, store some default file like:</p>
-<pre><code class="bash">sudo printf 'Q 1\ne 0 0 0\ns 1 0 0\n' &gt; /etc/sgx-musl.conf
+<pre><code class="bash">&gt; sudo printf 'Q 1\ne 0 0 0\ns 1 0 0\n' &gt; /etc/sgx-musl.conf
 </code></pre>
 
 <p>To run <em>sgx_hello_world</em>, in an enclave, just execute:</p>
-<pre><code class="bash">./sgx_hello_world
+<pre><code class="bash">&gt; ./sgx_hello_world
 Hello World
 </code></pre>
 
 <p>To see some more debug messages, set environment variable <em>SCONE_VERSION=1</em>:</p>
-<pre><code class="bash">SCONE_VERSION=1 ./sgx_hello_world
+<pre><code class="bash">&gt; SCONE_VERSION=1 ./sgx_hello_world
 export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
@@ -421,11 +421,11 @@ Hello World
 <p>The debug outputs <strong>SCONE_MODE=hw</strong> shows that <em>sgx_hello_world</em> runs in hardware mode, i.e., inside an SGX enclave.</p>
 <p><strong>Note.</strong> The compilation as well as the hello world program will fail in case you do not have an SGX driver installed.</p>
 <h2 id="dynamically-linked-hello-world">Dynamically-Linked Hello World</h2>
-<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_world.c -o dyn_hello_world
+<pre><code class="bash">&gt; docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_world.c -o dyn_hello_world
 </code></pre>
 
 <p>To run this natively, just execute the following:</p>
-<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./dyn_hello_world
+<pre><code class="bash">&gt; docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./dyn_hello_world
 </code></pre>
 
 <p>To run a dynamically-linked binary in an enclave, you need to run this in a special runtime environment. In this environment you can ask binaries to run inside of enclaves by setting environment <em>SCONE_ALPINE=1</em>. To indicate that we are indeed running inside an enclave, we ask to issue some debug messages from inside the enclave by setting environment variable <em>SCONE_VERSION=1</em>:</p>
@@ -444,7 +444,7 @@ Hello World
 </ul>
 <p><strong>NOTE</strong>: In production mode, you must only permit running in hardware mode. Scone ensures this with the help of <em>remote attestation</em>: the SCONE configuration and attestation service (CAS) will only provide configuration information and secrets to an application only after it has proven (with the help of SGX CPU extensions) that it is indeed running inside an SGX enclave.</p>
 <h3 id="execution-on-a-sgx-capable-machine">Execution on a SGX-capable machine</h3>
-<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+<pre><code class="bash">&gt; docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
 export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
@@ -462,12 +462,12 @@ Hello World
 
 <h3 id="execution-on-a-non-sgx-machine">Execution on a non-SGX machine</h3>
 <p>If you run this inside a container without access to SGX (/dev/isgx), for example, when running on a Mac, you will see the following error message:</p>
-<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+<pre><code class="bash">&gt; docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
 [Error] Could not create enclave: Error opening SGX device
 </code></pre>
 
 <p>You could run this in simulation mode as follows:</p>
-<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=SIM -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+<pre><code class="bash">&gt; docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=SIM -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
 export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
@@ -484,7 +484,7 @@ Hello World
 </code></pre>
 
 <p>Alternatively, you could run this program in automatic mode:</p>
-<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=AUTO -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime 
+<pre><code class="bash">&gt; docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -e SCONE_MODE=AUTO -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime 
 export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
@@ -502,7 +502,7 @@ HelloWorld
 
 <h2 id="run-strace">Run STRACE</h2>
 <p>Lets see how we can trace the program. Say, you have compile the program as shown above. After that you enter a cross compiler container and strace hello world as follows:</p>
-<pre><code class="bash">docker run --cap-add SYS_PTRACE -it --rm --device=/dev/isgx -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world &gt; strace.log
+<pre><code class="bash">&gt; docker run --cap-add SYS_PTRACE -it --rm --device=/dev/isgx -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world &gt; strace.log
 Hello World
 head strace.log
 execve(&quot;/usr/src/myapp/sgx_hello_world&quot;, [&quot;/usr/src/myapp/sgx_hello_world&quot;], [/* 10 vars */]) = 0

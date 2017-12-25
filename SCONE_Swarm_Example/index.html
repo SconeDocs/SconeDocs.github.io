@@ -334,7 +334,7 @@ site</a>.</p>
 ensure that all nodes get access to the same container image. The scone CLI expects the
 registry to be available at <strong>localhost:5000</strong>. You can start a default registry with the
 help of <strong>scone</strong>:</p>
-<pre><code class="bash">&gt; scone service registry --verbose
+<pre><code class="bash">$ scone service registry --verbose
 Registry is already running in swarm beatrix
 </code></pre>
 
@@ -342,14 +342,14 @@ Registry is already running in swarm beatrix
 an image from docker hub and then to push this image to the local registry. For example, to pull image
 <em>sconecuratedimages/sconetainer:noshielding</em> and store it as <em>localhost:5000/sconetainer:noshielding</em>,
 just execute:</p>
-<pre><code class="bash">&gt; scone service pull sconecuratedimages/sconetainer:noshielding
+<pre><code class="bash">$ scone service pull sconecuratedimages/sconetainer:noshielding
 new tag: localhost:5000/sconetainer:noshielding
 </code></pre>
 
 <h3 id="sgx-support">SGX Support</h3>
 <p>Services are automatically restarted. In case, there is a persistent failure in some service <em>ha</em>, we would see
 repeated restarts like: </p>
-<pre><code class="bash">&gt; scone service ps ha
+<pre><code class="bash">$ scone service ps ha
 ID                  NAME                IMAGE                      NODE                DESIRED STATE       CURRENT STATE           ERROR                       PORTS
 f65id6ow5n6w        ha.1                sconecuratedimages/nginx   beatrix             Ready               Ready 1 second ago                                  
 jt6wj5e3lso4         \_ ha.1            sconecuratedimages/nginx   beatrix             Shutdown            Failed 3 seconds ago    &quot;task: non-zero exit (1)&quot;   
@@ -360,13 +360,13 @@ p3bw780pu63b         \_ ha.1            sconecuratedimages/nginx   beatrix      
 
 <p>Reasons for such failures might be that that the containers might not have access to the sgx device. </p>
 <p>There are multiple reasons why the driver might not be accessible inside of a container: Did you indeed install the patched docker version? Did you indeed label the nodes correctly? To automatically diagnoses and in some cases, to perform some automatic corrections, just execute <strong>scone swarm check</strong>:</p>
-<pre><code class="bash">&gt; scone swarm check
+<pre><code class="bash">$ scone swarm check
 warning:  'sgx device is not automatically mapped inside of container on host beatrix (stack=198 434 0)'  (Line numer: '198')
 warning:  '--device=/dev/isgx: device mapper does not work inside of container on host beatrix (stack=199 434 0)'  (Line numer: '199')
 </code></pre>
 
 <p>To get a summary view of a swarm after you performed a check, just executed:</p>
-<pre><code class="bash">&gt; scone swarm ls
+<pre><code class="bash">$ scone swarm ls
 NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STATUS     AVAILABILITY  MANAGER   
 2             1             SCONE         SCONE         caroline             Ready      Active        Reachable 
 3             1             SCONE         SCONE         dorothy              Ready      Active                  
@@ -379,23 +379,23 @@ NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STA
 start a service in the swarm via <strong>scone service create</strong>.
 Docker swarm will start the image and it also takes care of failures by restarting failed services.</p>
 <p>For the next steps, make sure that all nodes have access to image <em>sconecuratedimages/sconetainer:noshielding</em> and pull this image via:</p>
-<pre><code class="bash">&gt; scone service pull sconecuratedimages/sconetainer:noshielding
+<pre><code class="bash">$ scone service pull sconecuratedimages/sconetainer:noshielding
 new tag: localhost:5000/sconetainer:noshielding
 </code></pre>
 
 <p>We start a nginx service including a version of the scontain.com website. We start two replicas running inside separate enclaves - most likely on two different nodes:</p>
-<pre><code class="bash">&gt; scone service create --name sconeweb --detach=true  --publish 80:80 --publish 443:443 --replicas=2 localhost:5000/sconetainer:noshielding
+<pre><code class="bash">$ scone service create --name sconeweb --detach=true  --publish 80:80 --publish 443:443 --replicas=2 localhost:5000/sconetainer:noshielding
 </code></pre>
 
 <p>In case the service starts up correctly, you will see a status like this:</p>
-<pre><code class="bash">&gt; scone service ps sconeweb
+<pre><code class="bash">$ scone service ps sconeweb
 ID                  NAME           IMAGE                              NODE                DESIRED STATE       CURRENT STATE            ERROR                              PORTS
 ba3odjkz6mx2        sconeweb.1     localhost:5000/nginx:noshielding   alice               Running             Running 8 minutes ago         
 x2xq1c3aede7        sconeweb.2     localhost:5000/nginx:noshielding   beatrix               Running             Running 8 minutes ago         
 </code></pre>
 
 <p>If, for example, an image is not available on all nodes, you might see the following status:</p>
-<pre><code class="bash">&gt; scone service ps sconeweb
+<pre><code class="bash">$ scone service ps sconeweb
 ID                  NAME                IMAGE                                        NODE                DESIRED STATE       CURRENT STATE          ERROR                              PORTS
 o79714pw2fpn        sconeweb.1          sconecuratedimages/sconetainer:noshielding   alice               Running             Running 4 hours ago                                       
 t0byepte0fzj         \_ sconeweb.1      sconecuratedimages/sconetainer:noshielding   beatrix             Shutdown            Rejected 4 hours ago   &quot;No such image: sconecuratedim…&quot;   
@@ -407,17 +407,17 @@ zxj74inh2zdf        sconeweb.2          sconecuratedimages/sconetainer:noshieldi
 
 <h2 id="stopping-the-service">Stopping the service</h2>
 <p>Stop the service via:</p>
-<pre><code class="bash">&gt; scone service rm sconeweb
+<pre><code class="bash">$ scone service rm sconeweb
 </code></pre>
 
 <h2 id="updating-the-image-of-a-service">Updating the image of a service</h2>
 <p>Say, there is a new version of the sconetainer image available. We can update this image in our local registry
 as follows:</p>
-<pre><code class="bash">scone pull sconecuratedimages/sconetainer:noshielding
+<pre><code class="bash">$ scone pull sconecuratedimages/sconetainer:noshielding
 </code></pre>
 
 <p>We can now update the service as follows:</p>
-<pre><code class="bash">scone service update --image  localhost:5000/sconetainer sconeweb
+<pre><code class="bash">$ scone service update --image  localhost:5000/sconetainer sconeweb
 </code></pre>
 
 <h2 id="draining-a-node">Draining a node</h2>

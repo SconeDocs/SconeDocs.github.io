@@ -348,7 +348,7 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <p>For statically linked binaries, we make available a (private) docker image <em>sconecuratedimages/crosscompilers:scone</em> which can produce statically linked binaries. In the statically linked binaries, we replace the interface to the operating system (i.e., libc) by a variant that enables programs to run inside Intel SGX enclaves.</p>
 <p><img alt="Static Compilation" src="../img/staticcompilation.jpg" /></p>
 <p>Note that a statically linked binaries might look like a dynamically-linked binary. For example, if you look at a statically-linked program <em>web-srv-go</em>, you will still see dynamic dependencies:</p>
-<pre><code class="bash">ldd web-srv-go 
+<pre><code class="bash">$ ldd web-srv-go 
     linux-vdso.so.1 =&gt;  (0x00007ffe423fd000)
     libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007effa344f000)
     libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007effa3085000)
@@ -369,26 +369,26 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <p>For an example how to use the crosscompilers, see how to compile a programs written in <a href="../GO/">GO</a>.</p>
 <h2 id="example">Example</h2>
 <p><strong>Note</strong>  on some systems you will need to run <em>docker</em> with root permissions, i.e., in this case you should prefix a </p>
-<pre><code class="bash">docker ...
+<pre><code class="bash">&gt; docker ...
 </code></pre>
 
 <p>command with <em>sudo</em>, i.e., you execute </p>
-<pre><code class="bash">sudo docker ...
+<pre><code class="bash">&gt; sudo docker ...
 </code></pre>
 
 <p>One can run the above compiler inside of a container while the compiled files reside outside the container. Say, your code is
 in file <em>myapp.c</em> in your current directory (<em>$PWD</em>). You can compile this code as follows:</p>
-<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc myapp.c
+<pre><code class="bash">&gt; docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc myapp.c
 </code></pre>
 
 <p>This call will generate a binary <em>a.out</em> in your working directory. This binary is dynamically linked against musl:</p>
-<pre><code class="bash"># ldd a.out 
+<pre><code class="bash">&gt; ldd a.out 
     /lib/ld-musl-x86_64.so.1 (0x7fb0379f9000)
     libc.musl-x86_64.so.1 =&gt; /lib/ld-musl-x86_64.so.1 (0x7fb0379f9000)
 </code></pre>
 
 <p>This binary can run natively only if you have musl installed at the correct position in your development machine (and your development machine runs Linux). Alternatively, you can run the binary in a container:</p>
-<pre><code class="bash">docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./a.out
+<pre><code class="bash">&gt; docker run --rm  -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./a.out
 </code></pre>
 
 <p>To run this inside of SGX enclaves with SCONE, you need access to the SCONE runtime systems. For more details, see our <em>hello world</em> in Section <a href="../SCONE_TUTORIAL/">SCONE Tutorial</a>. This is not very convenient and hence, we provide a) a simpler version with the help of <a href="../SCONE_Dockerfile/">Dockerfiles</a>. </p>

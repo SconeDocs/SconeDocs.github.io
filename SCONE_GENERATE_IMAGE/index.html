@@ -321,23 +321,23 @@
 Clone the SCONE_TUTORIAL before you start creating a <em>hello world</em> image.</p>
 <h2 id="generate-helloworld-image">Generate HelloWorld image</h2>
 <p>We generate a <em>hello world</em> container image. </p>
-<pre><code class="bash">cd SCONE_TUTORIAL/CreateImage
+<pre><code class="bash">&gt; cd SCONE_TUTORIAL/CreateImage
 </code></pre>
 
 <p>You can either execute all step manually by copy&amp;pasting all instructions or you can just execute</p>
-<pre><code class="bash">docker login
-sudo ./Dockerfile.sh
+<pre><code class="bash">&gt; docker login
+&gt; sudo ./Dockerfile.sh
 </code></pre>
 
 <p>and watch the outputs.</p>
 <p>Please change the image name to a repository on docker hub to which you can write:</p>
-<pre><code class="bash">export TAG=&quot;latest&quot;
-export IMAGE_NAME=&quot;sconecuratedimages/helloworld&quot;
+<pre><code class="bash">&gt; export TAG=&quot;latest&quot;
+&gt; export IMAGE_NAME=&quot;sconecuratedimages/helloworld&quot;
 </code></pre>
 
 <p>We generate container and compile hello world inside of this container with the help of our standard SCONE cross compiler:</p>
 <pre><code class="bash">
-CONTAINER_ID=`docker run -d -it --device=/dev/isgx  -v $(pwd):/mnt sconecuratedimages/crosscompilers:scone bash -c &quot;
+&gt; CONTAINER_ID=`docker run -d -it --device=/dev/isgx  -v $(pwd):/mnt sconecuratedimages/crosscompilers:scone bash -c &quot;
 set -e
 printf 'Q 1\ne 0 0 0\ns 1 0 0\n' &gt; /etc/sgx-musl.conf
 sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
@@ -346,19 +346,19 @@ sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
 
 <p>Note that above will fail if you do not have access to the SGX device <em>/dev/isgx</em>.</p>
 <p>Turn the container into an image:</p>
-<pre><code class="bash">IMAGE_ID=$(docker commit -p -c 'CMD sgx_hello_world' $CONTAINER_ID $IMAGE_NAME:$TAG)
+<pre><code class="bash">&gt; IMAGE_ID=$(docker commit -p -c 'CMD sgx_hello_world' $CONTAINER_ID $IMAGE_NAME:$TAG)
 </code></pre>
 
 <p>You can run this image by executing:</p>
-<pre><code class="bash">sudo docker run --device=/dev/isgx $IMAGE_NAME:$TAG
+<pre><code class="bash">&gt; sudo docker run --device=/dev/isgx $IMAGE_NAME:$TAG
 </code></pre>
 
 <p>You can push this image to Docker. However, ensure that you first login to docker:</p>
-<pre><code class="bash">sudo docker login
+<pre><code class="bash">&gt; sudo docker login
 </code></pre>
 
 <p>before you push the image to docker hub:</p>
-<pre><code class="bash">sudo docker push $IMAGE_NAME:$TAG
+<pre><code class="bash">&gt; sudo docker push $IMAGE_NAME:$TAG
 </code></pre>
 
 <p>Note: this will fail in case you do not have the permission to push to this repository. </p>
