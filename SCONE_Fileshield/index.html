@@ -253,6 +253,10 @@
                 
                     <li><a class="toctree-l4" href="#example">Example</a></li>
                 
+                    <li><a class="toctree-l4" href="#python">Python</a></li>
+                
+                    <li><a class="toctree-l4" href="#extended-example">Extended Example</a></li>
+                
                     <li><a class="toctree-l4" href="#notes">Notes</a></li>
                 
             
@@ -322,12 +326,171 @@
             <div class="section">
               
                 <h1 id="scone-file-protection">SCONE File Protection</h1>
-<p>SCONE supports the transparent encryption and/or authenticate files.</p>
+<p>SCONE supports the transparent encryption and/or authentication of files. </p>
 <h2 id="objective">Objective</h2>
-<p>Setting up file encryption takes several steps and we are working on making this simpler.</p>
-<p>The idea of file encryption is that a user can define file regions in which files must be <em>encrypted</em> (which always includes authentication), <em>authenticated</em> (i.e., SCONE ensure that the content is not modified), or <em>unprotected</em>. </p>
+<p>The idea of file encryption is that a user can define file regions in which files must be <em>encrypted</em> (which always includes authentication), <em>authenticated</em> (i.e., SCONE ensure that the content is not modified), or are <em>unprotected</em>. </p>
+<p>Setting up file encryption takes several steps - we are working on making this simpler.</p>
 <h2 id="example">Example</h2>
-<p>To show how the file encryption is set up, please have a look at the following screencast.</p>
+<p>Often, we only need to protect the files that are passed to a container via some volume. In this case, it is sufficient that the volume is protected.</p>
+<p>Let us demonstrate this via a simple example in which we pass in an encrypted volume to a container. We create this encrypted volume in our local filesystem (in directory <strong>volume</strong>) and we will later mount this in the container as <strong>/data</strong>. The original (non-encrypted) files are stored in directory <strong>data-original</strong>.</p>
+<pre><code class="bash">&gt; mkdir -p volume
+&gt; mkdir -p data-original
+</code></pre>
+
+<p>Let's write some files in the <em>data-original</em> directory:</p>
+<pre><code class="bash">cat &gt; data-original/hello.txt &lt;&lt; EOF
+Hello World
+EOF
+cat &gt; data-original/world.py &lt;&lt; EOF
+f = open('/data/hello.txt', 'r')
+print str(f.read())
+EOF
+</code></pre>
+
+<p>Let's check that <strong>volume</strong> is empty and we print the hash values of the two files in <strong>data-original</strong>:</p>
+<pre><code class="bash">&gt; ls volume
+&gt; shasum data-original/*
+648a6a6ffffdaa0badb23b8baf90b6168dd16b3a  data-original/hello.txt
+deda99d44e880ea8f2250f45c5c20c15d568d84c  data-original/world.py
+</code></pre>
+
+<p>Now, we start a container to create the encrypted volume:</p>
+<pre><code class="bash">docker run -it -v &quot;$PWD/volume:/data&quot; -v &quot;$PWD/data-original:/data-original&quot; sconecuratedimages/crosscompilers:scone
+</code></pre>
+
+<p>All the metadata required for checking the consistency of the files is stored in some file that we call <em>file system protection file</em>, or, short <em>fspf</em>. Actually, one can define multiple <em>fspf</em>s. Let's start with a simple example with a single <em>fspf</em>. The <em>fspf</em> file is created via command <strong>scone fspf create</strong> and let us name this file <strong>fspf.pb</strong>: </p>
+<pre><code class="bash">$ cd /data
+$ scone fspf create fspf.pb
+Created empty file system protection file in fspf.pb. AES-GCM tag: 0e3da7ad62f5bc7c7bb08c67b16f2423
+</code></pre>
+
+<p>We can now split the file system in <em>regions</em>, a region is a subtree. You can add regions to a <em>fspf</em> with the help of command <strong>scone fspf addr</strong>.</p>
+<p>A region can have the following properties:</p>
+<ul>
+<li><strong>authenticated</strong>: the integrity of files is checked. Specify command line option <strong>--authenticated</strong>.</li>
+<li><strong>encrypted</strong>: the confidentiality and integrity of files is protected. Specify command line option <strong>--encrypted</strong>.</li>
+<li><strong>unprotected</strong>: files are neither authenticated nor encrypted. Specify command line option <strong>--not-protected</strong>.</li>
+</ul>
+<p>File system changes of containers are typically ephemeral in the sense that file updates are lost when a container terminates. When specifying option <strong>--ephemeral</strong> files that are written to this region are actually not written  to disk at all: we use an in memory file system instead. This prevents that secrets are lost via writes to this regions.</p>
+<p>Say, by default we do not protect files and we want to read files and write  back  changed files to the file system. To do so, we define that the root tree is  <strong>--kernel</strong> as well as  <strong>--not-protected</strong>:</p>
+<pre><code class="bash">$ scone fspf addr fspf.pb / --kernel / --not-protected
+Added region / to file system protection file fspf.pb new AES-GCM tag: dd961af10b5aaa5cb1044c35a3f42c84
+</code></pre>
+
+<p>We want to persist the writes to the subtree rooted at <strong>/data</strong> as well as to encrypt all files in subtree <strong>/data</strong>. To encrypt the files,  we specify option <strong>--encrypted</strong>. We specify option <strong>--kernel</strong> followed by a path (here, also <strong>/data</strong>) to request that files in this region are written to directory <strong>/data</strong>.</p>
+<pre><code class="bash">$ scone fspf addr fspf.pb /data --encrypted --kernel /data
+Added region /data to file system protection file fspf.pb new AES-GCM tag: 8481369d3ffdd9b6aeb30d044bf5c1c7
+</code></pre>
+
+<p>Now, that we defined the regions, i.e., <strong>/</strong> and <strong>/data</strong>, we can add files to region <strong>/data</strong>. Let's just add all files in <strong>/data-original</strong> and encrypt these and write the encrypted files to <strong>/data</strong>:</p>
+<pre><code class="bash">$ scone fspf addf fspf.pb /data /data-original /data
+Added files to file system protection file fspf.pb new AES-GCM tag: 39a268166e628cf76e3fca80aa2d4f63
+</code></pre>
+
+<p>The keys are chosen at random and are stored in <em>fspf.pb</em>.</p>
+<p>We can now compare the hash values of the original files and the encrypted files:</p>
+<pre><code class="bash">$ shasum /data/*
+shasum /data/*
+87fd97468024e3d2864516ff5840e15d9615340d  /data/fspf.pb
+31732914910f4a08b9832c442074b0932915476c  /data/hello.txt
+8d07f3f576785c373a5e70e8dbcfa8ee06ca6d0c  /data/world.py
+</code></pre>
+
+<p>The fspf itself is not yet encrypted. We encrypt this file via command
+<strong>scone fspf encrypt fspf.pb</strong></p>
+<pre><code class="bash">$ scone fspf encrypt fspf.pb &gt; /data-original/keytag
+</code></pre>
+
+<p>We store the random encryption key as well as the tag of file <strong>fspf.pb</strong> in
+file  <strong>/data-original/keytag</strong>.</p>
+<p>We introduce a very simple program that reads the two files:</p>
+<pre><code class="bash">$ cat &gt; example.c &lt;&lt; EOF
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+void printfile(const char* fn) {
+    FILE *fp = fopen(fn, &quot;r&quot;);
+    char c;
+    while((c=fgetc(fp))!=EOF){
+        printf(&quot;%c&quot;,c);
+    }
+    fclose(fp);
+}
+
+int main() {
+    printfile(&quot;/data/hello.txt&quot;);
+    printfile(&quot;/data/world.py&quot;);
+}
+EOF
+</code></pre>
+
+<p>Let's crosscompile this program:</p>
+<pre><code class="bash">scone gcc example.c -o example
+</code></pre>
+
+<p>Executing this program results in an output like this:</p>
+<pre><code class="bash">$./example
+R??C?
+    q?z??E??|Ю?}ü ?o
+$??!rga??·*`?????????Gw?
+</code></pre>
+
+<p>We need to activate the file system shield via environment variables by setting the location of the file system protection file (in <strong>SCONE_FSPF</strong>), the encryption key of the file (in <strong>SCONE_FSPF_KEY</strong>) and the tag of the fspf (in <strong>SCONE_FSPF_TAG</strong>). 
+We can extract the encryption key as well as the tag of <strong>fspf.pb</strong> from file <strong>/data-original/keytag</strong>:</p>
+<pre><code class="bash">$ export SCONE_FSPF_KEY=$(cat /data-original/keytag | awk '{print $11}')
+$ export SCONE_FSPF_TAG=$(cat /data-original/keytag | awk '{print $9}')
+$ export SCONE_FSPF=/data/fspf.pb
+</code></pre>
+
+<p>We can now execute this program again:</p>
+<pre><code class="bash">$ ./example
+Hello World
+f = open('/data/hello.txt', 'r')
+print str(f.read())
+</code></pre>
+
+<p>Variables <strong>SCONE_FSPF_KEY</strong>, <strong>SCONE_FSPF_TAG</strong> and <strong>SCONE_FSPF</strong> should only be set manually for debugging since they cannot securely be passed in this way to programs running inside enclaves. To securely pass environment variables, please read the section about <a href="../SCONE_EE2EE/">end-to-end encryption</a>.</p>
+<h2 id="python">Python</h2>
+<p>Let's try a similar approach for Python. 
+In the above example, we encrypted a Python program. Let's try to execute this encrypted program that accesses an encrypted file:</p>
+<pre><code class="bash">docker run -it -v &quot;$PWD/volume:/data&quot; sconecuratedimages/crosscompilers:python27 bash
+</code></pre>
+
+<p>The files <em>/data/world.py</em> and  <em>/data/hello.txt</em> are encrypted:</p>
+<pre><code class="bash">$ cat /data/world.py
+?=??J??0?6+?Q?nKd?*N,??.?G???????R?cO?t?y??&gt;f?
+</code></pre>
+
+<p>Let's activate the file shield:</p>
+<pre><code class="bash">$ export SCONE_FSPF_KEY=... extract from data-original/keytag ...
+$ export SCONE_FSPF_TAG=... extract from data-original/keytag ...
+$ export SCONE_FSPF=/data/fspf.pb
+</code></pre>
+
+<p>We start the Python interpreter:</p>
+<pre><code class="bash">SCONE_HEAP=100000000 SCONE_ALPINE=1 SCONE_VERSION=1 /usr/local/bin/python 
+export SCONE_QUEUES=1
+...
+Python 2.7.14 (default, Dec 19 2017, 22:36:09) 
+[GCC 5.3.0] on linux2
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; 
+</code></pre>
+
+<p>Now, we execute the encrypted python file <strong>'/data/world.py</strong>:</p>
+<pre><code class="bash">&gt;&gt;&gt; execfile('/data/world.py')
+Hello World
+
+&gt;&gt;&gt;
+</code></pre>
+
+<p><strong>NOTE</strong>: the protection in this case is <strong>insufficient</strong> since Python reads multiple files outside of protected directory <strong>/data</strong>. At least, we should have authenticate all files in region <strong>/</strong> like follows:</p>
+<pre><code class="bash">$ scone fspf addr fspf.pb / --kernel / --authenticated
+</code></pre>
+
+<h2 id="extended-example">Extended Example</h2>
+<p>To learn how to use multiple file system protection files, 
+please have a look at the following screencast.</p>
 <p><a href="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt"><img alt="asciicast" src="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt.png" /></a></p>
 <p>Below is the script that is executed in the screencast:</p>
 <pre><code class="bash">&gt; docker run -it -v $PWD:/mnt sconecuratedimages/crosscompilers:scone
