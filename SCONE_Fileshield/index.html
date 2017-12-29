@@ -249,7 +249,7 @@
             
                 <li class="toctree-l3"><a href="#scone-file-protection">SCONE File Protection</a></li>
                 
-                    <li><a class="toctree-l4" href="#objective">Objective</a></li>
+                    <li><a class="toctree-l4" href="#concepts">Concepts</a></li>
                 
                     <li><a class="toctree-l4" href="#example">Example</a></li>
                 
@@ -326,10 +326,30 @@
             <div class="section">
               
                 <h1 id="scone-file-protection">SCONE File Protection</h1>
-<p>SCONE supports the transparent encryption and/or authentication of files. </p>
-<h2 id="objective">Objective</h2>
-<p>The idea of file encryption is that a user can define file regions in which files must be <em>encrypted</em> (which always includes authentication), <em>authenticated</em> (i.e., SCONE ensure that the content is not modified), or are <em>unprotected</em>. </p>
-<p>Setting up file encryption takes several steps - we are working on making this simpler.</p>
+<p>SCONE supports the transparent encryption and/or authentication of files. By <strong>transparent</strong>, we mean that there are no application code changes needed to support this. We support two ways to use the SCONE file protection:</p>
+<ul>
+<li>a <strong>low-level interface</strong> that gives you complete control. This is made available via command <strong>scone fspf</strong> and described in this document.</li>
+<li>a <strong>high-level interface</strong> that simplifies the use of the file protection and in particular, takes care of key management. (<em>The high-level interface is not yet available</em>).</li>
+</ul>
+<h2 id="concepts">Concepts</h2>
+<p>The underlying idea of SCONE file protection is that a user specifies that each file is <strong>either</strong>: </p>
+<ul>
+<li>
+<p><strong>authenticated</strong>, i.e., SCONE checks that the content was not modified by some unauthorized entity,</p>
+</li>
+<li>
+<p><strong>encrypted</strong>, i.e., the confidentiality is protected by encryption. Encrypted files are always authenticated, or </p>
+</li>
+<li>
+<p><strong>not-protected</strong>, i.e. SCONE reads and write  the files without any extra protection mechanisms. For example, you might use <em>not-protected</em> if you applications already encrypts its files.</p>
+</li>
+</ul>
+<p>Marking all files individually as either <em>authenticated</em>, <em>encrypted</em>, or <em>not-protected</em>, would not be very practical. Hence, we provide functionality to partition the filesystem into <strong>regions</strong>: regions do not overlap and each file belongs to exactly one region.</p>
+<p>A region is defined by a path. For example, <strong>/</strong> is the root region and you could, for example, specify that all files in <strong>/</strong> must be authenticated. You could define a second region <strong>/data/db</strong> and you specify that this region is encrypted.</p>
+<p>Each file belongs to exactly one region: it belongs to the region that has the longest common path prefix with this file. For example, file <em>/etc/db.conf</em> would belong, in this case, to region <em>/</em> and file <em>/data/db/table.db</em> would belong to region <em>/data/db</em>.</p>
+<p>SCONE supports an <strong>ephemeral</strong> file system: files are stored in memory inside of the enclave. Since memory inside of enclaves is still very limited, we recommend to limit the use of the ephemeral file system. Instead use the standard file system: we refer to this as the <strong>kernel</strong> file system. For each region you need to specify if the region is either <strong>ephemeral</strong> or <strong>kernel</strong>.</p>
+<p>Each region belongs to one of the following six classes:
+   <center>{<strong>ephemeral</strong> | <strong>kernel</strong>} X {<strong>not-protected</strong> | <strong>authenticated</strong> | <strong>encrypted</strong> }</center></p>
 <h2 id="example">Example</h2>
 <p>Often, we only need to protect the files that are passed to a container via some volume. In this case, it is sufficient that the volume is protected.</p>
 <p>Let us demonstrate this via a simple example in which we pass in an encrypted volume to a container. We create this encrypted volume in our local filesystem (in directory <strong>volume</strong>) and we will later mount this in the container as <strong>/data</strong>. The original (non-encrypted) files are stored in directory <strong>data-original</strong>.</p>
@@ -354,40 +374,43 @@ EOF
 deda99d44e880ea8f2250f45c5c20c15d568d84c  data-original/world.py
 </code></pre>
 
-<p>Now, we start a container to create the encrypted volume:</p>
-<pre><code class="bash">docker run -it -v &quot;$PWD/volume:/data&quot; -v &quot;$PWD/data-original:/data-original&quot; sconecuratedimages/crosscompilers:scone
+<p>Now, we start the SCONE crosscompiler in a container to create the encrypted volume:</p>
+<pre><code class="bash">&gt; docker run -it -v &quot;$PWD/volume:/data&quot; -v &quot;$PWD/data-original:/data-original&quot; sconecuratedimages/crosscompilers:scone
 </code></pre>
 
-<p>All the metadata required for checking the consistency of the files is stored in some file that we call <em>file system protection file</em>, or, short <em>fspf</em>. Actually, one can define multiple <em>fspf</em>s. Let's start with a simple example with a single <em>fspf</em>. The <em>fspf</em> file is created via command <strong>scone fspf create</strong> and let us name this file <strong>fspf.pb</strong>: </p>
+<h3 id="file-system-protection-file">File System Protection File</h3>
+<p>All the metadata required for checking the consistency of the files is stored in a <em>file system protection file</em>, or, short <em>fspf</em>. SCONE supports multiple <em>fspf</em>s. </p>
+<p>Let's start with a simple example with a single <em>fspf</em>. The <em>fspf</em> file is created via command <strong>scone fspf create</strong> and let us name this file <strong>fspf.pb</strong>. We execute the following commands
+inside the container (as indicated by the $ prompt):</p>
 <pre><code class="bash">$ cd /data
 $ scone fspf create fspf.pb
 Created empty file system protection file in fspf.pb. AES-GCM tag: 0e3da7ad62f5bc7c7bb08c67b16f2423
 </code></pre>
 
 <p>We can now split the file system in <em>regions</em>, a region is a subtree. You can add regions to a <em>fspf</em> with the help of command <strong>scone fspf addr</strong>.</p>
-<p>A region can have the following properties:</p>
+<p>Each region has exactly one of the following properties:</p>
 <ul>
-<li><strong>authenticated</strong>: the integrity of files is checked. Specify command line option <strong>--authenticated</strong>.</li>
-<li><strong>encrypted</strong>: the confidentiality and integrity of files is protected. Specify command line option <strong>--encrypted</strong>.</li>
-<li><strong>unprotected</strong>: files are neither authenticated nor encrypted. Specify command line option <strong>--not-protected</strong>.</li>
+<li><strong>authenticated</strong>: the integrity of files is checked, i.e., any unauthorized modification of this file is detected and results in a reading error inside of the enclave. Specify command line option <strong>--authenticated</strong>.</li>
+<li><strong>encrypted</strong>: the confidentiality and integrity of files is protected, i.e., encrypted always implies that the files are also authenticated. Specify command line option <strong>--encrypted</strong>.</li>
+<li><strong>not-protected</strong>: files are neither authenticated nor encrypted. Specify command line option <strong>--not-protected</strong>.</li>
 </ul>
-<p>File system changes of containers are typically ephemeral in the sense that file updates are lost when a container terminates. When specifying option <strong>--ephemeral</strong> files that are written to this region are actually not written  to disk at all: we use an in memory file system instead. This prevents that secrets are lost via writes to this regions.</p>
-<p>Say, by default we do not protect files and we want to read files and write  back  changed files to the file system. To do so, we define that the root tree is  <strong>--kernel</strong> as well as  <strong>--not-protected</strong>:</p>
+<p>File system changes of containers are typically ephemeral in the sense that file updates are lost when a container terminates. When specifying option <strong>--ephemeral</strong>, files in this region are not written to disk, the are written to an in memory file system instead. </p>
+<p>Say for now, that by default we do not protect files and we want to read files and write  back  changed files to the file system. To do so, we define that the root tree is  <strong>--kernel</strong> as well as  <strong>--not-protected</strong>:</p>
 <pre><code class="bash">$ scone fspf addr fspf.pb / --kernel / --not-protected
 Added region / to file system protection file fspf.pb new AES-GCM tag: dd961af10b5aaa5cb1044c35a3f42c84
 </code></pre>
 
-<p>We want to persist the writes to the subtree rooted at <strong>/data</strong> as well as to encrypt all files in subtree <strong>/data</strong>. To encrypt the files,  we specify option <strong>--encrypted</strong>. We specify option <strong>--kernel</strong> followed by a path (here, also <strong>/data</strong>) to request that files in this region are written to directory <strong>/data</strong>.</p>
+<p>Let us add another region <strong>/data</strong> that should be encrypted and persisted. To encrypt the files,  we specify option <strong>--encrypted</strong>. We specify option <strong>--kernel</strong> followed by a path (here, also <strong>/data</strong>) to request that files in this region are written to directory <strong>/data</strong>.</p>
 <pre><code class="bash">$ scone fspf addr fspf.pb /data --encrypted --kernel /data
 Added region /data to file system protection file fspf.pb new AES-GCM tag: 8481369d3ffdd9b6aeb30d044bf5c1c7
 </code></pre>
 
+<p>The encryption key for a file is chosen at random and stored in <em>fspf.pb</em>. We use the Intel random number generator <em>RdRand</em> to generate the key. The default key length of a region is 32 bytes. Alternatives are key length of 16 and 24 bytes. These can be selected via option  <strong>--key-length 16</strong> and <strong>--key-length 24</strong> when creating a region with command <strong>scone fspf addr</strong>.</p>
 <p>Now, that we defined the regions, i.e., <strong>/</strong> and <strong>/data</strong>, we can add files to region <strong>/data</strong>. Let's just add all files in <strong>/data-original</strong> and encrypt these and write the encrypted files to <strong>/data</strong>:</p>
 <pre><code class="bash">$ scone fspf addf fspf.pb /data /data-original /data
 Added files to file system protection file fspf.pb new AES-GCM tag: 39a268166e628cf76e3fca80aa2d4f63
 </code></pre>
 
-<p>The keys are chosen at random and are stored in <em>fspf.pb</em>.</p>
 <p>We can now compare the hash values of the original files and the encrypted files:</p>
 <pre><code class="bash">$ shasum /data/*
 shasum /data/*
