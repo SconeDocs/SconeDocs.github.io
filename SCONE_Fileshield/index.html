@@ -255,7 +255,9 @@
                 
                     <li><a class="toctree-l4" href="#python">Python</a></li>
                 
-                    <li><a class="toctree-l4" href="#protecting-root-region">Protecting Root Region</a></li>
+                    <li><a class="toctree-l4" href="#protecting-the-root-region">Protecting the Root Region</a></li>
+                
+                    <li><a class="toctree-l4" href="#checking-the-file-system-shield">Checking the File System Shield</a></li>
                 
                     <li><a class="toctree-l4" href="#extended-example">Extended Example</a></li>
                 
@@ -330,8 +332,8 @@
                 <h1 id="scone-file-protection">SCONE File Protection</h1>
 <p>SCONE supports the transparent encryption and/or authentication of files. By <strong>transparent</strong>, we mean that there are no application code changes needed to support this. We support two ways to use the SCONE file protection:</p>
 <ul>
-<li>a <strong>low-level interface</strong> that gives you complete control. This is made available via command <strong>scone fspf</strong> and described in this document.</li>
-<li>a <strong>high-level interface</strong> that simplifies the use of the file protection and in particular, takes care of key management. (<em>The high-level interface is not yet available</em>).</li>
+<li>a <strong>low-level interface</strong> intended to be used at the developer site. We assumet that the developer machine is sufficiently trust worthy. This is made available via command <strong>scone fspf</strong> and described in this document.</li>
+<li>a <strong>high-level interface</strong> simplifies the use of the file protection and it does and in particular, takes care of key management. (<em>The high-level interface is not yet available</em>).</li>
 </ul>
 <h2 id="concepts">Concepts</h2>
 <p>The underlying idea of SCONE file protection is that a user specifies that each file is <strong>either</strong>: </p>
@@ -343,18 +345,18 @@
 <p><strong>encrypted</strong>, i.e., the confidentiality is protected by encryption. Encrypted files are always authenticated, or </p>
 </li>
 <li>
-<p><strong>not-protected</strong>, i.e. SCONE reads and write  the files without any extra protection mechanisms. For example, you might use <em>not-protected</em> if you applications already encrypts its files.</p>
+<p><strong>not-protected</strong>, i.e. SCONE reads and write  the files without any extra protection mechanisms. For example, you might use <em>not-protected</em> if your application already encrypts its files or if you need direct access to devices.</p>
 </li>
 </ul>
-<p>Marking all files individually as either <em>authenticated</em>, <em>encrypted</em>, or <em>not-protected</em>, would not be very practical. Hence, we provide functionality to partition the filesystem into <strong>regions</strong>: regions do not overlap and each file belongs to exactly one region.</p>
-<p>A region is defined by a path. For example, <strong>/</strong> is the root region and you could, for example, specify that all files in <strong>/</strong> must be authenticated. You could define a second region <strong>/data/db</strong> and you specify that this region is encrypted.</p>
+<p>Marking all files individually as either <em>authenticated</em>, <em>encrypted</em>, or <em>not-protected</em> would not be very practical. Hence, we support to partition the filesystem into <strong>regions</strong>: regions do not overlap and each file belongs to exactly one region.</p>
+<p>A region is defined by a path. For example, region <strong>/</strong> is the root region and you could, for example, specify that all files in region <strong>/</strong> must be authenticated. You can define a second region, for example,  region <strong>/data/db</strong> and that this region is encrypted.</p>
 <p>Each file belongs to exactly one region: it belongs to the region that has the longest common path prefix with this file. For example, file <em>/etc/db.conf</em> would belong, in this case, to region <em>/</em> and file <em>/data/db/table.db</em> would belong to region <em>/data/db</em>.</p>
-<p>SCONE supports an <strong>ephemeral</strong> file system: files are stored in memory inside of the enclave. Since memory inside of enclaves is still very limited, we recommend to limit the use of the ephemeral file system. Instead use the standard file system: we refer to this as the <strong>kernel</strong> file system. For each region you need to specify if the region is either <strong>ephemeral</strong> or <strong>kernel</strong>.</p>
+<p>SCONE supports an <strong>ephemeral</strong> file system: files are stored in memory belonging to the enclave. Since memory inside of enclaves is still very limited, we recommend to limit the use of ephemeral files - use the the standard file system instead. We refer to this as the <strong>kernel</strong> file system. For each region, you need to specify if the region is either <strong>ephemeral</strong> or <strong>kernel</strong>.</p>
 <p>Each region belongs to one of the following six classes:
    <center>{<strong>ephemeral</strong> | <strong>kernel</strong>} X {<strong>not-protected</strong> | <strong>authenticated</strong> | <strong>encrypted</strong> }</center></p>
 <h2 id="example">Example</h2>
-<p>Often, we only need to protect the files that are passed to a container via some volume. In this case, it is sufficient that the volume is protected.</p>
-<p>Let us demonstrate this via a simple example in which we pass in an encrypted volume to a container. We create this encrypted volume in our local filesystem (in directory <strong>volume</strong>) and we will later mount this in the container as <strong>/data</strong>. The original (non-encrypted) files are stored in directory <strong>data-original</strong>.</p>
+<p>Sometimes, we might only need to protect the files that are passed to a container via some volume. In this case, it would be sufficient that the volume is either authenticated or encrypted.</p>
+<p>Let us demonstrate this via a simple example in which we pass an encrypted volume to a container. We create this encrypted volume in our local filesystem (in directory <strong>volume</strong>) and we will later mount this in the container as <strong>/data</strong>. The original (non-encrypted) files are stored in directory <strong>data-original</strong>.</p>
 <pre><code class="bash">&gt; mkdir -p volume
 &gt; mkdir -p data-original
 </code></pre>
@@ -499,7 +501,7 @@ export SCONE_QUEUES=1
 Hello World
 </code></pre>
 
-<h2 id="protecting-root-region">Protecting Root Region</h2>
+<h2 id="protecting-the-root-region">Protecting the Root Region</h2>
 <p>Note that the the protection in the above Python example is <strong>insufficient</strong>: Python will read files outside of the protected directory <strong>/data</strong>. This could be used to run modified code inside of the Python enclave. </p>
 <p>To deal with this threat, we recommend to use a <strong>white list</strong> approach: only files that are either authenticated or encrypted should be accessible by an enclave, i.e., one should avoid to use <strong>not-protected</strong> regions. We support <strong>not-protected</strong> regions to give your application, for example, direct access to devices needed by your application. </p>
 <p>We typically want to authenticate all files in region <strong>/</strong>:</p>
@@ -571,6 +573,42 @@ $ export SCONE_FSPF=/fspf.pb
 
 <p>Let's run python with authenticated file system:</p>
 <pre><code class="bash">SCONE_HEAP=1000000000 SCONE_ALLOW_DLOPEN=2  SCONE_ALPINE=1 SCONE_VERSION=1 /usr/local/bin/python
+</code></pre>
+
+<h2 id="checking-the-file-system-shield">Checking the File System Shield</h2>
+<p>Let's us check the file shield by creating a new python program (<em>helloworld-manual.py</em>) in
+side of a python container:</p>
+<pre><code class="bash">&gt; docker run -i sconecuratedimages/crosscompilers:python27-authenticated sh
+$ cat &gt; helloworld-manual.py &lt;&lt; EOF
+print &quot;Hello World&quot;
+EOF
+</code></pre>
+
+<p>When we switch on the file shield, the execution of this program inside the enclave will fail: since this file was not part of the original file system, the file system shield will prevent accessing this file.</p>
+<pre><code class="bash">$ export SCONE_FSPF_KEY=... extract from data-original/keytag ...
+$ export SCONE_FSPF_TAG=... extract from data-original/keytag ...
+$ export SCONE_FSPF=/fspf.pb
+$ SCONE_HEAP=1000000000 SCONE_ALLOW_DLOPEN=2  SCONE_ALPINE=1 SCONE_VERSION=1 /usr/local/bin/python helloworld-manual.py
+(fails)
+</code></pre>
+
+<p>We can, however, add a new file via programs that have access to the key of the <em>fspf</em>. We can, for example, write a python program to add a new python program to the file system.</p>
+<p>By default, we disable that the root fspf is updated. We can enable updates by setting environment variable <strong>SCONE_FSPF_MUTABLE=1</strong>. We plan to permit updates of the root fspf by default in the near future (i.e., we will remove variable <strong>SCONE_FSPF_MUTABLE=1</strong>).</p>
+<pre><code class="bash">$ SCONE_HEAP=1000000000 SCONE_FSPF_MUTABLE=1 SCONE_ALLOW_DLOPEN=2  SCONE_ALPINE=1 SCONE_VERSION=1 /usr/local/bin/python  &lt;&lt; PYTHON
+f = open('helloworld.py', 'w')
+f.write('print &quot;Hello World&quot;\n')
+f.close()
+PYTHON```
+</code></pre>
+
+<p>The tag of the file system protection file is now changed. We can determine the new TAG with the help of command <strong>scone fspf show</strong>:</p>
+<pre><code class="bash">$ export SCONE_FSPF_TAG=$(scone fspf show --tag /fspf.pb)
+</code></pre>
+
+<p>Now, we can run the new <strong>helloworld.py</strong>:</p>
+<pre><code class="bash">$ SCONE_HEAP=1000000000 SCONE_ALLOW_DLOPEN=2  SCONE_ALPINE=1 SCONE_VERSION=1 /usr/local/bin/python helloworld.py
+...
+Hello World
 </code></pre>
 
 <h2 id="extended-example">Extended Example</h2>
@@ -662,7 +700,7 @@ $ SCONE_FSPF=fspf.pb ./sgxcat
 
 <h2 id="notes">Notes</h2>
 <p>The SCONE File Protection documentation is not yet completed and more information will be provided soon.</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
