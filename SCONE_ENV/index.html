@@ -374,10 +374,22 @@ three numbers. The possible commands currently are:</p>
 </ul>
 </li>
 </ul>
-<p><strong>Note</strong> For now, the number of <em>sthreads</em> should always be larger than the number of  <em>lthreads</em> blocked in system calls.
-In a first approximation, you could set the number of <em>sthreads</em> as follows.</p>
-<p><center><strong> # sthreads  =  # ethreads + # lthreads </strong> </center></p>
-<p>We plan to automatically adjust the number of <em>sthreads</em> and <em>ethreads</em> in the future. </p>
+<p>The number of <em>sthreads</em> is automatically increased if more <strong>sthreads</strong> are needed to process system calls. An <strong>sthread</strong> will block if it does not have any work left to do. Hence, we recommend to start exactly one <strong>sthread</strong> per <strong>ethread</strong>.</p>
+<p><strong>ethreads</strong> will leave the enclave it there is no more work for them to do. Hence, it makes sense to start one ehthread per core. In some situations, it might even make sense to start one <strong>ethread</strong> per hyper-thread.</p>
+<p>Unless you want to limit the the number of CPU resources an enclave should use,  the following is a good generic configuration file:</p>
+<pre><code class="bash">$ sudo tee  /etc/sgx-musl.conf &lt;&lt; EOF
+Q 4
+e -1 0 0
+s -1 0 0
+e -1 1 0
+s -1 1 0
+e -1 2 0
+s -1 2 0
+e -1 3 0
+s -1 3 0
+EOF
+</code></pre>
+
 <h2 id="run-mode">Run Mode</h2>
 <ul>
 <li>
@@ -390,7 +402,7 @@ In a first approximation, you could set the number of <em>sthreads</em> as follo
 <p><strong>=SIM</strong>: run program outside of enclave. All SCONE related software runs but just outside of the enclave. This is not 100% compatible with hardware mode since, for example, some instructions are permitted in native mode that are not permitted in hardware mode.</p>
 </li>
 <li>
-<p><strong>=AUTO</strong>: run program inside of enclave if SGX is available. Otherwise, run in simulation mode.</p>
+<p><strong>=AUTO</strong>: run program inside of enclave if SGX is available. Otherwise, run in simulation mode. AUTO is the default mode.</p>
 </li>
 </ul>
 </li>
