@@ -206,7 +206,11 @@
                 
                     <li><a class="toctree-l4" href="#running-an-application">Running an application</a></li>
                 
-                    <li><a class="toctree-l4" href="#example_1">Example</a></li>
+                    <li><a class="toctree-l4" href="#numpy">NumPy</a></li>
+                
+                    <li><a class="toctree-l4" href="#cairo">Cairo</a></li>
+                
+                    <li><a class="toctree-l4" href="#example">Example</a></li>
                 
             
             </ul>
@@ -374,7 +378,7 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 </li>
 </ul>
 <p><strong>Python does not always deal gracefully with out of memory situations: often, it terminates with some misleading error message. Please try to give python sufficient stack and heap size if this happens. We recommend to start with SCONE_HEAP=10000000000 to ensure that Python has sufficient heap. If your program runs without any problem with a large heap, you can try to reduce the heap size to speedup program startup times.</strong></p>
-<h3 id="example">Example</h3>
+<p>Note that you can set the environment variable of a process - in our case python - running inside a container with docker option <strong>-e</strong>:</p>
 <pre><code class="bash">&gt; docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp -e SCONE_HEAP=10000000000 SCONE_MODE=HW -e SCONE_ALLOW_DLOPEN=2 -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:python27 python myapp.py
 
 export SCONE_QUEUES=4
@@ -384,8 +388,143 @@ export SCONE_MMAP32BIT=0
 ...
 </code></pre>
 
-<p>```</p>
-<h2 id="example_1">Example</h2>
+<h2 id="numpy">NumPy</h2>
+<p>Let's see how we can install some extra packages that your python program might need. Let us focus on <strong>NumPy</strong> first, a very popular package for scientific computing. Note that the following steps you would typically perform as part of a <a href="../SCONE_Dockerfile/">Dockerfile</a>.</p>
+<p>First, we start the SCONE Python  image:</p>
+<pre><code class="bash">&gt; docker run -it sconecuratedimages/crosscompilers:python27 bash
+</code></pre>
+
+<p>We then install <strong>numpy</strong> inside of the container with the help of <strong>pip</strong>:</p>
+<pre><code class="bash">$ pip install numpy
+Collecting numpy
+  Downloading numpy-1.14.0.zip (4.9MB)
+    100% |████████████████████████████████| 4.9MB 211kB/s 
+Building wheels for collected packages: numpy
+  Running setup.py bdist_wheel for numpy ... |
+done
+  Stored in directory: /root/.cache/pip/wheels/1e/02/97/ba1c91fa21d10f8f96cc6ddd7d9553d429b5af17558fb83280
+Successfully built numpy
+Installing collected packages: numpy
+Successfully installed numpy-1.14.0
+</code></pre>
+
+<p>Ok, let's try to execute some examples with <strong>NumPy</strong>. Let's  run Python inside an enclave, give it plenty of heap memory and ask SCONE to print some debug messages:</p>
+<pre><code class="bash">$ SCONE_HEAP=10000000000 SCONE_ALLOW_DLOPEN=2 SCONE_MODE=AUTO SCONE_ALPINE=1 SCONE_VERSION=1 /usr/local/bin/python
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=10000000000
+export SCONE_STACK=0
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=hw
+export SCONE_SGXBOUNDS=no
+export SCONE_VARYS=no
+export SCONE_ALLOW_DLOPEN=yes
+export SCONE_ALLOW_DLOPEN2=yes
+Revision: 7950fbd1a699ba15f9382ebaefc3ce0d4090801f
+Branch: master (dirty)
+Configure options: --enable-shared --enable-debug --prefix=/scone/src/built/cross-compiler/x86_64-linux-musl
+
+Python 2.7.14 (default, Dec 19 2017, 22:29:22) 
+[GCC 6.4.0] on linux2
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; 
+</code></pre>
+
+<p>Now, we can import numpy and execute some commands:</p>
+<pre><code class="bash">&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; a = np.arange(15).reshape(3, 5)
+&gt;&gt;&gt; a
+array([[ 0,  1,  2,  3,  4],
+       [ 5,  6,  7,  8,  9],
+       [10, 11, 12, 13, 14]])
+&gt;&gt;&gt; a.shape
+(3, 5)
+&gt;&gt;&gt; a.ndim
+2
+&gt;&gt;&gt; a.dtype.name
+'int64'
+&gt;&gt;&gt; a.itemsize
+8
+&gt;&gt;&gt; type(a)
+&lt;type 'numpy.ndarray'&gt;
+&gt;&gt;&gt; 
+</code></pre>
+
+<h2 id="cairo">Cairo</h2>
+<p>Let's look at another popular library: the <strong>cairo</strong> graphics library. <strong>cairo</strong>  is written in C and has 
+Python bindings provided by package <strong>pycairo</strong>. In this case, we need to install the C-library first:</p>
+<p>In Alpine Linux - which is the basis of the SCONE Python image - we can install cairo as follows:</p>
+<pre><code class="bash">$ apk add --no-cache  cairo-dev cairo 
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/main/x86_64/APKINDEX.tar.gz
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/community/x86_64/APKINDEX.tar.gz
+(1/55) Installing expat-dev (2.2.5-r0)
+...
+(55/55) Installing cairo-dev (1.14.10-r0)
+Executing busybox-1.27.2-r6.trigger
+Executing glib-2.54.2-r0.trigger
+No schema files found: doing nothing.
+OK: 297 MiB in 112 packages
+$ 
+</code></pre>
+
+<p>Now we can install the Python bindings of cairo with <strong>pip</strong>:</p>
+<pre><code class="bash">$ pip install pycairo
+Collecting pycairo
+  Downloading pycairo-1.15.4.tar.gz (178kB)
+    100% |████████████████████████████████| 184kB 1.7MB/s 
+Building wheels for collected packages: pycairo
+  Running setup.py bdist_wheel for pycairo ... done
+  Stored in directory: /root/.cache/pip/wheels/99/a6/16/79c5186b0ead4be059ce3102496b1ff776776b31da8e51af8f
+Successfully built pycairo
+Installing collected packages: pycairo
+Successfully installed pycairo-1.15.4
+</code></pre>
+
+<p>We can now start Python again via </p>
+<pre><code class="bash">SCONE_HEAP=10000000000 SCONE_ALLOW_DLOPEN=2 SCONE_MODE=AUTO SCONE_ALPINE=1 SCONE_VERSION=1 /usr/local/bin/python
+
+</code></pre>
+
+<p>before we execute some cairo examples:</p>
+<pre><code class="bash">&gt;&gt;&gt; import cairo
+&gt;&gt;&gt; import math
+&gt;&gt;&gt; WIDTH, HEIGHT = 256, 256
+&gt;&gt;&gt; 
+&gt;&gt;&gt; surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, WIDTH, HEIGHT)
+&gt;&gt;&gt; ctx = cairo.Context (surface)
+&gt;&gt;&gt; ctx.scale (WIDTH, HEIGHT) # Normalizing the canvas
+&gt;&gt;&gt; 
+&gt;&gt;&gt; pat = cairo.LinearGradient (0.0, 0.0, 0.0, 1.0)
+&gt;&gt;&gt; pat.add_color_stop_rgba (1, 0.7, 0, 0, 0.5) # First stop, 50% opacity
+&gt;&gt;&gt; pat.add_color_stop_rgba (0, 0.9, 0.7, 0.2, 1) # Last stop, 100% opacity
+&gt;&gt;&gt; 
+&gt;&gt;&gt; ctx.rectangle (0, 0, 1, 1) # Rectangle(x0, y0, x1, y1)
+&gt;&gt;&gt; ctx.set_source (pat)
+&gt;&gt;&gt; ctx.fill ()
+&gt;&gt;&gt; ctx.translate (0.1, 0.1) # Changing the current transformation matrix
+&gt;&gt;&gt; 
+&gt;&gt;&gt; ctx.move_to (0, 0)
+&gt;&gt;&gt; # Arc(cx, cy, radius, start_angle, stop_angle)
+... ctx.arc (0.2, 0.1, 0.1, -math.pi/2, 0)
+&gt;&gt;&gt; ctx.line_to (0.5, 0.1) # Line to (x,y)
+&gt;&gt;&gt; # Curve(x1, y1, x2, y2, x3, y3)
+... ctx.curve_to (0.5, 0.2, 0.5, 0.4, 0.2, 0.8)
+&gt;&gt;&gt; ctx.close_path ()
+&gt;&gt;&gt; 
+&gt;&gt;&gt; ctx.set_source_rgb (0.3, 0.2, 0.5) # Solid color
+&gt;&gt;&gt; ctx.set_line_width (0.02)
+&gt;&gt;&gt; ctx.stroke ()
+&gt;&gt;&gt; surface.write_to_png (&quot;example.png&quot;) # Output to PNG
+&gt;&gt;&gt; exit()
+</code></pre>
+
+<p>This generates a file <strong>example.png</strong> in the working directory.</p>
+<h2 id="example">Example</h2>
 <p>Let's look at another example:</p>
 <ul>
 <li>
@@ -399,7 +538,7 @@ export SCONE_MMAP32BIT=0
 </li>
 </ul>
 <p><a href="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03"><img alt="asciicast" src="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03.png" /></a></p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
