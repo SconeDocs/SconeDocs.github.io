@@ -503,9 +503,8 @@ Hello World
 </code></pre>
 
 <h2 id="protecting-the-root-region">Protecting the Root Region</h2>
-<p>Note that the the protection in the above Python example is <strong>insufficient</strong>: Python will read files outside of the protected directory <strong>/data</strong>. This could be used to run modified code inside of the Python enclave. </p>
-<p>To deal with this threat, we recommend to use a <strong>white list</strong> approach: only files that are either authenticated or encrypted should be accessible by an enclave, i.e., one should avoid to use <strong>not-protected</strong> regions. We support <strong>not-protected</strong> regions to give your application, for example, direct access to devices needed by your application. </p>
-<p>We typically want to authenticate all files in region <strong>/</strong>:</p>
+<p>Note that in the above example, Python will not be permitted to load dynamic libraries  outside of the protected directory <strong>/data</strong>: a dynamic library must reside in either an authenticated or an encrypted region.  To deal with this, we must define one or more authenticated or encrypted file regions that contain the dynamic libraries.  </p>
+<p>Let us show how to authenticate all files in region <strong>/</strong></p>
 <pre><code class="bash">$ scone fspf addr fspf.pb / --kernel / --authenticated
 </code></pre>
 
@@ -521,7 +520,7 @@ To do so, we ensure that we have the newest images:</p>
 <pre><code class="bash">&gt; docker run -it -v /var/run/docker.sock:/var/run/docker.sock -v &quot;$PWD/volume:/data&quot; -v &quot;$PWD/data-original:/data-original&quot; sconecuratedimages/crosscompilers:scone
 </code></pre>
 
-<p>Let us ensure that Docker is installed in this container (should be by default):</p>
+<p>Let us ensure that Docker is installed in this container:</p>
 <pre><code class="bash">apt-get update
 apt-get install -y docker.io
 </code></pre>

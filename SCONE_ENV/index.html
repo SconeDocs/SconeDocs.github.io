@@ -438,10 +438,10 @@ Configure options: --enable-file-prot --enable-shared --enable-debug --prefix=/s
 <h2 id="dynamic-library-support">Dynamic library support:</h2>
 <ul>
 <li>
-<p><strong>SCONE_ALLOW_DLOPEN</strong>: if defined, permit to load shared libraries during startup. All libraries that are loaded during startup are measured and contribute to the hash of the enclave, i.e., the are part of <em>MRENCLAVE</em>.</p>
+<p><strong>SCONE_ALLOW_DLOPEN="1"</strong>: if defined, permit to load shared libraries after startup. These libraries must be authenticated or encrypted. Note that all libraries that are loaded during startup are measured and contribute to the hash of the enclave, i.e., they are part of <strong>MRENCLAVE</strong>. The libraries loaded during startup could reside in a file region that is not protect or that is authenticated. These libraries must not be in an encrypted region since the encryption keys are not yet known during startup.</p>
 </li>
 <li>
-<p><strong>SCONE_ALLOW_DLOPEN="2"</strong>: not only can dynamic libraries be loaded during startup but also later on. For example, Python programs might dynamically load modules after startup. Our approach to enforce the integrity of these dynamic libraries with the help of a file protection shield.</p>
+<p><strong>SCONE_ALLOW_DLOPEN="2"</strong>: must be used <strong>for debugging only</strong>: this  value enables loading of dynamic libraries after startup that are neither authenticated nor encrypted. For example, Python programs might dynamically load modules after startup. Our approach to enforce the integrity of these dynamic libraries with the help of a file protection shield, i.e., you should eiter set <strong>SCONE_ALLOW_DLOPEN="1"</strong> or you should not define <strong>SCONE_ALLOW_DLOPEN</strong>.</p>
 </li>
 </ul>
 <h2 id="performance-tuning-variables">Performance tuning variables:</h2>

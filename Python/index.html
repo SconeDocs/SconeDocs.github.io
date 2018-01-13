@@ -212,6 +212,8 @@
                 
                     <li><a class="toctree-l4" href="#example">Example</a></li>
                 
+                    <li><a class="toctree-l4" href="#limitation">Limitation</a></li>
+                
             
             </ul>
         
@@ -371,13 +373,13 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 <p>To issue some debug messages that show that we are running inside an enclave, set <strong>SCONE_VERSION=1</strong></p>
 </li>
 <li>
-<p>In general, we only permit the loading of dynamic libraries after the initial loading of the problem, only by explicitly defining <strong>SCONE_ALLOW_DLOPEN</strong>. To enable the loading of dynamic libraries after startup (and without requiring the authentication of this library via the file shield), we set <strong>SCONE_ALLOW_DLOPEN=2</strong>.</p>
+<p>In general, we only permit the loading of dynamic libraries during the startup of a program - these libraries are part of <strong>MRENCLAVE</strong>, i.e., the hash of the enclave. To enable the loading of dynamic libraries after startup (and without requiring the authentication of this library via the file shield), one can set <strong>SCONE_ALLOW_DLOPEN=2</strong>. For operations, the environment variables are set by the <a href="../SCONE_CAS/">CAS</a> and you must set <strong>SCONE_ALLOW_DLOPEN</strong> either to <strong>SCONE_ALLOW_DLOPEN=1</strong> to enable loading of dynamic libraries or must not define <strong>SCONE_ALLOW_DLOPEN</strong>.</p>
 </li>
 <li>
 <p>Python applications often require large heaps and large stacks. The current SGX CPUs (SGXv1) do not permit to increase the size of enclaves dynamically. This implies that enclaves might run out of memory if the initial enclave size was set to small. Selecting large enclave size by default would result in long startup times for all programs. SCONE permits to set the heap size via environment variable <strong>SCONE_HEAP</strong> and the stack size via <strong>STACK_SIZE</strong> at startup.</p>
 </li>
 </ul>
-<p><strong>Python does not always deal gracefully with out of memory situations: often, it terminates with some misleading error message. Please try to give python sufficient stack and heap size if this happens. We recommend to start with SCONE_HEAP=10000000000 to ensure that Python has sufficient heap. If your program runs without any problem with a large heap, you can try to reduce the heap size to speedup program startup times.</strong></p>
+<p><strong>Python does not always deal gracefully with out of memory situations: often, it terminates with some misleading error message if Python runs out of heap or stack memory. Please try to give python sufficient stack and heap size if this happens. We recommend to start with a large heap, like, SCONE_HEAP=10000000000 to ensure that Python has sufficient heap. If your program runs without any problem with a large heap, you can try to reduce the heap size to speedup program startup times.</strong></p>
 <p>Note that you can set the environment variable of a process - in our case python - running inside a container with docker option <strong>-e</strong>:</p>
 <pre><code class="bash">&gt; docker run --rm -v &quot;$PWD&quot;:/usr/src/myapp -w /usr/src/myapp -e SCONE_HEAP=10000000000 SCONE_MODE=HW -e SCONE_ALLOW_DLOPEN=2 -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:python27 python myapp.py
 
@@ -538,6 +540,8 @@ Successfully installed pycairo-1.15.4
 </li>
 </ul>
 <p><a href="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03"><img alt="asciicast" src="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03.png" /></a></p>
+<h2 id="limitation">Limitation</h2>
+<p>We do not yet support fork, i.e., you spawn new processes from within your Python programs. We are currently working on removing this limitation of SCONE. Until then, we expect you to have an external spawner. </p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
