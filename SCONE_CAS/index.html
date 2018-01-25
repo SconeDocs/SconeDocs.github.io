@@ -158,6 +158,8 @@
             
                 <li class="toctree-l3"><a href="#scone-cas">SCONE CAS</a></li>
                 
+                    <li><a class="toctree-l4" href="#cas-development-environment">CAS Development Environment</a></li>
+                
             
             </ul>
         
@@ -324,10 +326,20 @@
 <p>after the service was attested by the CAS. </p>
 <p>To attest a service in a swarm, the CAS requires the help of a local attestation service (LAS).</p>
 <p><strong>As part of the SCONE Enterprise Version, you can run your own CAS and LAS infrastructure.</strong> To do so, we provide you with container images to simplify the execution of CAS and LAS. For other SCONE versions, we can provide you with access to a global CAS.</p>
-<p><strong>To set up a development environment, you can perform the following steps.</strong></p>
-<p>To run LAS on all nodes of a cluster managed by node <strong>faye</strong>, first pull the newest LAS image and then execute on all nodes of a SWARM:</p>
+<h2 id="cas-development-environment">CAS Development Environment</h2>
+<p>To set up a development environment with CAS, you can perform the following steps.</p>
+<p>We assume that you run the following commands inside of a container with the scone CLI like <strong>sconecuratedimages/sconecli</strong>. Also, we assume that you have access to a Docker swarm managed by some node called <strong>faye</strong>. </p>
+<p>First, check that the swarm is properly installed:</p>
 <pre><code class="bash">$ export SCONE_MANAGER=faye
-$ scone service pull sconecuratedimages/sconetainer:las
+$ scone swarm ls
+NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STATUS     AVAILABILITY  MANAGER   
+1             1             SCONE         SCONE         edna                 Ready      Active        Reachable 
+1             1             SCONE         SCONE         faye                 Ready      Active        Leader    
+</code></pre>
+
+<p>If <strong>scone swarm ls</strong> issues some warnings or there are no SGX-capable machines listed, you might want to run <strong>scone swarm check</strong> to update the labels of the swarm nodes.</p>
+<p>To run LAS on all nodes of a cluster managed by node <strong>faye</strong>, pull the newest LAS image and then execute on all nodes of a SWARM:</p>
+<pre><code class="bash">$ scone service pull sconecuratedimages/sconetainer:las
 $ scone service create --detach=true --mode global --publish mode=host,target=18766,published=18766 --name=las localhost:5000/sconetainer:las
 </code></pre>
 
@@ -351,7 +363,7 @@ ID                  NAME                IMAGE                            NODE   
 e6b0skuph9ve        cas.1               localhost:5000/sconetainer:cas   edna                Running             Running 3 hours ago                       
 </code></pre>
 
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
