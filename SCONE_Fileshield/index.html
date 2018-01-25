@@ -416,7 +416,9 @@ Added region /data to file system protection file fspf.pb new AES-GCM tag: 84813
 Added files to file system protection file fspf.pb new AES-GCM tag: 39a268166e628cf76e3fca80aa2d4f63
 </code></pre>
 
-<p>We can now compare the hash values of the original files and the encrypted files:</p>
+<p><strong>Note</strong> that if we add files to an authenticated file region, <strong>addf</strong> will not copy or encrypt any data. It will
+only add  the file names and the checksums (tags) of the files located in <strong>/data-original</strong> to <strong>fspf.pb</strong>. Also, you should drop the directory to which encrypted files are written (i.e., in the above case <strong>/data</strong>) when adding files with <strong>scone fspf addf</strong>. In this case, you would probably mount directory <strong>/data-original</strong> as <strong>/data</strong> in the container.</p>
+<p>Coming back to the above example, we can now compare the hash values of the original files and the encrypted files:</p>
 <pre><code class="bash">$ shasum /data/*
 shasum /data/*
 87fd97468024e3d2864516ff5840e15d9615340d  /data/fspf.pb
