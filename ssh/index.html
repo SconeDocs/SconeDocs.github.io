@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>manual scone service - SCONE</title>
+  <title>ssh setup - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "manual scone service";
+    var mkdocs_page_name = "ssh setup";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -214,17 +214,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">manual scone service</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#scone-service">scone service</a></li>
-                
-                    <li><a class="toctree-l4" href="#scone-service-commands">scone service commands</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_SERVICE/">manual scone service</a>
         
     </li>
 <li>
@@ -272,8 +263,21 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../ssh/">ssh setup</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">ssh setup</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#ssh-setup">ssh Setup</a></li>
+                
+                    <li><a class="toctree-l4" href="#scone">scone</a></li>
+                
+                    <li><a class="toctree-l4" href="#ssh-credentials-inside-of-containers">SSH Credentials inside of containers</a></li>
+                
+                    <li><a class="toctree-l4" href="#ssh-agent">SSH Agent</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -314,7 +318,7 @@
     
       
     
-    <li>manual scone service</li>
+    <li>ssh setup</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -324,167 +328,76 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="scone-service">scone service</h1>
-<p><strong>scone service</strong> manages remote docker services. <strong>scone service</strong> is mainly a thin wrapper around <strong>docker service</strong>. However, instead of executing commands locally,  it forwards the commands to the manager of a remote swarm.</p>
-<p>The remote swarm is specified via command line option <strong>--manager MANAGER</strong>. Alternatively, one can export an environment variable <strong>SCONE_MANAGER</strong>: this variable defines the default swarm to be used by <strong>scone service</strong> in case option <strong>--manager</strong> is not given.</p>
-<p><strong>scone service</strong> supports all commands and all the options of <strong>docker service</strong>. The semantics of command <strong>create</strong> is, however, slightly modified: <strong>scone service create</strong> only creates services on SGX-enabled nodes. More precisely, it limits the nodes that can run a service to those that have a label <a href="../SCONE_SWARM/">SGX VERSION</a> greater than 0.</p>
-<p>In addition to the docker defined commands, <strong>scone service</strong> supports two new commands:</p>
-<table>
-<thead>
-<tr>
-<th>scone service</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>registry</strong></td>
-<td>checks if a registry service is running in the swarm and if it is not, it starts a new registry service.</td>
-</tr>
-<tr>
-<td><strong>pull</strong></td>
-<td>pulls an image from a repository and stores it in the registry of the swarm.</td>
-</tr>
-</tbody>
-</table>
-<h2 id="scone-service-commands">scone service commands</h2>
-<p>The following commands of scone service are implemented by <strong>docker service</strong>:</p>
-<table>
-<thead>
-<tr>
-<th>scone service</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>create</strong></td>
-<td>Creates a new service <strong>on a SGX-enabled machine</strong>.</td>
-</tr>
-<tr>
-<td><strong>inspect</strong></td>
-<td>Display detailed information on one or more services</td>
-</tr>
-<tr>
-<td><strong>logs</strong></td>
-<td>Fetch the logs of a service or task</td>
-</tr>
-<tr>
-<td><strong>ls</strong></td>
-<td>List services</td>
-</tr>
-<tr>
-<td><strong>ps</strong></td>
-<td>List the tasks of one or more services</td>
-</tr>
-<tr>
-<td><strong>rm</strong></td>
-<td>Remove one or more services</td>
-</tr>
-<tr>
-<td><strong>rollback</strong></td>
-<td>Revert changes to a service's configuration</td>
-</tr>
-<tr>
-<td><strong>scale</strong></td>
-<td>Scale one or multiple replicated services</td>
-</tr>
-<tr>
-<td><strong>update</strong></td>
-<td>Update a service</td>
-</tr>
-</tbody>
-</table>
-<p>The options of the above commands are the same as for <strong>docker service</strong> with the exception that all commands support
-the new option <strong>--manager MANAGER</strong>.</p>
-<h3 id="scone-service-registry-options">scone service registry [OPTIONS]</h3>
-<p>Starts a local registry service in the swarm managed by node <strong>MANAGER</strong>.
-The identity of <strong>MANAGER</strong> is given via option <strong>--manager=MANAGER</strong> or via environment variable <strong>SCONE_MANAGER=MANAGER</strong>.</p>
-<table>
-<thead>
-<tr>
-<th>Options</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>--manager MANAGER</td>
-<td>manager of swarm (required unless SCONE_MANAGER is defined)</td>
-</tr>
-<tr>
-<td>--verbose</td>
-<td>print verbose messages</td>
-</tr>
-<tr>
-<td>--debug</td>
-<td>print debug messages</td>
-</tr>
-<tr>
-<td>--help</td>
-<td>print usage of this command</td>
-</tr>
-</tbody>
-</table>
-<h3 id="scone-service-pull-options-repositoryimagetag">scone service pull [OPTIONS] REPOSITORY/IMAGE[:TAG]</h3>
-<p>Pulls an image from a repository (typically, docker hub) and stores
-the image in the local registry. First, create this local repository with</p>
-<pre><code class="bash">$  scone service registry --manager MANAGER
+                <h1 id="ssh-setup">ssh Setup</h1>
+<p>ssh is standard way to log securely into remote hosts. The SCONE CLI requires that you can log into all hosts of your docker swarm(s) without the need for a password. We describe in this section how you could set this up.</p>
+<h2 id="scone">scone</h2>
+<p>The <em>scone</em> utility executes commands via <em>ssh</em> on the SGX-capable machine to install software as well as to deploy and monitor containers.</p>
+<p><img alt="SCONE Installation Alternatives" src="../img/alternativeInstallationMethods.png" /></p>
+<p>Since we potentially execute many <em>ssh</em> commands, you need to configure <em>ssh</em> such that</p>
+<ul>
+<li>
+<p>you can log into the SGX machines <em>without</em>  having to type a password,</p>
+</li>
+<li>
+<p>you can use the basename of your SGX machines to login, and</p>
+</li>
+<li>
+<p>ssh is permitted to reuse connections to reduce the execution time of the <em>scone</em> commands.</p>
+</li>
+</ul>
+<h3 id="ssh-configuration">ssh configuration</h3>
+<p>For each host inside of your swarm, you should add an entry to your <em>ssh</em> configuration:</p>
+<h4 id="host-alias">Host alias</h4>
+<p>To reduce your typing overhead, <strong>scone</strong> assumes that each host has a unique basename and that you configured <em>ssh</em> such that you can log into the host via this basename. For example, instead of typing <em>node2.my.very.long.domain.com</em>, you must configure  <em>ssh</em> such that <em>ssh node2</em> is a shortcut  for <em>ssh node2.my.very.long.domain.com</em>.</p>
+<p>As a caveat, this basename must be sufficient for other hosts in the <em>same swarm</em> to reach <em>node2</em>. In the above figure, <em>manager</em> must be able to resolve <em>node2</em> to the IP address of <em>node2.my.very.long.domain.com</em>. By default most swarms are setup this way.</p>
+<p>On your development machine (or, more precisely in your development container), 
+you need to add an alias <em>node2</em> for <em>node2.my.very.long.domain.com</em>, you could add the following lines to your <em>ssh config</em> (stored in <em>$HOME/.ssh/config</em>):</p>
+<pre><code class="bash">Host node2
+     HostName node2.my.very.long.domain.com
+     Port 22
+     User scone
+     IdentityFile ~/.ssh/id_rsa
 </code></pre>
 
-<p>It is expected that the name of the image to be pulled has the 
-following format:</p>
-<pre><code class="bash">   REPOSITORY/IMAGE[:TAG]
+<h4 id="ssh-connection-reuse">ssh connection reuse</h4>
+<p>To be able to reuse a ssh connection, you must configure ssh appropriately. You should set <em>ControlMaster</em> to <em>auto</em> and you have to specify a control path via option <em>ControlPath</em>. You can define a generic path like <em>~/.ssh/ssh_mux_%h_%p_%r</em> - this can be the same for all hosts. For example, for some host <em>alice</em> you might add the following lines to <em>$HOME/.ssh/config</em>:</p>
+<pre><code class="bash">Host alice
+        ControlMaster auto
+        ControlPath ~/.ssh/ssh_mux_%h_%p_%r
+        user ubuntu
+        port 10101
+        hostname sshproxy.cloudprovider.com
 </code></pre>
 
-<p>After pulling the image, it is locally available in the swarm.
-The name of the image id now:</p>
-<pre><code class="bash">   localhost:5000/IMAGE[:TAG]
+<h2 id="ssh-credentials-inside-of-containers">SSH Credentials inside of containers</h2>
+<p>To simplify the <em>ssh</em> setup inside of containers, you might want to map your <em>ssh</em> configuration residing in your home directory into the containers in which you run the <strong>scone</strong> CLI. Since you probably have a different user ID inside and outside the container, you might want to copy the original <em>ssh</em> configuration:</p>
+<pre><code class="bash">&gt; docker run -it -v $HOME/.ssh:/root/.xssh  sconecuratedimages/sconecli
 </code></pre>
 
-<p>The identity of MANAGER is given via option --manager or via
-environment variable SCONE_MANAGER.</p>
-<table>
-<thead>
-<tr>
-<th>Options</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>--manager MANAGER</td>
-<td>manager of swarm (required)</td>
-</tr>
-<tr>
-<td>--verbose</td>
-<td>print verbose messages</td>
-</tr>
-<tr>
-<td>--debug</td>
-<td>print debug messages</td>
-</tr>
-<tr>
-<td>--help</td>
-<td>print usage of this command</td>
-</tr>
-</tbody>
-</table>
-<h3 id="example">Example</h3>
-<p>To ensure that a registry is running on the swarm managed by node <strong>faye</strong>, execute:</p>
-<pre><code class="bash">$ export SCONE_MANAGER=faye
-$ scone service registry
+<p>Inside the container, copy the external <em>ssh</em> configuration:</p>
+<pre><code class="bash">$ cp -r $HOME/.xssh/* $HOME/.ssh/
 </code></pre>
 
-<p>To pull image <strong>sconecuratedimages/sconetainer:shielded</strong> from docker hub and store it in the local registry, execute</p>
-<pre><code class="bash">$ scone service pull sconecuratedimages/sconetainer:shielded
+<p>Ensure that for all hosts of a swarm that you public key <em>$HOME/.ssh/id_rsa.pub</em> is added to file  <em>$HOME/.ssh/authorized_keys</em> on each of these hosts.</p>
+<h3 id="alternative">Alternative</h3>
+<p>In case you do not want to use your standard credentials inside of a container, you need to ensure that you have a pair of authentication keys inside the container. If there exists no public key <em>$HOME/.ssh/id_rsa.pub</em> (often the case if you use a container), you can generate a new pair by executing:</p>
+<pre><code class="bash">$ ssh-keygen -b 4096 -t rsa
 </code></pre>
 
-<p>You can then start this image as a service on the swarm managed by <strong>faye</strong> as follows:</p>
-<pre><code class="bash">$ scone service create --name nginx-shielded --detach=true  --publish 8090:8080 --publish 8092:8082 localhost:5000/sconetainer:shielded
+<p>Append the generated public key <em>$HOME/.ssh/id_rsa.pub</em> to file <em>$HOME/.ssh/authorized_keys</em> on the SGX hosts for which you to be able to log in without a password.</p>
+<p>Also, ensure that your <em>$HOME/.ssh/config</em> contains an entry for each host of your swarm (see above).</p>
+<h2 id="ssh-agent">SSH Agent</h2>
+<p>In the container running the <em>scone</em> CLI, you need to start a <em>ssh-agent</em> in the container in which you run the <em>scone</em> CLI:</p>
+<pre><code class="bash">$ SA=$(ssh-agent)
+$ eval &quot;$SA&quot;
 </code></pre>
 
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>and add your public key by executing:</p>
+<pre><code class="bash">$ ssh-add
+</code></pre>
+
+<p>Ensure that you are now able to log into all hosts of your swarm.</p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
@@ -492,10 +405,10 @@ $ scone service registry
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_STACK/" class="btn btn-neutral float-right" title="manual scone stack"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../glossary/" class="btn btn-neutral float-right" title="Glossary"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_HOST/" class="btn btn-neutral" title="manual scone host"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../SCONE_Publications/" class="btn btn-neutral" title="Publications"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -521,10 +434,10 @@ $ scone service registry
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_HOST/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../SCONE_Publications/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_STACK/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../glossary/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

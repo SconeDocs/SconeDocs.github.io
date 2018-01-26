@@ -102,7 +102,7 @@
             
                 <li class="toctree-l3"><a href="#scone-host-installation-guide">SCONE: Host Installation Guide</a></li>
                 
-                    <li><a class="toctree-l4" href="#ssh">SSH</a></li>
+                    <li><a class="toctree-l4" href="#notes">Notes</a></li>
                 
                     <li><a class="toctree-l4" href="#installation-of-a-single-host">Installation of a single host</a></li>
                 
@@ -279,6 +279,13 @@
           
             <li>
     <li class="toctree-l1 ">
+        <a class="" href="../ssh/">ssh setup</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
         <a class="" href="../glossary/">Glossary</a>
         
     </li>
@@ -357,58 +364,11 @@ No matter where <em>scone</em> is running, it requires that <em>ssh</em> be prop
 <p>We recommend to install Ubuntu 17.04 or Ubuntu 17.10 on the Swarm machines. For older versions of Ubuntu, some minor manual fixing might be needed during installation of the SGX drivers and the Docker engine. The screencast below shows some of the issues one faces on older Ubuntu versions. The secure containers are mostly based on Ubuntu or Alpine Linux (smaller image size).</p>
 </li>
 </ul>
-<p><strong>NOTE</strong> This host setup will enable the execution of <em>SCONE secure containers</em> on SGX-enabled machines. These containers can run one or more <em>secure programs</em>, i.e., programs that are executed inside SGX enclaves.   The secure programs of secure containers can be statically-linked or dynamically-linked (see <a href="../SCONE_toolchain/">SCONE SGX Toolchain</a>). The host itself runs statically-linked secure programs only - this is to avoid failures do to library versioning issues.</p>
-<h2 id="ssh">SSH</h2>
-<p>The <em>scone</em> utility executes commands via <em>ssh</em> on the SGX-capable machine that should be installed.</p>
-<p><img alt="SCONE Installation Alternatives" src="../img/alternativeInstallationMethods.png" /></p>
-<p>Since we potentially execute many <em>ssh</em> commands, you need to configure <em>ssh</em> such that</p>
+<h2 id="notes">Notes</h2>
 <ul>
-<li>
-<p>you can log into the SGX machines <em>without</em>  having to type a password,</p>
-</li>
-<li>
-<p>you can use the basename of your SGX machines to log in , and</p>
-</li>
-<li>
-<p>ssh is permitted to reuse connections to reduce the execution time of the <em>scone</em> commands.</p>
-</li>
+<li>This host setup will enable the execution of <em>SCONE secure containers</em> on SGX-enabled machines. These containers can run one or more <em>secure programs</em>, i.e., programs that are executed inside SGX enclaves.   The secure programs of secure containers can be statically-linked or dynamically-linked (see <a href="../SCONE_toolchain/">SCONE SGX Toolchain</a>). The host itself runs statically-linked secure programs only - this is to avoid failures do to library versioning issues.</li>
 </ul>
-<h3 id="passwordless-ssh">Passwordless ssh</h3>
-<p>To set up passwordless ssh authentication, you need to ensure that you have a pair of authentication keys. If there exists no public key <em>$HOME/.ssh/id_rsa.pub</em> (often the case if you use a container), you can generate a new pair by executing:</p>
-<pre><code class="bash">&gt; ssh-keygen -b 4096 -t rsa
-</code></pre>
-
-<p>Append the generated public key <em>$HOME/.ssh/id_rsa.pub</em> to file <em>$HOME/.ssh/authorized_keys</em> on the SGX hosts for which you to be able to log in without a password.</p>
-<p>Additionally, you need to start a ssh-agent (on your developer machine):</p>
-<pre><code class="bash">$ SA=`ssh-agent`
-$ eval &quot;$SA&quot;
-</code></pre>
-
-<p>and add your authentication keys by executing:</p>
-<pre><code class="bash">$ ssh-add
-</code></pre>
-
-<h3 id="host-alias">Host alias</h3>
-<p>To reduce your typing overhead, you can use the basename of a host - if you configure ssh appropriately. For example, instead of typing <em>node2.my.very.long.domain.com</em>, you could configure  <em>ssh</em> such that <em>node2</em> refers to <em>node2.my.very.long.domain.com</em>.</p>
-<p>As a caveat, this basename must be sufficient for other hosts in the <em>same swarm</em> to reach <em>node2</em>. In the above figure, <em>manager</em> must be able to resolve <em>node2</em> to the IP address of <em>node2.my.very.long.domain.com</em>.</p>
-<p>To add an alias for <em>node2.my.very.long.domain.com</em>, you could add the following lines to your <em>ssh config</em> (stored in <em>$HOME/.ssh/config</em>):</p>
-<pre><code class="bash">Host node2
-     HostName node2.my.very.long.domain.com
-     Port 22
-     User scone
-     IdentityFile ~/.ssh/id_rsa
-</code></pre>
-
-<h3 id="ssh-connection-reuse">ssh connection reuse</h3>
-<p>To be able to reuse a ssh connection, you must configure ssh appropriately. You should set <em>ControlMaster</em> to <em>auto</em> and you have to specify a control path via option <em>ControlPath</em>. You can define a generic path like <em>~/.ssh/ssh_mux_%h_%p_%r</em> - this can be the same for all hosts. For example, for some host <em>alice</em> you might add the following lines to <em>$HOME/.ssh/config</em>:</p>
-<pre><code class="bash">Host alice
-        ControlMaster auto
-        ControlPath ~/.ssh/ssh_mux_%h_%p_%r
-        user ubuntu
-        port 10101
-        hostname sshproxy.cloudprovider.com
-</code></pre>
-
+<p><em>The <strong>scone CLI</strong> uses </em>ssh<em> to log into remote hosts. We assume that </em>ssh* is setup in such a way that you do not need passwords to log into these hosts.  Please read section <a href="../ssh/">ssh setup</a> to learn how to ensure this.</p>
 <h2 id="installation-of-a-single-host">Installation of a single host</h2>
 <p>After you set up the <a href="../SCONE_CLI/">scone CLI</a> and your passwordless ssh works, you can install the scone related software on a new host, say, <em>alice</em> as follows:</p>
 <pre><code class="bash">$ scone host install --name alice
