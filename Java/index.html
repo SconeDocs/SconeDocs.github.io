@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Rust - SCONE</title>
+  <title>Java - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Rust";
+    var mkdocs_page_name = "Java";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -193,8 +193,21 @@
 <li>
           
             <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../Java/">Java</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Java</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#java">Java</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#example">Example</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#example-zookeeper">Example: Zookeeper</a></li>
+                
+            
+            </ul>
         
     </li>
 <li>
@@ -207,19 +220,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">Rust</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#rust">Rust</a></li>
-                
-                    <li><a class="toctree-l4" href="#scone-rustc-scone-rustc">scone-rustc /  scone rustc</a></li>
-                
-                    <li><a class="toctree-l4" href="#scone-cargo-and-scone-cargo">scone-cargo and scone cargo:</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../Rust/">Rust</a>
         
     </li>
 <li>
@@ -323,7 +325,7 @@
     
       
     
-    <li>Rust</li>
+    <li>Java</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -333,71 +335,28 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="rust">Rust</h1>
-<p>SCONE supports the Rust programming language. Rust combines speed and strong type safety and it is hence our language of choice for new applications that need to run inside of enclaves.</p>
-<p>To build Rust applications, we provide variants of the <strong>rustc</strong> and <strong>cargo</strong> command line utilities as part of image <strong>sconecuratedimages/crosscompilers:scone</strong>: </p>
-<h2 id="scone-rustc-scone-rustc"><strong>scone-rustc</strong> /  <strong>scone rustc</strong></h2>
-<p>You can compile Rust programs but links against the SCONE libc instead of a standard libc. To print the version of Rust execute (inside container <strong>sconecuratedimages/crosscompilers:scone</strong>):</p>
-<pre><code class="bash">&gt; docker run -it sconecuratedimages/crosscompilers:scone
-$ scone rustc --version
-rustc 1.20.0 (f3d6973f4 2017-08-27)
-</code></pre>
+                <h1 id="java">Java</h1>
+<p>SCONE supports supports Java: we have an image containing OpenJDK8: <strong>sconecuratedimages/crosscompilers:openjdk8</strong>.</p>
+<h1 id="example">Example</h1>
+<p>Let us start with a simple hello world example:</p>
+<pre><code class="bash">cat &gt; HelloWorld.java &lt;&lt; EOF
+public class HelloWorld {
 
-<p>Let's try a simple hello world program.</p>
-<pre><code class="bash">$ mkdir ~/projects
-$ cd ~/projects
-$ mkdir hello_world
-$ cd hello_world
-</code></pre>
+    public static void main(String[] args) {
+        System.out.println(&quot;Hello World&quot;);
+    }
 
-<p>Let's try our rust program:</p>
-<pre><code class="bash">$ cat &gt; main.rs &lt;&lt; EOF
-fn main() {
-    println!(&quot;Hello, world!&quot;);
 }
 EOF
 </code></pre>
 
-<p>Let's compile the program for running inside of enclaves:</p>
-<pre><code class="bash">$ scone rustc main.rs
-$ ls
-main  main.rs
+<p>We can compile and run this inside of an enclave as follows:</p>
+<pre><code class="bash">docker run --rm -v $(pwd):/test sconecuratedimages/crosscompilers:openjdk8 sh -c &quot;cd /test &amp;&amp; javac HelloWorld.java &amp;&amp; java HelloWorld&quot;
 </code></pre>
 
-<p>Let's run main inside an enclave and print some debug information:</p>
-<pre><code class="bash">$ SCONE_MODE=HW SCONE_VERSION=1 ./main
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-export SCONE_SSPINS=100
-export SCONE_SSLEEP=4000
-export SCONE_KERNEL=0
-export SCONE_HEAP=67108864
-export SCONE_CONFIG=/etc/sgx-musl.conf
-export SCONE_MODE=hw
-export SCONE_SGXBOUNDS=no
-export SCONE_VARYS=no
-export SCONE_ALLOW_DLOPEN=no
-export SCONE_ALLOW_DLOPEN2=no
-
-Hello, world!
-</code></pre>
-
-<h2 id="scone-cargo-and-scone-cargo"><strong>scone-cargo</strong> and <strong>scone cargo</strong>:</h2>
-<p>You can build projects with <strong>scone cargo</strong>:</p>
-<pre><code class="bash">$ scone cargo build --target=scone
-</code></pre>
-
-<p>Alternatively, you can use <strong>scone-cargo</strong> if, for example,  you need a command without a space.</p>
-<p><strong>scone cargo</strong> has access to the SCONE-compiled rust standard library and the target file. <strong>--target=scone</strong> instructs it to use our target file - essentially triggering a cross-compiler build.</p>
-<p>Due to the cross-compilation, crates that depend on compiled (C) libraries, such as openssl or error-chain, do not work out of the box. Cargo will not use the system installed libraries because it wrongly assumes that they do not fit the target architecture. To solve this issue, one has to either provide the compiled libraries or deactivate the crate.</p>
-<p>The following is an example of how an executable with <em>openssl</em> can be compiled: </p>
-<pre><code class="bash">$ OPENSSL_LIB_DIR=/libressl-2.4.5 OPENSSL_INCLUDE_DIR=/libressl-2.4.5/include/ OPENSSL_STATIC=1 PKG_CONFIG_ALLOW_CROSS=1 scone-cargo build --target=scone 
-</code></pre>
-
-<p>In the case of error-chain, one can just deactivate its optional backtrace feature that actually requires a precompiled library.</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<h1 id="example-zookeeper">Example: Zookeeper</h1>
+<p>The above image runs Zookeeper without any modification. In particular,  it runs  <a href="https://github.com/phunt/zk-smoketest">zk-smoketest</a> without any issues.</p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
@@ -405,10 +364,10 @@ Hello, world!
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_HOST/" class="btn btn-neutral float-right" title="manual scone host"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Python/" class="btn btn-neutral float-right" title="Python"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../Python/" class="btn btn-neutral" title="Python"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../GO/" class="btn btn-neutral" title="GO"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -434,10 +393,10 @@ Hello, world!
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../Python/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../GO/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_HOST/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../Python/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
