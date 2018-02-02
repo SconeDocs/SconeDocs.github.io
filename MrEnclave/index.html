@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>C++ - SCONE</title>
+  <title>MrEnclave - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "C++";
+    var mkdocs_page_name = "MrEnclave";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -185,21 +185,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">C++</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#c-program-language-support">C++ Program Language Support</a></li>
-                
-                    <li><a class="toctree-l4" href="#image">Image</a></li>
-                
-                    <li><a class="toctree-l4" href="#help">Help</a></li>
-                
-                    <li><a class="toctree-l4" href="#example">Example</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../C++/">C++</a>
         
     </li>
 
@@ -305,8 +292,19 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../MrEnclave/">MrEnclave</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">MrEnclave</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#mrenclave">MrEnclave</a></li>
+                
+                    <li><a class="toctree-l4" href="#example-mrenclave-of-python">Example: MrEnclave of Python</a></li>
+                
+                    <li><a class="toctree-l4" href="#using-debug-output">Using debug output</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -364,11 +362,11 @@
     
       
         
-          <li>Language Support &raquo;</li>
+          <li>Appendix &raquo;</li>
         
       
     
-    <li>C++</li>
+    <li>MrEnclave</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -378,50 +376,32 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="c-program-language-support">C++ Program Language Support</h1>
-<p>SCONE supports native compilation of C++ programs when combined with dynamic linking as well as cross-compilation.  Cross-compilation is required  to support, in particular, statically linked binaries.</p>
-<p>This page focuses on the SCONE C++ cross compiler <strong>scone g++</strong> (a.k.a. <strong>scone-g++</strong>). This cross compiler is based on g++ and hence, the command line options are the same as those of g++.</p>
-<h2 id="image">Image</h2>
-<p>Ensure that you have the newest SCONE cross compiler image:</p>
-<pre><code class="bash">&gt; docker pull sconecuratedimages/crosscompilers:scone
-&gt; docker run -it sconecuratedimages/crosscompilers:scone
-$
+                <h1 id="mrenclave">MrEnclave</h1>
+<p>An enclave is identified by a hash value which is called  <strong>MrEnclave</strong>. This has is determined by content of the pages of an enclave and the access rights. In particular, the means that some of the <a href="../SCONE_ENV/">SCONE environment</a> variables like <strong>SCONE_HEAP</strong> and <strong>SCONE_ALLOW_DLOPEN</strong>  will affect <strong>MrEnclave</strong>.</p>
+<p>To determine <strong>MrEnclave</strong>, we provide a simple way to determine <strong>MrEnclave</strong> on the developer site via environment variable  <strong>SCONE_HASH=1</strong>.</p>
+<h2 id="example-mrenclave-of-python">Example: MrEnclave of Python</h2>
+<p>Let us determine <strong>MrEnclave</strong> of our python interpreter. We start the container
+and then set environment variable <strong>SCONE_HASH=1</strong> to ask SCONE to print <strong>MrEnclave</strong> and then terminate and <strong>SCONE_ALPINE=1</strong> to ensure that the application is indeed started with SCONE. </p>
+<p><strong>Note that with SCONE_HASH=1 the program is not executed - only MrEnclave is printed on stdout.</strong></p>
+<pre><code class="bash">&gt; docker run -it  sconecuratedimages/crosscompilers:python27 sh
+$ SCONE_HASH=1 SCONE_ALPINE=1 /usr/local/bin/python
+5430b3c0ab0e8a24ea4481e6022704cdbbcff68f6457eb0cdeaecfd734fec541
 </code></pre>
 
-<h2 id="help">Help</h2>
-<p>If you need some help, just execute in the container:</p>
-<pre><code class="bash">$ scone g++ --help
-Usage: x86_64-linux-musl-g++ [options] file...
-Options:
-...
+<p>Now, let us change the heap size via environment variable <strong>SCONE_HEAP</strong>
+by asking for a <strong>2GB</strong> heap:</p>
+<pre><code class="bash">$ SCONE_HEAP=2G SCONE_HASH=1 SCONE_ALPINE=1 /usr/local/bin/python
+aa25d6e1863819fca72f4f3315131ba4a438d1e1643c030190ca665215912465
 </code></pre>
 
-<h2 id="example">Example</h2>
-<p>Let's try to compile a simple program:</p>
-<pre><code class="bash">$ cat &gt; sqrt.cc &lt;&lt; EOF
-#include &lt;iostream&gt;
-#include &lt;cmath&gt;
-
-using namespace std;
-
-int main() {
-    int x = 0;
-    while(x &lt; 10) {
-        double y = sqrt((double)x);
-        cout &lt;&lt; &quot;The square root of &quot; &lt;&lt; x &lt;&lt; &quot; is &quot; &lt;&lt; y &lt;&lt; endl;
-        x++;
-    }
-    return 0;
-}
-EOF
+<p>By default, SCONE does not permit to load dynamic libraries after startup. By setting <strong>SCONE_ALLOW_DLOPEN=1</strong>, we permit to load dynamic libraries during runtime. This changes <strong>MrEnclave</strong>:</p>
+<pre><code class="bash">$ SCONE_ALLOW_DLOPEN=1 SCONE_HEAP=2G SCONE_HASH=1 SCONE_ALPINE=1 /usr/local/bin/python
+9c56db536e046a5fb84a5c482ce86e6592071dff75dc0e3eb27d701cf2c40508
 </code></pre>
 
-<p>We compile the program with <strong>scone gcc</strong> or <strong>scone-gcc</strong>:</p>
-<pre><code class="bash">$ scone g++ sqrt.cc -o sqrt
-</code></pre>
-
-<p>Let's execute the binary:</p>
-<pre><code class="bash">$ SCONE_VERSION=1 ./sqrt
+<h2 id="using-debug-output">Using debug output</h2>
+<p>As an alternative to <strong>SCONE_HASH=1</strong> is to print <strong>MrEnclave</strong> via debug messages by setting <strong>SCONE_VERSION=1</strong>:</p>
+<pre><code class="bash">$ SCONE_ALLOW_DLOPEN=1 SCONE_HEAP=2G SCONE_VERSION=1 SCONE_ALPINE=1 /usr/local/bin/python
 export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
@@ -429,27 +409,25 @@ export SCONE_MMAP32BIT=0
 export SCONE_SSPINS=100
 export SCONE_SSLEEP=4000
 export SCONE_KERNEL=0
-export SCONE_HEAP=67108864
+export SCONE_HEAP=2147483648
+export SCONE_STACK=81920
 export SCONE_CONFIG=/etc/sgx-musl.conf
-export SCONE_MODE=hw
+export SCONE_MODE=sim
 export SCONE_SGXBOUNDS=no
 export SCONE_VARYS=no
-export SCONE_ALLOW_DLOPEN=no
-export SCONE_ALLOW_DLOPEN2=no
+export SCONE_ALLOW_DLOPEN=yes (protected)
+export SCONE_MPROTECT=no
+Revision: b6a40e091e2adb253f019401723d2a734e887a74 (Fri Jan 26 07:44:44 2018 +0100)
+Branch: master (dirty)
+Configure options: --enable-shared --enable-debug --prefix=/scone/src/built/cross-compiler/x86_64-linux-musl
 
-The square root of 0 is 0
-The square root of 1 is 1
-The square root of 2 is 1.41421
-The square root of 3 is 1.73205
-The square root of 4 is 2
-The square root of 5 is 2.23607
-The square root of 6 is 2.44949
-The square root of 7 is 2.64575
-The square root of 8 is 2.82843
-The square root of 9 is 3
+Enclave hash: 9c56db536e046a5fb84a5c482ce86e6592071dff75dc0e3eb27d701cf2c40508
+Python 2.7.14 (default, Jan 10 2018, 05:35:30) 
+[GCC 6.4.0] on linux2
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
 </code></pre>
 
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, December 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
@@ -457,10 +435,10 @@ The square root of 9 is 3
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../Fortran/" class="btn btn-neutral float-right" title="Fortran"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../ssh/" class="btn btn-neutral float-right" title="ssh setup"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../C/" class="btn btn-neutral" title="C"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../SCONE_ENV/" class="btn btn-neutral" title="Environment variables"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -486,10 +464,10 @@ The square root of 9 is 3
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../C/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../SCONE_ENV/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../Fortran/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../ssh/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
