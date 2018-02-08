@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MrEnclave - SCONE</title>
+  <title>News - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "MrEnclave";
+    var mkdocs_page_name = "News";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -292,19 +292,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">MrEnclave</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#mrenclave">MrEnclave</a></li>
-                
-                    <li><a class="toctree-l4" href="#example-mrenclave-of-python">Example: MrEnclave of Python</a></li>
-                
-                    <li><a class="toctree-l4" href="#using-debug-output">Using debug output</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../MrEnclave/">MrEnclave</a>
         
     </li>
 
@@ -338,8 +327,15 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../news/">News</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">News</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#scone-news">SCONE News</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -373,7 +369,7 @@
         
       
     
-    <li>MrEnclave</li>
+    <li>News</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -383,58 +379,15 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="mrenclave">MrEnclave</h1>
-<p>An enclave is identified by a hash value which is called  <strong>MrEnclave</strong>. This has is determined by content of the pages of an enclave and the access rights. In particular, the means that some of the <a href="../SCONE_ENV/">SCONE environment</a> variables like <strong>SCONE_HEAP</strong> and <strong>SCONE_ALLOW_DLOPEN</strong>  will affect <strong>MrEnclave</strong>.</p>
-<p>To determine <strong>MrEnclave</strong>, we provide a simple way to determine <strong>MrEnclave</strong> on the developer site via environment variable  <strong>SCONE_HASH=1</strong>.</p>
-<h2 id="example-mrenclave-of-python">Example: MrEnclave of Python</h2>
-<p>Let us determine <strong>MrEnclave</strong> of our python interpreter. We start the container
-and then set environment variable <strong>SCONE_HASH=1</strong> to ask SCONE to print <strong>MrEnclave</strong> and then terminate and <strong>SCONE_ALPINE=1</strong> to ensure that the application is indeed started with SCONE. </p>
-<p><strong>Note that with SCONE_HASH=1 the program is not executed - only MrEnclave is printed on stdout.</strong></p>
-<pre><code class="bash">&gt; docker run -it  sconecuratedimages/crosscompilers:python27 sh
-$ SCONE_HASH=1 SCONE_ALPINE=1 /usr/local/bin/python
-5430b3c0ab0e8a24ea4481e6022704cdbbcff68f6457eb0cdeaecfd734fec541
-</code></pre>
-
-<p>Now, let us change the heap size via environment variable <strong>SCONE_HEAP</strong>
-by asking for a <strong>2GB</strong> heap:</p>
-<pre><code class="bash">$ SCONE_HEAP=2G SCONE_HASH=1 SCONE_ALPINE=1 /usr/local/bin/python
-aa25d6e1863819fca72f4f3315131ba4a438d1e1643c030190ca665215912465
-</code></pre>
-
-<p>By default, SCONE does not permit to load dynamic libraries after startup. By setting <strong>SCONE_ALLOW_DLOPEN=1</strong>, we permit to load dynamic libraries during runtime. This changes <strong>MrEnclave</strong>:</p>
-<pre><code class="bash">$ SCONE_ALLOW_DLOPEN=1 SCONE_HEAP=2G SCONE_HASH=1 SCONE_ALPINE=1 /usr/local/bin/python
-9c56db536e046a5fb84a5c482ce86e6592071dff75dc0e3eb27d701cf2c40508
-</code></pre>
-
-<h2 id="using-debug-output">Using debug output</h2>
-<p>As an alternative to <strong>SCONE_HASH=1</strong> is to print <strong>MrEnclave</strong> via debug messages by setting <strong>SCONE_VERSION=1</strong>:</p>
-<pre><code class="bash">$ SCONE_ALLOW_DLOPEN=1 SCONE_HEAP=2G SCONE_VERSION=1 SCONE_ALPINE=1 /usr/local/bin/python
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-export SCONE_SSPINS=100
-export SCONE_SSLEEP=4000
-export SCONE_KERNEL=0
-export SCONE_HEAP=2147483648
-export SCONE_STACK=81920
-export SCONE_CONFIG=/etc/sgx-musl.conf
-export SCONE_MODE=sim
-export SCONE_SGXBOUNDS=no
-export SCONE_VARYS=no
-export SCONE_ALLOW_DLOPEN=yes (protected)
-export SCONE_MPROTECT=no
-Revision: b6a40e091e2adb253f019401723d2a734e887a74 (Fri Jan 26 07:44:44 2018 +0100)
-Branch: master (dirty)
-Configure options: --enable-shared --enable-debug --prefix=/scone/src/built/cross-compiler/x86_64-linux-musl
-
-Enclave hash: 9c56db536e046a5fb84a5c482ce86e6592071dff75dc0e3eb27d701cf2c40508
-Python 2.7.14 (default, Jan 10 2018, 05:35:30) 
-[GCC 6.4.0] on linux2
-Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
-</code></pre>
-
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+                <h1 id="scone-news">SCONE News</h1>
+<p><strong>NEWS (2018-02-02): SCONE adds support for Zookeeper (sconecuratedimages/crosscompilers:zookeeper).</strong></p>
+<p><strong>NEWS (2018-02-02): SCONE adds support for Python 3.6.4 (sconecuratedimages/crosscompilers:python3.6.4-alpine3.7).</strong></p>
+<p><strong>NEWS (2018-01-27): SCONE adds support for <a href="../Java/">Java</a>.</strong></p>
+<p><strong>NEWS (2018-01-27): SCONE adds curated Node.js image (sconecuratedimages/crosscompilers:node-4.8.6).</strong></p>
+<p><strong>NEWS (2018-01-27): SCONE adds curated MongoDB image (sconecuratedimages/crosscompilers:mongodb).</strong></p>
+<p><strong>NEWS (2018-01-27): SCONE adds curated Memcached image (sconecuratedimages/crosscompilers:memcached).</strong></p>
+<p><strong>NEWS (2018-01-27): SCONE adds curated Vault image (sconecuratedimages/crosscompilers:vault).</strong></p>
+<p><strong>SOON TO COME: While SGX is affected by Spectre, SCONE adds protection against Spectre (variants 1 and 2). SGX is not affected by Meltdown.</strong></p>
               
             </div>
           </div>
@@ -442,10 +395,8 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../ssh/" class="btn btn-neutral float-right" title="ssh setup"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
-      
-        <a href="../SCONE_ENV/" class="btn btn-neutral" title="Environment variables"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../aboutScone/" class="btn btn-neutral" title="About Scone"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -471,10 +422,8 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_ENV/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../aboutScone/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
-      
-        <span style="margin-left: 15px"><a href="../ssh/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
