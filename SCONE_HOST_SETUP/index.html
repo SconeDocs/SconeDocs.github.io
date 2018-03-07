@@ -425,7 +425,7 @@ The easiest way to get started is to run <em>scone</em> in a Docker container.
 No matter where <em>scone</em> is running, it requires that <em>ssh</em> be properly installed.</p>
 </li>
 <li>
-<p>We recommend to install Ubuntu 17.04 or Ubuntu 17.10 on the Swarm machines. For older versions of Ubuntu, some minor manual fixing might be needed during installation of the SGX drivers and the Docker engine. The screencast below shows some of the issues one faces on older Ubuntu versions. The secure containers are mostly based on Ubuntu or Alpine Linux (smaller image size).</p>
+<p>We recommend to install Ubuntu 16.04 LTS, Ubuntu 17.10 or Ubuntu 18.04 LTS (as soon as it becomes available) on the Swarm machines. For older versions of Ubuntu, some minor manual fixing might be needed during installation of the SGX drivers and the Docker engine. The screencast below shows some of the issues one faces on older Ubuntu versions. The secure containers are mostly based on Ubuntu or Alpine Linux (smaller image size).</p>
 </li>
 </ul>
 <h2 id="notes">Notes</h2>
@@ -464,6 +464,8 @@ $ scone host install --name caroline  --join alice
 <h3 id="patched-sgx-driver">Patched SGX Driver</h3>
 <p>We also maintain a patched version of the SGX driver. This version adds some additional monitoring like the number of <em>available</em> and <em>free</em> EPC (Extended Page Cache) pages.</p>
 <p>Right now, we provide a patched version of the latest Intel SGX driver (November 11, 2017).</p>
+<h3 id="note">Note</h3>
+<p>We have been updating SCONE such that SCONE does not need access to <strong>/dev/isgx</strong> during cross-compilation - which could, for example, be executed during <em>docker build</em>. Hence, we will soon switch to an unpatched Docker engine and SGX driver.</p>
 <h3 id="screencast">Screencast</h3>
 <p>This screencast shows the installation of three machines SGX-capable hosts. In this screencast, we show the installation on machines that run older versions of Ubuntu (sgx2 = 14.04, sgx3 = 14.04 with custom kernel, and sgx4 = 16.04). In this case, we will see some warnings since <em>scone host</em> depends on <em>systemd</em> to start the swarm. In case <em>systemd</em> is not available, <em>scone host</em> will still be able to install the patched SGX driver and the patched Docker engine.</p>
 <p>Another issue that one sometimes faces is that an older SGX drivers is already installed but cannot be offloaded and replaced by the patched driver by <em>scone host</em>. The reason for that is that typically that some process is still using the <em>/dev/isgx</em> device. This needs to be manually fixed by stopping the process or by rebooting the machine. Alternatively, one can use the existing SGX driver. However, the monitoring of the used EPC pages will not be provided in this case.</p>
