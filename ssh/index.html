@@ -453,6 +453,10 @@ $ eval &quot;$SA&quot;
 <p>Ensure that you are now able to log into all hosts of your swarm.</p>
 <h2 id="sgx-host-setup">SGX Host Setup</h2>
 <p><strong>scone</strong> expects to have password-less access to all SGX hosts that you want to use for Scone. To do so, you need to add one of your public ssh keys to <strong>~/.ssh/authorized_keys</strong> on all SGX host. For example, you could add your public key <em>~/.ssh/id_rsa.pub</em> to file  <em>~/.ssh/authorized_keys</em> on each of these hosts.</p>
+<p>Some commands are required to be executed with <strong>sudo</strong>.  We assume that the user has the right to perform a password-less <strong>sudo</strong> on the SGX hosts. In case the user does not yet have this right, the user should be added to <strong>/etc/sudoers</strong>. Typically, one would add the user with the help of command <strong>visudo</strong>. The entry for user <em>alice</em> might look like this:</p>
+<pre><code class="bash">alice ALL=(ALL) NOPASSWD: ALL
+</code></pre>
+
 <h2 id="ssh-credentials">SSH Credentials</h2>
 <p>In case you do not want to use your standard credentials inside of a container, you need to ensure that you have a pair of authentication keys inside the container. If there exists no public key <em>$HOME/.ssh/id_rsa.pub</em> (often the case if you use a container), you can generate a new pair by executing:</p>
 <pre><code class="bash">$ ssh-keygen -b 4096 -t rsa
@@ -460,7 +464,7 @@ $ eval &quot;$SA&quot;
 
 <p>Append the generated public key <em>$HOME/.ssh/id_rsa.pub</em> to file <em>$HOME/.ssh/authorized_keys</em> on the SGX hosts for which you to be able to log in without a password.</p>
 <p>Also, ensure that your <em>$HOME/.ssh/config</em> contains an entry for each host of your swarm (see above).</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, March 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
