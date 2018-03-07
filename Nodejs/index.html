@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SCONE CAS - SCONE</title>
+  <title>Node - SCONE</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -20,7 +20,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "SCONE CAS";
+    var mkdocs_page_name = "Node";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -156,17 +156,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">SCONE CAS</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#scone-cas">SCONE CAS</a></li>
-                
-                    <li><a class="toctree-l4" href="#cas-development-environment">CAS Development Environment</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../SCONE_CAS/">SCONE CAS</a>
         
     </li>
 
@@ -229,8 +220,19 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../Nodejs/">Node</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Node</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#node">Node</a></li>
+                
+                    <li><a class="toctree-l4" href="#example">Example</a></li>
+                
+                    <li><a class="toctree-l4" href="#environment-variables">Environment variables:</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -374,11 +376,11 @@
     
       
         
-          <li>Tutorial &raquo;</li>
+          <li>Language Support &raquo;</li>
         
       
     
-    <li>SCONE CAS</li>
+    <li>Node</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -388,53 +390,104 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="scone-cas">SCONE CAS</h1>
-<p>SCONE CAS (<strong>Configuration and Attestation Service</strong>) helps to securely configure secure services. A CAS helps to provide services running inside of enclaves with</p>
-<ul>
-<li>their command line arguments</li>
-<li>their environment variables</li>
-</ul>
-<p>after the service was attested by the CAS. </p>
-<p>To attest a service in a swarm, the CAS requires the help of a local attestation service (LAS).</p>
-<p><strong>As part of the SCONE Enterprise Version, you can run your own CAS and LAS infrastructure.</strong> To do so, we provide you with container images to simplify the execution of CAS and LAS. For other SCONE versions, we can provide you with access to a global CAS.</p>
-<h2 id="cas-development-environment">CAS Development Environment</h2>
-<p>To set up a development environment with CAS, you can perform the following steps.</p>
-<p>We assume that you run the following commands inside of a container with the scone CLI like <strong>sconecuratedimages/sconecli</strong>. Also, we assume that you have access to a Docker swarm managed by some node called <strong>faye</strong>. </p>
-<p>First, check that the swarm is properly installed:</p>
-<pre><code class="bash">$ export SCONE_MANAGER=faye
-$ scone swarm ls
-NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STATUS     AVAILABILITY  MANAGER   
-1             1             SCONE         SCONE         edna                 Ready      Active        Reachable 
-1             1             SCONE         SCONE         faye                 Ready      Active        Leader    
+                <h1 id="node">Node</h1>
+<p>We provide Node 8.9.4 image that runs inside of an enclave:</p>
+<pre><code class="bash">&gt; docker pull sconecuratedimages/apps:node-8.9.4
 </code></pre>
 
-<p>If <strong>scone swarm ls</strong> issues some warnings or there are no SGX-capable machines listed, you might want to run <strong>scone swarm check</strong> to update the labels of the swarm nodes.</p>
-<p>To run LAS on all nodes of a cluster managed by node <strong>faye</strong>, pull the newest LAS image and then execute on all nodes of a SWARM:</p>
-<pre><code class="bash">$ scone service pull sconecuratedimages/sconetainer:las
-$ scone service create --detach=true --mode global --publish mode=host,target=18766,published=18766 --name=las localhost:5000/sconetainer:las
+<h2 id="example">Example</h2>
+<p>Let's look at a little <em>hello world</em> program. First, we need to start a <strong>node</strong> container: </p>
+<pre><code class="bash">&gt; docker run -it sconecuratedimages/apps:node-8.9.4 sh
 </code></pre>
 
-<p>Check that the service <em>las</em> is indeed running, check with command <em>ps</em>:</p>
-<pre><code class="bash">$ scone service ps las
-ID                  NAME                            IMAGE                            NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
-xvnsruar64qx        las.q26sp44pp12uf81zlyhb5pnxf   localhost:5000/sconetainer:las   edna                Running             Running 3 minutes ago                       *:18766-&gt;18766/tcp
-zfgx4t292ew6        las.cr3bxhy0nqmg77goxaih5sw8d   localhost:5000/sconetainer:las   dorothy             Running             Running 3 minutes ago                       *:18766-&gt;18766/tcp
-n441o9qqmnwa        las.os7ihjrel2jb4bplcn81h7f0i   localhost:5000/sconetainer:las   faye                Running             Running 3 minutes ago                       *:18766-&gt;18766/tcp
+<p>Inside of the container we first add <strong>npm</strong>: </p>
+<pre><code># apk add --no-cache nodejs-npm
 </code></pre>
 
-<p>Now, we can start the CAS service as follows. We first pull the newest
-CAS image and run it on one node of the swarm.</p>
-<pre><code class="bash">$ scone service pull sconecuratedimages/sconetainer:cas
-$ scone service create --name cas --detach=true  --publish 8081:8081 --publish 18765:18765 localhost:5000/sconetainer:cas
+<p>We create a new application <strong>myapp</strong>:</p>
+<pre><code class="bash"># mkdir myapp
+# cd myapp
+# cat &gt; package.json &lt;&lt; EOF
+{
+  &quot;name&quot;: &quot;myapp&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;description&quot;: &quot;&quot;,
+  &quot;main&quot;: &quot;app.js&quot;,
+  &quot;scripts&quot;: {
+    &quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;
+  },
+  &quot;author&quot;: &quot;&quot;,
+  &quot;license&quot;: &quot;ISC&quot;
+}
+EOF
+```bash
+
+We install **express** with the help of **npm**:
+
+
+```bash
+# npm install express —save
 </code></pre>
 
-<p>Let's check that CAS is indeed running:</p>
-<pre><code class="bash">$ scone service ps cas
-ID                  NAME                IMAGE                            NODE                DESIRED STATE       CURRENT STATE         ERROR               PORTS
-e6b0skuph9ve        cas.1               localhost:5000/sconetainer:cas   edna                Running             Running 3 hours ago                       
+<p>Let's store the <strong>hello world</strong> code:</p>
+<pre><code class="bash"># cat &gt; app.js &lt;&lt; EOF
+var express = require('express');
+var app = express();
+app.get('/', function (req, res) {
+  res.send('Hello World!');
+});
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
+});
+EOF
 </code></pre>
 
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>We can run this application inside of an enclave with <strong>node</strong>. We can also enable some debug
+messages by setting environment variable <strong>SCONE_VERSION=1</strong> to print that we run inside of an enclave:</p>
+<pre><code class="bash"># SCONE_VERSION=1 node app.js
+
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=4294967296
+export SCONE_STACK=4194304
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=hw
+export SCONE_SGXBOUNDS=no
+export SCONE_VARYS=no
+export SCONE_ALLOW_DLOPEN=yes (unprotected)
+export SCONE_MPROTECT=no
+Revision: e349ed6e4821f0cbfe895413c616409848216173 (Wed Feb 28 19:28:04 2018 +0100)
+Branch: master
+Configure options: --enable-shared --enable-debug --prefix=/builds/scone/subtree-scone/built/cross-compiler/x86_64-linux-musl
+
+Enclave hash: 28cf4f0953ba54af02b9d042fa2ec88a832d749ae4e5395cabd50369e72a5dcb
+Example app listening on port 3000!
+</code></pre>
+
+<p>You can now try to send a request to <strong>myapp</strong> from another shell in the container.
+Assuming that you did not start a new container in meantime, execute in another
+shell of your host:</p>
+<pre><code class="bash">&gt; docker exec -it $(docker ps -l -q) sh
+</code></pre>
+
+<p>Inside of the container, first install <strong>curl</strong> and then query <strong>myapp</strong>:</p>
+<pre><code class="bash"># apk add —no-cache curl
+# curl localhost:3000/
+Hello World!/ #
+</code></pre>
+
+<h2 id="environment-variables">Environment variables:</h2>
+<p>You can increase the heap by setting environment variable <strong>SCONE_HEAP</strong>, e.g., <strong>SCONE_HEAP=8G</strong>. </p>
+<p>Similarily, you can increase the stack size of threads running inside of enclaves by setting environment variable <strong>SCONE_STACK</strong>.</p>
+<p>Environment variable <strong>SCONE_VERSION=1</strong> prints debug messages - to show that the program runs inside of an enclave.</p>
+<p><strong>SCONE_MODE=hw</strong> enforce that program runs in hardware enclave. By default, we set <strong>SCONE_MODE=auto</strong> which uses hardware enclave if available 
+and software emulation otherwise.</p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, March 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
           </div>
@@ -442,10 +495,10 @@ e6b0skuph9ve        cas.1               localhost:5000/sconetainer:cas   edna   
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../SCONE_EE2EE/" class="btn btn-neutral float-right" title="Example E2E encryption"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Rust/" class="btn btn-neutral float-right" title="Rust"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../SCONE_Compose/" class="btn btn-neutral" title="SCONE Compose"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Python/" class="btn btn-neutral" title="Python"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -471,10 +524,10 @@ e6b0skuph9ve        cas.1               localhost:5000/sconetainer:cas   edna   
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../SCONE_Compose/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../Python/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../SCONE_EE2EE/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../Rust/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
