@@ -229,7 +229,9 @@
                 
                     <li><a class="toctree-l4" href="#example">Example</a></li>
                 
-                    <li><a class="toctree-l4" href="#environment-variables">Environment variables:</a></li>
+                    <li><a class="toctree-l4" href="#environment-variables">Environment variables</a></li>
+                
+                    <li><a class="toctree-l4" href="#dockerfile">Dockerfile</a></li>
                 
             
             </ul>
@@ -397,12 +399,16 @@
 
 <h2 id="example">Example</h2>
 <p>Let's look at a little <em>hello world</em> program. First, we need to start a <strong>node</strong> container: </p>
-<pre><code class="bash">&gt; docker run -it sconecuratedimages/apps:node-8.9.4 sh
+<pre><code class="bash">&gt; docker run -it --device=/dev/isgx sconecuratedimages/apps:node-8.9.4 sh
 </code></pre>
 
-<p>Inside of the container we first add <strong>npm</strong>: </p>
+<p>In case you have no sgx driver installed, you can drop option <strong>--device=/dev/isgx</strong> for testing. <strong>The programs will then run in simulation mode</strong>, i.e., the SCONE software runs but in native mode and not inside an enclave.</p>
+<p>Inside of the container, we first add <strong>npm</strong>: </p>
 <pre><code># apk add --no-cache nodejs-npm
-# npm init
+</code></pre>
+
+<p>Ensure we can run even in a resource-constrainted VM by setting the maximum heap size to a reasonable value of 1GB:</p>
+<pre><code># export SCONE_HEAP=1G
 </code></pre>
 
 <p>We create a new application <strong>myapp</strong>:</p>
@@ -479,12 +485,58 @@ shell of your host:</p>
 Hello World!/ #
 </code></pre>
 
-<h2 id="environment-variables">Environment variables:</h2>
-<p>You can increase the heap by setting environment variable <strong>SCONE_HEAP</strong>, e.g., <strong>SCONE_HEAP=8G</strong>. </p>
+<h2 id="environment-variables">Environment variables</h2>
+<p>SGXv1 cannot dynamically increase the memory of an enclave. Hence, we have to determine the maximum heap (and stack) size at program start: you can increase the heap by setting environment variable <strong>SCONE_HEAP</strong>, e.g., <strong>SCONE_HEAP=8G</strong>.
+In case you run out of memory inside the enclave, increase the heap size. In case your program gets <strong>killed</strong> by the OS, you might have selected a too large heap that is not supported by your VM or your host.</p>
 <p>Similarily, you can increase the stack size of threads running inside of enclaves by setting environment variable <strong>SCONE_STACK</strong>.</p>
 <p>Environment variable <strong>SCONE_VERSION=1</strong> prints debug messages - to show that the program runs inside of an enclave.</p>
 <p><strong>SCONE_MODE=hw</strong> enforce that program runs in hardware enclave. By default, we set <strong>SCONE_MODE=auto</strong> which uses hardware enclave if available 
 and software emulation otherwise.</p>
+<h2 id="dockerfile">Dockerfile</h2>
+<p>The above example, you could more easily put the following text in a Dockerfile:</p>
+<pre><code class="bash">FROM sconecuratedimages/apps:node-8.9.4
+ENV SCONE_HEAP=1G
+EXPOSE 3000
+RUN apk add --no-cache nodejs-npm \
+  &amp;&amp; mkdir myapp \
+  &amp;&amp; cd myapp \
+  &amp;&amp;  echo &quot;{&quot; &gt; package.json \
+  &amp;&amp;  echo '&quot;name&quot;: &quot;myapp&quot;,' &gt;&gt; package.json \
+  &amp;&amp;  echo '&quot;version&quot;: &quot;1.0.0&quot;,' &gt;&gt; package.json \
+  &amp;&amp;  echo '&quot;description&quot;: &quot;&quot;,' &gt;&gt; package.json \
+  &amp;&amp;  echo '&quot;main&quot;: &quot;app.js&quot;,' &gt;&gt; package.json \
+  &amp;&amp;  echo '&quot;scripts&quot;:' &gt;&gt; package.json { \
+  &amp;&amp;  echo '  &quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;' &gt;&gt; package.json \
+  &amp;&amp;  echo '},' &gt;&gt; package.json \
+  &amp;&amp;  echo '&quot;author&quot;: &quot;&quot;,' &gt;&gt; package.json \
+  &amp;&amp;  echo '&quot;license&quot;: &quot;ISC&quot;' &gt;&gt; package.json \
+  &amp;&amp;  echo '}' &gt;&gt; package.json \
+  &amp;&amp; npm install express --save \
+  &amp;&amp; echo &quot;var express = require('express');&quot; &gt; app.js \
+  &amp;&amp; echo &quot;var app = express();&quot; &gt;&gt; app.js \
+  &amp;&amp; echo &quot;app.get('/', function (req, res) {&quot; &gt;&gt; app.js \
+  &amp;&amp; echo &quot;  res.send('Hello World!');&quot; &gt;&gt; app.js \
+  &amp;&amp; echo &quot;});&quot; &gt;&gt; app.js \
+  &amp;&amp; echo &quot;app.listen(3000, function () {&quot; &gt;&gt; app.js \
+  &amp;&amp; echo &quot;  console.log('Example app listening on port 3000!');&quot; &gt;&gt; app.js \
+  &amp;&amp; echo &quot;});&quot; &gt;&gt; app.js 
+
+CMD SCONE_VERSION=1 node /myapp/app.js
+</code></pre>
+
+<p>Now create an image <strong>myapp</strong> as follows:</p>
+<pre><code class="bash"># docker build -t myapp .
+</code></pre>
+
+<p>You can run a container of this image as a daemon as follows:</p>
+<pre><code class="bash"># docker run -d -p 3000:3000 myapp
+</code></pre>
+
+<p>You can now query <strong>myapp</strong> as follows:</p>
+<pre><code class="bash"># curl localhost:3000
+Hello World!
+</code></pre>
+
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, March 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
               
             </div>
