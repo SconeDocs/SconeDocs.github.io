@@ -292,8 +292,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../SCONE_TUTORIAL/" title="SCONE Tutorial" class="md-nav__link">
-      SCONE Tutorial
+    <a href="../SCONE_TUTORIAL/" title="SCONE Hello World" class="md-nav__link">
+      SCONE Hello World
     </a>
   </li>
 
@@ -741,39 +741,144 @@
                 <h1 id="glossary">Glossary<a class="headerlink" href="#glossary" title="Permanent link">&para;</a></h1>
 <ul>
 <li>
-<p><strong>cloud-native application</strong>. An application designed to run inside of a cloud. One requirement is that the application is deployed with the help of containers.</p>
+<p><strong>attestation</strong></p>
+<p>Process of proving the integrity and authenticity of the attestee's software or hardware component to a verifier. This includes validating if a given software is executed on a given hardware.</p>
+<ul>
+<li>
+<p><strong>local attestation</strong></p>
+<p>Attestation executed locally, e.g., one software component validates the integrity and authenticity of another software component which is executed on the same hardware. In Intel SGX, the CPU creates a report containing integrity information of the attested enclave whose keyed-MAC can only be verified, and changed for that matter, by the verifier enclave running on the same platform.</p>
 </li>
 <li>
-<p><strong>container</strong>. An light-weight alternative to a virtual machine (VM). The isolation of containers is implemented by the operating system. Docker and Kubernetes use Linux for isolation. In the case of VMs, the isolation is implemented with the help of CPU extensions.</p>
+<p><strong>remote attestation</strong></p>
+<p>Attestation executed remotely, i.e., the component which does the validation and the component which is validated are executed on different machines. In Intel SGX, the report received during local attestation is signed with the quoting enclave's private key making the integrity of the quote - the signed report - remotely verifiable.</p>
 </li>
 <li>
-<p><strong>enclave</strong>. This is an alias for <em>SGX enclave</em>.</p>
+<p><strong>Configuration and Attestation Service (CAS)</strong></p>
+<p>The Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, SCONE-enabled executables, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.</p>
 </li>
 <li>
-<p><strong>EPC</strong>. A cache of memory pages belonging to enclaves. This cache resides in a reserved part of the main memory that is directly managed by the CPU (and not by the operating system or the hypervisor). The data in this cache is encrypted. Unlike enclave pages residing in the main memory, the CPU can encrypt and decrypt individual cache lines residing inside the EPC. This results in low overheads.</p>
+<p><strong>Local Attestation Service (LAS)</strong></p>
+<p>A per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.</p>
+</li>
+</ul>
 </li>
 <li>
-<p><strong>Secure container</strong>. A container which uses additional hardware isolation mechanisms, i.e., SGX to provide better application security. In particular, a secure container runs one or more <em>secure programs</em>. Additionally, the integrity and confidentiality of files inside a secure container are protected by SCONE.</p>
+<p><strong>booting</strong></p>
+<ul>
+<li>
+<p><strong>secure boot</strong></p>
+<p>A boot procedure which allows only the execution of firmware, bootloaders and operating systems which are digitally signed by a (well) defined set of acceptable signers.</p>
 </li>
 <li>
-<p><strong>Secure program</strong>. A program that executes inside an enclave.</p>
+<p><strong>measured boot</strong></p>
+<p>A boot procedure which measures the state of the system at each boot step. This measurement can be accessed to verify the current state of a given system. Compared to secure boot, measured boot will not prevent an "insecure" state of the system.</p>
+</li>
+</ul>
 </li>
 <li>
-<p><strong>SGX</strong>. A CPU extension by Intel that permits to create SGX enclaves.</p>
+<p><strong>cloud-native application</strong> </p>
+<p>An application designed to run inside of a cloud. One requirement is that the application is deployed with the help of containers.</p>
 </li>
 <li>
-<p><strong>SGX enclave</strong>. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.</p>
+<p><strong>cloud provider</strong> </p>
+<p>An entity providing cloud services (PaaS, IaaS, MaaS etc.) to its customers. It is assumed that a cloud provider is in physical or logical control of the hardware and system software used to provide the cloud services. </p>
 </li>
 <li>
-<p><strong>ethread, lthread, sthread</strong>. SCONE usese different kind of threads:</p>
+<p><strong>container</strong></p>
+<p>An light-weight alternative to a virtual machine (VM). The isolation of containers is implemented by the operating system. Docker and Kubernetes use Linux for isolation. In the case of VMs, the isolation is implemented with the help of CPU extensions.</p>
+</li>
+<li>
+<p><strong>enclave</strong>.</p>
+<p>This is an alias for <em>SGX enclave</em>.</p>
+</li>
+<li>
+<p><strong>Docker image</strong></p>
+<p>A snapshot of a container's state that can be used to initialize new containers with the same state.</p>
+</li>
+<li>
+<p><strong>Docker registry</strong></p>
+<p>A Docker registry stores Docker images for the purpose of easy distribution comparable to the app stores of Android or iOS.</p>
+</li>
+<li>
+<p><strong>EPC</strong>.</p>
+<p>A cache of memory pages belonging to enclaves. This cache resides in a reserved part of the main memory that is directly managed by the CPU (and not by the operating system or the hypervisor). The data in this cache is encrypted. Unlike enclave pages residing in the main memory, the CPU can encrypt and decrypt individual cache lines residing inside the EPC. This results in low overheads.</p>
+</li>
+<li>
+<p><strong>microservice</strong></p>
+<p>A rather small component which offers a single service.</p>
+</li>
+<li>
+<p><strong>SCONE</strong></p>
+<p>A software framework, jointly developed by the SERECA and SecureCloud EU projects, allowing the trustworthy execution of <em>unmodified</em> x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.</p>
+<ul>
+<li>
+<p><strong>SCONE Docker image</strong></p>
+<p>A SCONE Docker image is a Docker image that contains an SCONE-enabled executable and is additionally annotated via image labels with metadata allowing the attestation of the started SCONE-enabled executable and the image's file system content.</p>
+</li>
+<li>
+<p><strong>SCONE container</strong></p>
+<p>A SCONE container is a running instance of a SCONE Docker image.</p>
+</li>
+<li>
+<p><strong>SCONE microservice</strong></p>
+<p>Microservice which is a SCONE-enabled executable.</p>
+</li>
+<li>
+<p><strong>SCONE-enabled executable</strong></p>
+<p>An executable created by a SCONE cross-compiler. The actual program will be executed within an enclave and utilises the SCONE runtime.</p>
+</li>
+<li>
+<p><strong>SCONE runtime</strong></p>
+<p>The runtime environment necessary to execute a SCONE-enabled executable. At the moment this consists of a modified C-library based on the musl library.</p>
+</li>
+<li>
+<p><strong>SCONE cross-compiler</strong></p>
+<p>Compilers for various programming languages such as C, C++, Rust, Go, and Fortran which compile source code into a SCONE-enabled executable.</p>
+</li>
+<li>
+<p><strong>SCONE client</strong></p>
+<p>A program that is used to configure SCONE-enabled executables. It allows the user to push confidential configurations to the CAS and encrypt files to ensure their content is only accessible by specific SCONE-enabled executables executed inside enclaves.</p>
+</li>
+<li>
+<p><strong>SCONE infrastructure</strong></p>
+<p>The SCONE infrastructure summarises all components necessary to deploy and run a SCONE-enabled executable. This includes Docker components like the Docker daemon and the Docker registry as well as the SCONE client and additional services like CAS and LAS.</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Secure container</strong>. </p>
+<p>A container which uses additional hardware isolation mechanisms, i.e., SGX to provide better application security. In particular, a secure container runs one or more <em>secure programs</em>. Additionally, the integrity and confidentiality of files inside a secure container are protected by SCONE.</p>
+</li>
+<li>
+<p><strong>Secure program</strong>. </p>
+<p>A program that executes inside an enclave.</p>
+</li>
+<li>
+<p><strong>SGX (Software Guard eXtension)</strong>. </p>
+<p>A CPU extension by Intel that permits to create SGX enclaves.</p>
+</li>
+<li>
+<p><strong>SGX enclave</strong>. </p>
+<p>A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.</p>
+</li>
+<li>
+<p><strong>threading</strong>. SCONE uses different kind of threads:</p>
 <ul>
 <li><strong>ethread</strong>: a thread that executes application threads inside of an enclave</li>
 <li><strong>lthread</strong>: an application thread. Typically, created by the application directly or indirectly via a <em>pthread_create</em> call. In SCONE, this <em>pthread_create</em> call will create a <em>lthread</em>. The lthread is executed by some <em>ethread</em>. In this way, we can quickly switch to another application thread whenever an application thread would get block. In this way, we reduce the number of enclave entries and exits - which are costly.</li>
 <li><strong>sthread</strong>: a thread that runs outside of the enclave and that executes system calls on behalf of the threads running inside the enclave</li>
 </ul>
 </li>
+<li>
+<p><strong>trusted computing base (TCB)</strong></p>
+<p>The set of hardware and software components which can break the security policy. Therefore one has to trust that these components are not malicious or faulty.</p>
+</li>
+<li>
+<p><strong>trusted execution environment (TEE)</strong></p>
+<p>A piece of hardware which allows secure processing. Usually the achieved protection goals are confidentiality and integrity.</p>
+</li>
 </ul>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a> and <a href="https://www.securecloudproject.eu/">SecureCloud</a>, March 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
                 

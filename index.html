@@ -394,8 +394,8 @@
 
 
   <li class="md-nav__item">
-    <a href="SCONE_TUTORIAL/" title="SCONE Tutorial" class="md-nav__link">
-      SCONE Tutorial
+    <a href="SCONE_TUTORIAL/" title="SCONE Hello World" class="md-nav__link">
+      SCONE Hello World
     </a>
   </li>
 
@@ -969,7 +969,7 @@ In a nutshell, our objective is to run applications such that data is <strong>al
 <h3 id="integration-with-secure-key-store">Integration with secure key store<a class="headerlink" href="#integration-with-secure-key-store" title="Permanent link">&para;</a></h3>
 <p>Encryption keys must be protected. In many installations, one does not want humans to be able to see encryption keys. Hence, one generates keys and stores these in keystores. SCONE supports the integration with a keystore.</p>
 <h3 id="transparent-tls-encryption">Transparent TLS encryption<a class="headerlink" href="#transparent-tls-encryption" title="Permanent link">&para;</a></h3>
-<p>Some popular applications like <strong>memcached</strong> or <strong>Zookeeper<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup></strong> do not support TLS out of the box. SCONE can transparently add TLS encryption to TCP connections. In SCONE, we never uses an external process for TLS termination<sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup>. In this way, the plain text is never seen by the operating system or any adversary.</p>
+<p>Some popular applications like <strong>memcached</strong> or <strong>Zookeeper<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup></strong> do not support TLS out of the box. SCONE can transparently add TLS encryption to TCP connections: the connections are terminated inside of the enclave. In this way, the plain text is never seen by the operating system or any adversary. Note that one should not use an external process for TLS termination<sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup>. </p>
 <h3 id="transparent-file-protection">Transparent file protection<a class="headerlink" href="#transparent-file-protection" title="Permanent link">&para;</a></h3>
 <p>SCONE protects the integrity and confidentiality of files via <a href="SCONE_Fileshield/"><strong>transparent file protection</strong></a>. This protection does not require any source code changes. A file can either be <em>integrity-protected</em> only (i.e., the file is stored in plain text but modifications are detected) or <em>confidentiality-</em> and <em>integrity-protected</em> (i.e., the file is encrypted and modifications are detected).</p>
 <h3 id="ease-of-use">Ease of use<a class="headerlink" href="#ease-of-use" title="Permanent link">&para;</a></h3>
@@ -986,7 +986,7 @@ In a nutshell, our objective is to run applications such that data is <strong>al
 servers by TLS. SCONE can add transparent support TLS for Zookeeper to ensure that the integrity and confidentiality of the data exchanged between the Zookeeper server is protected.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 <li id="fn:3">
-<p>Memcached could be protected, for example, with the help of a <em>stunnel</em>.&#160;<a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+<p>Memcached could be protected, for example, with the help of a <em>stunnel</em>. The communication between memcached and stunnel is not encrypted and hence, adversaries with root access would see the unencrypted traffic.&#160;<a class="footnote-backref" href="#fnref:3" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
