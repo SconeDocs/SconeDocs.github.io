@@ -80,7 +80,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
     
-      <a href="#compose-stack-files" tabindex="1" class="md-skip">
+      <a href="#stack-files" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -222,8 +222,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../appsecurity/" title="Application-oriented security" class="md-nav__link">
-      Application-oriented security
+    <a href="../appsecurity/" title="Application-Oriented security" class="md-nav__link">
+      Application-Oriented security
     </a>
   </li>
 
@@ -738,8 +738,8 @@
               
                 
                 
-                <h1 id="compose-stack-files">Compose / Stack Files<a class="headerlink" href="#compose-stack-files" title="Permanent link">&para;</a></h1>
-<p>SCONE supports to run secure applications  consisting of multiple secure containers. To do so, SCONE introduces slightly extended Docker <a href="https://docs.docker.com/compose/"><em>compose</em></a> file. Such an extended compose file defines for each process that runs inside of an enclave, a unique hash value (<strong>MRENCLAVE</strong>). During startup, SCONE performs an <em>attestation</em> for all these <em>secure processes</em> to ensure that the hash of the started program is as expected, i.e., is equal to <strong>MRENCLAVE</strong>. Only if it is equal, the arguments and the environment variables are passed to the process. In this way, we can pass secrets as arguments or environment variables in a secure fashion to a secure process.</p>
+                <h1 id="stack-files">Stack Files<a class="headerlink" href="#stack-files" title="Permanent link">&para;</a></h1>
+<p>SCONE supports to run secure applications  consisting of multiple secure containers. To do so, SCONE introduces slightly extended Docker <a href="https://docs.docker.com/docker-cloud/apps/stack-yaml-reference/"><em>stack</em></a> file. Such an extended stack file defines for each process that runs inside of an enclave, a unique hash value (<strong>MRENCLAVE</strong>). During startup, SCONE performs an <em>attestation</em> for all these <em>secure processes</em> to ensure that the hash of the started program is as expected, i.e., is equal to <strong>MRENCLAVE</strong>. Only if it is equal, the arguments and the environment variables are passed to the process. In this way, we can pass secrets as arguments or environment variables in a secure fashion to a secure process.</p>
 <p>By default, all containers are started with SCONE and the arguments are passed in a secure fashion to the started processes. However, you might not want to run all processes inside of enclaves. For containers that should be directly started with Docker Swarm, you need to set field <strong>not_scone: "true"</strong>. In this case, all arguments and the environment variables are directly passed to the container with Docker Swarm (instead of SCONE).</p>
 <p>Let's consider an example, that consists of a <em>haproxy</em> that runs in native mode and is directly started with Docker Swarm (indicated by line <strong>not_scone: "true"</strong>) Moreover, we start <em>myapp</em> (defined in container image <em>myapp-image</em>) and specify <strong>MRENCLAVE</strong>. Only after ensuring that the program started in the enclave has the expected <strong>MRENCLAVE</strong> the arguments and the environment variables are passed to <em>myapp</em>.</p>
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="s">&quot;3.1.scone&quot;</span>
@@ -768,11 +768,11 @@
         <span class="l l-Scalar l-Scalar-Plain">length</span><span class="p p-Indicator">:</span> <span class="s">&quot;8&quot;</span>
 </pre></div>
 
-<p>The extended compose file is split by SCONE into a standard compose file and a configuration information that is stored in the SCONE <em>Configruation and Attestation Service</em> (<strong>CAS</strong>):</p>
+<p>The extended stack file is split by SCONE into a standard stack file and a configuration information that is stored in the SCONE <em>Configruation and Attestation Service</em> (<strong>CAS</strong>):</p>
 <p><img alt="*scone stack deploy*" src="../img/SCONE-compose.png" /></p>
-<p>In the current version of scone, we assume that the compose file is stored on a trusted host. (We plan to support compose files stored on untrusted host in the near future.)</p>
-<p>The <em>split</em> functionality is part of the <strong>scone CLI</strong>, i.e., you can split a compose file via</p>
-<div class="codehilite"><pre><span></span>$ scone cas split &lt;COMPOSE_FILE&gt; --stack &lt;STACK_ID&gt;
+<p>In the current version of scone, we assume that the stack file is stored on a trusted host. </p>
+<p>The <em>split</em> functionality is part of the <strong>scone CLI</strong>, i.e., you can split a stack file via</p>
+<div class="codehilite"><pre><span></span>$ scone cas split &lt;STACK_FILE&gt; --stack &lt;STACK_ID&gt;
 </pre></div>
 
 <p>The stack ID is a randomly chose unique ID.</p>
