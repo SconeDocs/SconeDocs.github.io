@@ -1216,33 +1216,41 @@ Created empty file system protection file in fspf.pb. AES-GCM tag: 0e3da7ad62f5b
 Added region / to file system protection file fspf.pb new AES-GCM tag: dd961af10b5aaa5cb1044c35a3f42c84
 </pre></div>
 
-<p>Let us add another region <strong>/data</strong> that should be encrypted and persisted. To encrypt the files,  we specify option <strong>--encrypted</strong>. We specify option <strong>--kernel</strong> followed by a path (here, also <strong>/data</strong>) to request that files in this region are written to directory <strong>/data</strong>.</p>
+<p>Let us add another region <strong>/data</strong> that should be encrypted and persisted. To encrypt the files,  we specify option <strong>--encrypted</strong>.
+We specify option <strong>--kernel</strong> followed by a path (here, also <strong>/data</strong>) to request that files in this region are written to the kernel file system into directory <strong>/data</strong>.</p>
 <div class="codehilite"><pre><span></span>$ scone fspf addr fspf.pb /data --encrypted --kernel /data
 Added region /data to file system protection file fspf.pb new AES-GCM tag: 8481369d3ffdd9b6aeb30d044bf5c1c7
 </pre></div>
 
 <p>The encryption key for a file is chosen at random and stored in <em>fspf.pb</em>. We use the Intel random number generator <em>RdRand</em> to generate the key. The default key length of a region is 32 bytes. Alternatives are key length of 16 and 24 bytes. These can be selected via option  <strong>--key-length 16</strong> and <strong>--key-length 24</strong> when creating a region with command <strong>scone fspf addr</strong>.</p>
-<p>Now, that we defined the regions, i.e., <strong>/</strong> and <strong>/data</strong>, we can add files to region <strong>/data</strong>. Let's just add all files in <strong>/data-original</strong> and encrypt these and write the encrypted files to <strong>/data</strong>:</p>
+<p>Now, that we defined the regions, i.e., <strong>/</strong> and <strong>/data</strong>, we can add files to region <strong>/data</strong>.
+Let's just add all files in <strong>/data-original</strong>, encrypt these and write the encrypted files to <strong>/data</strong>.
+Note, the first <strong>/data</strong> argument specifies the protection region that determines the protection policy.
+The second, specifies where the encrypted files will be stored.
+That is, the command iterates over and reads the existing files in <strong>/data-original</strong> and encrypts them.
+The encrypted file content is written into the directory <strong>/data</strong> while the protection metadata of the individual files is added to the <strong>fsfp.pb</strong> file.</p>
 <div class="codehilite"><pre><span></span>$ scone fspf addf fspf.pb /data /data-original /data
 Added files to file system protection file fspf.pb new AES-GCM tag: 39a268166e628cf76e3fca80aa2d4f63
 </pre></div>
 
-<p><strong>Note</strong> that if we add files to an authenticated file region, <strong>addf</strong> will not copy or encrypt any data. It will
-only add  the file names and the checksums (tags) of the files located in <strong>/data-original</strong> to <strong>fspf.pb</strong>. Also, you should drop the directory to which encrypted files are written (i.e., in the above case <strong>/data</strong>) when adding files with <strong>scone fspf addf</strong>. In this case, you would probably mount directory <strong>/data-original</strong> as <strong>/data</strong> in the container.</p>
+<p><strong>Note</strong> that if the <strong>/data</strong> region would have been only authenticated and not encrypted, the tool does not need to write out any (encrypted) files.
+It will only add the file names and the checksums (tags) of the files located in <strong>/data-original</strong> to the <strong>fspf.pb</strong> file.
+Thus, you could drop the last argument in this case.</p>
 <p>Coming back to the above example, we can now compare the hash values of the original files and the encrypted files:</p>
 <div class="codehilite"><pre><span></span>$ shasum /data/*
-shasum /data/*
 87fd97468024e3d2864516ff5840e15d9615340d  /data/fspf.pb
 31732914910f4a08b9832c442074b0932915476c  /data/hello.txt
 8d07f3f576785c373a5e70e8dbcfa8ee06ca6d0c  /data/world.py
+$ shasum /data-original/*
+648a6a6ffffdaa0badb23b8baf90b6168dd16b3a  /data-original/hello.txt
+deda99d44e880ea8f2250f45c5c20c15d568d84c  /data-original/world.py
 </pre></div>
 
 <p>The fspf itself is not yet encrypted. We encrypt this file via command
 <strong>scone fspf encrypt fspf.pb</strong></p>
 <p><div class="codehilite"><pre><span></span>$ scone fspf encrypt fspf.pb &gt; /data-original/keytag
 </pre></div>
-We store the random encryption key as well as the tag of file <strong>fspf.pb</strong> in
-file  <strong>/data-original/keytag</strong>.</p>
+We store the random encryption key as well as the tag of file <strong>fspf.pb</strong> in file  <strong>/data-original/keytag</strong>.</p>
 <p>We introduce a very simple program that reads the two files:</p>
 <div class="codehilite"><pre><span></span>$ cat &gt; example.c <span class="s">&lt;&lt; EOF</span>
 <span class="s">#include &lt;stdio.h&gt;</span>
@@ -1511,7 +1519,7 @@ $ <span class="nv">SCONE_FSPF</span><span class="o">=</span>fspf.pb ./sgxcat
 
 <h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
 <p>The SCONE File Protection documentation is not yet completed and more information will be provided soon.</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
                 
