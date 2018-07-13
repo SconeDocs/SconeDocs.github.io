@@ -893,11 +893,11 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9">
     
     <label class="md-nav__link" for="nav-9">
-      Appendix
+      Background
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
       <label class="md-nav__title" for="nav-9">
-        Appendix
+        Background
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
@@ -908,8 +908,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../appsecurity/" title="Application-Oriented security" class="md-nav__link">
-      Application-Oriented security
+    <a href="../appsecurity/" title="Application-Oriented Security" class="md-nav__link">
+      Application-Oriented Security
     </a>
   </li>
 
@@ -922,18 +922,6 @@
   <li class="md-nav__item">
     <a href="../background/" title="SCONE Background" class="md-nav__link">
       SCONE Background
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../news/" title="News Log" class="md-nav__link">
-      News Log
     </a>
   </li>
 
@@ -972,10 +960,46 @@
       
 
 
-  <li class="md-nav__item">
-    <a href="../aboutScone/" title="About Scone" class="md-nav__link">
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
       About Scone
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        About Scone
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../aboutScone/" title="About" class="md-nav__link">
+      About
     </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../news/" title="News Log" class="md-nav__link">
+      News Log
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -1100,7 +1124,20 @@ Hello World
 <p>The output shows that SCONE is running in <strong>hardware mode</strong>: <em>export SCONE_MODE=hw</em></p>
 <h2 id="background-info">Background Info<a class="headerlink" href="#background-info" title="Permanent link">&para;</a></h2>
 <p>For ease of use, we create all Docker images such that applications run inside of enclaves if enclaves are available (<a href="../SCONE_ENV/#run-mode"><strong>AUTO</strong> mode</a>). If SGX is not available, they run in simulation mode, i.e., outside of an enclave but all SCONE software is running. To disable simulation mode, you can set environment variable <strong>SCONE_MODE=HW</strong>:</p>
-<div class="codehilite"><pre><span></span>docker run --device=/dev/isgx -e „SCONE_MODE=HW“ -it sconecuratedimages/crosscompilers
+<div class="codehilite"><pre><span></span>docker run --device=/dev/isgx -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
+</pre></div>
+
+<p>If you would start your container in hardware mode but forget to give it access to the sgx device, i.e.,</p>
+<div class="codehilite"><pre><span></span>docker run -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
+</pre></div>
+
+<p>compilation of the <em>helloworld</em> will succeed  but running the <em>helloworld</em> program will fail:</p>
+<div class="codehilite"><pre><span></span>bash-4.4# echo $SCONE_MODE
+HW
+bash-4.4# ls -l /dev/isgx
+ls: /dev/isgx: No such file or directory
+bash-4.4# ./helloworld
+[SCONE|ERROR] ./tools/starter-exec.c:993:_dl_main(): Could not create enclave: Error opening SGX device
 </pre></div>
 
 <p>When running your software in operations, you would force the programs to run inside of enclaves: this can be enforced with the help of SCONE <a href="../SCONE_CAS/">configuration and attestation service</a>. </p>
