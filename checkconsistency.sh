@@ -107,20 +107,26 @@ def main(argv):
             if age.days > 30:
                 warnings[key] = bcolors.WARNING + "WARNING: Image sconecuratedimages/%s is too old: age in days =%d" % (key, age.days) + bcolors.ENDC
 
+    errors=0
     print "Warnings related to images mentioned in documentation:"
     for key in warnings:
         print warnings[key]
+        errors+=1
 
     print "Errors related to images that have not recently been updated:"
     sorted_age=sorted(ages.items(), key=operator.itemgetter(1))
     for key in sorted_age:
         print bcolors.OKBLUE + "ERROR: image %s too old (%d days)" % (key[0], key[1]) + bcolors.ENDC
+        errors+=1
 
     print "Errors related of images mentioned in documentation but not available on docker hub:"
     for key in faulty:
         if not key in examples:
             print bcolors.FAIL + "ERROR: did not find image sconecuratedimages/"+key+" in File: "+faulty[key] + bcolors.ENDC
-
+            errors+=1
+    if errors > 0:
+        print bcolors.FAIL + "FATAL: Total of %d errors encounter. Exiting." % (errors) + bcolors.ENDC
+        exit(1)
 
 if __name__ == "__main__":
     main(sys.argv)
