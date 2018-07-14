@@ -35,7 +35,7 @@ repositories=["utils", "crosscompilers", "sgx-exporter", "sconecli", "apps", "mu
 # i.e., they do not exist
 
 examples={}
-#examples["nginx"]=0
+examples["nginx"]=0
 examples["crosscompilers:python27-authenticated"]=0
 examples[""]=0
 examples["helloworld:"]=0
