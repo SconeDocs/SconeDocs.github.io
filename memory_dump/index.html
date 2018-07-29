@@ -1106,12 +1106,16 @@
                 
                 <h1 id="finding-secrets">Finding Secrets...<a class="headerlink" href="#finding-secrets" title="Permanent link">&para;</a></h1>
 <p>One of the main advantages of SGX technology is that it cannot only protect against
-external attackers but also internal attackers that have already root access.</p>
-<p>To demonstrate that SGX/SCONE can protect against users with root access<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup>,
-let's consider a simple example: we store some secret in a variable <em>secret</em>.
+external attackers but also internal attackers that have already root access. We introduce
+a simple approach how you could check that your application is indeed running inside an enclave
+and that secrets are not accessible.</p>
+<p>To demonstrate how one can check that SGX/SCONE can protect against users with root access<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup>,
+let's consider a <strong>simplistic example</strong>: we store some secret in a variable <em>secret</em><sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup>.
 Note that the code is by default not encrypted, i.e., you must not store
-secrets in your code since the binary can be analysed. If you need to to protect your binaries too,
-SCONE supports this by being able to load encrypted shared libraries.</p>
+secrets in your code since the binary can be analysed.  In other words, <strong>do not
+store secrets in you code</strong> as it is done in this simplistic example. </p>
+<p>If you need to to protect your binaries too - for example, since you have some legacy code with embedded secrets -
+SCONE can protect these secrets this by supporting to load encrypted shared libraries.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>Let's get our crosscompiler image and ensure that you give your container access to the
 SGX device:</p>
@@ -1213,7 +1217,7 @@ by typing <em>control-C</em>.</p>
 <div class="codehilite"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
 </pre></div>
 
-<p>This will run for a little less time and in particular, it will not print any secret.</p>
+<p>This will run for much less time and in particular, it will not print any secrets.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, July 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
 <div class="footnote">
 <hr />
@@ -1221,6 +1225,10 @@ by typing <em>control-C</em>.</p>
 <li id="fn:1">
 <p>Note that the enclave runs in this example runs in debug mode, i.e., one can still attach to this
 enclave with <strong>scone-gdb</strong>. To prevent access via the debugger, you need to run your enclave in <em>production mode</em>.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Note that an adversary could analyse the binary and figure out the secret. The standard way to provide
+an enclave with secrets is to use <a href="../SCONE_EE2EE">SCONE CAS</a>.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
