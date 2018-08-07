@@ -13,7 +13,7 @@
         <meta name="description" content="Scone Documentation - Secure Containers">
       
       
-        <link rel="canonical" href="https://sconedocs.github.io/pypyscone/">
+        <link rel="canonical" href="https://sconedocs.github.io/configuration/">
       
       
         <meta name="author" content="Christof Fetzer">
@@ -42,7 +42,7 @@
     
     
       
-        <title>PyPy - SCONE</title>
+        <title>SCONE Configuration File - SCONE</title>
       
     
     
@@ -85,7 +85,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#pypy-for-scone" tabindex="1" class="md-skip">
+      <a href="../#scone-configuration-file" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -111,7 +111,7 @@
                 SCONE
               </span>
               <span class="md-header-nav__topic">
-                PyPy
+                SCONE Configuration File
               </span>
             
           
@@ -444,12 +444,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
     
     <label class="md-nav__link" for="nav-5">
       Language Support
@@ -537,20 +535,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-    <a href="./" title="PyPy" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../pypyscone/" title="PyPy" class="md-nav__link">
       PyPy
     </a>
-    
   </li>
 
         
@@ -1020,6 +1009,22 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#application-interface" title="application interface" class="md-nav__link">
+    application interface
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1031,22 +1036,46 @@
               
                 
                 
-                <h1 id="pypy-for-scone">PyPy for SCONE<a class="headerlink" href="#pypy-for-scone" title="Permanent link">&para;</a></h1>
-<p>PyPy is a <em>Just In Time</em> compiler for Python. We maintain a container image that includes  PyPy
-running inside of an enclave.</p>
-<p>The speed of pypy inside of an enclave is in many cases faster than running natively (i.e., outside an enclave) 
-using the standard CPython interpreter. To compare the performance we are using the standard
-<a href="http://speed.pypy.org/">python / pypy speed center</a> and add pypy for SCONE.</p>
-<p>Below you can see a graph that gives an overview of the performance of different Python variants.
-This depicts normalized performance using pypy as the baseline, i.e., smaller values
-show better performance. For example, a ratio of 65 means that the program is indeed 65 times slower than
-pypy running in native mode (i.e., these are not percent values). 
-We can see in this graph that pypy can achieve for some benchmarks
-dramatic speedups. pypy running inside of an enclave is in almost all benchmarks faster
-than native CPython:</p>
-<p><img alt="SCONE end-to-end encryption" src="../img/SpeedCenterOverview.png" /></p>
-<p>You can compare the performance in more details using the <a href="http://pyspeed.lsd.ufcg.edu.br/comparison/">speedcenter website</a> maintained 
-by <a href="http://ufcg.edu.br/">UFCG</a>.</p>
+                <h1 id="scone-configuration-file">SCONE Configuration File<a class="headerlink" href="#scone-configuration-file" title="Permanent link">&para;</a></h1>
+<p>SCONE permits users to tune certain internal parameters. These parameters affect performance but
+do not - at least directly - impact confidentiality nor integrity. These tuning parameters are defined
+by default in file <em>/etc/sgx-musl.conf</em>. When executing a program, one can change this default via environment
+variable <em>SCONE_CONFIG</em>.</p>
+<p>SCONE runs four different types of threads:</p>
+<ul>
+<li><strong>ETHREADS</strong>: this are operating systems threads that run inside an enclave</li>
+<li><strong>STHREADS</strong>: these are operating systems threads that run outside an enclave. </li>
+</ul>
+<p>SCONE_ETHREADS, SCONE_STHREADS, and SCONE_ESPINS, SCONE_ESLEEP variables
+are gone.</p>
+<p>As a replacement for SCONE_ETHREADS and SCONE_STHREADS variable, there
+is now SCONE_QUEUES variable, and a configurations file (in which you
+can set most of environment variables).</p>
+<p>The path to default config is /etc/sgx-musl.conf, you can also specify
+it via SCONE_CONFIG option. A reasonable default configuration file is
+already installed on sgx1-sgx3 machines.</p>
+<p>The format for the configuration file: on each line, there is a
+statement beginning with a single-character command code, and up to
+three numbers. The possible commands currently are:
+- Q <number of queues> - sets the number of syscall-return queue pairs
+  to allocate, equivalent to setting SCONE_QUEUES env variable;
+- H <heap size> - sets the size of heap, equivalent to setting
+  SCONE_HEAP env variable;
+- P <spin time> - equivalent to setting SCONE_SSPINS env variable;
+- L <sleep time> - equivalent to setting SCONE_SSLEEP env variable;
+- s <core-no> <queue-no> <realtime?> - creates an sthread pinned to
+  core <core-no>, serving queue pair with index <queue-no>, if
+  <realtime?> is non-zero - sets SCHED_FIFO scheduler for the thread.
+- e <core-no> <queue-no> <realtime?> - same as before, but creates an
+  ethread.</p>
+<p>SCONE_* env variables have higher priority than settings from the config file.</p>
+<h2 id="application-interface">application interface<a class="headerlink" href="#application-interface" title="Permanent link">&para;</a></h2>
+<p>SCONE is developed for legacy compatible code. Sometimes though it is wanted to
+adapt legacy code to benefit from SGX specific functionalities. SCONE exposes a
+set of these functionalities to the application in the <code class="codehilite">scone.h</code> header file.
+The source code can make sure that it is acutally executed with SCONE by
+testing for the <code class="codehilite">__SCONE_LIBC__</code> macro defined in <code class="codehilite">features.h</code>.</p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
                 
@@ -1063,41 +1092,6 @@ by <a href="http://ufcg.edu.br/">UFCG</a>.</p>
       
         
 <footer class="md-footer">
-  
-    <div class="md-footer-nav">
-      <nav class="md-footer-nav__inner md-grid">
-        
-          <a href="../Python/" title="Python" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
-            </div>
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Previous
-                </span>
-                Python
-              </span>
-            </div>
-          </a>
-        
-        
-          <a href="../Nodejs/" title="Node" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                Node
-              </span>
-            </div>
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
-            </div>
-          </a>
-        
-      </nav>
-    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
