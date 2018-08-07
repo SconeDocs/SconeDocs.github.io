@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0, mkdocs-material-3.0.2">
+      <meta name="generator" content="mkdocs-1.0, mkdocs-material-3.0.3">
     
     
       
@@ -1215,7 +1215,9 @@ Our work is presented at <a href="https://www.usenix.org/conference/atc18/presen
 <h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
 <p>SCONE is a platform to <strong>build and run secure applications</strong> with the help of <strong>Intel SGX</strong> (Software Guard eXtensions)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup>. 
 In a nutshell, our objective is to run applications such that data is <strong>always encrypted</strong>, i.e., all data at rest, all data on the wire as well as all data in main memory is encrypted. Even the program code can be encrypted. SCONE helps to protect data, computations and code against <strong>attackers with root access</strong>.</p>
-<p><img alt="SCONE Unmodified Application" src="img/sconeapp.png" /></p>
+<p><center>
+<img alt="SCONE Unmodified Application" src="img/sconeapp.png" />
+</center></p>
 <p>Our aim is it to make it <strong>as easy as possible</strong> to secure existing application. Switching to SCONE is simple since applications do not need to be modified. SCONE supports the most popular programming languages like JavaScript, Python - including PyPy, Java, Rust, Go, C, and C++ but also some ancient languages like Fortran.  Avoiding source code changes helps to ensure that applications can later run on different trusted execution environments. Moreover, there is no risk for hardware lock-in nor software lock-in -  even into SCONE.</p>
 <p>SCONE can be used on top of Kubernetes, Ranger and Docker. We provide a tight integration with Docker Swarm.  In case you are already using Docker <strong>stack files</strong>, we provide a <a href="SCONE_Compose/">simple way</a> to secure your services and applications.  We will provide a similar integration with Kubernetes later in 2018.</p>
 <p>SCONE <strong>scales better</strong> than competing solutions since it uses an advanced thread management and a very efficient way how to perform <a href="SCONE_Publications/#scone-secure-linux-containers-with-intel-sgx-usenix-osdi-2016"><strong>system calls</strong></a>. SCONE has an <a href="SCONE_CAS/"><strong>integrated secrets and configuration management</strong></a> - simplifying the distribution of secrets without application changes by performing an attestation of applications. </p>
@@ -1234,12 +1236,12 @@ In a nutshell, our objective is to run applications such that data is <strong>al
 <p><a href="SCONE_Compose/"><strong>secure command line arguments</strong></a>. Some applications might not use environment variables but command line arguments to pass secrets to the application. SCONE provides a secure way to pass arguments to your application without other privileged parties, like the operating system, being able to see the arguments.</p>
 </li>
 </ul>
-<p><img alt="SCONE Unmodified Application" src="img/encryptedConfiguration.png" /></p>
+<p><img alt="SCONE Secure Application Configuration" src="img/encryptedConfiguration.png" /></p>
 <h3 id="transparent-attestation">Transparent attestation<a class="headerlink" href="#transparent-attestation" title="Permanent link">&para;</a></h3>
 <p><a href="SCONE_Compose/"><strong>SCONE verifies that the correct code is running</strong></a> before passing any configuration info to the application. To ensure this, SCONE provides a <em>local attestation and configuration service</em>: this service provides only the code with the correct signature (<strong>MrEnclave</strong>) with its secrets. It also provides the application with a certificate. For debugging and development, you can run code inside of enclaves without attestation.</p>
-<p><img alt="SCONE Unmodified Application" src="img/AppAttestation.png" /></p>
+<p><img alt="SCONE Application Attestation" src="img/AppAttestation.png" /></p>
 <p>Two applications can ensure that they run inside enclaves via TLS authentication. In this way we can ensure that the client certificate and the server certificate was issued by the SCONE CAS, i.e., both communication partners run inside of enclaves and have the expected <strong>MrEnclave</strong>. </p>
-<p><img alt="SCONE Unmodified Application" src="img/p2pattestation.png" /></p>
+<p><img alt="SCONE TLS Attestation" src="img/p2pattestation.png" /></p>
 <h3 id="secure-main-memory">Secure main memory<a class="headerlink" href="#secure-main-memory" title="Permanent link">&para;</a></h3>
 <p>An adversary with root access can read the memory content of any process. In this way, an adversary can gain access to keys that an application is using, for example, the keys to protect its data at rest. SCONE helps to <strong>protect the main memory</strong>:</p>
 <ul>
@@ -1260,9 +1262,12 @@ In a nutshell, our objective is to run applications such that data is <strong>al
 </li>
 </ul>
 <h3 id="integration-with-secure-key-store">Integration with secure key store<a class="headerlink" href="#integration-with-secure-key-store" title="Permanent link">&para;</a></h3>
-<p>Encryption keys must be protected. In many installations, one does not want humans to be able to see encryption keys. Hence, one generates keys and stores these in keystores. SCONE supports the integration with a keystore.</p>
+<p>Encryption keys must be protected. In many installations, one does not want humans to be able to see encryption keys. Hence, one can generate keys and stores in SCONE CAS. SCONE also supports the integration with a keystore like Vault. SCONE can run Vault inside of an enclave to protect
+Vaults secrets in main memory.</p>
+<p><img alt="SCONE Transparent TLS Shield" src="img/keystore.png" /></p>
 <h3 id="transparent-tls-encryption">Transparent TLS encryption<a class="headerlink" href="#transparent-tls-encryption" title="Permanent link">&para;</a></h3>
 <p>Some popular applications like <strong>memcached</strong> or <strong>Zookeeper<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup></strong> do not support TLS out of the box. SCONE can transparently add TLS encryption to TCP connections: the connections are terminated inside of the enclave. In this way, the plain text is never seen by the operating system or any adversary. Note that one should not use an external process for TLS termination<sup id="fnref:3"><a class="footnote-ref" href="#fn:3" rel="footnote">3</a></sup>. </p>
+<p><img alt="SCONE Transparent TLS Shield" src="img/TLSshield.png" /></p>
 <h3 id="transparent-file-protection">Transparent file protection<a class="headerlink" href="#transparent-file-protection" title="Permanent link">&para;</a></h3>
 <p>SCONE protects the integrity and confidentiality of files via <a href="SCONE_Fileshield/"><strong>transparent file protection</strong></a>. This protection does not require any source code changes. A file can either be <em>integrity-protected</em> only (i.e., the file is stored in plain text but modifications are detected) or <em>confidentiality-</em> and <em>integrity-protected</em> (i.e., the file is encrypted and modifications are detected).</p>
 <h3 id="ease-of-use">Ease of use<a class="headerlink" href="#ease-of-use" title="Permanent link">&para;</a></h3>
