@@ -216,8 +216,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#so-what-problems-can-scone-help-me-to-solve" title="So, what problems can SCONE help me to solve?" class="md-nav__link">
-    So, what problems can SCONE help me to solve?
+  <a href="#so-what-problems-can-scone-help-to-solve" title="So, what problems can SCONE help to solve?" class="md-nav__link">
+    So, what problems can SCONE help to solve?
   </a>
   
     <nav class="md-nav">
@@ -1120,8 +1120,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#so-what-problems-can-scone-help-me-to-solve" title="So, what problems can SCONE help me to solve?" class="md-nav__link">
-    So, what problems can SCONE help me to solve?
+  <a href="#so-what-problems-can-scone-help-to-solve" title="So, what problems can SCONE help to solve?" class="md-nav__link">
+    So, what problems can SCONE help to solve?
   </a>
   
     <nav class="md-nav">
@@ -1220,14 +1220,14 @@ In a nutshell, our objective is to run applications such that data is <strong>al
 </center></p>
 <p>Our aim is it to make it <strong>as easy as possible</strong> to secure existing application. Switching to SCONE is simple since applications do not need to be modified. SCONE supports the most popular programming languages like JavaScript, Python - including PyPy, Java, Rust, Go, C, and C++ but also some ancient languages like Fortran.  Avoiding source code changes helps to ensure that applications can later run on different trusted execution environments. Moreover, there is no risk for hardware lock-in nor software lock-in -  even into SCONE.</p>
 <p>SCONE can be used on top of Kubernetes, Ranger and Docker. We provide a tight integration with Docker Swarm.  In case you are already using Docker <strong>stack files</strong>, we provide a <a href="SCONE_Compose/">simple way</a> to secure your services and applications.  We will provide a similar integration with Kubernetes later in 2018.</p>
-<p>SCONE <strong>scales better</strong> than competing solutions since it uses an advanced thread management and a very efficient way how to perform <a href="SCONE_Publications/#scone-secure-linux-containers-with-intel-sgx-usenix-osdi-2016"><strong>system calls</strong></a>. SCONE has an <a href="SCONE_CAS/"><strong>integrated secrets and configuration management</strong></a> - simplifying the distribution of secrets without application changes by performing an attestation of applications. </p>
+<p>SCONE <strong>scales better</strong> than competing solutions since it uses an advanced thread management and a very efficient way how to perform <a href="SCONE_Publications/#scone-secure-linux-containers-with-intel-sgx-usenix-osdi-2016"><strong>system calls</strong></a>. SCONE has an <a href="SCONE_CAS/"><strong>integrated secrets and configuration management</strong></a> - simplifying the distribution of secrets without application changes by performing an attestation of applications.</p>
 <p>While SCONE focuses on securing containers and cloud-native applications, SCONE can help you to secure almost any program running on top of Linux.</p>
-<h2 id="so-what-problems-can-scone-help-me-to-solve">So, what problems can SCONE help me to solve?<a class="headerlink" href="#so-what-problems-can-scone-help-me-to-solve" title="Permanent link">&para;</a></h2>
+<h2 id="so-what-problems-can-scone-help-to-solve">So, what problems can SCONE help to solve?<a class="headerlink" href="#so-what-problems-can-scone-help-to-solve" title="Permanent link">&para;</a></h2>
 <h3 id="secure-application-configuration">Secure application configuration<a class="headerlink" href="#secure-application-configuration" title="Permanent link">&para;</a></h3>
 <p>SCONE provides applications with secrets in a secure fashion. <em>Why is that a problem?</em>  Say, you want to run MySQL and you configure MySQL to encrypt its data at rest. To do so, MySQL requires a key to decrypt and encrypt its files. One can store this key in the MySQL configuration file but this configuration file cannot be encrypted since MySQL would need a key to decrypt the file. SCONE helps developers to solve such configuration issues in the following ways:</p>
 <ul>
 <li>
-<p><strong>secure configuration files</strong>. SCONE can transparently decrypt encrypted configuration files. It will give access to the plain text only to a given program, like, MySQL. No source code changes are needed for this to work.</p>
+<p><strong>secure configuration files</strong>. SCONE can transparently decrypt encrypted configuration files, i.e., without the need to modify the application. It will give access to the plain text only to a given program, like, MySQL. No source code changes are needed for this to work.</p>
 </li>
 <li>
 <p><a href="SCONE_Compose/"><strong>secure environment variables</strong></a>. SCONE gives applications access to environment variables that are not visible to anybody else - even users with root access or the operating system. <em>Why would I need this?</em> Consider the MySQL example from above. You can pass user passwords via environment variables like <em>MYSQL_ROOT_PASSWORD</em> and <em>MYSQL_PASSWORD</em> to MySQL. We need to protect these environment variables to prevent unauthorized accesses to the MySQL database.</p>
@@ -1238,7 +1238,8 @@ In a nutshell, our objective is to run applications such that data is <strong>al
 </ul>
 <p><img alt="SCONE Secure Application Configuration" src="img/encryptedConfiguration.png" /></p>
 <h3 id="transparent-attestation">Transparent attestation<a class="headerlink" href="#transparent-attestation" title="Permanent link">&para;</a></h3>
-<p><a href="SCONE_Compose/"><strong>SCONE verifies that the correct code is running</strong></a> before passing any configuration info to the application. To ensure this, SCONE provides a <em>local attestation and configuration service</em>: this service provides only the code with the correct signature (<strong>MrEnclave</strong>) with its secrets. It also provides the application with a certificate. For debugging and development, you can run code inside of enclaves without attestation.</p>
+<p><a href="SCONE_Compose/"><strong>SCONE verifies that the correct code is running</strong></a> before passing any configuration info to the application. To ensure this, SCONE provides a <em>local attestation and configuration service</em>: this service provides only the code with the correct signature (<strong>MrEnclave</strong>) with its secrets: certificates, arguments, environment variables and keys. It also provides the application with a certificate that shows that the application runs inside an enclave. Note that this can be done completely <strong>transparent</strong> to the application, i.e., no application source code changes are required: the encrypted certificate can be stored  in the file system where the application expects its certificates.</p>
+<p>For debugging and development, you can run code inside of enclaves without attestation.</p>
 <p><img alt="SCONE Application Attestation" src="img/AppAttestation.png" /></p>
 <p>Two applications can ensure that they run inside enclaves via TLS authentication. In this way we can ensure that the client certificate and the server certificate was issued by the SCONE CAS, i.e., both communication partners run inside of enclaves and have the expected <strong>MrEnclave</strong>. </p>
 <p><img alt="SCONE TLS Attestation" src="img/p2pattestation.png" /></p>
