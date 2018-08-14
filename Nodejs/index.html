@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0, mkdocs-material-3.0.3">
+      <meta name="generator" content="mkdocs-1.0.1, mkdocs-material-3.0.3">
     
     
       
@@ -1106,43 +1106,43 @@
                 
                 <h1 id="node">Node<a class="headerlink" href="#node" title="Permanent link">&para;</a></h1>
 <p>We provide Node 8.9.4 image that runs inside of an enclave:</p>
-<div class="codehilite"><pre><span></span>&gt; docker pull sconecuratedimages/apps:node-8.9.4
+<div class="codehilite"><pre><span></span>docker pull sconecuratedimages/apps:node-8.9.4
 </pre></div>
 
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>Let's look at a little <em>hello world</em> program. First, we need to start a <strong>node</strong> container: </p>
-<div class="codehilite"><pre><span></span>&gt; docker run -it --device<span class="o">=</span>/dev/isgx sconecuratedimages/apps:node-8.9.4 sh
+<div class="codehilite"><pre><span></span>docker run -it --device<span class="o">=</span>/dev/isgx sconecuratedimages/apps:node-8.9.4 sh
 </pre></div>
 
 <p>In case you have no sgx driver installed, you can drop option <strong>--device=/dev/isgx</strong> for testing. <strong>The programs will then run in simulation mode</strong>, i.e., the SCONE software runs but in native mode and not inside an enclave.</p>
 <p>Inside of the container, we first add <strong>npm</strong>: </p>
-<div class="codehilite"><pre><span></span># apk add --no-cache nodejs-npm
+<div class="codehilite"><pre><span></span>apk add --no-cache nodejs-npm
 </pre></div>
 
 <p>Ensure we can run even in a resource-constrainted VM by setting the maximum heap size to a reasonable value of 1GB:</p>
-<div class="codehilite"><pre><span></span># export SCONE_HEAP=1G
+<div class="codehilite"><pre><span></span>export SCONE_HEAP=1G
 </pre></div>
 
 <p>We create a new application <strong>myapp</strong>:</p>
-<div class="codehilite"><pre><span></span><span class="c1"># mkdir myapp</span>
-<span class="c1"># cd myapp</span>
-<span class="c1"># cat &gt; package.json &lt;&lt; EOF</span>
-<span class="o">{</span>
-  <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;myapp&quot;</span>,
-  <span class="s2">&quot;version&quot;</span>: <span class="s2">&quot;1.0.0&quot;</span>,
-  <span class="s2">&quot;description&quot;</span>: <span class="s2">&quot;&quot;</span>,
-  <span class="s2">&quot;main&quot;</span>: <span class="s2">&quot;app.js&quot;</span>,
-  <span class="s2">&quot;scripts&quot;</span>: <span class="o">{</span>
-    <span class="s2">&quot;test&quot;</span>: <span class="s2">&quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span>
-  <span class="o">}</span>,
-  <span class="s2">&quot;author&quot;</span>: <span class="s2">&quot;&quot;</span>,
-  <span class="s2">&quot;license&quot;</span>: <span class="s2">&quot;ISC&quot;</span>
-<span class="o">}</span>
-EOF
+<div class="codehilite"><pre><span></span>mkdir myapp
+<span class="nb">cd</span> myapp
+cat &gt; package.json <span class="s">&lt;&lt; EOF</span>
+<span class="s">{</span>
+<span class="s">  &quot;name&quot;: &quot;myapp&quot;,</span>
+<span class="s">  &quot;version&quot;: &quot;1.0.0&quot;,</span>
+<span class="s">  &quot;description&quot;: &quot;&quot;,</span>
+<span class="s">  &quot;main&quot;: &quot;app.js&quot;,</span>
+<span class="s">  &quot;scripts&quot;: {</span>
+<span class="s">    &quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span>
+<span class="s">  },</span>
+<span class="s">  &quot;author&quot;: &quot;&quot;,</span>
+<span class="s">  &quot;license&quot;: &quot;ISC&quot;</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
 </pre></div>
 
 <p>We install <strong>express</strong> with the help of <strong>npm</strong>:</p>
-<div class="codehilite"><pre><span></span><span class="c1"># npm install express --save</span>
+<div class="codehilite"><pre><span></span>npm install express --save
 </pre></div>
 
 <p>Let's store the <strong>hello world</strong> code:</p>
@@ -1160,7 +1160,7 @@ EOF
 
 <p>We can run this application inside of an enclave with <strong>node</strong>. We can also enable some debug
 messages by setting environment variable <strong>SCONE_VERSION=1</strong> to print that we run inside of an enclave:</p>
-<div class="codehilite"><pre><span></span><span class="c1"># SCONE_VERSION=1 node app.js</span>
+<div class="codehilite"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> node app.js
 
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
@@ -1188,12 +1188,12 @@ Example app listening on port <span class="m">3000</span>!
 <p>You can now try to send a request to <strong>myapp</strong> from another shell in the container.
 Assuming that you did not start a new container in meantime, execute in another
 shell of your host:</p>
-<div class="codehilite"><pre><span></span>&gt; docker <span class="nb">exec</span> -it <span class="k">$(</span>docker ps -l -q<span class="k">)</span> sh
+<div class="codehilite"><pre><span></span>docker <span class="nb">exec</span> -it <span class="k">$(</span>docker ps -l -q<span class="k">)</span> sh
 </pre></div>
 
 <p>Inside of the container, first install <strong>curl</strong> and then query <strong>myapp</strong>:</p>
-<div class="codehilite"><pre><span></span><span class="c1"># apk add —no-cache curl</span>
-<span class="c1"># curl localhost:3000/</span>
+<div class="codehilite"><pre><span></span>apk add --no-cache curl
+curl localhost:3000/
 Hello World!/ <span class="c1">#</span>
 </pre></div>
 
@@ -1340,7 +1340,7 @@ Hello World!
     
       <script src="../assets/javascripts/application.583bbe55.js"></script>
       
-      <script>app.initialize({version:"1.0",url:{base:".."}})</script>
+      <script>app.initialize({version:"1.0.1",url:{base:".."}})</script>
       
     
     
