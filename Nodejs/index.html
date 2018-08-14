@@ -1146,23 +1146,25 @@ cat &gt; package.json <span class="s">&lt;&lt; EOF</span>
 </pre></div>
 
 <p>Let's store the <strong>hello world</strong> code:</p>
-<div class="codehilite"><pre><span></span><span class="c1"># cat &gt; app.js &lt;&lt; EOF</span>
-var <span class="nv">express</span> <span class="o">=</span> require<span class="o">(</span><span class="s1">&#39;express&#39;</span><span class="o">)</span><span class="p">;</span>
-var <span class="nv">app</span> <span class="o">=</span> express<span class="o">()</span><span class="p">;</span>
-app.get<span class="o">(</span><span class="s1">&#39;/&#39;</span>, <span class="k">function</span> <span class="o">(</span>req, res<span class="o">)</span> <span class="o">{</span>
-  res.send<span class="o">(</span><span class="s1">&#39;Hello World!&#39;</span><span class="o">)</span><span class="p">;</span>
-<span class="o">})</span><span class="p">;</span>
-app.listen<span class="o">(</span><span class="m">3000</span>, <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
-  console.log<span class="o">(</span><span class="s1">&#39;Example app listening on port 3000!&#39;</span><span class="o">)</span><span class="p">;</span>
-<span class="o">})</span><span class="p">;</span>
-EOF
+<div class="codehilite"><pre><span></span>cat &gt; app.js <span class="s">&lt;&lt; EOF</span>
+<span class="s">var express = require(&#39;express&#39;);</span>
+<span class="s">var app = express();</span>
+<span class="s">app.get(&#39;/&#39;, function (req, res) {</span>
+<span class="s">  res.send(&#39;Hello World!&#39;);</span>
+<span class="s">});</span>
+<span class="s">app.listen(3000, function () {</span>
+<span class="s">  console.log(&#39;Example app listening on port 3000!&#39;);</span>
+<span class="s">});</span>
+<span class="s">EOF</span>
 </pre></div>
 
 <p>We can run this application inside of an enclave with <strong>node</strong>. We can also enable some debug
 messages by setting environment variable <strong>SCONE_VERSION=1</strong> to print that we run inside of an enclave:</p>
 <div class="codehilite"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> node app.js
+</pre></div>
 
-<span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<p>This results in an output like this:</p>
+<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
@@ -1194,7 +1196,10 @@ shell of your host:</p>
 <p>Inside of the container, first install <strong>curl</strong> and then query <strong>myapp</strong>:</p>
 <div class="codehilite"><pre><span></span>apk add --no-cache curl
 curl localhost:3000/
-Hello World!/ <span class="c1">#</span>
+</pre></div>
+
+<p>This results in an output like this:</p>
+<div class="codehilite"><pre><span></span>Hello World!/ <span class="c1">#</span>
 </pre></div>
 
 <p>Potential error messages:</p>
