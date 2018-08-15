@@ -451,38 +451,9 @@
       
     
     
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Updating CPU microcode
-      </label>
-    
     <a href="./" title="Updating CPU microcode" class="md-nav__link md-nav__link--active">
       Updating CPU microcode
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#checking-cpu-features" title="Checking CPU Features" class="md-nav__link">
-    Checking CPU Features
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
     
   </li>
 
@@ -1061,22 +1032,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#checking-cpu-features" title="Checking CPU Features" class="md-nav__link">
-    Checking CPU Features
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1089,6 +1044,7 @@
                 
                 
                 <h1 id="microcode-update">Microcode Update<a class="headerlink" href="#microcode-update" title="Permanent link">&para;</a></h1>
+<h1 id="microcode-update-on-ubuntu">Microcode-Update on Ubuntu<a class="headerlink" href="#microcode-update-on-ubuntu" title="Permanent link">&para;</a></h1>
 <p>On Ubuntu, you can upgrade your CPU  to the newest microcode as follows:</p>
 <div class="codehilite"><pre><span></span><span class="nv">TMPDIR</span><span class="o">=</span><span class="k">$(</span>mktemp -d<span class="k">)</span>
 <span class="nb">cd</span> <span class="nv">$TMPDIR</span>
@@ -1098,10 +1054,9 @@ sudo apt-get update
 sudo apt-get install -y intel-microcode
 <span class="k">if</span> <span class="o">[</span> -f /sys/devices/system/cpu/microcode/reload <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     <span class="k">if</span> <span class="o">[</span> -d /lib/firmware <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
-        <span class="nb">echo</span> <span class="s2">&quot;OK&quot;</span>
         mkdir -p OLD
         cp -rf /lib/firmware/intel-ucode OLD
-        sudo cp -rf intel-ucode /lib/firmware
+            sudo cp -rf intel-ucode /lib/firmware
         <span class="nb">echo</span> <span class="s2">&quot;1&quot;</span> <span class="p">|</span> sudo tee /sys/devices/system/cpu/microcode/reload
     <span class="k">else</span>
         <span class="nb">echo</span> <span class="s2">&quot;Error: microcode directory does not exist&quot;</span>
@@ -1112,14 +1067,15 @@ sudo apt-get install -y intel-microcode
 </pre></div>
 
 <h2 id="checking-cpu-features">Checking CPU Features<a class="headerlink" href="#checking-cpu-features" title="Permanent link">&para;</a></h2>
+<div class="admonition note">
+<p class="admonition-title">CPU microcode updates that protects against side channels like L1TF are not available for all CPUs.</p>
+</div>
 <p>You can check that your microcode has up to date protection
 features enabled by executing the following:</p>
 <div class="codehilite"><pre><span></span>docker run --rm sconecuratedimages/apps:check_cpuid
 </pre></div>
 
-<div class="admonition note">
-<p class="admonition-title">CPU microcode updates that protects against side channels like L1TF are not available for all CPUs</p>
-</div>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, August 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
                 
