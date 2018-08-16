@@ -1125,6 +1125,42 @@ sudo apt-get install -y intel-microcode
 <span class="k">fi</span>
 </pre></div>
 
+<p>You can check that a new microcode was updated by executing:</p>
+<div class="codehilite"><pre><span></span>dmesg <span class="p">|</span> grep microcode
+</pre></div>
+
+<p>This will result in an output like</p>
+<div class="codehilite"><pre><span></span>[  108.121907] microcode: CPU0 sig=0x506e3, pf=0x2, revision=0xc2
+[  108.129335] microcode: CPU0 updated to revision 0xc6, date = 2018-04-17
+[  108.129406] microcode: CPU1 sig=0x506e3, pf=0x2, revision=0xc2
+[  108.129484] microcode: CPU1 updated to revision 0xc6, date = 2018-04-17
+[  108.129539] microcode: CPU2 sig=0x506e3, pf=0x2, revision=0xc2
+[  108.129611] microcode: CPU2 updated to revision 0xc6, date = 2018-04-17
+[  108.129696] microcode: CPU3 sig=0x506e3, pf=0x2, revision=0xc2
+[  108.129768] microcode: CPU3 updated to revision 0xc6, date = 2018-04-17
+[  108.129816] microcode: CPU4 sig=0x506e3, pf=0x2, revision=0xc2
+[  108.129905] microcode: CPU4 updated to revision 0xc6, date = 2018-04-17
+[  108.129953] microcode: CPU5 sig=0x506e3, pf=0x2, revision=0xc2
+[  108.130025] microcode: CPU5 updated to revision 0xc6, date = 2018-04-17
+[  108.130070] microcode: CPU6 sig=0x506e3, pf=0x2, revision=0xc2
+[  108.130142] microcode: CPU6 updated to revision 0xc6, date = 2018-04-17
+[  108.130224] microcode: CPU7 sig=0x506e3, pf=0x2, revision=0xc2
+[  108.130296] microcode: CPU7 updated to revision 0xc6, date = 2018-04-17
+[  108.130298] microcode: Enabling Indirect Branch Prediction Barrier
+[  108.130300] microcode: Enabling Indirect Branch Restricted Speculation
+</pre></div>
+
+<p>When you are sure that this works out, you can load this microcode during reboot as follows:</p>
+<div class="codehilite"><pre><span></span>cat &gt; /tmp/load-intel-ucode.sh <span class="s">&lt;&lt; EOF</span>
+<span class="s">#!/bin/bash</span>
+<span class="s">echo &quot;1&quot; | sudo tee /sys/devices/system/cpu/microcode/reload</span>
+<span class="s">EOF</span>
+sudo mv /tmp/load-intel-ucode.sh /lib/firmware/load-intel-ucode.sh
+chmod a+x /lib/firmware/load-intel-ucode.sh
+crontab -e
+@reboot /lib/firmware/load-intel-ucode.sh
+</pre></div>
+
 <h2 id="checking-cpu-features">Checking CPU Features<a class="headerlink" href="#checking-cpu-features" title="Permanent link">&para;</a></h2>
 <div class="admonition note">
 <p class="admonition-title">CPU microcode updates that protects against side channels like L1TF are not available for all CPUs.</p>
