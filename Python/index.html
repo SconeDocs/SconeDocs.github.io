@@ -1181,34 +1181,44 @@
 <h2 id="image">Image<a class="headerlink" href="#image" title="Permanent link">&para;</a></h2>
 <p>Currently, we provde a simple Python 2.7 image that is based on the standard Python image python:2.7-alpine.</p>
 <p>You can pull this image as follows:</p>
-<div class="codehilite"><pre><span></span>&gt; docker pull sconecuratedimages/crosscompilers:python27
+<div class="codehilite"><pre><span></span>docker pull sconecuratedimages/apps:python-2-alpine3.6
 </pre></div>
 
 <h2 id="python-interpreter">Python Interpreter<a class="headerlink" href="#python-interpreter" title="Permanent link">&para;</a></h2>
-<p>To run the Python interpreter inside an enclave in interactive mode, just execute:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:python27 sh
+<p>To run the Python interpreter inside an enclave in interactive mode, first start the container:</p>
+<div class="codehilite"><pre><span></span>docker run --rm -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/apps:python-2-alpine3.6 sh
+</pre></div>
 
-$ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000000000</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>AUTO <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python
-<span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<p>The execute python inside of the container:</p>
+<div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
+</pre></div>
+
+<p>Since we set <strong>SCONE_VERSION=1</strong>, we get the following outputs<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup>:</p>
+<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">export</span> <span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
 <span class="nb">export</span> <span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
 <span class="nb">export</span> <span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">11000000</span>
+<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">268435456</span>
+<span class="nb">export</span> <span class="nv">SCONE_STACK</span><span class="o">=</span><span class="m">4194304</span>
 <span class="nb">export</span> <span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
+<span class="nb">export</span> <span class="nv">SCONE_ESPINS</span><span class="o">=</span><span class="m">10000</span>
 <span class="nb">export</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>hw
 <span class="nb">export</span> <span class="nv">SCONE_SGXBOUNDS</span><span class="o">=</span>no
-<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>yes
-Revision: 9b355b99170ad434010353bb9f4dca24e532b1b7
-Branch: master
-Configure options: --enable-file-prot --enable-shared --enable-debug --prefix<span class="o">=</span>/scone/src/built/cross-compiler/x86_64-linux-musl
+<span class="nb">export</span> <span class="nv">SCONE_VARYS</span><span class="o">=</span>no
+<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>yes <span class="o">(</span>unprotected<span class="o">)</span>
+<span class="nb">export</span> <span class="nv">SCONE_MPROTECT</span><span class="o">=</span>no
+Revision: d0afc0f23819476cbc7d944a20e91d79fcb6f9ab <span class="o">(</span>Thu Aug <span class="m">16</span> <span class="m">16</span>:45:05 <span class="m">2018</span> +0200<span class="o">)</span>
+Branch: master <span class="o">(</span>dirty<span class="o">)</span>
+Configure options: --enable-shared --enable-debug --prefix<span class="o">=</span>/mnt/ssd/franz/subtree-scone/built/cross-compiler/x86_64-linux-musl
 
-Python <span class="m">2</span>.7.14 <span class="o">(</span>default, Nov  <span class="m">4</span> <span class="m">2017</span>, <span class="m">00</span>:12:32<span class="o">)</span> 
-<span class="o">[</span>GCC <span class="m">5</span>.3.0<span class="o">]</span> on linux2
+Enclave hash: f129bbd19627367c03e2980c0f04a32809a7aae1d795a75220d9054daf537b30
+Python <span class="m">2</span>.7.13 <span class="o">(</span>default, Jun  <span class="m">1</span> <span class="m">2018</span>, <span class="m">13</span>:20:58<span class="o">)</span>
+<span class="o">[</span>GCC <span class="m">7</span>.3.0<span class="o">]</span> on linux2
 Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&quot;</span>, <span class="s2">&quot;credits&quot;</span> or <span class="s2">&quot;license&quot;</span> <span class="k">for</span> more information.
-&gt;&gt;&gt; 
+&gt;&gt;&gt;
 </pre></div>
 
 <p>Potential error messages:</p>
@@ -1242,12 +1252,14 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Python program exits</p>
-<p>Python does not always deal gracefully with out of memory situations: often, it terminates with some misleading error message if Python runs out of heap or stack memory. Please try to give python sufficient stack and heap size if this happens. We recommend to start with a large heap, like, <strong>SCONE_HEAP=10000000000</strong> to ensure that Python has sufficient heap. If your program runs without any problem with a large heap, you can try to reduce the heap size to speedup program startup times.**</p>
+<p>Python does not always deal gracefully with out of memory situations: often, it terminates with some misleading error message if Python runs out of heap or stack memory. Please try to give python sufficient stack and heap size if this happens. We recommend to start with a large heap, like, <strong>SCONE_HEAP=256M</strong> to ensure that Python has sufficient heap. If your program runs without any problem with a large heap, you can try to reduce the heap size to speedup program startup times.**</p>
 </div>
 <p>Note that you can set the environment variable of a process - in our case python - running inside a container with docker option <strong>-e</strong>:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run --rm -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">10000000000</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/crosscompilers:python27 python myapp.py
+<div class="codehilite"><pre><span></span>docker run --rm -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/apps:python-2-alpine3.6 python myapp.py
+</pre></div>
 
-<span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<p>Will produce an output like</p>
+<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
@@ -1257,26 +1269,33 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 <h2 id="numpy">NumPy<a class="headerlink" href="#numpy" title="Permanent link">&para;</a></h2>
 <p>Let's see how we can install some extra packages that your python program might need. Let us focus on <strong>NumPy</strong> first, a very popular package for scientific computing. Note that the following steps you would typically perform as part of a <a href="../SCONE_Dockerfile/">Dockerfile</a>.</p>
 <p>First, we start the SCONE Python  image:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -it sconecuratedimages/crosscompilers:python27 bash
+<div class="codehilite"><pre><span></span>docker run -it --rm sconecuratedimages/apps:python-2-alpine3.6 sh
+</pre></div>
+
+<p>This is a minimal image and you need to add some packages to be able to
+install packages that compile external code:</p>
+<div class="codehilite"><pre><span></span>apk add --no-cache bats libbsd openssl musl-dev build-base
 </pre></div>
 
 <p>We then install <strong>numpy</strong> inside of the container with the help of <strong>pip</strong>:</p>
-<div class="codehilite"><pre><span></span>$ pip install numpy
-Collecting numpy
-  Downloading numpy-1.14.0.zip <span class="o">(</span><span class="m">4</span>.9MB<span class="o">)</span>
-    <span class="m">100</span>% <span class="p">|</span>████████████████████████████████<span class="p">|</span> <span class="m">4</span>.9MB 211kB/s 
-Building wheels <span class="k">for</span> collected packages: numpy
-  Running setup.py bdist_wheel <span class="k">for</span> numpy ... <span class="p">|</span>
-<span class="k">done</span>
-  Stored in directory: /root/.cache/pip/wheels/1e/02/97/ba1c91fa21d10f8f96cc6ddd7d9553d429b5af17558fb83280
-Successfully built numpy
+<div class="codehilite"><pre><span></span>pip install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
+</pre></div>
+
+<p>This results in an output like</p>
+<div class="codehilite"><pre><span></span>Collecting <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
+  Downloading https://files.pythonhosted.org/packages/d5/6e/f00492653d0fdf6497a181a1c1d46bbea5a2383e7faf4c8ca6d6f3d2581d/numpy-1.14.5.zip <span class="o">(</span><span class="m">4</span>.9MB<span class="o">)</span>
+    <span class="m">100</span>% <span class="p">|</span>████████████████████████████████<span class="p">|</span> <span class="m">4</span>.9MB 375kB/s
 Installing collected packages: numpy
-Successfully installed numpy-1.14.0
+  Running setup.py install <span class="k">for</span> numpy ... <span class="k">done</span>
+Successfully installed numpy-1.14.5
 </pre></div>
 
 <p>Ok, let's try to execute some examples with <strong>NumPy</strong>. Let's  run Python inside an enclave, give it plenty of heap memory and ask SCONE to print some debug messages:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">10000000000</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>AUTO <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python
-<span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
+</pre></div>
+
+<p>during startup this issues the following messages</p>
+<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
@@ -1325,8 +1344,9 @@ array<span class="o">([[</span> <span class="m">0</span>,  <span class="m">1</sp
 <p>Let's look at another popular library: the <strong>cairo</strong> graphics library. <strong>cairo</strong>  is written in C and has 
 Python bindings provided by package <strong>pycairo</strong>. In this case, we need to install the C-library first:</p>
 <p>In Alpine Linux - which is the basis of the SCONE Python image - we can install cairo as follows:</p>
-<div class="codehilite"><pre><span></span>$ apk add --no-cache  cairo-dev cairo 
-fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/main/x86_64/APKINDEX.tar.gz
+<p><div class="codehilite"><pre><span></span>apk add --no-cache  cairo-dev cairo 
+</pre></div>
+<div class="codehilite"><pre><span></span>fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/main/x86_64/APKINDEX.tar.gz
 fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/community/x86_64/APKINDEX.tar.gz
 <span class="o">(</span><span class="m">1</span>/55<span class="o">)</span> Installing expat-dev <span class="o">(</span><span class="m">2</span>.2.5-r0<span class="o">)</span>
 ...
@@ -1336,11 +1356,11 @@ Executing glib-2.54.2-r0.trigger
 No schema files found: doing nothing.
 OK: <span class="m">297</span> MiB in <span class="m">112</span> packages
 $ 
-</pre></div>
-
+</pre></div></p>
 <p>Now we can install the Python bindings of cairo with <strong>pip</strong>:</p>
-<div class="codehilite"><pre><span></span>$ pip install pycairo
-Collecting pycairo
+<p><div class="codehilite"><pre><span></span>pip install pycairo
+</pre></div>
+<div class="codehilite"><pre><span></span>Collecting pycairo
   Downloading pycairo-1.15.4.tar.gz <span class="o">(</span>178kB<span class="o">)</span>
     <span class="m">100</span>% <span class="p">|</span>████████████████████████████████<span class="p">|</span> 184kB <span class="m">1</span>.7MB/s 
 Building wheels <span class="k">for</span> collected packages: pycairo
@@ -1349,10 +1369,9 @@ Building wheels <span class="k">for</span> collected packages: pycairo
 Successfully built pycairo
 Installing collected packages: pycairo
 Successfully installed pycairo-1.15.4
-</pre></div>
-
+</pre></div></p>
 <p>We can now start Python again via </p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">10000000000</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>AUTO <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python
+<div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
 </pre></div>
 
 <p>before we execute some cairo examples:</p>
@@ -1405,12 +1424,15 @@ Successfully installed pycairo-1.15.4
 <p><a href="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03"><img alt="asciicast" src="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03.png" /></a></p>
 <h2 id="limitation">Limitation<a class="headerlink" href="#limitation" title="Permanent link">&para;</a></h2>
 <p>We do not yet support fork, i.e., you spawn new processes from within your Python programs. We are currently working on removing this limitation of SCONE. Until then, we expect you to have an external spawner. </p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, June 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, August 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
 <p>Send email to <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#110;&#102;&#111;&#64;&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#111;&#109;">&#105;&#110;&#102;&#111;&#64;&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#111;&#109;</a> to get access for evaluation version.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>The other environment variables are explained below. Also read Section <a href="SCONE_ENV">Environment Variables</a> for further details.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
