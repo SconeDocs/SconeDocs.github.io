@@ -1397,7 +1397,7 @@ print str<span class="o">(</span>f.read<span class="o">())</span>
 <h2 id="python">Python<a class="headerlink" href="#python" title="Permanent link">&para;</a></h2>
 <p>Let's try a similar approach for Python. 
 In the above example, we encrypted a Python program. Let's try to execute this encrypted program that accesses an encrypted file:</p>
-<div class="codehilite"><pre><span></span>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> sconecuratedimages/crosscompilers:python27 bash
+<div class="codehilite"><pre><span></span>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> sconecuratedimages/apps:python-2.7-alpine3.6 bash
 </pre></div>
 
 <p>The files <em>/data/world.py</em> and  <em>/data/hello.txt</em> are encrypted:</p>
@@ -1426,9 +1426,9 @@ Hello World
 
 <p>We need to add all files that our application might access. Often, these files in the root region might be defined in some container image. Let's see how we can add these files to our region <strong>/</strong>.</p>
 <h3 id="adding-files-from-an-existing-container-image">Adding files from an existing container image<a class="headerlink" href="#adding-files-from-an-existing-container-image" title="Permanent link">&para;</a></h3>
-<p>We show how to add a subset of the files of container image <strong>sconecuratedimages/crosscompilers:python27</strong> to our root region.
+<p>We show how to add a subset of the files of container image <strong>sconecuratedimages/apps:python-2.7-alpine3.6</strong> to our root region.
 To do so, we ensure that we have the newest images:</p>
-<div class="codehilite"><pre><span></span>&gt; docker pull sconecuratedimages/crosscompilers:python27
+<div class="codehilite"><pre><span></span>&gt; docker pull sconecuratedimages/apps:python-2.7-alpine3.6
 &gt; docker pull sconecuratedimages/crosscompilers
 </pre></div>
 
@@ -1442,9 +1442,9 @@ apt-get install -y docker.io
 </pre></div>
 
 <p>Now, we want to add all files of some target container. In our example,
-this is an instance of image <em>sconecuratedimages/crosscompilers:python27</em>.
+this is an instance of image <em>sconecuratedimages/apps:python-2.7-alpine3.6</em>.
 We ensure that we pulled the latest image before we start the container:</p>
-<div class="codehilite"><pre><span></span><span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker run -d sconecuratedimages/crosscompilers:python27 <span class="nb">printf</span> OK<span class="sb">`</span> 
+<div class="codehilite"><pre><span></span><span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker run -d sconecuratedimages/apps:python-2.7-alpine3.6 <span class="nb">printf</span> OK<span class="sb">`</span> 
 </pre></div>
 
 <p>We can now copy all files from this container into a new directory <strong>rootvol</strong>:</p>
@@ -1471,14 +1471,14 @@ $ scone fspf encrypt fspf.pb &gt; keytag
 <p>We can now create a new container image with this file system protection file
 using this Dockerfile</p>
 <div class="codehilite"><pre><span></span>$ cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
-<span class="s">FROM sconecuratedimages/crosscompilers:python27</span>
+<span class="s">FROM sconecuratedimages/apps:python-2.7-alpine3.6</span>
 <span class="s">COPY fspf.pb /</span>
 <span class="s">EOF</span>
-$ docker build -t sconecuratedimages/crosscompilers:python27-authenticated .
+$ docker build -t sconecuratedimages/apps:python-2.7-alpine3.6-authenticated .
 </pre></div>
 
 <p>We can run a container as follows:
-<div class="codehilite"><pre><span></span>$ docker run -it sconecuratedimages/crosscompilers:python27-authenticated sh
+<div class="codehilite"><pre><span></span>$ docker run -it sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
 </pre></div></p>
 <p>Let us activate the file shield:</p>
 <div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span>... extract from data-original/keytag ...
@@ -1493,7 +1493,7 @@ $ <span class="nb">export</span> <span class="nv">SCONE_FSPF</span><span class="
 <h2 id="checking-the-file-system-shield">Checking the File System Shield<a class="headerlink" href="#checking-the-file-system-shield" title="Permanent link">&para;</a></h2>
 <p>Let's us check the file shield by creating a new python program (<em>helloworld-manual.py</em>) in
 side of a python container:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -i sconecuratedimages/crosscompilers:python27-authenticated sh
+<div class="codehilite"><pre><span></span>&gt; docker run -i sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
 $ cat &gt; helloworld-manual.py <span class="s">&lt;&lt; EOF</span>
 <span class="s">print &quot;Hello World&quot;</span>
 <span class="s">EOF</span>

@@ -4,7 +4,7 @@
 
 docker rmi sconecuratedimages/muslgcc
 docker rmi sconecuratedimages/crosscompilers:runtime
-docker rmi sconecuratedimages/crosscompilers:scone
+docker rmi sconecuratedimages/crosscompilers
 docker rmi sconecuratedimages/crosscompilers:gcc-sim
 docker rmi sconecuratedimages/helloworld
 
@@ -15,7 +15,7 @@ docker pull sconecuratedimages/muslgcc
 
 docker pull sconecuratedimages/crosscompilers:runtime
 
-docker pull sconecuratedimages/crosscompilers:scone
+docker pull sconecuratedimages/crosscompilers
 
 docker pull sconecuratedimages/crosscompilers:gcc-sim
 
@@ -39,7 +39,7 @@ docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/cr
 
 ./sim_hello_world
 
-docker run --rm --device=/dev/isgx -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:scone scone-gcc hello_world.c  -o sgx_hello_world
+docker run --rm --device=/dev/isgx -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers scone-gcc hello_world.c  -o sgx_hello_world
 
 ./sgx_hello_world
 
@@ -92,9 +92,9 @@ cd SCONE_TUTORIAL/CreateImage
 export TAG="latest"
 export IMAGE_NAME="sconecuratedimages/helloworld"
 
-docker pull sconecuratedimages/crosscompilers:scone
+docker pull sconecuratedimages/crosscompilers
 
-CONTAINER_ID=`docker run -d -it --device=/dev/isgx  -v $(pwd):/mnt sconecuratedimages/crosscompilers:scone bash -c "
+CONTAINER_ID=`docker run -d -it --device=/dev/isgx  -v $(pwd):/mnt sconecuratedimages/crosscompilers bash -c "
 set -e
 printf 'Q 1\ne 0 0 0\ns 1 0 0\n' > /etc/sgx-musl.conf
 scone-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
@@ -197,7 +197,7 @@ docker push $FULLTAG
 asciinema rec --title="Scone File Protection" --max-wait=1  FSPF_screencast
 
 
-docker run -it -v $PWD:/mnt sconecuratedimages/crosscompilers:scone
+docker run -it -v $PWD:/mnt sconecuratedimages/crosscompilers
 
 mkdir -p /example
 # where native files would be written

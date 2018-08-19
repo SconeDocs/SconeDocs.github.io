@@ -36,7 +36,7 @@ repositories=["utils", "crosscompilers", "sgx-exporter", "sconecli", "apps", "mu
 
 examples={}
 examples["nginx"]=0
-examples["crosscompilers:python27-authenticated"]=0
+examples["apps:python-2.7-alpine3.6-authenticated"]=0
 examples[""]=0
 examples["helloworld:"]=0
 
