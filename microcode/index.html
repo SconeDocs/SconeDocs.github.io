@@ -85,7 +85,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#microcode-update-and-check" tabindex="1" class="md-skip">
+      <a href="../#l1tf-aka-foreshadow-mitigation" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -1114,8 +1114,22 @@
               
                 
                 
-                <h1 id="microcode-update-and-check">Microcode Update and Check<a class="headerlink" href="#microcode-update-and-check" title="Permanent link">&para;</a></h1>
+                <h1 id="l1tf-aka-foreshadow-mitigation">L1TF (a.k.a. Foreshadow) Mitigation<a class="headerlink" href="#l1tf-aka-foreshadow-mitigation" title="Permanent link">&para;</a></h1>
+<p>Intel SGX is susceptible to a side channel attack in which an attacker can read the
+secrets of an enclave <strong>E</strong> by starting an enclave <strong>A</strong> on the same core as <strong>E</strong>. This attack only works for secrets of <strong>E</strong> stored in a L1 cache  and if <strong>A</strong> and <strong>E</strong> run 
+on the same core. This attack is referred to as <strong>enclave-to-enclave (E2E)</strong> attack.
+E2E <strong>does not work</strong> if <strong>E</strong> and <strong>A</strong> run on different cores since each core has its own dedicated L1 cache.</p>
+<p>The current Intel microcode ensures that the L1 cache of a core is flushed when a
+thread leaves the enclave. In this way, if <strong>A</strong> runs after <strong>E</strong>, it will not be able
+to read any secrets from <strong>L1</strong>. Note that flushing L1 is an expensive operation. SCONE keeps the threads running inside of an enclave and in this way avoids the cost of flushing
+L1 on each system call.</p>
+<p>The microcode update by Intel protects against L1TF only if <strong>hyperthreading</strong> is
+disabled! If enclave <strong>A</strong> would run on one hyperthread and <strong>E</strong> on the second hyperthread of the same core, <strong>A</strong> could still read the values of <strong>E</strong> stored in <strong>L1</strong> using the L1TF side channel. Hence, you must also disable the <strong>hyperthreading</strong> inside of your BIOS<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup>. If hyperthreading is switched on/off, is checked during attestation. In other words, one can ensure during attestation that the enclave is protected against L1TF.</p>
+<p>According to <a href="https://software.intel.com/security-software-guidance/software-guidance/l1-terminal-fault">the Intel documentation</a>, an update microcode combined with switched off hyperthreading will <strong>fully mitigate L1TF and E2E for Intel SGX</strong>.</p>
 <h2 id="microcode-update-on-ubuntu">Microcode Update on Ubuntu<a class="headerlink" href="#microcode-update-on-ubuntu" title="Permanent link">&para;</a></h2>
+<p>Note that the BIOS loads the microcode during boot. The operating
+system can load a newer version of the microcode, for example, in case there is no
+new microcode update available yet for your BIOS. <strong>In this case, the OS has to load the new microcode on each new boot.</strong></p>
 <p>On Ubuntu, you can upgrade your CPU  to the newest microcode as follows:</p>
 <div class="codehilite"><pre><span></span><span class="nv">TMPDIR</span><span class="o">=</span><span class="k">$(</span>mktemp -d<span class="k">)</span>
 <span class="nb">cd</span> <span class="nv">$TMPDIR</span>
@@ -1169,6 +1183,7 @@ sudo apt-get install -y intel-microcode
 <span class="s">EOF</span>
 sudo mv /tmp/load-intel-ucode.sh /lib/firmware/load-intel-ucode.sh
 chmod a+x /lib/firmware/load-intel-ucode.sh
+<span class="c1"># the following cmd pops up the editor: add the @reboot... via the editor</span>
 crontab -e
 @reboot /lib/firmware/load-intel-ucode.sh
 </pre></div>
@@ -1183,6 +1198,14 @@ features enabled by executing the following:</p>
 </pre></div>
 
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, August 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>We have published an alternative to switching off hyperthreading in <a href="https://www.usenix.org/conference/atc18/presentation/oleksenko">Usenix ATC 2018</a>: we ensure that both hyperthreads of a core run inside of the same enclave.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
                 
                   
                 
