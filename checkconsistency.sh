@@ -84,6 +84,7 @@ def check_repositories():
         repository= "sconecuratedimages/%s" % rep
         print "Processing repository %s" % repository
         r=call(["docker", "pull", "--all-tags", repository])
+        call(["docker", "images", "purge"])  # remove deleted images
         check_age(repository)
 
 # check markdown file of documentation and age of all repositories
