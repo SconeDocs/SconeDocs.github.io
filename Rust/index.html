@@ -1131,11 +1131,11 @@ Hello, world!
 
 <h2 id="scone-cargo-and-scone-cargo"><strong>scone-cargo</strong> and <strong>scone cargo</strong>:<a class="headerlink" href="#scone-cargo-and-scone-cargo" title="Permanent link">&para;</a></h2>
 <p>You can build projects with <strong>scone cargo</strong>:</p>
-<div class="codehilite"><pre><span></span>$ scone cargo build --target<span class="o">=</span>scone
+<div class="codehilite"><pre><span></span>$ scone cargo build --target<span class="o">=</span>x86_64-scone-linux-musl
 </pre></div>
 
 <p>Alternatively, you can use <strong>scone-cargo</strong> if, for example,  you need a command without a space.</p>
-<p><strong>scone cargo</strong> has access to the SCONE-compiled rust standard library and the target file. <strong>--target=scone</strong> instructs it to use our target file - essentially triggering a cross-compiler build.</p>
+<p><strong>scone cargo</strong> has access to the SCONE-compiled rust standard library and the target file. <strong>--target=x86_64-scone-linux-musl</strong> instructs it to use our target file - essentially triggering a cross-compiler build.</p>
 <p>Due to the cross-compilation, crates that depend on compiled (C) libraries, such as openssl or error-chain, do not work out of the box. Cargo will not use the system installed libraries because it wrongly assumes that they do not fit the target architecture. To solve this issue, one has to either provide the compiled libraries or deactivate the crate.</p>
 <p>The following is an example of how an executable with <em>openssl</em> can be compiled: </p>
 <div class="codehilite"><pre><span></span>$ <span class="nv">OPENSSL_LIB_DIR</span><span class="o">=</span>/libressl-2.4.5 <span class="nv">OPENSSL_INCLUDE_DIR</span><span class="o">=</span>/libressl-2.4.5/include/ <span class="nv">OPENSSL_STATIC</span><span class="o">=</span><span class="m">1</span> <span class="nv">PKG_CONFIG_ALLOW_CROSS</span><span class="o">=</span><span class="m">1</span> scone-cargo build --target<span class="o">=</span>scone 
