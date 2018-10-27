@@ -393,6 +393,47 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#testing" title="Testing" class="md-nav__link">
+    Testing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup" title="SETUP" class="md-nav__link">
+    SETUP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1" title="Step 1" class="md-nav__link">
+    Step 1
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2" title="Step 2" class="md-nav__link">
+    Step 2
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3" title="Step 3" class="md-nav__link">
+    Step 3
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -1157,6 +1198,47 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#testing" title="Testing" class="md-nav__link">
+    Testing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup" title="SETUP" class="md-nav__link">
+    SETUP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1" title="Step 1" class="md-nav__link">
+    Step 1
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2" title="Step 2" class="md-nav__link">
+    Step 2
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3" title="Step 3" class="md-nav__link">
+    Step 3
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -1257,43 +1339,146 @@ Intel SGX CPU extension.</p>
 a security policies.  We call such a security policy a  <strong>session</strong>.</p>
 <p><img alt="**Session**" src="../img/session.png" /></p>
 <p>A session specifies what volumes are mounted and where they are mounted, the keys and tags of these volumes and MrEnclave of the trusted DApp. For example, a
-session description could look like this:</p>
-<div class="codehilite"><pre><span></span><span class="n">name</span><span class="o">:</span> <span class="n">simple_demo973314779816631545484317824</span>
-<span class="n">digest</span><span class="o">:</span> <span class="n">create</span>
+session (template) could look like this:</p>
+<div class="codehilite"><pre><span></span>name: $SESSION
+digest: create
 
-<span class="n">services</span><span class="o">:</span>
-   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">application</span>
-     <span class="n">image_name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">simple_demo</span>
-     <span class="n">mrenclaves</span><span class="o">:</span> <span class="o">[</span><span class="mi">12</span><span class="n">a7a1049814207a0b2d26aff3e21dd921c8754b1cb46cf02c3269870a5d8233</span><span class="o">]</span>
-     <span class="n">tags</span><span class="o">:</span> <span class="o">[</span><span class="n">demo</span><span class="o">]</span>
-     <span class="n">command</span><span class="o">:</span> <span class="n">copy_files</span> <span class="n">integrity</span> <span class="kd">protected</span> <span class="n">command</span> <span class="n">line</span> <span class="k">arguments</span> <span class="n">are</span> <span class="n">put</span> <span class="n">here</span>
-     <span class="n">pwd</span><span class="o">:</span> <span class="o">/</span>
-     <span class="n">environment</span><span class="o">:</span>
-        <span class="n">SCONE_MODE</span><span class="o">:</span> <span class="n">hw</span>
-        <span class="n">ZIP_URL</span><span class="o">:</span> <span class="n">https</span><span class="o">://</span><span class="mf">87.190</span><span class="o">.</span><span class="mf">236.132</span><span class="o">:</span><span class="mi">4443</span><span class="sr">/18lW4/</span><span class="n">helloWorld</span><span class="o">.</span><span class="na">txt</span>
+services:
+   - name: application
+     image_name: sconecuratedimages/iexec:copy_demo
+     mrenclaves: [e0f45a9a862c83f383730cc2aef144081025e3f925615da5b35c4d980faaa3c9]
+     tags: [demo]
+     command: /application
+     pwd: /
+     environment:
+        SCONE_MODE: hw
+        ZIP_URL: $URL
 
-<span class="n">volumes</span><span class="o">:</span>
-   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">encrypted</span><span class="o">-</span><span class="n">input</span><span class="o">-</span><span class="n">files</span>
-     <span class="n">fspf_tag</span><span class="o">:</span> <span class="mi">632545824</span><span class="n">c059d466093224271e16421</span>
-     <span class="n">fspf_key</span><span class="o">:</span> <span class="mi">4</span><span class="n">e9ea2ed437dc2f95fb1349ee21a9ce69de14a56b53f3a4ff6de065e30e5acd5</span>
-   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">encrypted</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">files</span>
-     <span class="n">fspf_tag</span><span class="o">:</span> <span class="mi">0</span><span class="n">a20d02dda136322ce530d2289a08132</span>
-     <span class="n">fspf_key</span><span class="o">:</span> <span class="mi">568170</span><span class="n">a741308526406faca081f8502e42bf2163b60f6ba962c05fb68cae2ab6</span>
+volumes:
+   - name: encrypted-input-files
+     fspf_tag: $INPUT_FSPF_TAG
+     fspf_key: $INPUT_FSPF_KEY
+   - name: encrypted-output-files
+     fspf_tag: $OUTPUT_FSPF_TAG
+     fspf_key: $OUTPUT_FSPF_KEY
 
-<span class="n">images</span><span class="o">:</span>
-   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">simple_demo</span>
-     <span class="n">mrenclaves</span><span class="o">:</span> <span class="o">[</span><span class="mi">12</span><span class="n">a7a1049814207a0b2d26aff3e21dd921c8754b1cb46cf02c3269870a5d8233</span><span class="o">]</span>
-     <span class="n">tags</span><span class="o">:</span> <span class="o">[</span><span class="n">demo</span><span class="o">]</span>
-     <span class="n">volumes</span><span class="o">:</span>
-        <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">encrypted</span><span class="o">-</span><span class="n">input</span><span class="o">-</span><span class="n">files</span>
-          <span class="n">path</span><span class="o">:</span> <span class="o">/</span><span class="n">encryptedInputs</span>
-        <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">encrypted</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">files</span>
-          <span class="n">path</span><span class="o">:</span> <span class="o">/</span><span class="n">encryptedOutputs</span>
+images:
+   - name: sconecuratedimages/iexec:copy_demo
+     mrenclaves: [e0f45a9a862c83f383730cc2aef144081025e3f925615da5b35c4d980faaa3c9]
+     tags: [demo]
+     volumes:
+        - name: encrypted-input-files
+          path: /encryptedInputs
+        - name: encrypted-output-files
+          path: /encryptedOutputs
 </pre></div>
 
 <p>Note that in most cases you can start from a generic session template and you do not need to worry about the syntax and all the details of session descriptions.</p>
 <h2 id="building-an-dapp">Building an DApp<a class="headerlink" href="#building-an-dapp" title="Permanent link">&para;</a></h2>
-<p><code class="codehilite">bashgit clone</code>bash</p>
+<p>The source code of this application, you can retrieve from</p>
+<div class="codehilite"><pre><span></span>git clone https://github.com/scontain/copy_dapp.git
+<span class="nb">cd</span> copy_dapp
+</pre></div>
+
+<p>You can see that the source code (file <em>copy_files.c</em>) does not contain any specifics related to
+SCONE or SGX. </p>
+<p>We build this program with the help of the standard
+<strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile). For convenience,
+we provide an Alpine image (i.e., sconecuratedimages/muslgcc) that has <strong>gcc</strong> preinstalled.</p>
+<div class="codehilite"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/muslgcc</span>
+
+COPY copy_files.c  /
+
+<span class="c"># compile with vanilla gcc</span>
+<span class="k">RUN</span> gcc -Wall copy_files.c -o /copy_files
+
+<span class="k">FROM</span><span class="s"> iexechub/sgx-scone:runtime</span>
+
+COPY --from<span class="o">=</span><span class="m">0</span> /copy_files /application
+
+<span class="k">RUN</span> apk add curl bash unzip zip
+
+<span class="k">ENTRYPOINT</span><span class="s"> [&quot;/application.sh&quot;]</span>
+</pre></div>
+
+<p>To run the application inside of an enclave, we need the SCONE
+runtime environment. This runtime is part of image <strong>iexechub/sgx-scone:runtime</strong>.
+Moreover, this image contains a script <strong>/application.sh</strong> that pulls
+the input and output volumes from some transfer service, executes the application inside of an enclave. For testing, the script can push the encrypted output volume to a transfer service (see below).  </p>
+<p>The image <strong>sconecuratedimages/iexec:copy_demo</strong>
+is built by the script <code class="codehilite">build-image.sh</code>. This script also determines
+<strong>MrEnclave</strong> of the application and writes a <strong>session template</strong> copy_dapp.yml.</p>
+<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
+<p>We now show how to execute a simple test program. After building the image
+by executing</p>
+<div class="codehilite"><pre><span></span>./build-image.sh
+</pre></div>
+
+<p>We can execute this image on a SGX-capable host. This host has to have the SCONE local attestation service and Docker installed. We will describe in the installation section on how to install these prerequisites.</p>
+<p>In what follows, we assume that the name of the host is stored in environment variable <strong>host</strong>.</p>
+<h3 id="setup">SETUP<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h3>
+<p>To execute 
+We create an INPUTS directory and store some files there. We encrypt these files and push the zipped up files to <strong>transfer.sh</strong>.</p>
+<p>Let's set up the INPUTS for our example</p>
+<div class="codehilite"><pre><span></span>mkdir -p EXAMPLE
+<span class="nb">cd</span> EXAMPLE
+mkdir -p KEYS INPUTS OUTPUTS ZIP
+<span class="nb">echo</span> <span class="s2">&quot;Hello world&quot;</span> &gt; INPUTS/f1.txt
+<span class="nb">echo</span> <span class="s2">&quot;Hello together&quot;</span> &gt; INPUTS/f2.txt
+cp ../copy_dapp.yml KEYS/
+</pre></div>
+
+<h3 id="step-1">Step 1<a class="headerlink" href="#step-1" title="Permanent link">&para;</a></h3>
+<p>Let's execute the first step of encrypting the files and pushing these to the transfer service:</p>
+<div class="codehilite"><pre><span></span><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs sconecuratedimages/iexecsgx:scone.cli encryptedpush --application sconecuratedimages/iexec:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
+</pre></div>
+
+<p>Let's look at the output:</p>
+<div class="codehilite"><pre><span></span><span class="nb">echo</span> <span class="nv">$CMD</span>
+</pre></div>
+
+<p>should result in an output like:</p>
+<div class="codehilite"><pre><span></span> <span class="s2">&quot;cmdline&quot;</span>: --sessionID <span class="m">180713033312847980809017601</span>/application --secretManagementService <span class="m">87</span>.190.236.136 --url https://transfer.sh/TPGzU/scone-upload
+</pre></div>
+
+<p>You can look in your browser at the URL to see the uploaded files!</p>
+<h3 id="step-2">Step 2<a class="headerlink" href="#step-2" title="Permanent link">&para;</a></h3>
+<p>Before running this application on the iExec platform, we might
+want to test it on some SGX-capable host.</p>
+<p>Ensure that the newest image is loaded on <strong>host</strong>. This step is only needed if it is expected that the image has changed
+since <strong>docker run</strong> does not pull/update the image.</p>
+<div class="codehilite"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/iexec:copy_demo
+</pre></div>
+
+<p>Ensure that you are executing a bash shell (execute <code class="codehilite">bash</code>). Now, execute the command on <strong>host</strong> and we ask it to be pushed to transfer.sh:</p>
+<div class="codehilite"><pre><span></span><span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/iexec:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push transfer.sh<span class="k">)</span>
+</pre></div>
+
+<p>Let's look at the output:</p>
+<div class="codehilite"><pre><span></span><span class="nb">echo</span> <span class="nv">$URL</span>
+</pre></div>
+
+<p>this results in an output like:</p>
+<div class="codehilite"><pre><span></span>https://transfer.sh/11yj8M/helloWorld.txt
+</pre></div>
+
+<p>You can now download this (if running a <strong>bash</strong> shell) </p>
+<div class="codehilite"><pre><span></span>curl --output ZIP/encryptedOutputFiles.zip <span class="si">${</span><span class="nv">URL</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>
+</pre></div>
+
+<h3 id="step-3">Step 3<a class="headerlink" href="#step-3" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/ZIP:/encryptedOutputs  -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs sconecuratedimages/iexecsgx:scone.cli decrypt
+</pre></div>
+
+<p>We can now look at the files in OUTPUT directory:</p>
+<div class="codehilite"><pre><span></span>cat OUTPUTS/f1.txt
+</pre></div>
+
+<p>results in  <code class="codehilite">Hello world</code> and</p>
+<div class="codehilite"><pre><span></span>cat OUTPUTS/f2.txt
+</pre></div>
+
+<p>results in  <code class="codehilite">Hello together</code>.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, October 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
