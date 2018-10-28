@@ -1257,13 +1257,13 @@
                 
                 
                 <h1 id="trusted-dapps-with-scone-and-iexec">Trusted DApps with SCONE and iExec<a class="headerlink" href="#trusted-dapps-with-scone-and-iexec" title="Permanent link">&para;</a></h1>
-<p>This tutorial shows how to build a <strong>trusted DApp</strong> for the <a href="https://iex.ec/"><strong>iExec platform</strong></a>. A <a href="https://en.wikipedia.org/wiki/Decentralized_application"><strong>DApp</strong></a> is a decentralized application that can be executed on hosts of a decentralized network. We recommend that you read the preceding tutorial pages first to learn about basic terminology and concepts of SCONE. </p>
+<p>This tutorial shows how to build a <strong>trusted DApp</strong> for the <a href="https://iex.ec/"><strong>iExec platform</strong></a>. A <a href="https://en.wikipedia.org/wiki/Decentralized_application"><strong>DApp</strong></a> is a decentralized application that can be executed on hosts of a decentralized network. To learn about basic terminology and concepts of SCONE,  we recommend that you read the preceding tutorial pages first. </p>
 <h3 id="trusted-dapp">Trusted DApp<a class="headerlink" href="#trusted-dapp" title="Permanent link">&para;</a></h3>
 <p>SCONE helps developers to protect the <strong>integrity</strong> as well as the <strong>confidentiality</strong> not only of data at rest (i.e., on disk) and data being transmitted but also <strong>all data stored in main memory</strong>. Note
 that any root user can easily dump the main memory of any application and in this
-way can gain secrets like the keys used to encrypt the data at rest.  </p>
+way might gain secrets like the keys used to encrypt the data at rest.  </p>
 <p><img alt="Protection Goals" src="../img/DApp-overview.png" /></p>
-<p>By <strong>trusted DApp</strong> we refer to a DApp that executes inside a <a href="https://en.wikipedia.org/wiki/Trusted_execution_environment"><strong>trusted execution environment (TEE)</strong></a> in
+<p>By <strong>trusted DApp</strong>, we refer to a DApp that executes inside a <a href="https://en.wikipedia.org/wiki/Trusted_execution_environment"><strong>trusted execution environment (TEE)</strong></a> in
 such a way that not even an attacker with root rights can access the data of the application. SCONE simplifies to run applications inside of TEEs as well as to
 transparently encrypt and decrypt files.
 SCONE is designed to be independent of the actual TEE implementation. Right now -- since there is a lack of appropriate hardware alternatives -- SCONE supports only <a href="https://en.wikipedia.org/wiki/Software_Guard_Extensions">Intel SGX</a>.</p>
@@ -1291,14 +1291,14 @@ SCONE is designed to be independent of the actual TEE implementation. Right now 
 </ul>
 <h3 id="trusted-copy-dapp">Trusted <strong>copy</strong> DApp<a class="headerlink" href="#trusted-copy-dapp" title="Permanent link">&para;</a></h3>
 <p>We show how to implement a simple <strong>copy</strong> command as
-a trusted DApp. This is of course not a realistic DApp but it helps to show all
-steps necessary to build and run such an application.</p>
+a trusted DApp. This is of course not a realistic DApp but it helps us to show all
+steps necessary to build and run trusted DApps.</p>
 <p>The <strong>copy</strong> DApp copies files located in an input directory <strong>/INPUTS</strong> to an output directory <strong>/OUTPUTS</strong> of the client the machine.</p>
 <p><img alt="**copy DApps**" src="../img/simpledapp.png" /></p>
 <p>With the help of SCONE, this <strong>copy</strong> DApp actually copies
-encrypted files such that the SCONE <strong>transparently decrypts</strong> and checks the integrity of files that are read by the application. This protects the confidentiality and integrity of the files without any need to change the application itself. Also, SCONE encrypts and integrity protects the files that are written by the application. Each file is encrypted with a random key generated and managed by SCONE inside the enclave.</p>
+encrypted files such that the SCONE <strong>transparently decrypts</strong> and <strong>checks the integrity</strong> of files that are read by the application. This protects the <strong>confidentiality</strong> and <strong>integrity</strong> of the files without any need to change the application itself. Also, SCONE encrypts and integrity protects the files that are written by the application. Each file is encrypted with a random key generated and managed by SCONE inside the enclave.</p>
 <p><img alt="**copy DApps**" src="../img/copydapp.png" /></p>
-<p>With the help of a CLI (command line interface deployed in a container), a client can encrypt
+<p>With the help of a CLI (command line interface deployed in a container, see below), a client can encrypt
 and push files stored on its client machine  to the copy DApp. The copy DApp copies the files. The CLI can decrypt the files after the execution of the DApp.</p>
 <p><img alt="**workflow DApps**" src="../img/workflow.png" /></p>
 <p>We introduce the commands to perform this example below.</p>
@@ -1308,22 +1308,24 @@ and push files stored on its client machine  to the copy DApp. The copy DApp cop
 <li>an encrypted volume for input files mapped in the container in directory <strong>/encryptedInputs</strong>, and</li>
 <li>an encrypted volume for output files <strong>/encryptedOutputs</strong>.</li>
 </ul>
-<p>We show below how the input files are encrypted with the help of the CLI and pushed to the container. Moreover, we show how to decrypt the files with the help of CLI.</p>
+<p>We show below how the input files are encrypted with the help of the CLI and pushed to the container. Moreover, we show how to decrypt the files with the help of the CLI.</p>
 <p><img alt="**keys and tags**" src="../img/keysandtags.png" /></p>
-<p>To access an encrypted volume, one needs a <strong>key</strong> and a <strong>tag</strong>. The <strong>key</strong> is used the encrypt the individual keys of the files of the volume, i.e., it is used to protect the <strong>confidentiality</strong> of the files. The tag describes the current state of the volume. Any change of any file in the volume will result in a new <strong>tag</strong>. The <strong>tag</strong> is used to protect the <strong>integrity</strong> and <strong>freshness</strong> of the files:</p>
+<p>To access an encrypted volume, one needs a <strong>key</strong> and a <strong>tag</strong>. The <strong>key</strong> is used to encrypt the individual keys of the files of the volume, i.e., it is used to protect the <strong>confidentiality</strong> of the files. The tag describes the current state of the volume. Any change of any file in the volume will result in a new <strong>tag</strong>. The <strong>tag</strong> is used to protect the <strong>integrity</strong> and <strong>freshness</strong> of the files:</p>
 <ul>
 <li>any unauthorized modification of the volume will be detected since the correct tag can only be computed by parties knowing the key of the volume (<strong>integrity protection</strong>).</li>
 <li>any rollback to older version of the volume will be correctly encrypted but will have an old tag. Hence, rollbacks to older versions will be detected (<strong>freshness protection</strong>).</li>
 </ul>
 <h2 id="key-and-tag-management">Key and Tag Management<a class="headerlink" href="#key-and-tag-management" title="Permanent link">&para;</a></h2>
-<p>The <strong>copy DApp</strong> requires access to <strong>keys</strong> and <strong>tags</strong>  to read the encrypted input files (i.e., the input volume) and to write the encrypted output files (i.e., the output volume). Passing the keys and tags to the <strong>copy DApp</strong> is non-trivial since we need to ensure that no other DApp or an attacker can read or modify  the keys or the tags.  </p>
+<p>The <strong>copy DApp</strong> requires access to <strong>keys</strong> and <strong>tags</strong>  to read the encrypted input files (i.e., the input volume) and to write the encrypted output files (i.e., the output volume). Passing the keys and tags to the <strong>copy DApp</strong> is non-trivial since we need to ensure that no other DApp nor any attacker can read or modify  the keys or the tags.  </p>
 <p><img alt="**Keymanagement**" src="../img/keymanagement.png" /></p>
 <p>To pass the keys and tags to a trusted DApp, SCONE provides a <strong>configuration and attestation service (CAS)</strong>. The CAS can ensure that only the <strong>copy DApp</strong> can access the keys and tags by verifying that it talks to an unmodified <strong>copy DApp</strong>. This process is called <strong>attestation</strong> and is performed with the help of the
 Intel SGX CPU extension.</p>
-<p>Typically, such a trusted DApp is deployed with the help of a container image hosted on docker hub (or some similar repository). We recommend that these container images are signed using <a href="https://docs.docker.com/engine/security/trust/content_trust/">Docker content trust</a>. Note that content trust is not sufficient to ensure that we talk to an unmodified <strong>copy DApp</strong> since 1) an attacker with root access could change this image on the host on which it is deployed, and 2) the <strong>copy DApp</strong> could not <a href="https://en.wikipedia.org/wiki/Authentication">authenticate</a> itself  since it would need a private key of a certificate and  this private key could be read by any entity that is permitted to access that image. Hence, if we were to use only content trust, an attacker could easily impersonate the <strong>copy DApp</strong>.</p>
+<p>A trusted DApp is deployed with the help of a container image hosted on docker hub or some similar repository. We recommend that these container images are signed using <a href="https://docs.docker.com/engine/security/trust/content_trust/">Docker content trust</a>. Note that content trust is not sufficient to ensure that we talk to an unmodified <strong>copy DApp</strong> since, for example, an attacker with root access could change this image on the host on which it is deployed.</p>
+<p>To establish trust between two communication partners, they typically <a href="https://en.wikipedia.org/wiki/Authentication">authenticate</a> each other with the help of <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS</a>. An entity needs to know a private key to authenticate itself. When a trusted DApp like the <strong>copy DApp</strong> starts up it does not know such a private key yet. Note that any key that might be stored in plain text in the image, could be read by any entity that is permitted to access that image. One could encrypt the private key in the image but then the trust DApps would need to know the key to decrypt the private key. Note that the code that runs inside of an enclave, is in general not encrypted. Hence, one cannot store the private key inside of the code either.</p>
+<p><strong>Attestation</strong> - unlike authentication - does not need a private key. It ensures that the correct code is executing. To distinguish between different instances of a trusted DApp, on startup, the SCONE runtime generates a random private/public key pair inside of the enclave.  This means that the private key can be kept secret inside of the enclave. This public key is used to identify this instance and one can perform TLS authentication to ensure that one talks to a specific instance.  </p>
 <p><img alt="**Trusted DApp State**" src="../img/DAppState.png" /></p>
 <p>To <strong>attest</strong> a trusted DApp, we need to describe the state of this DApp. In general, this consists of a hash value that describes the trusted DApp (called <strong>MrEnclave</strong>) and a tag that describes the file systems state. In the case of the copy DApp, the file system (mounted at /) does not need to be attested - only the encrypted input volume (mounted at /encryptedInputs)  and encrypted output volume (mounted at /encryptedOutputs) needs to be attested.</p>
-<p>When a trusted DApp starts up, it connects to the CAS to perform an attestation. This attestation ensures that <strong>MrEnclave</strong> is the expected value and that the file system and the mounted volumes are in the correct state, i.e., the tags have the expected values.</p>
+<p>When a trusted DApp starts up, it connects to the CAS to perform an attestation. This attestation ensures that <strong>MrEnclave</strong> is the expected value and that the file system and the mounted volumes are in the correct state, i.e., the tags have the expected values. Note that <strong>MrEnclave</strong> will depend on the heap and stack size, i.e., changing the values will require an update of the expected <strong>MrEnclave</strong>.</p>
 <p>A trusted DApp will typically write to the output volume. This will change the tag of the output volume. To ensure that a client can read the current state of the volumes written by a trusted DApp, the <strong>tags</strong> will be pushed to the CAS when a trusted DApp exits.</p>
 <h2 id="attesting-cas">Attesting CAS<a class="headerlink" href="#attesting-cas" title="Permanent link">&para;</a></h2>
 <p>CAS is written in <a href="https://www.rust-lang.org/en-US/">Rust</a>, a safe and efficient programming language. The type-safety ensures that simple programming bugs can be exploited by attackers to hijack services. A client can attest a valid CAS in two ways:</p>
@@ -1332,14 +1334,17 @@ Intel SGX CPU extension.</p>
 <li>via the certificates provided by CAS.</li>
 </ul>
 <p>Right now, the CLI verifies that it talks to a correct CAS with the help of TLS. The client only uses TLS and verifies that the CAS has the correct certificate. Only a CAS will be able to get this certificate. In a later version, we will additionally ensure that the CAS provides a correct report by the Intel attestations service.</p>
-<p>CAS is <strong>trusted, managed service</strong>: it can be operated by a provider but the provider is not  able to access the sessions of the clients. Right now we run a public CAS service for debugging and testing. <strong>This CAS runs in debug mode</strong>, i.e., you should not use this CAS to pass secrets.</p>
-<p>In case there would be a need for running a private CAS services, we will enable clients to run their own CAS. Please contact us if you want to run your own CAS or if you need access to CAS running in production mode.</p>
+<p>CAS is <strong>trusted, managed service</strong>: it can be operated by a provider but the provider is not  able to access the sessions and in particular, the secrets of the clients. Right now, we run a public CAS service for debugging and testing. <strong>This CAS runs in debug mode</strong>, i.e., you should not use this CAS to pass secrets.</p>
+<p>For clients that need to run a private CAS services, we will enable clients to run their own CAS. Please contact us if you want to run your own CAS or if you need access to CAS running in production mode.</p>
+<p><strong>To run a trusted DApp in production mode, you need either to get a MrSigner from Intel or you need access to Intel SGX CPU that supports flexible launch control.  Contact us, if you want to run trusted DApps in production mode.</strong></p>
 <h2 id="sessions">Sessions<a class="headerlink" href="#sessions" title="Permanent link">&para;</a></h2>
 <p>We need to specify the value of <strong>MrEnclave</strong> and the state (i.e., the tags) of the of the volumes and in the general case, also the file system. To do so, CAS supports
 a security policies.  We call such a security policy a  <strong>session</strong>.</p>
 <p><img alt="**Session**" src="../img/session.png" /></p>
-<p>A session specifies what volumes are mounted and where they are mounted, the keys and tags of these volumes and MrEnclave of the trusted DApp. For example, a
-session (template) could look like this:</p>
+<p>A session specifies what volumes are mounted and where they are mounted, the keys and tags of these volumes and MrEnclave of the trusted DApp. One problem that we need to address is that each client of a trusted DApp cannot only protect its data from an attacker but also from other clients of the trusted DApp, the entity that generated the image and the entities that manage the CAS or the host on which the trusted DApp is executed. </p>
+<p><img alt="**Session specific keys**" src="../img/customization.png" /></p>
+<p>To address this issue, we provide a way to have individually encrypted volumes for each session. In other words, each client of a trusted DApp can customize the image by providing input and output volumes and only the instance of this client can access these volumes. <strong>No other client nor the image generator can access the keys and hence, these volumes</strong>.</p>
+<p>A client generates these keys (in the CLI). A <strong>session</strong> specifies these keys. A session is typically derived from a <strong>session template</strong>. The session template of the <strong>copy DApp</strong> looks like this:</p>
 <div class="codehilite"><pre><span></span>name: $SESSION
 digest: create
 
@@ -1352,7 +1357,6 @@ services:
      pwd: /
      environment:
         SCONE_MODE: hw
-        ZIP_URL: $URL
 
 volumes:
    - name: encrypted-input-files
@@ -1373,17 +1377,23 @@ images:
           path: /encryptedOutputs
 </pre></div>
 
-<p>Note that in most cases you can start from a generic session template and you do not need to worry about the syntax and all the details of session descriptions.</p>
+<p>Note that in most cases you can start from a generic session template and you do not need to worry about the syntax and all the details of session descriptions.
+The session templates of trusted DApps look very similar to the session template above.
+The three differences are that</p>
+<ul>
+<li>the <strong>image name</strong> will be updated,</li>
+<li>the list of <strong>mrenclaves</strong> will be different, and</li>
+<li>one might want to specify arguments passed to the trusted DApp (<strong>key command</strong>).</li>
+</ul>
 <h2 id="building-an-dapp">Building an DApp<a class="headerlink" href="#building-an-dapp" title="Permanent link">&para;</a></h2>
 <p>The source code of this application, you can retrieve from</p>
 <div class="codehilite"><pre><span></span>git clone https://github.com/scontain/copy_dapp.git
 <span class="nb">cd</span> copy_dapp
 </pre></div>
 
-<p>You can see that the source code (file <em>copy_files.c</em>) does not contain any specifics related to
-SCONE or SGX. </p>
+<p>The source code of the trusted copy DApp is file <em>copy_files.c</em>. </p>
 <p>We build this program with the help of the standard
-<strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile). For convenience,
+<strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile below). For convenience,
 we provide an Alpine image (i.e., sconecuratedimages/muslgcc) that has <strong>gcc</strong> preinstalled.</p>
 <div class="codehilite"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/muslgcc</span>
 
@@ -1404,22 +1414,25 @@ COPY --from<span class="o">=</span><span class="m">0</span> /copy_files /applica
 <p>To run the application inside of an enclave, we need the SCONE
 runtime environment. This runtime is part of image <strong>iexechub/sgx-scone:runtime</strong>.
 Moreover, this image contains a script <strong>/application.sh</strong> that pulls
-the input and output volumes from some transfer service, executes the application inside of an enclave. For testing, the script can push the encrypted output volume to a transfer service (see below).  </p>
+the encrypted input and output volumes from some transfer service, 
+executes the application inside of an enclave. For testing, the script can push the encrypted output volume to a transfer service (see below).  </p>
 <p>The image <strong>sconecuratedimages/iexec:copy_demo</strong>
 is built by the script <code class="codehilite">build-image.sh</code>. This script also determines
-<strong>MrEnclave</strong> of the application and writes a <strong>session template</strong> copy_dapp.yml.</p>
+<strong>MrEnclave</strong> of the application and writes a <strong>session template</strong> <em>copy_dapp.yml</em>.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
-<p>We now show how to execute a simple test program. After building the image
+<p>We now show how to test the trusted copy DApp. After building the image
 by executing</p>
 <div class="codehilite"><pre><span></span>./build-image.sh
 </pre></div>
 
-<p>We can execute this image on a SGX-capable host. This host has to have the SCONE local attestation service and Docker installed. We will describe in the installation section on how to install these prerequisites.</p>
+<p>We can execute this image on a SGX-capable host. This host has to have the SCONE local attestation service and Docker installed. We describe in the <a href="../installation/">installation section</a> on how to install these prerequisites.</p>
 <p>In what follows, we assume that the name of the host is stored in environment variable <strong>host</strong>.</p>
 <h3 id="setup">SETUP<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h3>
-<p>To execute 
-We create an INPUTS directory and store some files there. We encrypt these files and push the zipped up files to <strong>transfer.sh</strong>.</p>
-<p>Let's set up the INPUTS for our example</p>
+<p>To execute the trusted copy DApp, we need to create some files to copy.
+We create an INPUTS directory and store some files there.
+We also create some OUTPUTS directory and some directory to hold some generated keys (KEYS) and
+to hold some temporary files (ZIP). We also copy the session template generated when building the
+container image.</p>
 <div class="codehilite"><pre><span></span>mkdir -p EXAMPLE
 <span class="nb">cd</span> EXAMPLE
 mkdir -p KEYS INPUTS OUTPUTS ZIP
@@ -1429,6 +1442,7 @@ cp ../copy_dapp.yml KEYS/
 </pre></div>
 
 <h3 id="step-1">Step 1<a class="headerlink" href="#step-1" title="Permanent link">&para;</a></h3>
+<p>We encrypt these files and push the zipped up files for now to <strong>transfer.sh</strong>. (We will soon change to an alternative to transfer.sh.)</p>
 <p>Let's execute the first step of encrypting the files and pushing these to the transfer service:</p>
 <div class="codehilite"><pre><span></span><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs sconecuratedimages/iexecsgx:scone.cli encryptedpush --application sconecuratedimages/iexec:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
 </pre></div>
