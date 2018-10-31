@@ -367,9 +367,58 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Blender
+      </label>
+    
     <a href="./" title="Blender" class="md-nav__link md-nav__link--active">
       Blender
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" title="Introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secrets-management" title="Secrets Management" class="md-nav__link">
+    Secrets Management
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessions" title="Sessions" class="md-nav__link">
+    Sessions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -1044,6 +1093,42 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" title="Introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secrets-management" title="Secrets Management" class="md-nav__link">
+    Secrets Management
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sessions" title="Sessions" class="md-nav__link">
+    Sessions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1057,8 +1142,73 @@
                 
                 <h1 id="blender-use-case">Blender Use Case<a class="headerlink" href="#blender-use-case" title="Permanent link">&para;</a></h1>
 <p><a href="https://www.blender.org/">Blender</a> is an open-source software  3D creation suite that in particular, supports rendering.  We show how to render images with the help of blender on a remote, untrusted host. </p>
-<p>In this use case, we show how to execute blender using simple <strong>ssh</strong> to run blender remotely: we encrypt the input file(s), ship the input files to the remote host, execute blender inside an enclave, and ship the results back to the local host. Blender also runs as a <a href="../dapps/"><strong>trusted DApp</strong></a> for the <a href="https://iex.ec/"><strong>iExec platform</strong></a>.</p>
-<p>Very soon to come...</p>
+<p>In this use case, we show how to execute blender using simple <strong>ssh</strong> to run blender remotely: we encrypt the input file(s), ship the input files to the remote host, execute blender inside an enclave, and ship the results back to the local host. This Blender image also runs as a <a href="../dapps/"><strong>trusted DApp</strong></a> for the <a href="https://iex.ec/"><strong>iExec platform</strong></a>.</p>
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<p><strong>Blender</strong> is a relative large binary that is almost 60MB large. It has multiple extensions / addons implemented in Python. These extensions are dynamically loaded when they are needed. The source files of these extensions are located at different places in the filesystem:</p>
+<p><img alt="Files needing protection" src="../img/blenderfs.png" /></p>
+<p>As we show below, a user can add more Python extensions that help to render images and animations. These python extensions might contain intellectual properties of the user. The <strong>confidentiality as well as the integrity</strong> of these extensions mus be protected.</p>
+<p>The blender image contains all the above files but not the user extensions. We need to ensure <strong>the integrity of the blender application as well as the extensions</strong>, i.e., an attacker cannot modify the blender image without being detected.  We recommend that these container images are signed using <a href="https://docs.docker.com/engine/security/trust/content_trust/">Docker content trust</a>. Note that content trust is, however, not sufficient to ensure that <strong>blender</strong> will actually read the original, unmodified files. For example, an attacker with root access could change this image on the host on which blender is executed.</p>
+<p><img alt="blender file regions" src="../img/blenderprotection.png" /></p>
+<p>We split the file system of the blender image in the following file regions:</p>
+<ul>
+<li>the root file system itself is not protected. In this unprotected part is the blender binary as well as a script to start the blender image.</li>
+<li>the <strong>/usr</strong> file region is <strong>authenticated</strong>, i.e., the integrity of all files in this region is verified by the SCONE runtime before being passed to <strong>blender</strong>. This file region is generated by the image creator - in this case, scontain.com.</li>
+<li>the <strong>/encryptedInputs</strong> file region is <strong>protected</strong>, i.e., both the integrity as well as the confidentiality of files in this region are ensured. The files in this region are provided by the user: with the help of a CLI (see below), the user encrypts the files and pushes these to the host on which blender is executed.</li>
+<li>the <strong>/encryptedOutputs</strong> file region is <strong>protected</strong>, i.e., both the integrity as well as the confidentiality of files in this region are ensured. This region is initially empty but is still generated by the user with the help of a CLI (see below), the client encrypts the files and pushes these to the host on which blender is executed.</li>
+</ul>
+<h3 id="secrets-management">Secrets Management<a class="headerlink" href="#secrets-management" title="Permanent link">&para;</a></h3>
+<p>We can summarize the responsibilities of the image creator and the user as follows. The image creator ensures the integrity of blender and all extensions. The user ensures that both the confidentiality as well as the integrity of the user extensions:</p>
+<p><img alt="responsibilities" src="../img/blender_responsibilities.png" /></p>
+<p>We should be explicit about the different roles in the context of the blender use case:</p>
+<ul>
+<li>the <strong>image creator</strong> encrypts the file system, i.e., defines the <strong>/usr</strong> authenticated file region and permits the user to map protected regions <strong>/encryptedInputs</strong> and <strong>/encryptedOutputs</strong> into the blender image. The image creator controls the key and tag of the root file system but must not be able to access the user-controlled protected regions. The image creator defines the expected <strong>tag</strong> of the file system as well as the expected <strong>MrEnclave</strong>.</li>
+<li>the <strong>user</strong> controls the  protected regions <strong>/encryptedInputs</strong> and <strong>/encryptedOutputs</strong>. However, the user must not be able to modify the authenticated files in the root file systems. Otherwise, an attacker might be able to use this right to modify the images of other users. Moreover, the user must not be able to access the protected file regions of other users.</li>
+<li>an attacker must not be able to read the protected regions of any user nor must an attacker be able to modify the authenticated files in the root filesystem.</li>
+</ul>
+<p><img alt="blender roles" src="../img/blender_keys.png" /></p>
+<p>Based on these different roles, we need to manage the keys when executing the blender image. The key and tag of the blender image must be controlled by the image creator. In particular, neither a user nor an attacker must be able to get access to this key. Otherwise, this entity might be able to modify the image - which we would actually detect with the help of the tag. However, in case of protected images to protect the intellectual property of the image creator, this entity could read the content of the filesystem.</p>
+<p>The key and tag of the protected volumes of a user must only be visible by the user itself. Note, however, that all keys and tags must be accessible by the SCONE runtime of the blender image itself. In other words, the blender image must be able to get acceas to the keys while we need to prevent the user as well as the image creator to see all keys.</p>
+<p>The SCONE CAS (Configuration and Attestation System) can manage the keys in such a way that an image can gain access to the keys of multiple entities. The main mechanism to support this is the opaque export and import of keys. The creator of the blender image can export the key of root filesystem but can restrict the export to blender that is identified by a <strong>MrEnclave</strong> as well as <strong>tag</strong> of the file system.</p>
+<h3 id="sessions">Sessions<a class="headerlink" href="#sessions" title="Permanent link">&para;</a></h3>
+<p>A <strong>session</strong> is a security policy that defines secrets and who can access these secrets. The session of the image will define the key and tag and also defines if and what other sessions can access this information. In this case, we export to blender services. CAS ensures that only blender images that have the expected image tag (i.e., fspf_tag) and enclaves with the expected MrEnclave (i.e., mrenclaves) can access the key (i.e., fspf_key).</p>
+<p>The session will also determine the arguments of blender. In this case, the base image defines that an python program <strong>/encryptedInputs/application.py</strong> is executed.  The python program itself is defined in a volume that is provided by the user, i.e., it is not under the control of the image creator.</p>
+<div class="codehilite"><pre><span></span><span class="n">name</span><span class="o">:</span> <span class="n">scone</span><span class="o">:</span><span class="n">blender</span>
+<span class="n">digest</span><span class="o">:</span> <span class="n">create</span>
+
+<span class="n">services</span><span class="o">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">blender</span>
+     <span class="n">image_name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">blender</span>
+     <span class="n">mrenclaves</span><span class="o">:</span> <span class="o">[</span><span class="n">$MRENCLAVE</span><span class="o">]</span>
+     <span class="n">tags</span><span class="o">:</span> <span class="o">[</span><span class="n">demo</span><span class="o">]</span>
+     <span class="n">pwd</span><span class="o">:</span> <span class="o">/</span>
+     <span class="n">command</span><span class="o">:</span> <span class="n">blender</span> <span class="o">-</span><span class="n">b</span> <span class="o">-</span><span class="n">P</span> <span class="sr">/encryptedInputs/</span><span class="n">application</span><span class="o">.</span><span class="na">py</span>
+     <span class="n">fspf_path</span><span class="o">:</span> <span class="sr">/usr/</span><span class="n">fspf</span><span class="o">.</span><span class="na">pb</span>
+     <span class="n">fspf_key</span><span class="o">:</span> <span class="n">$FSPF_KEY</span>
+     <span class="n">fspf_tag</span><span class="o">:</span> <span class="n">$FSPF_TAG</span>
+     <span class="n">environment</span><span class="o">:</span>
+        <span class="n">SCONE_NO_MMAP_ACCESS</span><span class="o">:</span> <span class="mi">1</span>
+        <span class="n">SCONE_ALLOW_DLOPEN</span><span class="o">:</span> <span class="mi">1</span>
+
+<span class="n">images</span><span class="o">:</span>
+   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">blender</span>
+     <span class="n">mrenclaves</span><span class="o">:</span> <span class="o">[</span><span class="n">$MRENCLAVE</span><span class="o">]</span>
+     <span class="n">tags</span><span class="o">:</span> <span class="o">[</span><span class="n">demo</span><span class="o">]</span>
+     <span class="n">volumes</span><span class="o">:</span>
+        <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">encrypted</span><span class="o">-</span><span class="n">input</span><span class="o">-</span><span class="n">files</span>
+          <span class="n">path</span><span class="o">:</span> <span class="o">/</span><span class="n">encryptedInputs</span>
+        <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">encrypted</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">files</span>
+          <span class="n">path</span><span class="o">:</span> <span class="o">/</span><span class="n">encryptedOutputs</span>
+
+<span class="n">exports</span><span class="o">:</span>
+  <span class="o">-</span> <span class="kd">namespace</span><span class="o">:</span> <span class="n">service</span>
+    <span class="n">name</span><span class="o">:</span> <span class="n">blender</span>
+    <span class="n">export</span><span class="o">:</span> <span class="s2">&quot;*&quot;</span>
+  <span class="o">-</span> <span class="kd">namespace</span><span class="o">:</span> <span class="n">image</span>
+    <span class="n">name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">blender</span>
+    <span class="n">export</span><span class="o">:</span> <span class="s2">&quot;*&quot;</span>
+</pre></div>
+
+<p>Too be continued soon ...</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, October 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
