@@ -424,6 +424,19 @@
     CLI
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blender-scripting" title="Blender Scripting" class="md-nav__link">
+    Blender Scripting
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
       
@@ -1136,6 +1149,19 @@
     CLI
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blender-scripting" title="Blender Scripting" class="md-nav__link">
+    Blender Scripting
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
       
@@ -1192,7 +1218,7 @@
 
 <span class="n">services</span><span class="o">:</span>
    <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">blender</span>
-     <span class="n">image_name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">blender</span>
+     <span class="n">image_name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">blender_python</span>
      <span class="n">mrenclaves</span><span class="o">:</span> <span class="o">[</span><span class="n">$MRENCLAVE</span><span class="o">]</span>
      <span class="n">tags</span><span class="o">:</span> <span class="o">[</span><span class="n">demo</span><span class="o">]</span>
      <span class="n">pwd</span><span class="o">:</span> <span class="o">/</span>
@@ -1205,7 +1231,7 @@
         <span class="n">SCONE_ALLOW_DLOPEN</span><span class="o">:</span> <span class="mi">1</span>
 
 <span class="n">images</span><span class="o">:</span>
-   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">blender</span>
+   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">blender_python</span>
      <span class="n">mrenclaves</span><span class="o">:</span> <span class="o">[</span><span class="n">$MRENCLAVE</span><span class="o">]</span>
      <span class="n">tags</span><span class="o">:</span> <span class="o">[</span><span class="n">demo</span><span class="o">]</span>
      <span class="n">volumes</span><span class="o">:</span>
@@ -1219,7 +1245,7 @@
     <span class="n">name</span><span class="o">:</span> <span class="n">blender</span>
     <span class="n">export</span><span class="o">:</span> <span class="s2">&quot;*&quot;</span>
   <span class="o">-</span> <span class="kd">namespace</span><span class="o">:</span> <span class="n">image</span>
-    <span class="n">name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">blender</span>
+    <span class="n">name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexec</span><span class="o">:</span><span class="n">blender_python</span>
     <span class="n">export</span><span class="o">:</span> <span class="s2">&quot;*&quot;</span>
 </pre></div>
 
@@ -1231,7 +1257,7 @@ digest: create
 services:
    - name: blender
      import: scone:blender
-     image_name: sconecuratedimages/iexec:blender
+     image_name: sconecuratedimages/iexec:blender_python
      command: blender -b -P /encryptedInputs/application.py
      pwd: /
 
@@ -1244,7 +1270,7 @@ volumes:
      fspf_key: $OUTPUT_FSPF_KEY
 
 images:
-   - name: sconecuratedimages/iexec:blender
+   - name: sconecuratedimages/iexec:blender_python
      import: scone:blender
 </pre></div>
 
@@ -1260,20 +1286,84 @@ images:
 <li>the unencrypted output directory is mapped into the CLI container at <strong>/decryptedOutputs</strong><sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup>: , and</li>
 <li>a directory that contains some configuration data (which are automatically generated) at  <strong>/conf</strong>.</li>
 </ul>
-<p>To remotely start a container with the help of <strong>ssh</strong>, we need to give the CLI container access to the client's <strong>ssh-agent</strong><sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup>:</p>
-<div class="codehilite"><pre><span></span>docker run -t --rm -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent  -v $PWD/CONF:/conf -v $PWD/INPUTS:/inputs -v  $PWD/OUTPUTS:/decryptedOutputs sconecuratedimages/iexecsgx:scone.cli execute --application sconecuratedimages/iexecsgx:blender --host caroline
+<p>To remotely start a container with the help of <strong>ssh</strong>, we need to give the CLI container access via command <strong>add-host</strong>. After giving ssh access, we can start the blend applications. To do so, we can
+give it </p>
+<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:blender_python --host faye
 </pre></div>
 
-<p>Too be continued soon ...</p>
+<h3 id="blender-scripting">Blender Scripting<a class="headerlink" href="#blender-scripting" title="Permanent link">&para;</a></h3>
+<p>Let us show an example with an encrypted Python program that is executed on the remote site along with blender to
+render an image. We take an example from <a href="https://github.com/njanakiev/blender-scripting/blob/master/scripts/simple_sphere.py">github</a> by <a href="https://github.com/njanakiev">Nikolai Janakiev</a>: This Python program is unmodified an will be shipped and run in an encrypted fashion on the remote host that executes the blender image. While this is probably not necessary for open source
+code to protect its <strong>confidentiality</strong>, it is important to protect its <strong>integrity</strong>: if an attacker could change the code, it could get access to all data of the image and could modify the results. In general, we want to protect both the integrity as well as the confidentiality of the Python code.</p>
+<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">bpy</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">mathutils</span> <span class="kn">import</span> <span class="n">Euler</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span>
+
+<span class="c1"># Check if script is opened in Blender program</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="k">if</span><span class="p">(</span><span class="n">bpy</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">space_data</span> <span class="o">==</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">bpy</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">space_data</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
+<span class="c1"># Get folder of script and add current working directory to path</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+
+
+<span class="k">def</span> <span class="nf">createSphere</span><span class="p">(</span><span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)):</span>
+    <span class="c1"># Create icosphere</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">primitive_ico_sphere_add</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="n">origin</span><span class="p">)</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">bpy</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">object</span>
+    <span class="k">return</span> <span class="n">obj</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># Remove all elements</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">removeAll</span><span class="p">()</span>
+
+    <span class="c1"># Create camera</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;CAMERA&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">cam</span> <span class="o">=</span> <span class="n">bpy</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">object</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">rotation_euler</span> <span class="o">=</span> <span class="n">Euler</span><span class="p">((</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;XYZ&#39;</span><span class="p">)</span>
+    <span class="c1"># Make this the current camera</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">cam</span>
+
+    <span class="c1"># Create lamps</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">rainbowLights</span><span class="p">()</span>
+
+    <span class="c1"># Create object and its material</span>
+    <span class="n">sphere</span> <span class="o">=</span> <span class="n">createSphere</span><span class="p">()</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">setSmooth</span><span class="p">(</span><span class="n">sphere</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># Specify folder to save rendering</span>
+    <span class="n">render_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s1">&#39;../encryptedOutputs&#39;</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">render_folder</span><span class="p">)):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">render_folder</span><span class="p">)</span>
+
+    <span class="c1"># Render image</span>
+    <span class="n">rnd</span> <span class="o">=</span> <span class="n">bpy</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="s1">&#39;Scene&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">render</span>
+    <span class="n">rnd</span><span class="o">.</span><span class="n">resolution_x</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="n">rnd</span><span class="o">.</span><span class="n">resolution_y</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="n">rnd</span><span class="o">.</span><span class="n">resolution_percentage</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">rnd</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">render_folder</span><span class="p">,</span> <span class="s1">&#39;simple_sphere.png&#39;</span><span class="p">)</span>
+    <span class="n">bpy</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">render</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">write_still</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+<p>We have to copy this scripts - together with some the <em>utils</em> module - in folder <strong>INPUTS</strong>. This folder will
+be encrypted and pushed to remote host which is given by argument <strong>--host ALIAS</strong>. We can execute this
+Python script on host <strong>faye</strong> as follows:</p>
+<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:blender_python --host faye
+</pre></div>
+
+<p>The output of this script is stored in file <em>simple_sphere.png</em> directory <strong>OUTPUTS</strong>. Opening this file results in
+the following output (rendered in the enclave):</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
 <div class="footnote">
 <hr />
 <ol>
 <li id="fn:1">
 <p>This will soon change to <strong>/outputs</strong>.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-<li id="fn:2">
-<p>The forwarding of the <strong>ssh-agent</strong> into a container is broken on <strong>MacOS</strong>. This requires some <a href="../ssh/">ugly alternatives</a>.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
