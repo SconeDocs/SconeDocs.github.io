@@ -1162,20 +1162,27 @@ a simple CLI (Command Line Interface). The CLI runs inside a container on the us
 <h2 id="ssh-setup">SSH Setup<a class="headerlink" href="#ssh-setup" title="Permanent link">&para;</a></h2>
 <div class="admonition hint">
 <p class="admonition-title">Access to images</p>
-<p>Please send us an email at <a href="mailto:info@scontain.com">info@scontain.com</a> if you want to try this out yourself.</p>
+<p>Please send us an email at <a href="mailto:info@scontain.com">info@scontain.com</a> if you want to try this out yourself.
+You also need to <a href="../sgxinstall/">install the SGX driver</a> and <a href="../dockerinstall/">the docker engine</a> on the remote host.</p>
 </div>
-<p>Right now, we support the execution on remote hosts / VMs via <strong>ssh</strong>. To be able to do so, you need first to add the <em>ssh</em> credentials for these hosts via the CLI. These credentials are stored in a volume stored on the client's computer. In this example, we use directory <strong>$PWD/conf/</strong>. You can use any other directory but this has always to be mapped in the container at location <strong>/conf</strong>:</p>
+<p>Right now, we support the execution on remote hosts / VMs via <strong>ssh</strong> and via the iExec platform. To start a container on a remote host via <strong>ssh</strong>, you need first to add the <em>ssh</em> credentials for these hosts via the CLI. These credentials are stored in a volume stored on the client's computer. In this example, we use directory <strong>$PWD/conf/</strong>. You can use any other directory but this has always to be mapped in the container at location <strong>/conf</strong>:</p>
 <div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:copy_demo add-host --alias caroline --hostname <span class="m">1</span>.2.3.4
 </pre></div>
 
-<p>The output will look something like this:</p>
+<p>This adds an alias (<strong>caroline</strong>) for host (here identified by the IP address <strong>1.2.3.4</strong> but
+could also be just a hostname) to the ssh configuration stored inside the container. The container
+generates a key pair inside the container. The public key is used to grant access to the container
+on the remote host.  The output of <strong>add-host</strong> will look something like this:</p>
 <div class="codehilite"><pre><span></span><span class="n">ssh</span> <span class="n">ubuntu</span><span class="mf">@1.2.3.4</span> <span class="s">&quot;echo </span><span class="se">\&quot;</span><span class="s">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXVqr0diJjgMPx7WNTQWJVhV3ea8L1I/8mDZTsQUH5gazB+laIiM7tEAKbddbessItmA9bLOZEq4CIrYmtXpjG2tBSES2YpqNhQ8+3r4U3ozSBD1XAc6OzRmnHP+wmuVpCQw0QxBKj0Qq5MCehmLIXLYephOtjVWwsA3EprVHIq0+/wYZp4mU3evCgcvE46nxOrmHzu5X4iDUMSY59XHdavIVkkS87qp4RlyFQa0gBRHOfcGEVJ3oS/pmKHxasdLwjiVmCovLG4RPS88RoKCf8zWis8vpPUKt/04xjlj4gqsV/U7VR2S/kFcvq1yuvOno+BhcsGme2U2CKTV4Y16ZJ scone-CLI</span><span class="se">\&quot;</span><span class="s"> &gt;&gt; .ssh/authorized_keys&quot;</span>
 </pre></div>
 
 <p>Copy this output and execute on your local client to give the container access to the remote host.</p>
+<p><center>
+<img alt="add-host: add ssh credentials" src="../img/add-host.png" />
+</center></p>
 <h2 id="execution">Execution<a class="headerlink" href="#execution" title="Permanent link">&para;</a></h2>
-<p>To execute an application on a remote host, you first have to add this host via <strong>add-host</strong> as described above.</p>
-<p>We show how to execute the simple <strong>copy application</strong> that we introduce in the <a href="../dapps/">next section of this tutorial</a>. This copy application takes some input files in a given directory <strong>INPUTS</strong> and copies these files to directory <strong>OUTPUTS</strong>. The copy application is stored in image <strong>sconecuratedimages/iexec:copy_demo</strong>  on <strong>hub.docker.com</strong>.</p>
+<p>To execute an application on a remote host, you first have to add this host via <strong>add-host</strong> as described above.
+We show how to execute the simple <strong>copy application</strong> that we introduce in the <a href="../dapps/">next section of this tutorial</a>. This copy application takes some input files in a given directory <strong>INPUTS</strong> and copies these files to directory <strong>OUTPUTS</strong>. The copy application is stored in image <strong>sconecuratedimages/iexec:copy_demo</strong>  on <strong>hub.docker.com</strong>.</p>
 <p>You can execute this like follows: </p>
 <div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:copy_demo --host caroline
 </pre></div>
@@ -1199,6 +1206,9 @@ You can verify this by executing:</p>
 <div class="codehilite"><pre><span></span>Hello World
 </pre></div>
 
+<p><center>
+<img alt="execute: single step secure remote execution" src="../img/execute.png" />
+</center></p>
 <p>You can try some other applications like our <a href="../blender/">blender example</a>.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
