@@ -399,8 +399,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#introduction" title="Introduction" class="md-nav__link">
-    Introduction
+  <a href="#cli" title="CLI" class="md-nav__link">
+    CLI
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technical-background" title="Technical Background" class="md-nav__link">
+    Technical Background
   </a>
   
 </li>
@@ -420,7 +427,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cli" title="CLI" class="md-nav__link">
+  <a href="#cli_1" title="CLI" class="md-nav__link">
     CLI
   </a>
   
@@ -1124,8 +1131,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#introduction" title="Introduction" class="md-nav__link">
-    Introduction
+  <a href="#cli" title="CLI" class="md-nav__link">
+    CLI
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technical-background" title="Technical Background" class="md-nav__link">
+    Technical Background
   </a>
   
 </li>
@@ -1145,7 +1159,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cli" title="CLI" class="md-nav__link">
+  <a href="#cli_1" title="CLI" class="md-nav__link">
     CLI
   </a>
   
@@ -1184,7 +1198,17 @@
                 <h1 id="blender-use-case">Blender Use Case<a class="headerlink" href="#blender-use-case" title="Permanent link">&para;</a></h1>
 <p><a href="https://www.blender.org/">Blender</a> is an open-source software  3D creation suite that in particular, supports rendering.  We show how to render images with the help of blender on a remote, untrusted host. </p>
 <p>In this use case, we show how to execute blender using simple <strong>ssh</strong> to run blender remotely: we encrypt the input file(s), ship the input files to the remote host, execute blender inside an enclave, and ship the results back to the local host. This Blender image also runs as a <a href="../dapps/"><strong>trusted DApp</strong></a> for the <a href="https://iex.ec/"><strong>iExec platform</strong></a>.</p>
-<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<p><img alt="Workflow of Blender Example" src="../img/blender_python.png" /></p>
+<h2 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h2>
+<p>Assuming the Python scripts are located in the <strong>INPUTS</strong> directory, we can compute the output image on host <strong>faye</strong> as follows:</p>
+<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:blender_python --host faye
+</pre></div>
+
+<p>The output of this script is stored in file <em>simple_sphere.png</em> directory <strong>OUTPUTS</strong>. Opening this file results in
+the following output.</p>
+<p><img alt="simple_sphere.png" src="../img/simple_sphere.png" /></p>
+<p>Note that this image was rendered in an enclave with all python files, the input files as well as the output files being always encrypted.</p>
+<h2 id="technical-background">Technical Background<a class="headerlink" href="#technical-background" title="Permanent link">&para;</a></h2>
 <p><strong>Blender</strong> is a relative large binary that is almost 60MB large. It has multiple extensions / addons implemented in Python. These extensions are dynamically loaded when they are needed. The source files of these extensions are located at different places in the filesystem:</p>
 <p><img alt="Files needing protection" src="../img/blenderfs.png" /></p>
 <p>As we show below, a user can add more Python extensions that help to render images and animations. These python extensions might contain intellectual properties of the user. The <strong>confidentiality as well as the integrity</strong> of these extensions mus be protected.</p>
@@ -1211,7 +1235,7 @@
 <p>The key and tag of the protected volumes of a user must only be visible by the user itself. Note, however, that all keys and tags must be accessible by the SCONE runtime of the blender image itself. In other words, the blender image must be able to get acceas to the keys while we need to prevent the user as well as the image creator to see all keys.</p>
 <p>The SCONE CAS (Configuration and Attestation System) can manage the keys in such a way that an image can gain access to the keys of multiple entities. The main mechanism to support this is the opaque export and import of keys. The creator of the blender image can export the key of root filesystem but can restrict the export to blender that is identified by a <strong>MrEnclave</strong> as well as <strong>tag</strong> of the file system.</p>
 <h2 id="sessions">Sessions<a class="headerlink" href="#sessions" title="Permanent link">&para;</a></h2>
-<p>A <strong>session</strong> is a security policy that defines secrets and who can access these secrets. The session of the image will define the key and tag and also defines if and what other sessions can access this information. In this case, we export to blender services. CAS ensures that only blender images that have the expected image tag (i.e., fspf_tag) and enclaves with the expected MrEnclave (i.e., mrenclaves) can access the key (i.e., fspf_key).</p>
+<p>A <strong>session</strong> is a security policy that defines secrets and who can access these secrets. The session of the image will define the key and tag and also defines if and what other sessions can access this information. In this case, we export to blender services. CAS ensures that only blender images that have the expected image tag (i.e., <em>fspf_tag</em>) and enclaves with the expected MrEnclave (i.e., <em>mrenclaves</em>) can access the key (i.e., <em>fspf_key</em>).</p>
 <p>The session will also determine the arguments of blender. In this case, the base image defines that an python program <strong>/encryptedInputs/application.py</strong> is executed.  The python program itself is defined in a volume that is provided by the user, i.e., it is not under the control of the image creator.</p>
 <div class="codehilite"><pre><span></span><span class="n">name</span><span class="o">:</span> <span class="n">scone</span><span class="o">:</span><span class="n">blender</span>
 <span class="n">digest</span><span class="o">:</span> <span class="n">create</span>
@@ -1274,7 +1298,7 @@ images:
      import: scone:blender
 </pre></div>
 
-<h2 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h2>
+<h2 id="cli_1">CLI<a class="headerlink" href="#cli_1" title="Permanent link">&para;</a></h2>
 <p>Most users, they probably do not want to learn about sessions and the details how to protect their intellectual property. They expect instead that </p>
 <ul>
 <li>their IP is properly protected, and</li>
@@ -1352,12 +1376,7 @@ code to protect its <strong>confidentiality</strong>, it is important to protect
 
 <p>We have to copy this scripts - together with some the <em>utils</em> module - in folder <strong>INPUTS</strong>. This folder will
 be encrypted and pushed to remote host which is given by argument <strong>--host ALIAS</strong>. We can execute this
-Python script on host <strong>faye</strong> as follows:</p>
-<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:blender_python --host faye
-</pre></div>
-
-<p>The output of this script is stored in file <em>simple_sphere.png</em> directory <strong>OUTPUTS</strong>. Opening this file results in
-the following output (rendered in the enclave):</p>
+Python script on host <strong>faye</strong> as shown above.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
 <div class="footnote">
 <hr />
