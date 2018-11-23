@@ -387,8 +387,36 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cube" title="Cube" class="md-nav__link">
+    Cube
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helicopter-example" title="Helicopter Example" class="md-nav__link">
+    Helicopter Example
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#car-example" title="Car Example" class="md-nav__link">
+    Car Example
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-example" title="Advanced Example" class="md-nav__link">
+    Advanced Example
+  </a>
   
 </li>
       
@@ -1185,8 +1213,36 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cube" title="Cube" class="md-nav__link">
+    Cube
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helicopter-example" title="Helicopter Example" class="md-nav__link">
+    Helicopter Example
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#car-example" title="Car Example" class="md-nav__link">
+    Car Example
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-example" title="Advanced Example" class="md-nav__link">
+    Advanced Example
+  </a>
   
 </li>
       
@@ -1267,6 +1323,8 @@ You can verify this by executing:</p>
 <h3 id="sample-input">Sample Input<a class="headerlink" href="#sample-input" title="Permanent link">&para;</a></h3>
 <p>Let's set up an EXAMPLE directory and create directories and download the input file:</p>
 <div class="codehilite"><pre><span></span>mkdir -p EXAMPLE
+<span class="nv">TRANSFER</span><span class="o">=</span><span class="s2">&quot;transfer.sh&quot;</span>
+<span class="nv">CAS</span><span class="o">=</span><span class="s2">&quot;ask info@scontain.com for CAS hostname&quot;</span>
 <span class="nb">cd</span> EXAMPLE
 mkdir -p KEYS INPUTS OUTPUTS
 curl https://raw.githubusercontent.com/iExecBlockchainComputing/iexec-dapps-registry/master/iExecBlockchainComputing/Blender/iexec-rlc.blend -o INPUTS/iexec-rlc.blend
@@ -1274,7 +1332,7 @@ curl https://raw.githubusercontent.com/iExecBlockchainComputing/iexec-dapps-regi
 
 <p>We assume that you added the host (in this case <strong>caroline</strong>) already via <strong>add-host</strong> (see above).</p>
 <h3 id="execution_1">Execution<a class="headerlink" href="#execution_1" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:blender --host caroline
+<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:blender --host caroline  -r <span class="nv">$TRANSFER</span>  -s <span class="s2">&quot;</span><span class="nv">$CAS</span><span class="s2">&quot;</span>
 </pre></div>
 
 <p>We can now look at the files in OUTPUT directory:</p>
@@ -1285,7 +1343,51 @@ curl https://raw.githubusercontent.com/iExecBlockchainComputing/iexec-dapps-regi
 <p><center>
 <img alt="Computed Image" src="../img/0001.png" />
 </center></p>
-<p>You can try some other applications like our <a href="../blender/">blender example</a>.</p>
+<h3 id="cube">Cube<a class="headerlink" href="#cube" title="Permanent link">&para;</a></h3>
+<p>Let's download another blender file: </p>
+<div class="codehilite"><pre><span></span>curl  --output INPUTS/iexec-rlc.blend  https://raw.githubusercontent.com/golemfactory/golem/develop/apps/blender/benchmark/test_task/cube.blend
+</pre></div>
+
+<p>and render this blender file:</p>
+<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:blender --host caroline -r <span class="nv">$TRANSFER</span>  -s <span class="s2">&quot;</span><span class="nv">$CAS</span><span class="s2">&quot;</span>
+</pre></div>
+
+<p>We can now look at the files in OUTPUT directory:</p>
+<div class="codehilite"><pre><span></span>open OUTPUTS/0001.png
+</pre></div>
+
+<p>Which shows the following picture:</p>
+<p><center>
+<img alt="Cube" src="../img/cube-0001.png" />
+</center></p>
+<h3 id="helicopter-example">Helicopter Example<a class="headerlink" href="#helicopter-example" title="Permanent link">&para;</a></h3>
+<p>Another example:</p>
+<div class="codehilite"><pre><span></span>curl  --output INPUTS/iexec-rlc.blend  https://raw.githubusercontent.com/golemfactory/golem/develop/apps/blender/benchmark/test_task/scene-Helicopter-27-cycles.blend
+</pre></div>
+
+<p>execution with the same command as above:</p>
+<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:blender --host caroline -r <span class="nv">$TRANSFER</span>  -s <span class="s2">&quot;</span><span class="nv">$CAS</span><span class="s2">&quot;</span>
+</pre></div>
+
+<p>results in the following output:</p>
+<p><center>
+<img alt="Hellicopter cycles" src="../img/scene-Helicopter-27-cycles-0001.png" />
+</center></p>
+<h3 id="car-example">Car Example<a class="headerlink" href="#car-example" title="Permanent link">&para;</a></h3>
+<p>We show one more example:</p>
+<div class="codehilite"><pre><span></span>curl  --output INPUTS/iexec-rlc.blend  https://raw.githubusercontent.com/golemfactory/golem/develop/apps/blender/benchmark/test_task/bmw27_cpu.blend
+</pre></div>
+
+<p>and render this (as above):</p>
+<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexec:blender --host caroline -r <span class="nv">$TRANSFER</span>  -s <span class="s2">&quot;</span><span class="nv">$CAS</span><span class="s2">&quot;</span>
+</pre></div>
+
+<p>and display this:</p>
+<p><center>
+<img alt="BMW" src="../img/car-0001.png" />
+</center></p>
+<h2 id="advanced-example">Advanced Example<a class="headerlink" href="#advanced-example" title="Permanent link">&para;</a></h2>
+<p>You can also run <strong>blender</strong> with Python scripts that describe your images and movies - see  <a href="../blender/">blender use case</a> for details.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
