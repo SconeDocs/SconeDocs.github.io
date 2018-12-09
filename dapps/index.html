@@ -1387,7 +1387,7 @@ digest: create
 
 services:
    - name: application
-     image_name: sconecuratedimages/iexec:copy_demo
+     image_name: sconecuratedimages/iexecsgx:copy_demo
      mrenclaves: [e0f45a9a862c83f383730cc2aef144081025e3f925615da5b35c4d980faaa3c9]
      tags: [demo]
      command: /application
@@ -1404,7 +1404,7 @@ volumes:
      fspf_key: $OUTPUT_FSPF_KEY
 
 images:
-   - name: sconecuratedimages/iexec:copy_demo
+   - name: sconecuratedimages/iexecsgx:copy_demo
      mrenclaves: [e0f45a9a862c83f383730cc2aef144081025e3f925615da5b35c4d980faaa3c9]
      tags: [demo]
      volumes:
@@ -1453,7 +1453,7 @@ runtime environment. This runtime is part of image <strong>iexechub/sgx-scone:ru
 Moreover, this image contains a script <strong>/application.sh</strong> that pulls
 the encrypted input and output volumes from some transfer service, 
 executes the application inside of an enclave. For testing, the script can push the encrypted output volume to a transfer service (see below).  </p>
-<p>The image <strong>sconecuratedimages/iexec:copy_demo</strong>
+<p>The image <strong>sconecuratedimages/iexecsgx:copy_demo</strong>
 is built by the script <code class="codehilite">build-image.sh</code>. This script also determines
 <strong>MrEnclave</strong> of the application and writes a <strong>session template</strong> <em>copy_dapp.yml</em>.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
@@ -1481,7 +1481,7 @@ cp ../copy_dapp.yml KEYS/
 <h3 id="step-1">Step 1<a class="headerlink" href="#step-1" title="Permanent link">&para;</a></h3>
 <p>We encrypt these files and push the zipped up files for now to <strong>filepush.co</strong>.</p>
 <p>Let's execute the first step of encrypting the files and pushing these to the transfer service:</p>
-<div class="codehilite"><pre><span></span><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs sconecuratedimages/iexecsgx:scone.cli encryptedpush --application sconecuratedimages/iexec:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
+<div class="codehilite"><pre><span></span><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs sconecuratedimages/iexecsgx:scone.cli encryptedpush --application sconecuratedimages/iexecsgx:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
 </pre></div>
 
 <p>Let's look at the output:</p>
@@ -1498,11 +1498,11 @@ cp ../copy_dapp.yml KEYS/
 want to test it on some SGX-capable host.</p>
 <p>Ensure that the newest image is loaded on <strong>host</strong>. This step is only needed if it is expected that the image has changed
 since <strong>docker run</strong> does not pull/update the image.</p>
-<div class="codehilite"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/iexec:copy_demo
+<div class="codehilite"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/iexecsgx:copy_demo
 </pre></div>
 
 <p>Ensure that you are executing a bash shell (execute <code class="codehilite">bash</code>). Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
-<div class="codehilite"><pre><span></span><span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/iexec:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push filepush.co/upload<span class="k">)</span>
+<div class="codehilite"><pre><span></span><span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/iexecsgx:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push filepush.co/upload<span class="k">)</span>
 </pre></div>
 
 <p>Let's look at the output:</p>
