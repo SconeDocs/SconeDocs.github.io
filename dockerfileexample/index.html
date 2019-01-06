@@ -1165,26 +1165,31 @@
                 
                 
                 <h1 id="dockerfile-example">Dockerfile Example<a class="headerlink" href="#dockerfile-example" title="Permanent link">&para;</a></h1>
-<p>We show now how to create a container image that contains an <strong>hello world</strong> program running inside an enclave.</p>
+<p>We show now how to create a container image that contains a very simple <strong>hello world</strong> program running inside an enclave. The program is given in <a href="../C/">C</a> but could be any other compiled language that we support like <a href="../Rust/">Rust</a>, <a href="../C++/">C++</a> and <a href="../Fortran/">Fortran</a>.</p>
 <p><img alt="SCONE Hardware Mode" src="../img/dockerfile.png" /></p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This build should not be pushed to a public repository since it contains the complete SCONE platform.
+<div class="admonition hint">
+<p class="admonition-title">Getting access</p>
+<p>You need access to a private docker hub repository <strong>sconecuratedimages/crosscompilers</strong> to execute this example. <a href="mailto:info@scontain.com?Subject=Access%20to%20SCONE%20community%20edition&amp;Body=Hi%20there%2c%0dmy%20Docker%20Hub%20ID%20is%20...%20and%20I'm%20working%20on%20...%20at%20company%20...%20and%20would%20like%20to%20get%20access%20to%20the%20Scone%20community%20edition.%0dBest%20regards%2c%20...">Send us</a>
+your docker hub ID to get access to this repository.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Building images without the SCONE tool chain</p>
+<p>This example builds an image that contains the complete SCONE platform.
 Build your <a href="../multistagebuild/">container images with a multi-stage build</a> such that they only
-contain your binaries.</p>
+contain your binaries when you push your images to a public repository.</p>
 </div>
 <p>Here is the dockerfile:</p>
-<div class="codehilite"><pre><span></span>cat &gt; Dockerfile &lt;&lt; EOF
-FROM sconecuratedimages/crosscompilers
+<div class="codehilite"><pre><span></span>cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
+<span class="s">FROM sconecuratedimages/crosscompilers</span>
 
-RUN echo  &quot;#include &lt;stdio.h&gt;&quot; &gt; helloworld.c \
-   &amp;&amp; echo &quot;int main() {&quot; &gt;&gt; helloworld.c \
-   &amp;&amp; echo &quot;printf(\&quot;Hello World!\n\&quot;); }&quot; &gt;&gt; helloworld.c
+<span class="s">RUN echo  &quot;#include &lt;stdio.h&gt;&quot; &gt; helloworld.c \</span>
+<span class="s">   &amp;&amp; echo &quot;int main() {&quot; &gt;&gt; helloworld.c \</span>
+<span class="s">   &amp;&amp; echo &quot;printf(\&quot;Hello World!\n\&quot;); }&quot; &gt;&gt; helloworld.c</span>
 
-RUN gcc -o helloworld helloworld.c
+<span class="s">RUN gcc -o helloworld helloworld.c</span>
 
-CMD bash -c &quot;SCONE_VERSION=1 /helloworld&quot;
-EOF
+<span class="s">CMD bash -c &quot;SCONE_VERSION=1 /helloworld&quot;</span>
+<span class="s">EOF</span>
 </pre></div>
 
 <p>Let's generate an image (<strong>helloworld</strong>) with this Dockerfile: </p>
@@ -1221,9 +1226,9 @@ Hello World!
 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In case you do not have a SGX driver installed, run the program in <a href="../firstcontainer/">simulation mode</a> by executing <em>docker run --rm helloworld</em></p>
+<p>In case you do not have a SGX driver installed, the run will fail. Run the program in <a href="../firstcontainer/">simulation mode</a> by executing <em>docker run --rm helloworld</em></p>
 </div>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, August 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
                 
@@ -1281,7 +1286,7 @@ Hello World!
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright Scontain © 2018
+            Copyright Scontain © 2019
           </div>
         
         powered by
