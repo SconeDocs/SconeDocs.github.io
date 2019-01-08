@@ -711,6 +711,20 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#workflow" title="Workflow" class="md-nav__link">
+    Workflow
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complex-workflows" title="Complex Workflows" class="md-nav__link">
+    Complex Workflows
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#image" title="Image" class="md-nav__link">
     Image
   </a>
@@ -1228,6 +1242,20 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#workflow" title="Workflow" class="md-nav__link">
+    Workflow
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complex-workflows" title="Complex Workflows" class="md-nav__link">
+    Complex Workflows
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#image" title="Image" class="md-nav__link">
     Image
   </a>
@@ -1294,12 +1322,30 @@
                 
                 
                 <h1 id="python">Python<a class="headerlink" href="#python" title="Permanent link">&para;</a></h1>
-<p>SCONE supports running Python programs inside of SGX enclaves. We maintain Docker images<sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup> for various Python versions. </p>
+<p>SCONE supports running Python programs inside of SGX enclaves. We maintain Docker images for various Python versions / Python engines like:</p>
+<ul>
+<li><strong>Python 3.5.1</strong>: sconecuratedimages/appspython-3.5-alpine</li>
+<li><strong>Python 2.7</strong>: sconecuratedimages/apps:python-2.7.13-alpine3.6, and</li>
+<li><strong>PyPy 2.7</strong>: sconecuratedimages/apps:pypy-2.7.15-alpine3.7</li>
+</ul>
+<p>Let us know if you need a specific Python / PyPy version.</p>
 <div class="admonition note">
 <p class="admonition-title">PyPy for SCONE</p>
-<p>We also support PyPy for SCONE: <a href="../pypyscone/"><strong>PyPySCONE</strong></a>'s speed is close to PyPy ("just in time Python") and in almost all SpeedCenter benchmarks is <strong>PyPy</strong> inside an enclave faster than native Python. Send us email if you want to try this out.</p>
+<p><a href="../pypyscone/"><strong>PyPySCONE's speed</strong></a> is close to PyPy ("just in time Python") and in almost all SpeedCenter benchmarks is <strong>PyPy</strong> inside an enclave faster than native Python.</p>
 </div>
+<h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
+<p>SCONE supports the typical Docker workflow to create Docker images that contain the Python engine as well as the Python program. SCONE supports the encryption of the Python programs to ensure both the confidentiality as well as the integrity of the programs. A typical workflow might look like this:</p>
+<p><img alt="SCONE Python Workflow" src="../img/python-workflow.png" /></p>
+<p>We at scontain.com maintain the SCONE-Python image and push this to hub.docker.com. This image can be used by authorized application developers to add encrypted Python programs and encrypted libraries. The SCONE runtime of the Python engine needs to get access to the encryption key to be able to decrypt transparently the Python scripts for the Python engine. To do so, the application developer defines a security policy that ensures that only the Python engine that executes the application of the application provider gets access to this encryption key.</p>
+<p>When the Python engine starts completely inside of a SGX enclave. The SCONE runtime transparently attests the Python engine as well as the <strong>filesystem</strong>: Only if both the Python engine has the expected MrEnclave as well as the filesystem state is exactly as expected, the SCONE runtime gets the encryption key from the SCONE CAS (Configuration and Attestation Service). The application developer therefore adds the expected MrEnclave and the initial filesystem state in form of a security policy to SCONE CAS.</p>
+<h2 id="complex-workflows">Complex Workflows<a class="headerlink" href="#complex-workflows" title="Permanent link">&para;</a></h2>
+<p>SCONE supports more complex workflows in which the user can also specify encrypted volumes for input as well as output data. We explain a more complex example in the context of our <a href="../blender/">blender use case</a>.</p>
 <h2 id="image">Image<a class="headerlink" href="#image" title="Permanent link">&para;</a></h2>
+<div class="admonition hint">
+<p class="admonition-title">Getting access to Python Images</p>
+<p>You need access to a private docker hub repository <strong>sconecuratedimages/apps</strong> to be able to evaluate our Python images. <a href="mailto:info@scontain.com?Subject=Access%20to%20the%20SCONE%20Python%20community%20edition&amp;Body=Hi%20there%2c%0dmy%20Docker%20Hub%20ID%20is%20...%20and%20I'm%20working%20on%20...%20at%20company%20...%20and%20would%20like%20to%20get%20access%20to%20the%20SCONE%20Python%20community%20edition.%0dBest%20regards%2c%20...">Send us</a>
+your docker hub ID to get access to this repository.</p>
+</div>
 <p>Currently, we provde a simple Python 2.7 image that is based on the standard Python image python:2.7-alpine.</p>
 <p>You can pull this image as follows:</p>
 <div class="codehilite"><pre><span></span>docker pull sconecuratedimages/apps:python-2-alpine3.6
@@ -1314,7 +1360,7 @@
 <div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
 </pre></div>
 
-<p>Since we set <strong>SCONE_VERSION=1</strong>, we get the following outputs<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">2</a></sup>:</p>
+<p>Since we set <strong>SCONE_VERSION=1</strong>, we get the following outputs<sup id="fnref:2"><a class="footnote-ref" href="#fn:2" rel="footnote">1</a></sup>:</p>
 <div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
@@ -1546,15 +1592,12 @@ Successfully installed pycairo-1.15.4
 <p><a href="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03"><img alt="asciicast" src="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03.png" /></a></p>
 <h2 id="limitation">Limitation<a class="headerlink" href="#limitation" title="Permanent link">&para;</a></h2>
 <p>We do not yet support fork, i.e., you spawn new processes from within your Python programs. We are currently working on removing this limitation of SCONE. Until then, we expect you to have an external spawner. </p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, August 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
 <div class="footnote">
 <hr />
 <ol>
-<li id="fn:1">
-<p>Send email to <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#110;&#102;&#111;&#64;&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#111;&#109;">&#105;&#110;&#102;&#111;&#64;&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#111;&#109;</a> to get access for evaluation version.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
 <li id="fn:2">
-<p>The other environment variables are explained below. Also read Section <a href="../SCONE_ENV/">Environment Variables</a> for further details.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p>The other environment variables are explained below. Also read Section <a href="../SCONE_ENV/">Environment Variables</a> for further details.&#160;<a class="footnote-backref" href="#fnref:2" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
