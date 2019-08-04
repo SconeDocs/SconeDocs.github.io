@@ -13,7 +13,7 @@
         <meta name="description" content="Scone Documentation - Secure Containers">
       
       
-        <link rel="canonical" href="https://sconedocs.github.io/CASOverview/">
+        <link rel="canonical" href="https://sconedocs.github.io/peer-to-peer-attestation/">
       
       
         <meta name="author" content="Christof Fetzer">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Overview - SCONE</title>
+        <title>Peer-to-Peer Attestation - SCONE</title>
       
     
     
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#scone-configuration-and-attestation-service-cas" tabindex="1" class="md-skip">
+      <a href="#peer-to-peer-attestation" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -115,7 +115,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Overview
+                Peer-to-Peer Attestation
               
             </span>
           
@@ -374,12 +374,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
     
     <label class="md-nav__link" for="nav-3">
       Configuration & Attestation
@@ -395,20 +393,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-    <a href="./" title="Overview" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../CASOverview/" title="Overview" class="md-nav__link">
       Overview
     </a>
-    
   </li>
 
         
@@ -1226,6 +1215,57 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" title="Motivation" class="md-nav__link">
+    Motivation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-approach" title="General Approach" class="md-nav__link">
+    General Approach
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#peer-attestation" title="Peer Attestation" class="md-nav__link">
+    Peer Attestation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#session" title="Session" class="md-nav__link">
+    Session
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#program-attestation" title="Program Attestation" class="md-nav__link">
+    Program Attestation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" title="Summary" class="md-nav__link">
+    Summary
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1237,26 +1277,76 @@
               
                 
                 
-                <h1 id="scone-configuration-and-attestation-service-cas">SCONE Configuration and Attestation Service (CAS)<a class="headerlink" href="#scone-configuration-and-attestation-service-cas" title="Permanent link">&para;</a></h1>
-<p><a href="print-arg-env/"><center>
-<img alt="SCONE CAS Overview" src="../img/CASOverview-1.png" title="SCONE CAS manages the keys of an applications. The keys are under complete control of the application: only services given explicit control by the application get access to the keys." />
-</center></a></p>
-<p><center>
-<img alt="SCONE CAS Security Policy" src="../img/CASOverview-2.png" title="SCONE CAS can generate keys on behalf of and application inside of an enclave. Access to keys is controlled by a security policy controlled by the application. Neither root users nor CAS admins can access the keys nor the security policies. CAS runs inside an trusted hardware environment (enclave)." />
-</center></p>
-<p><center>
-<img alt="SCONE Key Provisioning" src="../img/CASOverview-3.png" title="Secure key and configuration provisioning with the need to change the source code of applications: secrets, keys, and configuration parameters are securely provisioned via command line arguments, environment variables and via transparently encrypted files." />
-</center></p>
-<p><center>
-<img alt="SCONE Access Control" src="../img/CASOverview-4.png" title="Access control to create, modify or read security policies is specified  via private keys in the security policy itself. Only clients proving that they know the private key, are granted access by CAS." />
-</center></p>
+                <h1 id="peer-to-peer-attestation">Peer-to-Peer Attestation<a class="headerlink" href="#peer-to-peer-attestation" title="Permanent link">&para;</a></h1>
 <p><center>
 <img alt="SCONE Peer-To-Peer" src="../img/CASOverview-5.png" title="SCONE CAS supports peer-to-peer based attestation of services operated by mutually distrusting peers." />
 </center></p>
-<p><a href="../EncryptedWordCount/"><center>
-<img alt="SCONE Configuration" src="../img/CASOverview-6.png" title="We can create images with encrypted Python code on trusted host and transparently attest and decrypt inside of enclave." />
-</center></a></p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, July 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<h2 id="motivation">Motivation<a class="headerlink" href="#motivation" title="Permanent link">&para;</a></h2>
+<p>CAS supports <strong>peers</strong> to <strong>attest</strong> each others. The term <strong>peer</strong> refers an instance of a program such that</p>
+<ul>
+<li>each peer might be operated by a different organizations, and</li>
+<li>these organizations might not always trust each other to be honest, however</li>
+<li>they need to cooperate to achieve their business objectives.</li>
+</ul>
+<p>A dishonest organization might try to operate a modified program to gain advantages. As we explain below, it might
+  even be sufficient for an organization to change the configuration of the program or some files on the disk to change the program's behavior to its advantage. For example, the behavior of a Python program is not only determined by the Python engine that executes the Python program but also the set of Python files and dynamic link libraries and configuration files in the filesystem. An organization could try to modify one of the program's Python files or a file belonging to the Python standard library to change the behavior of the program to its advantage.</p>
+<h2 id="general-approach">General Approach<a class="headerlink" href="#general-approach" title="Permanent link">&para;</a></h2>
+<p>For a set of mutually distrusting organizations to be able to work together, we propose the following approach</p>
+<ul>
+<li><strong>all agree to run the same, agreed-upon program</strong>: This program could be stored in a global git repository and is identified by a hash value - like the commit timestamp.</li>
+<li><strong>same initial state</strong>: all files accessed by the program are correctly initialized.</li>
+<li><strong>cryptographic access control</strong>: only the program itself knows the encryption key to modify these files and to protect the confidentiality as well as the integrity, all files can be transparently encrypted.</li>
+<li><strong>trusted execution</strong>: the behavior of the program cannot be modified during run-time by, for example, modifying the memory, files or the operating system.</li>
+</ul>
+<p>To achieve this, we will explain that</p>
+<ul>
+<li>peers <strong>can attest each other</strong> via TLS certificates,</li>
+<li>very that the peers run in the <strong>context of a honest SCONE CAS</strong> (SCONE Configuration and Attestation Service), and</li>
+<li>a peer needs to <strong>check the security policy</strong> of it peers.</li>
+</ul>
+<h2 id="peer-attestation">Peer Attestation<a class="headerlink" href="#peer-attestation" title="Permanent link">&para;</a></h2>
+<p>The basic idea of peer attestation is as follows. A peer program <strong>A</strong> is connected via TLS to a peer <strong>B</strong> and <strong>A</strong> wants to ensure that it can trust  program <strong>B</strong>. To do so, <strong>A</strong> verifies the TLS certificate of <strong>B</strong>. This certificate, <strong>B_CERT</strong>, is issued in the context of a <a href="cas_blender_example/#hello-world-session">CAS session</a> in which <strong>B</strong> runs, i.e., it is issued and signed by the CAS, <strong>B_CAS</strong>, that <strong>B</strong> is using. <strong>B_CERT</strong> includes a chain of certificates which also includes the TLS certificate of <strong>B_CAS</strong>.</p>
+<p>Peer <strong>A</strong> can now perform the following steps:</p>
+<ul>
+<li><strong>A</strong> checks that <strong>B_CERT</strong> was issued by <strong>B_CAS</strong> by attesting that  <strong>B_CAS</strong> is a honest CAS running inside of a production enclave. See <a href="ProductionModeCAS/#cas-attestation">CAS Attestation</a> for more details on how to attest CAS itself.</li>
+<li><strong>B_CERT</strong> contains the session name <strong>B_session</strong> and <strong>A</strong> downloads this CAS session from <strong>B_CAS</strong> using its certificate determined during attestation to exclude man-in-the middle attacks: to ensure that <strong>B's</strong> session is as expected, <strong>B</strong> checks that it is an instance of an agreed upon session template.</li>
+</ul>
+<h2 id="session">Session<a class="headerlink" href="#session" title="Permanent link">&para;</a></h2>
+<p>The session <strong>B_session</strong> defines how the files are initialized and which programs can access the files. Usually there are two programs:</p>
+<ul>
+<li>the <strong>programm</strong> that provides a service, and</li>
+<li>an initialization program (we call it <strong>pull_code</strong>) that encrypts and initializes the filesystem.</li>
+</ul>
+<p>The session specifies a certificate <strong>B_CERT</strong> that is issued by CAS in such a way that the private key belonging to <strong>B_CERT</strong> is only known inside of CAS and program <strong>B</strong>.</p>
+<p>The idea of the <strong>pull_code</strong> is to clone existing code and files from a remote git repository and store this in an encrypted file region. It ensures the integrity of the cloned code by connecting via a secure channel to the git repository, verifying the identity of the git repository and checking out a given commit time stamp. Additionally, one could extend this to</p>
+<ul>
+<li>only support to accept signed commits, and</li>
+<li>to run the git repository also inside of an enclave</li>
+</ul>
+<p>The behavior of <strong>pull_code</strong> is completely defined by its <strong>MrEnclave</strong> and its environment variables which are specified in session <strong>B_session</strong>. In other words, peer <strong>A</strong> can verify that <strong>pull_code</strong> does exactly that what it is supposed to do.</p>
+<p>A dishonest organization could try to circumvent <strong>pull_code</strong> by trying to modify a session <strong>B_CERT</strong> such that during attestation is the expected format. We can prevent this by specifying inside the session that it cannot be deleted nor can it be updated: this ensures that the current session is immutable. However, there could be a predecessor session that was mutable and in which a program under control of an adversary initialized the files. To be able to detect this, we check that the session <strong>B_session</strong> is the first session of this name, i.e., it has no <code class="codehilite"><span class="n">predecessor</span></code> field.</p>
+<h2 id="program-attestation">Program Attestation<a class="headerlink" href="#program-attestation" title="Permanent link">&para;</a></h2>
+<p>The term <strong>program attestation</strong> refers to the process of helping to ensure that an enclave was started and that the file system is in the correct state. In the context of the peer-to-peer attestation, this helps to ensure that the file system is actually properly initialized and only a program <strong>B</strong> with the correct <strong>MrEnclave</strong> has access to the private key of <strong>B_CERT</strong>.</p>
+<p>In the SCONE platform, CAS performs a program attestation of a program in context of a session to ensure that it is
+permitted to pass arguments, environment variables, and the file system keys to the program. CAS performs the following steps:</p>
+<ul>
+<li><strong>it is checked that a program runs the same, agreed-upon program code</strong>: in the above example, this would be the Python engine which can be attested via its expected <strong>MrEnclave</strong>, and</li>
+<li><strong>the program itself runs inside of an SGX enclave in production mode</strong>, i.e., it cannot be accessed during runtime by other programs</li>
+<li><strong>the content of files were not modified</strong>, i.e., all files are in the expected state.</li>
+</ul>
+<p><strong>MrEnclave</strong> and the <strong>expected file state</strong> are defined in the session. </p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>The  state of a program consists of multiple components, like</p>
+<ul>
+<li>a Python engine that can be attested via its <strong>MrEnclave</strong>, and</li>
+<li>Python code and dynamically-linked libraries stored in the file system which is protected <strong>via the SCONE file shield</strong>.</li>
+</ul>
+<p>We ensure that the</p>
+<ul>
+<li>the initial state of the file system was correctly initialized by performing this initialization via a trusted program running inside an enclave, and</li>
+<li>the attestation with the help of TLS certificates checks all components that affect the behavior of a program.</li>
+</ul>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, Aug 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
                 
@@ -1273,41 +1363,6 @@
       
         
 <footer class="md-footer">
-  
-    <div class="md-footer-nav">
-      <nav class="md-footer-nav__inner md-grid">
-        
-          <a href="../dapps/" title="Trusted DApps" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
-            </div>
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Previous
-                </span>
-                Trusted DApps
-              </span>
-            </div>
-          </a>
-        
-        
-          <a href="../cas_intro/" title="Introduction" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                Introduction
-              </span>
-            </div>
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
-            </div>
-          </a>
-        
-      </nav>
-    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
