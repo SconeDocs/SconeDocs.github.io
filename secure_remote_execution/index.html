@@ -1443,7 +1443,7 @@ a simple <strong>CLI</strong> (Command Line Interface). The CLI runs inside a co
 <p>You need to install the <a href="../installation/">SGX driver and Docker engine</a>.</p>
 </div>
 <p>So far, we support the execution on remote hosts / VMs via <strong>ssh</strong> and via the iExec platform. To start a container on a remote host via this <strong>CLI</strong>, you need to give the CLI the credentials of this hosts. These credentials are stored in a volume stored on the client's computer. In this example, we use directory <strong>$PWD/conf/</strong> to store the credentials. Ensure that only you have access to this directory to protect the credentials. This directory must be mapped in the container at location <strong>/conf</strong>:</p>
-<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli add-host --alias caroline --hostname <span class="m">1</span>.2.3.4
+<div class="codehilite"><pre><span></span><span class="nb">eval</span> docker run -it --rm -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli add-host --alias caroline --hostname <span class="m">1</span>.2.3.4
 </pre></div>
 
 <p>This adds an alias (<strong>caroline</strong>) for the host identified by option <strong>--hostname</strong>. The argument <strong>--hostname</strong> can either be a hostname or an IP address. The CLI generates a key pair inside the container and stores it in <strong>/conf</strong>. The public key is used to grant access to the container on the remote host.  </p>
@@ -1451,7 +1451,7 @@ a simple <strong>CLI</strong> (Command Line Interface). The CLI runs inside a co
 <div class="codehilite"><pre><span></span><span class="n">ssh</span> <span class="n">ubuntu</span><span class="mf">@1.2.3.4</span> <span class="s">&quot;echo </span><span class="se">\&quot;</span><span class="s">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXVqr0diJjgMPx7WNTQWJVhV3ea8L1I/8mDZTsQUH5gazB+laIiM7tEAKbddbessItmA9bLOZEq4CIrYmtXpjG2tBSES2YpqNhQ8+3r4U3ozSBD1XAc6OzRmnHP+wmuVpCQw0QxBKj0Qq5MCehmLIXLYephOtjVWwsA3EprVHIq0+/wYZp4mU3evCgcvE46nxOrmHzu5X4iDUMSY59XHdavIVkkS87qp4RlyFQa0gBRHOfcGEVJ3oS/pmKHxasdLwjiVmCovLG4RPS88RoKCf8zWis8vpPUKt/04xjlj4gqsV/U7VR2S/kFcvq1yuvOno+BhcsGme2U2CKTV4Y16ZJ scone-CLI</span><span class="se">\&quot;</span><span class="s"> &gt;&gt; .ssh/authorized_keys&quot;</span>
 </pre></div>
 
-<p>Copy this output and execute on your local client to give the container access to the remote host.</p>
+<p><code class="codehilite"><span class="n">eval</span></code> executes the output and gives your local client to give the container access to the remote host.</p>
 <p><center>
 <img alt="add-host: add ssh credentials" src="../img/add-host.png" />
 </center></p>
