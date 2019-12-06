@@ -1381,18 +1381,18 @@
 </pre></div>
 
 <p>This results in an output similar to this:</p>
-<div class="codehilite"><pre><span></span><span class="n">argv</span><span class="p">:</span> <span class="p">.</span><span class="o">/</span><span class="n">print</span><span class="o">-</span><span class="n">arg</span><span class="o">-</span><span class="n">env</span> <span class="n">Hello</span>
-<span class="n">environ</span><span class="p">:</span>
-<span class="n">ENV2</span><span class="o">=</span><span class="n">World</span>
-<span class="n">ENV1</span><span class="o">=!</span>
-<span class="p">...</span>
+<div class="codehilite"><pre><span></span><span class="c">argv: ./print-arg-env Hello</span>
+<span class="c">environ:</span>
+<span class="err">ENV2=World</span>
+<span class="err">ENV1=!</span>
+<span class="err">...</span>
 </pre></div>
 
 <p>Let's cross-compile this program to run inside of enclaves as follows:</p>
 <div class="codehilite"><pre><span></span>docker run --device<span class="o">=</span>/dev/isgx -it --privileged -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/work sconecuratedimages/crosscompilers:ubuntu16.04 scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env
 </pre></div>
 
-<p>We can now determine <code class="codehilite"><span class="n">MRENCLAVE</span></code> as follows:</p>
+<p>We can now determine <code class="codehilite"><span class="err">MRENCLAVE</span></code> as follows:</p>
 <div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="sb">`</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./scone-print-arg-env<span class="sb">`</span>
 <span class="nb">echo</span> MRENCLAVE of scone-print-arg-env is <span class="nv">$MRENCLAVE</span>
 </pre></div>
@@ -1402,11 +1402,11 @@
 </pre></div>
 
 <p>This will result in the same output as before:</p>
-<div class="codehilite"><pre><span></span><span class="n">argv</span><span class="p">:</span> <span class="p">.</span><span class="o">/</span><span class="n">print</span><span class="o">-</span><span class="n">arg</span><span class="o">-</span><span class="n">env</span> <span class="n">Hello</span>
-<span class="n">environ</span><span class="p">:</span>
-<span class="n">ENV2</span><span class="o">=</span><span class="n">World</span>
-<span class="n">ENV1</span><span class="o">=!</span>
-<span class="p">...</span>
+<div class="codehilite"><pre><span></span><span class="c">argv: ./print-arg-env Hello</span>
+<span class="c">environ:</span>
+<span class="err">ENV2=World</span>
+<span class="err">ENV1=!</span>
+<span class="err">...</span>
 </pre></div>
 
 <div class="admonition warning">
@@ -1419,11 +1419,11 @@ need to run the program in the context of CAS.**</p>
 <p>In the next step, we control the environment variables and the arguments with the help of CAS.</p>
 <div class="admonition note">
 <p class="admonition-title">When does the SCONE runtime use CAS?</p>
-<p>When environment variable <code class="codehilite"><span class="n">SCONE_CONFIG_ID</span></code> is not set, the SCONE runtime will not contact CAS. 
- If it is set, we will contact <code class="codehilite"><span class="n">SCONE_CAS_ADDR</span></code>. If <code class="codehilite"><span class="n">SCONE_CAS_ADDR</span></code> is not set, we contact by default 
- host „cas“. The SCONE runtime will also contact <code class="codehilite"><span class="n">SCONE_LAS_ADDR</span></code> for local attestation. If <code class="codehilite"><span class="n">SCONE_LAS_ADDR</span></code> is not set, we contact by default host „las“.</p>
+<p>When environment variable <code class="codehilite"><span class="err">SCONE_CONFIG_ID</span></code> is not set, the SCONE runtime will not contact CAS. 
+ If it is set, we will contact <code class="codehilite"><span class="err">SCONE_CAS_ADDR</span></code>. If <code class="codehilite"><span class="err">SCONE_CAS_ADDR</span></code> is not set, we contact by default 
+ host „cas“. The SCONE runtime will also contact <code class="codehilite"><span class="err">SCONE_LAS_ADDR</span></code> for local attestation. If <code class="codehilite"><span class="err">SCONE_LAS_ADDR</span></code> is not set, we contact by default host „las“.</p>
 </div>
-<p>We assume that you already started a <a href="../CASIntro/">CAS</a> in the background via <code class="codehilite"><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span> <span class="o">-</span><span class="n">d</span> <span class="n">cas</span></code>
+<p>We assume that you already started a <a href="../CASIntro/">CAS</a> in the background via <code class="codehilite"><span class="err">docker-compose up -d cas</span></code>
 on the local machine:</p>
 <div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
 </pre></div>
@@ -1432,7 +1432,7 @@ on the local machine:</p>
 <div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone.ml
 </pre></div>
 
-<p>We also assume that you already started a <a href="../LASIntro/">LAS</a> in the background via <code class="codehilite"><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span> <span class="o">-</span><span class="n">d</span> <span class="n">las</span></code>
+<p>We also assume that you already started a <a href="../LASIntro/">LAS</a> in the background via <code class="codehilite"><span class="err">docker-compose up -d las</span></code>
 on the local machine:</p>
 <div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
 </pre></div>
@@ -1468,28 +1468,28 @@ on the local machine:</p>
 </pre></div>
 
 <p>This results in an output similar to this:</p>
-<div class="codehilite"><pre><span></span><span class="n">Created</span> <span class="k">Session</span><span class="p">[</span><span class="n">id</span><span class="o">=</span><span class="n">ce81e4cd</span><span class="o">-</span><span class="n">eed4</span><span class="o">-</span><span class="mi">4</span><span class="n">f12</span><span class="o">-</span><span class="mi">9</span><span class="n">bfc</span><span class="o">-</span><span class="n">c93e3dd4b454</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">secure</span><span class="o">-</span><span class="n">arguments</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">Pending</span><span class="p">]</span><span class="k">c</span>
+<div class="codehilite"><pre><span></span><span class="err">Created Session[id=ce81e4cd-eed4-4f12-9bfc-c93e3dd4b454, name=secure-arguments, status=Pending]c</span>
 </pre></div>
 
 <p>Note that if you try to upload to a session that already exists, you will get an error code like this:</p>
-<div class="codehilite"><pre><span></span><span class="n">Could</span> <span class="k">not</span> <span class="k">create</span> <span class="n">successor</span> <span class="k">session</span><span class="p">.</span> <span class="n">Invalid</span> <span class="n">previous</span> <span class="k">session</span> <span class="n">digest</span><span class="p">:</span> <span class="k">Some</span><span class="p">(</span><span class="ss">&quot;5de101e4980f312527e1c308dfe6c7bc465660c0fea6b98983efa5baf94bf362&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="k">None</span>
+<div class="codehilite"><pre><span></span><span class="err">Could not create successor session. Invalid previous session digest: Some(&quot;5de101e4980f312527e1c308dfe6c7bc465660c0fea6b98983efa5baf94bf362&quot;) != None</span>
 </pre></div>
 
-<p>In other words, if you want to update a session, you need to define a <code class="codehilite"><span class="n">predecessor</span></code> key in the session that specifies the current session. This is to ensure that a client does not overwrite a just updated session, i.e., it permits to detect write/write conflicts.</p>
+<p>In other words, if you want to update a session, you need to define a <code class="codehilite"><span class="err">predecessor</span></code> key in the session that specifies the current session. This is to ensure that a client does not overwrite a just updated session, i.e., it permits to detect write/write conflicts.</p>
 <h3 id="executing-print-arg-env">Executing Print-Arg-Env<a class="headerlink" href="#executing-print-arg-env" title="Permanent link">&para;</a></h3>
-<p>Let us now execute <code class="codehilite"><span class="n">scone</span><span class="o">-</span><span class="n">print</span><span class="o">-</span><span class="n">arg</span><span class="o">-</span><span class="n">env</span></code> in the context of session <code class="codehilite"><span class="n">secure</span><span class="o">-</span><span class="n">arguments</span><span class="o">-</span><span class="n">example</span></code>. To do so, we need
-to pass in environment variable <code class="codehilite"><span class="n">SCONE_CONFIG_ID</span></code> which contains the name of the session and we need to set 
-<code class="codehilite"><span class="n">SCONE_CAS_ADDR</span></code>as well as <code class="codehilite"><span class="n">SCONE_LAS_ADDR</span></code> as we have shown above.</p>
+<p>Let us now execute <code class="codehilite"><span class="err">scone-print-arg-env</span></code> in the context of session <code class="codehilite"><span class="err">secure-arguments-example</span></code>. To do so, we need
+to pass in environment variable <code class="codehilite"><span class="err">SCONE_CONFIG_ID</span></code> which contains the name of the session and we need to set 
+<code class="codehilite"><span class="err">SCONE_CAS_ADDR</span></code>as well as <code class="codehilite"><span class="err">SCONE_LAS_ADDR</span></code> as we have shown above.</p>
 <div class="codehilite"><pre><span></span><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span>secure-arguments-example/scone-print-arg-env ./scone-print-arg-env
 </pre></div>
 
 <p>This will print the following output:</p>
-<div class="codehilite"><pre><span></span><span class="n">argv</span><span class="p">:</span> <span class="p">.</span><span class="o">/</span><span class="n">scone</span><span class="o">-</span><span class="n">print</span><span class="o">-</span><span class="n">arg</span><span class="o">-</span><span class="n">env</span> <span class="n">arg1</span> <span class="n">arg2</span> <span class="n">arg3</span>
-<span class="n">environ</span><span class="p">:</span>
-<span class="n">SCONE_MODE</span><span class="o">=</span><span class="n">hw</span>
-<span class="n">env2</span><span class="o">=</span><span class="k">in</span>
-<span class="n">env1</span><span class="o">=</span><span class="n">running</span>
-<span class="n">env3</span><span class="o">=</span><span class="n">enclave</span>
+<div class="codehilite"><pre><span></span><span class="c">argv: ./scone-print-arg-env arg1 arg2 arg3</span>
+<span class="c">environ:</span>
+<span class="err">SCONE_MODE=hw</span>
+<span class="err">env2=in</span>
+<span class="err">env1=running</span>
+<span class="err">env3=enclave</span>
 </pre></div>
 
 <p>Note that the environment variables - except those expected by the SCONE runtime to locate LAS, CAS and the session - are ignored. This means
@@ -1498,12 +1498,12 @@ even if we pass additional arguments and environment variables,  the output does
 </pre></div>
 
 <p>results in the same output:</p>
-<div class="codehilite"><pre><span></span><span class="n">argv</span><span class="p">:</span> <span class="p">.</span><span class="o">/</span><span class="n">scone</span><span class="o">-</span><span class="n">print</span><span class="o">-</span><span class="n">arg</span><span class="o">-</span><span class="n">env</span> <span class="n">arg1</span> <span class="n">arg2</span> <span class="n">arg3</span>
-<span class="n">environ</span><span class="p">:</span>
-<span class="n">SCONE_MODE</span><span class="o">=</span><span class="n">hw</span>
-<span class="n">env2</span><span class="o">=</span><span class="k">in</span>
-<span class="n">env1</span><span class="o">=</span><span class="n">running</span>
-<span class="n">env3</span><span class="o">=</span><span class="n">enclave</span>
+<div class="codehilite"><pre><span></span><span class="c">argv: ./scone-print-arg-env arg1 arg2 arg3</span>
+<span class="c">environ:</span>
+<span class="err">SCONE_MODE=hw</span>
+<span class="err">env2=in</span>
+<span class="err">env1=running</span>
+<span class="err">env3=enclave</span>
 </pre></div>
 
 <p>The SCONE variables provided by the environment are not protected in any way and
@@ -1511,7 +1511,7 @@ we designed SCONE assuming that an attacker could modify these environment varia
 lead to denial of service attacks but not to the exposure of any secrets.</p>
 <div class="admonition note">
 <p class="admonition-title">Integrity of SCONE environment variables</p>
-<p>An adversary could change <code class="codehilite"><span class="n">SCONE_CONFIG_ID</span></code>, <code class="codehilite"><span class="n">SCONE_CAS_ADDR</span></code> and <code class="codehilite"><span class="n">SCONE_LAS_ADDR</span></code>  but in this
+<p>An adversary could change <code class="codehilite"><span class="err">SCONE_CONFIG_ID</span></code>, <code class="codehilite"><span class="err">SCONE_CAS_ADDR</span></code> and <code class="codehilite"><span class="err">SCONE_LAS_ADDR</span></code>  but in this
  case, the application does not start (attestation fails) up or it does not get access to the secrets and configuration
  variables to do its job.</p>
 </div>

@@ -1352,9 +1352,9 @@
                 
                 
                 <h1 id="encrypted-python-programs-and-encrypted-input">Encrypted Python Programs and Encrypted Input<a class="headerlink" href="#encrypted-python-programs-and-encrypted-input" title="Permanent link">&para;</a></h1>
-<p>With the help of a simple <code class="codehilite"><span class="n">wordcount</span></code> Python program, we show how to <strong>execute encrypted Python code</strong> inside of an SGX enclave.
+<p>With the help of a simple <code class="codehilite"><span class="err">wordcount</span></code> Python program, we show how to <strong>execute encrypted Python code</strong> inside of an SGX enclave.
 In this example, we also show how to encrypt an input file. The Python engine itself also runs inside the same enclave.</p>
-<p>We put both the Python code as well as the input file of the <code class="codehilite"><span class="n">wordcount</span></code> in the same encrypted filesystem.
+<p>We put both the Python code as well as the input file of the <code class="codehilite"><span class="err">wordcount</span></code> in the same encrypted filesystem.
 Typically, we would put the Python code in the encrypted filesystem of the image and the encrypted input
 and output files in one or more <strong>encrypted volumes</strong> mapped into the container.</p>
 <p><center>
@@ -1373,31 +1373,31 @@ and output files in one or more <strong>encrypted volumes</strong> mapped into t
 <div class="codehilite"><pre><span></span>git clone https://github.com/scontain/EncryptedWordCount.git
 </pre></div>
 
-<p>and then enter directory <code class="codehilite"><span class="n">EncryptedWordCount</span></code></p>
+<p>and then enter directory <code class="codehilite"><span class="err">EncryptedWordCount</span></code></p>
 <div class="codehilite"><pre><span></span><span class="nb">cd</span> EncryptedWordCount
 </pre></div>
 
 <h2 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h2>
-<p>The Python source code and the input file is stored in directory <code class="codehilite"><span class="n">native</span><span class="o">-</span><span class="n">files</span><span class="o">/</span></code>. The <code class="codehilite"><span class="n">wordcount</span><span class="p">.</span><span class="n">py</span></code> code is just some very simple
+<p>The Python source code and the input file is stored in directory <code class="codehilite"><span class="err">native-files/</span></code>. The <code class="codehilite"><span class="err">wordcount.py</span></code> code is just some very simple
 Python code to count the frequency of words in a given file:</p>
 <div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="nb">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;r+&quot;</span><span class="p">)</span>
+<span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;r+&quot;</span><span class="p">)</span>
 
 <span class="n">wordcount</span><span class="o">=</span><span class="p">{}</span>
-<span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+<span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
     <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wordcount</span><span class="p">:</span>
         <span class="n">wordcount</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">wordcount</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">wordcount</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="k">print</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span>
+    <span class="nb">print</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span>
 </pre></div>
 
-<h2 id="creating-image-with-encrypted-wordcount">Creating Image with Encrypted <code class="codehilite"><span class="n">wordcount</span></code><a class="headerlink" href="#creating-image-with-encrypted-wordcount" title="Permanent link">&para;</a></h2>
-<p>The repository includes a script <code class="codehilite"><span class="n">create_image</span><span class="p">.</span><span class="n">sh</span></code> that</p>
+<h2 id="creating-image-with-encrypted-wordcount">Creating Image with Encrypted <code class="codehilite"><span class="err">wordcount</span></code><a class="headerlink" href="#creating-image-with-encrypted-wordcount" title="Permanent link">&para;</a></h2>
+<p>The repository includes a script <code class="codehilite"><span class="err">create_image.sh</span></code> that</p>
 <ul>
-<li>encrypts the files in directory <code class="codehilite"><span class="n">native</span><span class="o">-</span><span class="n">files</span><span class="o">/</span></code>: the files are <strong>integrity</strong>, <strong>confidentiality</strong> and <strong>rollback</strong> protected</li>
+<li>encrypts the files in directory <code class="codehilite"><span class="err">native-files/</span></code>: the files are <strong>integrity</strong>, <strong>confidentiality</strong> and <strong>rollback</strong> protected</li>
 <li>attests that CAS is a proper CAS running inside an enclave and then stores the TLS certificate of the CAS in the local file system</li>
 <li>generates a docker image containing a Python engine which runs inside of an enclave </li>
 <li>pushes a <strong>security policy</strong> to CAS via TLS (checking the certificate of CAS) that includes
@@ -1409,35 +1409,35 @@ Python code to count the frequency of words in a given file:</p>
 <div class="codehilite"><pre><span></span>./create_image.sh
 </pre></div>
 
-<p>This creates an image <code class="codehilite"><span class="n">encryptedwordcount</span></code> stored in the local registry and
+<p>This creates an image <code class="codehilite"><span class="err">encryptedwordcount</span></code> stored in the local registry and
 a session in a SCONE Configuration and Attestation Service (CAS) running on a remote site.</p>
-<p><em>We assume in this demo that the creation of the <code class="codehilite"><span class="n">wordcount</span></code> image is performed on a trusted host.</em> 
-The execution of the <code class="codehilite"><span class="n">wordcount</span></code> can be performed on an untrusted host. For simplicity, we execute on the
+<p><em>We assume in this demo that the creation of the <code class="codehilite"><span class="err">wordcount</span></code> image is performed on a trusted host.</em> 
+The execution of the <code class="codehilite"><span class="err">wordcount</span></code> can be performed on an untrusted host. For simplicity, we execute on the
 same host.</p>
-<h2 id="running-the-wordcount-image">Running the <code class="codehilite"><span class="n">wordcount</span></code> image<a class="headerlink" href="#running-the-wordcount-image" title="Permanent link">&para;</a></h2>
-<p>First, read some environment variables set by <code class="codehilite"><span class="p">.</span><span class="o">/</span><span class="n">create_image</span><span class="p">.</span><span class="n">sh</span></code></p>
+<h2 id="running-the-wordcount-image">Running the <code class="codehilite"><span class="err">wordcount</span></code> image<a class="headerlink" href="#running-the-wordcount-image" title="Permanent link">&para;</a></h2>
+<p>First, read some environment variables set by <code class="codehilite"><span class="err">./create_image.sh</span></code></p>
 <div class="codehilite"><pre><span></span><span class="nb">source</span> myenv
 </pre></div>
 
-<p>and then start the <code class="codehilite"><span class="n">wordcount</span><span class="p">.</span><span class="n">py</span></code> with <code class="codehilite"><span class="n">docker</span><span class="o">-</span><span class="n">compose</span></code>:</p>
+<p>and then start the <code class="codehilite"><span class="err">wordcount.py</span></code> with <code class="codehilite"><span class="err">docker-compose</span></code>:</p>
 <div class="codehilite"><pre><span></span>docker-compose up
 </pre></div>
 
 <p>You will see quite some log output ending with</p>
-<div class="codehilite"><pre><span></span><span class="p">...</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">scone</span> <span class="mi">1</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">region</span><span class="p">.</span> <span class="mi">3</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">Hence</span><span class="p">,</span> <span class="mi">1</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="err">{</span><span class="n">ephemeral</span> <span class="mi">1</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="k">without</span> <span class="mi">1</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">command</span> <span class="mi">1</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">File</span> <span class="mi">1</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">mechanisms</span><span class="p">.</span> <span class="mi">1</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">region</span><span class="p">:</span> <span class="mi">1</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">the</span> <span class="mi">19</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">path</span><span class="p">.</span> <span class="mi">1</span>
-<span class="n">python_1</span>  <span class="o">|</span> <span class="n">document</span><span class="p">.</span> <span class="mi">1</span>
-<span class="n">encryptedwordcount_python_1</span> <span class="n">exited</span> <span class="k">with</span> <span class="n">code</span> <span class="mi">0</span>
+<div class="codehilite"><pre><span></span><span class="err">...</span>
+<span class="err">python_1  | scone 1</span>
+<span class="err">python_1  | region. 3</span>
+<span class="err">python_1  | Hence, 1</span>
+<span class="err">python_1  | {ephemeral 1</span>
+<span class="err">python_1  | without 1</span>
+<span class="err">python_1  | command 1</span>
+<span class="err">python_1  | File 1</span>
+<span class="err">python_1  | mechanisms. 1</span>
+<span class="err">python_1  | region: 1</span>
+<span class="err">python_1  | the 19</span>
+<span class="err">python_1  | path. 1</span>
+<span class="err">python_1  | document. 1</span>
+<span class="err">encryptedwordcount_python_1 exited with code 0</span>
 </pre></div>
 
 <p>Stop the compose file with control-C.</p>
@@ -1450,7 +1450,7 @@ same host.</p>
 <div class="codehilite"><pre><span></span>rm -rf encrypted-files/ fspf-file myenv client-key.pem client.pem myenv native-files/keytag session.yml
 </pre></div>
 
-<p>before starting it with <code class="codehilite"><span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="n">up</span></code> again.</p>
+<p>before starting it with <code class="codehilite"><span class="err">docker-compose up</span></code> again.</p>
 <h2 id="contacts">Contacts<a class="headerlink" href="#contacts" title="Permanent link">&para;</a></h2>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, July 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 

@@ -1302,7 +1302,7 @@ this image cached:</p>
 </pre></div>
 
 <p>In case the pull fails, ask us for access to evalutate SCONE.</p>
-<p>Now, run the image. On some hosts, JVM needs <code class="codehilite"><span class="c1">--privileged</span></code> access:
+<p>Now, run the image. On some hosts, JVM needs <code class="codehilite"><span class="err">--privileged</span></code> access:
 <div class="codehilite"><pre><span></span>docker run --privileged --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/apps:8-jdk-alpine
 </pre></div></p>
 <p>Please drop argument <em>--device=/dev/isgx</em> in case you do not have an SGX driver installed.</p>
@@ -1327,11 +1327,11 @@ this image cached:</p>
 <div class="codehilite"><pre><span></span>java HelloWorld
 </pre></div>
 
-<p>This might produce some warnings (since we disable access to the <code class="codehilite"><span class="n">proc</span> <span class="n">filesystem</span></code>):</p>
-<div class="codehilite"><pre><span></span><span class="o">/</span> <span class="o">#</span> <span class="n">java</span> <span class="n">HelloWorld</span>
-<span class="n">Picked</span> <span class="n">up</span> <span class="n">JAVA_TOOL_OPTIONS</span><span class="p">:</span> <span class="o">-</span><span class="n">Xmx256m</span>
-<span class="n">OpenJDK</span> <span class="mi">64</span><span class="o">-</span><span class="nb">Bit</span> <span class="n">Server</span> <span class="n">VM</span> <span class="n">warning</span><span class="p">:</span> <span class="n">Can</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">detect</span> <span class="n">initial</span> <span class="n">thread</span> <span class="n">stack</span> <span class="k">location</span> <span class="o">-</span> <span class="n">find_vma</span> <span class="n">failed</span>
-<span class="n">Hello</span> <span class="n">World</span>
+<p>This might produce some warnings (since we disable access to the <code class="codehilite"><span class="k">proc</span> <span class="nv">filesystem</span></code>):</p>
+<div class="codehilite"><pre><span></span><span class="err">/ # java HelloWorld</span>
+<span class="err">Picked up JAVA_TOOL_OPTIONS: -Xmx256m</span>
+<span class="err">OpenJDK 64-Bit Server VM warning: Can&#39;t detect initial thread stack location - find_vma failed</span>
+<span class="err">Hello World</span>
 </pre></div>
 
 <p>We can run Java with some additional log messages to see what accesses are blocked:</p>
@@ -1394,11 +1394,11 @@ In case you run out of memory inside the enclave, increase the heap size. In cas
 </pre></div>
 
 <p>will result in the following output:</p>
-<div class="codehilite"><pre><span></span><span class="n">Picked</span> <span class="n">up</span> <span class="n">JAVA_TOOL_OPTIONS</span><span class="p">:</span> <span class="o">-</span><span class="n">Xmx256m</span>
-<span class="p">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="p">]</span> <span class="n">src</span><span class="o">/</span><span class="n">scone</span><span class="o">-</span><span class="n">shielding</span><span class="o">/</span><span class="n">proc_fs</span><span class="p">.</span><span class="k">c</span><span class="p">:</span><span class="mi">324</span><span class="p">:</span><span class="n">_proc_fs_open</span><span class="p">():</span> <span class="k">open</span><span class="p">:</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="k">self</span><span class="o">/</span><span class="n">mountinfo</span> <span class="k">is</span> <span class="k">not</span> <span class="n">supported</span>
-<span class="p">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="p">]</span> <span class="n">src</span><span class="o">/</span><span class="n">scone</span><span class="o">-</span><span class="n">shielding</span><span class="o">/</span><span class="n">proc_fs</span><span class="p">.</span><span class="k">c</span><span class="p">:</span><span class="mi">324</span><span class="p">:</span><span class="n">_proc_fs_open</span><span class="p">():</span> <span class="k">open</span><span class="p">:</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="k">self</span><span class="o">/</span><span class="n">maps</span> <span class="k">is</span> <span class="k">not</span> <span class="n">supported</span>
-<span class="n">OpenJDK</span> <span class="mi">64</span><span class="o">-</span><span class="nb">Bit</span> <span class="n">Server</span> <span class="n">VM</span> <span class="n">warning</span><span class="p">:</span> <span class="n">Can</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">detect</span> <span class="n">initial</span> <span class="n">thread</span> <span class="n">stack</span> <span class="k">location</span> <span class="o">-</span> <span class="n">find_vma</span> <span class="n">failed</span>
-<span class="n">Hello</span> <span class="n">World</span>
+<div class="codehilite"><pre><span></span><span class="err">Picked up JAVA_TOOL_OPTIONS: -Xmx256m</span>
+<span class="err">[SCONE|WARN] src/scone-shielding/proc_fs.c:324:_proc_fs_open(): open: /proc/self/mountinfo is not supported</span>
+<span class="err">[SCONE|WARN] src/scone-shielding/proc_fs.c:324:_proc_fs_open(): open: /proc/self/maps is not supported</span>
+<span class="err">OpenJDK 64-Bit Server VM warning: Can&#39;t detect initial thread stack location - find_vma failed</span>
+<span class="err">Hello World</span>
 </pre></div>
 
 <h1 id="example-zookeeper">Example: Zookeeper<a class="headerlink" href="#example-zookeeper" title="Permanent link">&para;</a></h1>

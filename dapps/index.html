@@ -1600,14 +1600,14 @@ The three differences are that</p>
 <p>We build this program with the help of the standard
 <strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile below). For convenience,
 we provide an Alpine image (i.e., sconecuratedimages/muslgcc) that has <strong>gcc</strong> preinstalled.</p>
-<div class="codehilite"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/muslgcc</span>
+<div class="codehilite"><pre><span></span><span class="k">FROM</span> <span class="s">sconecuratedimages/muslgcc</span>
 
 <span class="k">COPY</span> copy_files.c  /
 
 <span class="c"># compile with vanilla gcc</span>
 <span class="k">RUN</span> gcc -Wall copy_files.c -o /copy_files
 
-<span class="k">FROM</span><span class="s"> iexechub/sgx-scone:runtime</span>
+<span class="k">FROM</span> <span class="s">iexechub/sgx-scone:runtime</span>
 
 <span class="k">COPY</span> --from<span class="o">=</span><span class="m">0</span> /copy_files /application
 
@@ -1622,7 +1622,7 @@ Moreover, this image contains a script <strong>/application.sh</strong> that pul
 the encrypted input and output volumes from some transfer service, 
 executes the application inside of an enclave. For testing, the script can push the encrypted output volume to a transfer service (see below).  </p>
 <p>The image <strong>sconecuratedimages/iexecsgx:copy_demo</strong>
-is built by the script <code class="codehilite"><span class="n">build</span><span class="o">-</span><span class="n">image</span><span class="p">.</span><span class="n">sh</span></code>. This script also determines
+is built by the script <code class="codehilite"><span class="err">build-image.sh</span></code>. This script also determines
 <strong>MrEnclave</strong> of the application and writes a <strong>session template</strong> <em>copy_dapp.yml</em>.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <p>We now show how to test the trusted copy DApp. After building the image
@@ -1669,7 +1669,7 @@ since <strong>docker run</strong> does not pull/update the image.</p>
 <div class="codehilite"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/iexecsgx:copy_demo
 </pre></div>
 
-<p>Ensure that you are executing a bash shell (execute <code class="codehilite"><span class="n">bash</span></code>). Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
+<p>Ensure that you are executing a bash shell (execute <code class="codehilite"><span class="err">bash</span></code>). Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
 <div class="codehilite"><pre><span></span><span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/iexecsgx:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push filepush.co/upload<span class="k">)</span>
 </pre></div>
 
@@ -1693,11 +1693,11 @@ since <strong>docker run</strong> does not pull/update the image.</p>
 <div class="codehilite"><pre><span></span>cat OUTPUTS/f1.txt
 </pre></div>
 
-<p>results in  <code class="codehilite"><span class="n">Hello</span> <span class="n">world</span></code> and</p>
+<p>results in  <code class="codehilite"><span class="err">Hello world</span></code> and</p>
 <div class="codehilite"><pre><span></span>cat OUTPUTS/f2.txt
 </pre></div>
 
-<p>results in  <code class="codehilite"><span class="n">Hello</span> <span class="n">together</span></code>.</p>
+<p>results in  <code class="codehilite"><span class="err">Hello together</span></code>.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   

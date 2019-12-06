@@ -1456,42 +1456,42 @@
 <h3 id="root-cas">Root CAS<a class="headerlink" href="#root-cas" title="Permanent link">&para;</a></h3>
 <p>Scontain.com operates its own <strong>root CAS</strong>. Customers might, however, want to operate their own <strong>rootCAS</strong>. This root CAS runs inside an enclave and uses an encrypted filesystem.</p>
 <p>Starting up a root CAS is different from a <em>child</em> CAS:
- A root CAS uses the SGX sealing key (mrenclave-based) to encrypt its database. This can be enabled by setting <code class="codehilite"><span class="n">sealed</span></code> to <code class="codehilite"><span class="k">true</span></code> in the CAS config file, in the database section. If this option is enabled during the first start of CAS, it will</p>
+ A root CAS uses the SGX sealing key (mrenclave-based) to encrypt its database. This can be enabled by setting <code class="codehilite"><span class="err">sealed</span></code> to <code class="codehilite"><span class="err">true</span></code> in the CAS config file, in the database section. If this option is enabled during the first start of CAS, it will</p>
 <ol>
-<li>create a <code class="codehilite"><span class="n">volume</span><span class="p">.</span><span class="n">fspf</span></code> with an encrypted region for the database file (<code class="codehilite"><span class="n">palaemon</span><span class="p">.</span><span class="n">db</span></code>),</li>
-<li>encrypt the <code class="codehilite"><span class="n">volume</span><span class="p">.</span><span class="n">fspf</span></code> with the sealing key and store the fspf file in the fs,</li>
-<li>initialize the FS shield with the newly created <code class="codehilite"><span class="n">volume</span><span class="p">.</span><span class="n">fspf</span></code>, and</li>
-<li>create an empty <code class="codehilite"><span class="n">palaemon</span><span class="p">.</span><span class="n">db</span></code> in this protected volume.</li>
+<li>create a <code class="codehilite"><span class="err">volume.fspf</span></code> with an encrypted region for the database file (<code class="codehilite"><span class="err">palaemon.db</span></code>),</li>
+<li>encrypt the <code class="codehilite"><span class="err">volume.fspf</span></code> with the sealing key and store the fspf file in the fs,</li>
+<li>initialize the FS shield with the newly created <code class="codehilite"><span class="err">volume.fspf</span></code>, and</li>
+<li>create an empty <code class="codehilite"><span class="err">palaemon.db</span></code> in this protected volume.</li>
 </ol>
 <p>Note that the creation is done inside of the enclave, i.e., only the encrypted DB and volume.fspf is visible outside of the enclave. During subsequent runs, CAS will detect that the volume/database already exist, and will simply initialize the FS shield using already existing volume.fspf.</p>
 <p><strong>Limitations:</strong>
 The <strong>root CAS</strong> does no have rollback protection: Intel has stopped supporting monotonic counters which are implemented by the Intel Management Engine (ME) when using Linux.  We plan to add rollback protection in a later version of CAS using an alternative mechanism.</p>
 <h3 id="cas-configuration-protection">CAS Configuration Protection<a class="headerlink" href="#cas-configuration-protection" title="Permanent link">&para;</a></h3>
-<p>As we mentioned above, the CAS configuration file will need to set <code class="codehilite"><span class="n">sealed</span></code> to <code class="codehilite"><span class="k">true</span></code>. An attacker could try to attack the initial configuration of CAS. Hence, the CAS configuration file needs to be protected too, as it contains security relevant configuration options. For example, it contains hashes of trusted SCONE quoting enclaves. One possibility would be to hardcode the config into CAS itself, however this is not sufficiently flexible since modifications of a config requires CAS recompilation.</p>
-<p>We use a different approach: we tie the fs tag with the mrenclave by adding the tag into enclave_parms structure. This can be done by setting <code class="codehilite"><span class="n">SCONE_FSPF_TAG</span></code> during enclave signing to provide fspf tag that shall be added to enclave_parms, e.g.</p>
+<p>As we mentioned above, the CAS configuration file will need to set <code class="codehilite"><span class="err">sealed</span></code> to <code class="codehilite"><span class="err">true</span></code>. An attacker could try to attack the initial configuration of CAS. Hence, the CAS configuration file needs to be protected too, as it contains security relevant configuration options. For example, it contains hashes of trusted SCONE quoting enclaves. One possibility would be to hardcode the config into CAS itself, however this is not sufficiently flexible since modifications of a config requires CAS recompilation.</p>
+<p>We use a different approach: we tie the fs tag with the mrenclave by adding the tag into enclave_parms structure. This can be done by setting <code class="codehilite"><span class="err">SCONE_FSPF_TAG</span></code> during enclave signing to provide fspf tag that shall be added to enclave_parms, e.g.</p>
 <div class="codehilite"><pre><span></span>$ <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span>84cae7af24a94f52f5de5dd36c1843dc scone-signer sign /myapp
 </pre></div>
 
 <p>Since mrenclave with this approach depends on the fspf tag, a client can make sure that the configuration file has not been manipulated by performing CAS attestation.</p>
-<p>If an application was signed with <code class="codehilite"><span class="n">SCONE_FSPF_TAG</span></code>, environment variable <code class="codehilite"><span class="n">SCONE_BOOTSTRAP_FSPF</span></code> shall be used to provide path to FSPF (the runtime will terminate execution if it detects that it has an expected fspf tag, but no FSPF was provided):</p>
+<p>If an application was signed with <code class="codehilite"><span class="err">SCONE_FSPF_TAG</span></code>, environment variable <code class="codehilite"><span class="err">SCONE_BOOTSTRAP_FSPF</span></code> shall be used to provide path to FSPF (the runtime will terminate execution if it detects that it has an expected fspf tag, but no FSPF was provided):</p>
 <div class="codehilite"><pre><span></span><span class="nv">SCONE_BOOTSTRAP_FSPF</span><span class="o">=</span>/fspf.pb /myapp
 </pre></div>
 
-<p>During FS shield initialization, fspf tag from enclave_parms must match the tag of the FSPF provided via SCONE_BOOTSTRAP_FSPF, otherwise execution will be terminated. Note that when <code class="codehilite"><span class="n">SCONE_BOOTSTRAP_FSPF</span></code> is used, no application arguments or environment variables will be passed to the application, as they cannot be trusted (this would require application-level modifications to check whether args and env are sane).</p>
-<p>To protect CAS, we create a FSPF covering everything that needs to be integrity protected, and use <code class="codehilite"><span class="n">SCONE_FSPF_TAG</span></code> to add the tag into mrenclave of CAS.</p>
+<p>During FS shield initialization, fspf tag from enclave_parms must match the tag of the FSPF provided via SCONE_BOOTSTRAP_FSPF, otherwise execution will be terminated. Note that when <code class="codehilite"><span class="err">SCONE_BOOTSTRAP_FSPF</span></code> is used, no application arguments or environment variables will be passed to the application, as they cannot be trusted (this would require application-level modifications to check whether args and env are sane).</p>
+<p>To protect CAS, we create a FSPF covering everything that needs to be integrity protected, and use <code class="codehilite"><span class="err">SCONE_FSPF_TAG</span></code> to add the tag into mrenclave of CAS.</p>
 <p>Limitations:
 - read-only file system
 - no args/env
 - no secrets in the initial fs state</p>
 <h2 id="cas-attestation">CAS Attestation<a class="headerlink" href="#cas-attestation" title="Permanent link">&para;</a></h2>
-<p>To establish trust into a root CAS, the client needs to perform a remote attestation of the root CAS. CAS provides a REST endpoint (<code class="codehilite"><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">attest</span></code>) to request its quote, which can then be validated by a remote party. The quote will contain a hash of the CAS's certificate chain (in the report data), allowing the client to verify whether the hash of the certificates presented by CAS matches the hash in the report data, and use these certificates for future communication with CAS without the need for re-attestation.</p>
+<p>To establish trust into a root CAS, the client needs to perform a remote attestation of the root CAS. CAS provides a REST endpoint (<code class="codehilite"><span class="err">/v1/attest</span></code>) to request its quote, which can then be validated by a remote party. The quote will contain a hash of the CAS's certificate chain (in the report data), allowing the client to verify whether the hash of the certificates presented by CAS matches the hash in the report data, and use these certificates for future communication with CAS without the need for re-attestation.</p>
 <h3 id="cas-attestation-api">CAS Attestation API<a class="headerlink" href="#cas-attestation-api" title="Permanent link">&para;</a></h3>
 <p>The following types of attestation information are provided by CAS:</p>
 <ul>
-<li><code class="codehilite"><span class="n">IAS</span> <span class="n">verification</span> <span class="n">report</span></code> (<code class="codehilite"><span class="n">IASReport</span></code>) - verification report provided by the Intel Attestation Service (IAS)</li>
-<li><code class="codehilite"><span class="n">EPID</span> <span class="n">quote</span></code> (<code class="codehilite"><span class="n">EPID</span></code>) - unverified quote produced by a quoting enclave. Such quote needs to be verified by the requester via IAS</li>
+<li><code class="codehilite"><span class="err">IAS verification report</span></code> (<code class="codehilite"><span class="err">IASReport</span></code>) - verification report provided by the Intel Attestation Service (IAS)</li>
+<li><code class="codehilite"><span class="err">EPID quote</span></code> (<code class="codehilite"><span class="err">EPID</span></code>) - unverified quote produced by a quoting enclave. Such quote needs to be verified by the requester via IAS</li>
 </ul>
-<p>To request CAS attestation information, make a <code class="codehilite"><span class="k">GET</span></code> request to <code class="codehilite"><span class="n">v1</span><span class="o">/</span><span class="n">attest</span></code>,
+<p>To request CAS attestation information, make a <code class="codehilite"><span class="err">GET</span></code> request to <code class="codehilite"><span class="err">v1/attest</span></code>,
 for example:</p>
 <div class="codehilite"><pre><span></span><span class="err">GET /v1/attest</span>
 </pre></div>
@@ -1509,7 +1509,7 @@ for example:</p>
 <tr>
 <td>type</td>
 <td>string</td>
-<td>Type of requested attestation information. Accepted values: <code class="codehilite"><span class="n">IASReport</span></code>, <code class="codehilite"><span class="n">EPID</span></code>. If no type is specified, <code class="codehilite"><span class="n">IASReport</span></code> is assumed. <br> This is an optional field</td>
+<td>Type of requested attestation information. Accepted values: <code class="codehilite"><span class="err">IASReport</span></code>, <code class="codehilite"><span class="err">EPID</span></code>. If no type is specified, <code class="codehilite"><span class="err">IASReport</span></code> is assumed. <br> This is an optional field</td>
 </tr>
 <tr>
 <td>nonce</td>
@@ -1519,12 +1519,12 @@ for example:</p>
 <tr>
 <td>spid</td>
 <td>16 byte hex string</td>
-<td>Identifier of the IAS user. Valid only for <code class="codehilite"><span class="n">EPID</span></code> requests.  <br> This is a mandatory field (if <code class="codehilite"><span class="k">type</span></code> is <code class="codehilite"><span class="n">EPID</span></code>)</td>
+<td>Identifier of the IAS user. Valid only for <code class="codehilite"><span class="err">EPID</span></code> requests.  <br> This is a mandatory field (if <code class="codehilite"><span class="err">type</span></code> is <code class="codehilite"><span class="err">EPID</span></code>)</td>
 </tr>
 <tr>
 <td>linkable</td>
 <td>boolean</td>
-<td>Whether linkable or unlinkable signature scheme should be used.  Valid only for <code class="codehilite"><span class="n">EPID</span></code> requests. <br> This is a mandatory field (if <code class="codehilite"><span class="k">type</span></code> is <code class="codehilite"><span class="n">EPID</span></code>)</td>
+<td>Whether linkable or unlinkable signature scheme should be used.  Valid only for <code class="codehilite"><span class="err">EPID</span></code> requests. <br> This is a mandatory field (if <code class="codehilite"><span class="err">type</span></code> is <code class="codehilite"><span class="err">EPID</span></code>)</td>
 </tr>
 </tbody>
 </table>
@@ -1544,17 +1544,17 @@ for example:</p>
 </tr>
 <tr>
 <td>additional_data</td>
-<td>Additional data integrity protected via <code class="codehilite"><span class="n">proof</span></code></td>
+<td>Additional data integrity protected via <code class="codehilite"><span class="err">proof</span></code></td>
 </tr>
 </tbody>
 </table>
 <h3 id="proof-data">Proof Data<a class="headerlink" href="#proof-data" title="Permanent link">&para;</a></h3>
-<p><code class="codehilite"><span class="n">proof_data</span></code> is a JSON map.</p>
+<p><code class="codehilite"><span class="err">proof_data</span></code> is a JSON map.</p>
 <p>The returned proof data depends on the requested attestation method.
 Accordingly, "IASReport", and "EPID" proof data might be returned.
-The returned type of the proof data is specified in the <code class="codehilite"><span class="k">type</span></code> field.</p>
-<p><strong><code class="codehilite"><span class="n">IASReport</span></code></strong></p>
-<p>The data returned for an <code class="codehilite"><span class="n">IASReport</span></code> is equivalent to the data obtained from Intel's IAS.
+The returned type of the proof data is specified in the <code class="codehilite"><span class="err">type</span></code> field.</p>
+<p><strong><code class="codehilite"><span class="err">IASReport</span></code></strong></p>
+<p>The data returned for an <code class="codehilite"><span class="err">IASReport</span></code> is equivalent to the data obtained from Intel's IAS.
 Please refer to
 <a href="https://api.trustedservices.intel.com/documents/IAS-API-Spec-rev-4.0.pdf">Intel Attestation Service API documentation, section 3.2</a> for description of the individual data fields.
 Data obtained from headers are put into the following JSON fields:
@@ -1564,10 +1564,10 @@ Data obtained from headers are put into the following JSON fields:
  - advisory_url
  - advisory_ids
  - body</p>
-<p>The IAS response's body is found in the <code class="codehilite"><span class="n">body</span></code> field.
+<p>The IAS response's body is found in the <code class="codehilite"><span class="err">body</span></code> field.
 See the example below.</p>
-<p><strong><code class="codehilite"><span class="n">EPID</span></code></strong></p>
-<p>The proof data returned for an <code class="codehilite"><span class="n">EPID</span></code> quote is a JSON map with the following fields:</p>
+<p><strong><code class="codehilite"><span class="err">EPID</span></code></strong></p>
+<p>The proof data returned for an <code class="codehilite"><span class="err">EPID</span></code> quote is a JSON map with the following fields:</p>
 <table>
 <thead>
 <tr>
@@ -1578,7 +1578,7 @@ See the example below.</p>
 <tbody>
 <tr>
 <td>type</td>
-<td>Will be "<code class="codehilite"><span class="n">EPID</span></code>"</td>
+<td>Will be "<code class="codehilite"><span class="err">EPID</span></code>"</td>
 </tr>
 <tr>
 <td>quote</td>
@@ -1590,17 +1590,17 @@ See the example below.</p>
 </tr>
 <tr>
 <td>linkable</td>
-<td><code class="codehilite"><span class="k">true</span></code> or <code class="codehilite"><span class="k">false</span></code> as specified in the request</td>
+<td><code class="codehilite"><span class="err">true</span></code> or <code class="codehilite"><span class="err">false</span></code> as specified in the request</td>
 </tr>
 </tbody>
 </table>
-<p><code class="codehilite"><span class="n">spid</span></code> and <code class="codehilite"><span class="n">linkable</span></code> merely reflect the provided query parameters of the request.
-For verification, <code class="codehilite"><span class="n">quote</span></code> has to be sent to Intel's IAS service.
-IAS has to be queried with the specified <code class="codehilite"><span class="n">spid</span></code> and <code class="codehilite"><span class="n">linkable</span></code> settings to obtain verification reports successfully.</p>
+<p><code class="codehilite"><span class="err">spid</span></code> and <code class="codehilite"><span class="err">linkable</span></code> merely reflect the provided query parameters of the request.
+For verification, <code class="codehilite"><span class="err">quote</span></code> has to be sent to Intel's IAS service.
+IAS has to be queried with the specified <code class="codehilite"><span class="err">spid</span></code> and <code class="codehilite"><span class="err">linkable</span></code> settings to obtain verification reports successfully.</p>
 <h3 id="additional-data">Additional Data<a class="headerlink" href="#additional-data" title="Permanent link">&para;</a></h3>
-<p>The <code class="codehilite"><span class="n">additional_data</span></code> value of the response's JSON contains additional data that is integrity protected and sent along with the attestation proof.
+<p>The <code class="codehilite"><span class="err">additional_data</span></code> value of the response's JSON contains additional data that is integrity protected and sent along with the attestation proof.
 This data is typically used to, but not limited to, transmit identification information and replay protection that is cryptographically bound to the attestation proof.</p>
-<p>The <code class="codehilite"><span class="n">additional_data</span></code> values is a JSON map with the following fields:</p>
+<p>The <code class="codehilite"><span class="err">additional_data</span></code> values is a JSON map with the following fields:</p>
 <table>
 <thead>
 <tr>
@@ -1611,7 +1611,7 @@ This data is typically used to, but not limited to, transmit identification info
 <tbody>
 <tr>
 <td>type</td>
-<td>Must be "<code class="codehilite"><span class="n">CasAttestationDataV1</span></code>"</td>
+<td>Must be "<code class="codehilite"><span class="err">CasAttestationDataV1</span></code>"</td>
 </tr>
 <tr>
 <td>nonce</td>
@@ -1623,8 +1623,8 @@ This data is typically used to, but not limited to, transmit identification info
 </tr>
 </tbody>
 </table>
-<p>To protect the <code class="codehilite"><span class="n">additional_data</span></code>'s integrity it is hashed and its hash value is embedded in the <code class="codehilite"><span class="n">proof</span></code> field in an attestation method specific manner (see the Proof Data section below).
-The hash is created by hashing <code class="codehilite"><span class="n">additional_data</span></code>'s unprettified JSON representation with SHA512 yielding a 64-byte long hash value.</p>
+<p>To protect the <code class="codehilite"><span class="err">additional_data</span></code>'s integrity it is hashed and its hash value is embedded in the <code class="codehilite"><span class="err">proof</span></code> field in an attestation method specific manner (see the Proof Data section below).
+The hash is created by hashing <code class="codehilite"><span class="err">additional_data</span></code>'s unprettified JSON representation with SHA512 yielding a 64-byte long hash value.</p>
 <h3 id="response-status-codes">Response Status Codes<a class="headerlink" href="#response-status-codes" title="Permanent link">&para;</a></h3>
 <ul>
 <li>200 ok - no error</li>
@@ -1694,59 +1694,59 @@ The hash is created by hashing <code class="codehilite"><span class="n">addition
 
 <h3 id="scone-cli-extension">scone CLI extension<a class="headerlink" href="#scone-cli-extension" title="Permanent link">&para;</a></h3>
 <p>We provide a new cas subcommand in scone-cli to simplify attestation and key provisioning.</p>
-<div class="codehilite"><pre><span></span><span class="nv">scone</span> <span class="nv">cas</span> <span class="nv">attest</span>
-<span class="nv">Attest</span> <span class="nv">a</span> <span class="nv">CAS</span> <span class="nv">instance</span>
+<div class="codehilite"><pre><span></span><span class="n">scone</span><span class="w"> </span><span class="n">cas</span><span class="w"> </span><span class="n">attest</span><span class="w"></span>
+<span class="n">Attest</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">CAS</span><span class="w"> </span><span class="n">instance</span><span class="w"></span>
 
-<span class="nv">USAGE</span>:
-    <span class="nv">scone</span> <span class="nv">cas</span> <span class="nv">attest</span> [<span class="nv">FLAGS</span>] [<span class="nv">OPTIONS</span>] <span class="o">--</span><span class="nv">address</span> <span class="o">&lt;</span><span class="nv">address</span><span class="o">&gt;</span> <span class="o">--</span><span class="nv">mrenclave</span> <span class="o">&lt;</span><span class="nv">mrenclave</span><span class="o">&gt;</span>
+<span class="k">USAGE</span><span class="err">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">scone</span><span class="w"> </span><span class="n">cas</span><span class="w"> </span><span class="n">attest</span><span class="w"> </span><span class="o">[</span><span class="n">FLAGS</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">OPTIONS</span><span class="o">]</span><span class="w"> </span><span class="c1">--address &lt;address&gt; --mrenclave &lt;mrenclave&gt;</span>
 
-<span class="nv">FLAGS</span>:
-    <span class="o">-</span><span class="nv">C</span>               <span class="nv">Accept</span> <span class="nv">CONFIGURATION</span> <span class="nv">NEEDED</span> <span class="nv">verification</span> <span class="nv">response</span> <span class="ss">(</span><span class="nv">hyperthreading</span> <span class="nv">enabled</span>, <span class="nv">less</span> <span class="nv">secure</span><span class="ss">)</span>
-    <span class="o">-</span><span class="nv">d</span>               <span class="nv">Allow</span> <span class="nv">CAS</span> <span class="nv">to</span> <span class="nv">run</span> <span class="nv">in</span> <span class="nv">debug</span> <span class="nv">mode</span> <span class="ss">(</span><span class="nv">only</span> <span class="k">for</span> <span class="nv">testing</span> <span class="nv">purposes</span><span class="o">!</span><span class="ss">)</span>
-    <span class="o">-</span><span class="nv">G</span>               <span class="nv">Accept</span> <span class="nv">GROUP</span> <span class="nv">OUT</span> <span class="nv">OF</span> <span class="nv">DATE</span> <span class="nv">verification</span> <span class="nv">response</span> <span class="ss">(</span><span class="nv">TCB</span> <span class="nv">out</span><span class="o">-</span><span class="nv">of</span><span class="o">-</span><span class="nv">date</span>, <span class="nv">dangerous</span><span class="o">!</span><span class="ss">)</span>
-    <span class="o">-</span><span class="nv">h</span>, <span class="o">--</span><span class="nv">help</span>       <span class="nv">Prints</span> <span class="nv">help</span> <span class="nv">information</span>
-    <span class="o">-</span><span class="nv">V</span>, <span class="o">--</span><span class="nv">version</span>    <span class="nv">Prints</span> <span class="nv">version</span> <span class="nv">information</span>
-    <span class="o">-</span><span class="nv">v</span>, <span class="o">--</span><span class="nv">verbose</span>    <span class="nv">Print</span> <span class="nv">received</span> <span class="nv">verification</span> <span class="nv">report</span> <span class="nv">to</span> <span class="nv">stderr</span>
+<span class="nl">FLAGS</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="n">C</span><span class="w">               </span><span class="n">Accept</span><span class="w"> </span><span class="n">CONFIGURATION</span><span class="w"> </span><span class="n">NEEDED</span><span class="w"> </span><span class="n">verification</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="p">(</span><span class="n">hyperthreading</span><span class="w"> </span><span class="n">enabled</span><span class="p">,</span><span class="w"> </span><span class="k">less</span><span class="w"> </span><span class="n">secure</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="n">d</span><span class="w">               </span><span class="n">Allow</span><span class="w"> </span><span class="n">CAS</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">debug</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="p">(</span><span class="k">only</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">testing</span><span class="w"> </span><span class="n">purposes</span><span class="err">!</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="n">G</span><span class="w">               </span><span class="n">Accept</span><span class="w"> </span><span class="k">GROUP</span><span class="w"> </span><span class="k">OUT</span><span class="w"> </span><span class="k">OF</span><span class="w"> </span><span class="nc">DATE</span><span class="w"> </span><span class="n">verification</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="p">(</span><span class="n">TCB</span><span class="w"> </span><span class="k">out</span><span class="o">-</span><span class="k">of</span><span class="o">-</span><span class="nc">date</span><span class="p">,</span><span class="w"> </span><span class="n">dangerous</span><span class="err">!</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="c1">--help       Prints help information</span>
+<span class="w">    </span><span class="o">-</span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="c1">--version    Prints version information</span>
+<span class="w">    </span><span class="o">-</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="c1">--verbose    Print received verification report to stderr</span>
 
-<span class="nv">OPTIONS</span>:
-    <span class="o">-</span><span class="nv">a</span>, <span class="o">--</span><span class="nv">address</span> <span class="o">&lt;</span><span class="nv">address</span><span class="o">&gt;</span>        <span class="nv">CAS</span> <span class="nv">address</span>
-    <span class="o">-</span><span class="nv">m</span>, <span class="o">--</span><span class="nv">mrenclave</span> <span class="o">&lt;</span><span class="nv">mrenclave</span><span class="o">&gt;</span>    <span class="nv">Expected</span> <span class="nv">mrenclave</span>
-    <span class="o">-</span><span class="nv">n</span>, <span class="o">--</span><span class="nv">nonce</span> <span class="o">&lt;</span><span class="nv">nonce</span><span class="o">&gt;</span>            <span class="k">Random</span> <span class="nv">number</span> <span class="nv">to</span> <span class="k">include</span> <span class="nv">in</span> <span class="nv">report</span> <span class="nv">data</span>
+<span class="nl">OPTIONS</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="o">-</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="c1">--address &lt;address&gt;        CAS address</span>
+<span class="w">    </span><span class="o">-</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="c1">--mrenclave &lt;mrenclave&gt;    Expected mrenclave</span>
+<span class="w">    </span><span class="o">-</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="c1">--nonce &lt;nonce&gt;            Random number to include in report data</span>
 </pre></div>
 
-<p>This command will contact CAS, request its certificate chain (via <code class="codehilite"><span class="o">/</span><span class="n">v1</span><span class="o">/</span><span class="n">attest</span></code>), request IAS report, validate the verification response and finally ensure that the hash of the certificate chain matches the hash in the report data. Upon successful verification, will print certificate chain to stdout, or return an error otherwise.</p>
+<p>This command will contact CAS, request its certificate chain (via <code class="codehilite"><span class="err">/v1/attest</span></code>), request IAS report, validate the verification response and finally ensure that the hash of the certificate chain matches the hash in the report data. Upon successful verification, will print certificate chain to stdout, or return an error otherwise.</p>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span>$ scone cas attest -m ad9c03d643d740435a2b1841266ed3a928c42a797c21809fe2332054021af40f -a cas:8081 -G -C
 </pre></div>
 
 <h2 id="policy-access-control">Policy Access Control<a class="headerlink" href="#policy-access-control" title="Permanent link">&para;</a></h2>
 <p>By default, access to a security policy is granted to the client that creates the policy. The creator is identified by a certificate which the client provides when it sets up the TLS connection to Palaemon. For any operation that Palaemon executes, it will first perform access control with the help of the provided client certificate. If the operation is not explicitly permitted, the operation will fail.</p>
-<p>A policy can be created by any client ‒ as long as the name of the policy is unique.  A policy can define <strong>Access Control Lists</strong> (ACLs) in section <code class="codehilite"><span class="n">access_control</span></code> - lists of certificates allowed to perform a particular operation. For each operation for which no ACL is defined, some default lists is defined (see below).</p>
+<p>A policy can be created by any client ‒ as long as the name of the policy is unique.  A policy can define <strong>Access Control Lists</strong> (ACLs) in section <code class="codehilite"><span class="err">access_control</span></code> - lists of certificates allowed to perform a particular operation. For each operation for which no ACL is defined, some default lists is defined (see below).</p>
 <p>For any operation that Palaemon executes, it will first perform access control, i.e., it checks that the provided client certificate is permitted to perform the operation. Note that TLS checks that the client knows the private key of the client certificate.</p>
 <h3 id="predefined-names">Predefined Names<a class="headerlink" href="#predefined-names" title="Permanent link">&para;</a></h3>
-<p>Palaemon also defines a constant for the client certificate  creator, i.e., <code class="codehilite"><span class="n">CREATOR</span></code> of the policy, i.e., this represents the public key of the client that created the policy. We also define constants</p>
+<p>Palaemon also defines a constant for the client certificate  creator, i.e., <code class="codehilite"><span class="err">CREATOR</span></code> of the policy, i.e., this represents the public key of the client that created the policy. We also define constants</p>
 <ul>
-<li><code class="codehilite"><span class="k">ANY</span></code>: To permit access by anybody, define a list with a single member <code class="codehilite"><span class="k">ANY</span></code></li>
-<li><code class="codehilite"><span class="k">NONE</span></code>: To emphasize that nobody has access, you can define a ACL with a single member <code class="codehilite"><span class="k">NONE</span></code>.</li>
+<li><code class="codehilite"><span class="err">ANY</span></code>: To permit access by anybody, define a list with a single member <code class="codehilite"><span class="err">ANY</span></code></li>
+<li><code class="codehilite"><span class="err">NONE</span></code>: To emphasize that nobody has access, you can define a ACL with a single member <code class="codehilite"><span class="err">NONE</span></code>.</li>
 </ul>
-<p>Note that <code class="codehilite"><span class="k">ANY</span></code> and <code class="codehilite"><span class="k">NONE</span></code> can only be part of a list with a single entry. <code class="codehilite"><span class="n">CREATOR</span></code> can be part of lists with arbitrarily many public keys.</p>
+<p>Note that <code class="codehilite"><span class="err">ANY</span></code> and <code class="codehilite"><span class="err">NONE</span></code> can only be part of a list with a single entry. <code class="codehilite"><span class="err">CREATOR</span></code> can be part of lists with arbitrarily many public keys.</p>
 <h2 id="palaemon-operations-on-sessions">PALAEMON Operations on sessions<a class="headerlink" href="#palaemon-operations-on-sessions" title="Permanent link">&para;</a></h2>
 <p>For any RUD operation, as well for reading the policy certificate, the policy can define an ACL:</p>
 <ul>
-<li><code class="codehilite"><span class="k">read</span></code>: permit to read the policy - without the secrets. By default this set to <code class="codehilite"><span class="n">CREATOR</span></code>.</li>
-<li><code class="codehilite"><span class="n">secrets</span></code>: permit to read the policy including the secrets. This can be used for migrating sessions and must be used with care. By default this is set to <code class="codehilite"><span class="k">NONE</span></code>.</li>
-<li><code class="codehilite"><span class="k">update</span></code>: permit to update the policy. By default this set to <code class="codehilite"><span class="n">CREATOR</span></code>.</li>
-<li><code class="codehilite"><span class="k">delete</span></code>: permit to delete the policy. By default this set to <code class="codehilite"><span class="n">CREATOR</span></code>.</li>
+<li><code class="codehilite"><span class="err">read</span></code>: permit to read the policy - without the secrets. By default this set to <code class="codehilite"><span class="err">CREATOR</span></code>.</li>
+<li><code class="codehilite"><span class="err">secrets</span></code>: permit to read the policy including the secrets. This can be used for migrating sessions and must be used with care. By default this is set to <code class="codehilite"><span class="err">NONE</span></code>.</li>
+<li><code class="codehilite"><span class="err">update</span></code>: permit to update the policy. By default this set to <code class="codehilite"><span class="err">CREATOR</span></code>.</li>
+<li><code class="codehilite"><span class="err">delete</span></code>: permit to delete the policy. By default this set to <code class="codehilite"><span class="err">CREATOR</span></code>.</li>
 </ul>
 <p>In other words, to perform any of these operations, a client has to provide a certificate that matches a certificate in the specified ACL. TLS will ensure that the client knows the private key to the given public key.</p>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
-<p>To prohibit any read access of a policy, i.e., even by the creator, define a <code class="codehilite"><span class="k">NONE</span></code> policy:</p>
+<p>To prohibit any read access of a policy, i.e., even by the creator, define a <code class="codehilite"><span class="err">NONE</span></code> policy:</p>
 <div class="codehilite"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">NONE</span>
 </pre></div>
 
-<p>To permit access by anybody, define a list with a single member <code class="codehilite"><span class="k">ANY</span></code>:</p>
+<p>To permit access by anybody, define a list with a single member <code class="codehilite"><span class="err">ANY</span></code>:</p>
 <div class="codehilite"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ANY</span>
@@ -1755,19 +1755,19 @@ The hash is created by hashing <code class="codehilite"><span class="n">addition
 <p><strong>Notes:</strong> Alternatives to specifying certificates are i) public keys, ii) hashes of certificates, or iii) names of certificates. We decided to support certificates instead of public keys or hashes of certificates since they provide some more information and can be verified if they are revoked or expired.</p>
 <h3 id="example-access-control">Example: Access Control<a class="headerlink" href="#example-access-control" title="Permanent link">&para;</a></h3>
 <p>A certificate  has to be encoded in PEM format like this:</p>
-<div class="codehilite"><pre><span></span>  <span class="o">-----</span><span class="nv">BEGIN</span> <span class="nv">CERTIFICATE</span><span class="o">-----</span>
-      <span class="nv">MIIGGzCCBAOgAwIBAgIJALrB28lSsN6VMA0GCSqGSIb3DQEBCwUAMGYxCzAJBgNV</span>
-      <span class="nv">BAYTAkRFMQ8wDQYDVQQIEwZTYXhvbnkxEDAOBgNVBAcTB0RyZXNkZW4xITAfBgNV</span>
-      <span class="nv">HhcNMTgwNDI0MTc1MjU0WhcNMzgwNDE5MTc1MjU0WjBmMQswCQYDVQQGEwJERTEP</span>
-      ...
-      <span class="nv">wpV1hfHc8tqJyYovBpFLc55QrGyLZkY5mZX7ug4nn48x2XCenDm1Vn86R23</span><span class="o">/</span><span class="nv">a2uu</span>
-      <span class="nv">ZhOKX5xBi6SZTca8egCCPGY</span><span class="o">+</span><span class="nv">HuW6kvHSyrBSFygxmPLdq4gYdjVsgFujMvknGw8X</span>
-      <span class="nv">r5Ofz</span><span class="o">+</span><span class="nv">k7EYtRuzS5jO7</span><span class="o">+</span><span class="nv">NQmeZqy</span><span class="o">/</span><span class="nv">ItUFFc5oW5hpug</span><span class="o">==</span>
-  <span class="o">-----</span><span class="k">END</span> <span class="nv">CERTIFICATE</span><span class="o">-----</span>
+<div class="codehilite"><pre><span></span><span class="err">  -----BEGIN CERTIFICATE-----</span>
+<span class="err">      MIIGGzCCBAOgAwIBAgIJALrB28lSsN6VMA0GCSqGSIb3DQEBCwUAMGYxCzAJBgNV</span>
+<span class="err">      BAYTAkRFMQ8wDQYDVQQIEwZTYXhvbnkxEDAOBgNVBAcTB0RyZXNkZW4xITAfBgNV</span>
+<span class="err">      HhcNMTgwNDI0MTc1MjU0WhcNMzgwNDE5MTc1MjU0WjBmMQswCQYDVQQGEwJERTEP</span>
+<span class="err">      ...</span>
+<span class="err">      wpV1hfHc8tqJyYovBpFLc55QrGyLZkY5mZX7ug4nn48x2XCenDm1Vn86R23/a2uu</span>
+<span class="err">      ZhOKX5xBi6SZTca8egCCPGY+HuW6kvHSyrBSFygxmPLdq4gYdjVsgFujMvknGw8X</span>
+<span class="err">      r5Ofz+k7EYtRuzS5jO7+NQmeZqy/ItUFFc5oW5hpug==</span>
+<span class="err">  -----END CERTIFICATE-----</span>
 </pre></div>
 
 <p>We can pack this in an access control list. Reading a policy is controlled via
-a <code class="codehilite"><span class="k">read</span></code> ACL. This can be defined as part of the policy as follows:</p>
+a <code class="codehilite"><span class="err">read</span></code> ACL. This can be defined as part of the policy as follows:</p>
 <div class="codehilite"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="p p-Indicator">|-</span>
@@ -1905,10 +1905,10 @@ or via environment variables:</p>
    description: CAS Instace CA certificate, signed by CAS CA
  - subject: CN = cas-session:test
    issuer: CN = cas-instance
-   description: session CA certificate for session <code class="codehilite"><span class="n">test</span></code>, signed by CAS Instance CA
+   description: session CA certificate for session <code class="codehilite"><span class="err">test</span></code>, signed by CAS Instance CA
  - subject: CN = server-tls-credentials, L = 91a05b97059623ffd447411b40fabefd167c929fa4951d509c89060fac9c0c7d
    issuer: CN = cas-session:test
-   description: leaf certificate generated by Palaemon from session key named <code class="codehilite"><span class="n">server</span><span class="o">-</span><span class="n">tls</span><span class="o">-</span><span class="n">credentials</span></code>,  signed by <code class="codehilite"><span class="n">test</span></code> session CA certificate. <code class="codehilite"><span class="n">L</span></code> attribute contains platform id on which the service instance runs.</p>
+   description: leaf certificate generated by Palaemon from session key named <code class="codehilite"><span class="err">server-tls-credentials</span></code>,  signed by <code class="codehilite"><span class="err">test</span></code> session CA certificate. <code class="codehilite"><span class="err">L</span></code> attribute contains platform id on which the service instance runs.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, Aug 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   

@@ -1366,20 +1366,20 @@ Hardware mode is only supported in Linux, since the Intel SGX driver is only ava
 <p>The output shows that SCONE is running in <strong>hardware mode</strong>: <em>export SCONE_MODE=hw</em></p>
 <h2 id="background-info">Background Info<a class="headerlink" href="#background-info" title="Permanent link">&para;</a></h2>
 <p>For ease of use, we create all Docker images such that applications run inside of enclaves if enclaves are available (<a href="SCONE_ENV/#run-mode"><strong>AUTO</strong> mode</a>). If SGX is not available, they run in simulation mode, i.e., outside of an enclave but all SCONE software is running. To disable simulation mode, you can set environment variable <strong>SCONE_MODE=HW</strong>:</p>
-<div class="codehilite"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="c1">--device=/dev/isgx -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers</span>
+<div class="codehilite"><pre><span></span><span class="err">docker run --device=/dev/isgx -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers</span>
 </pre></div>
 
 <p>If you would start your container in hardware mode but forget to give it access to the sgx device, i.e.,</p>
-<div class="codehilite"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">e</span> <span class="ss">&quot;SCONE_MODE=HW&quot;</span> <span class="o">-</span><span class="n">it</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">crosscompilers</span>
+<div class="codehilite"><pre><span></span><span class="err">docker run -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers</span>
 </pre></div>
 
 <p>compilation of the <em>helloworld</em> will succeed  but running the <em>helloworld</em> program will fail:</p>
-<div class="codehilite"><pre><span></span><span class="nv">bash</span><span class="o">-</span><span class="mi">4</span>.<span class="mi">4</span># <span class="nv">echo</span> $<span class="nv">SCONE_MODE</span>
-<span class="nv">HW</span>
-<span class="nv">bash</span><span class="o">-</span><span class="mi">4</span>.<span class="mi">4</span># <span class="nv">ls</span> <span class="o">-</span><span class="nv">l</span> <span class="o">/</span><span class="nv">dev</span><span class="o">/</span><span class="nv">isgx</span>
-<span class="nv">ls</span>: <span class="o">/</span><span class="nv">dev</span><span class="o">/</span><span class="nv">isgx</span>: <span class="nv">No</span> <span class="nv">such</span> <span class="nv">file</span> <span class="nv">or</span> <span class="nv">directory</span>
-<span class="nv">bash</span><span class="o">-</span><span class="mi">4</span>.<span class="mi">4</span># .<span class="o">/</span><span class="nv">helloworld</span>
-[<span class="nv">SCONE</span><span class="o">|</span><span class="nv">ERROR</span>] .<span class="o">/</span><span class="nv">tools</span><span class="o">/</span><span class="nv">starter</span><span class="o">-</span><span class="k">exec</span>.<span class="nv">c</span>:<span class="mi">993</span>:<span class="nv">_dl_main</span><span class="ss">()</span>: <span class="nv">Could</span> <span class="nv">not</span> <span class="nv">create</span> <span class="nv">enclave</span>: <span class="nv">Error</span> <span class="nv">opening</span> <span class="nv">SGX</span> <span class="nv">device</span>
+<div class="codehilite"><pre><span></span><span class="err">bash-4.4# echo $SCONE_MODE</span>
+<span class="err">HW</span>
+<span class="err">bash-4.4# ls -l /dev/isgx</span>
+<span class="c">ls: /dev/isgx: No such file or directory</span>
+<span class="err">bash-4.4# ./helloworld</span>
+<span class="err">[SCONE|ERROR] ./tools/starter-exec.c:993:_dl_main(): Could not create enclave: Error opening SGX device</span>
 </pre></div>
 
 <p>When running your software in operations, you would force the programs to run inside of enclaves: this can be enforced with the help of SCONE <a href="../cas_intro/">configuration and attestation service</a>. </p>

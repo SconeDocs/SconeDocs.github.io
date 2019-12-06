@@ -1343,7 +1343,7 @@
 <h2 id="attacker">Attacker<a class="headerlink" href="#attacker" title="Permanent link">&para;</a></h2>
 <p>In SCONE, we assume a very powerful <strong>attacker</strong> that has root access on the hosts on which we execute applications. The attacker can hence <a href="../memory_dump/">dump the memory</a> of the application using standard features of the operating system. In this way, the attacker can gain access to the code, the data and all the keys that are stored in main memory.</p>
 <p><center>
-<img alt="Attacker" src="../img/attacker.svg#smaller" />
+<img alt="Attacker" src="../img/attacker.png" />
 </center></p>
 <p>Note that the attacker can read all files of the application since operating system based access control does not apply to an attacker with root access. Moreover, any operating system based encryption of files does prevent file system accesses by the attacker either. If the application encrypts the files itself, the encryption key has to be stored somewhere in main memory - otherwise, the application would not be able to encrypt and decrypt files. An attacker can dump the main memory to get a hold of this encryption key.</p>
 <h2 id="user">User<a class="headerlink" href="#user" title="Permanent link">&para;</a></h2>
@@ -1353,11 +1353,11 @@
 <li>Protection against <strong>read</strong> accesses by attackers protects the <strong>integrity</strong> of the data, keys, and code.</li>
 </ul>
 <p><center>
-<img alt="User" src="../img/user.svg" />
+<img alt="User" src="../img/user.png" />
 </center></p>
 <p>SCONE provides a simple <a href="../secure_remote_execution/">CLI (command line interface)</a> to execute applications on remote hosts. This CLI supports to  encrypt files on the user's computer and push these files to a remote computer. Only the application itself can access the files: SCONE performs a transparent attestation of the application to ensure that <strong>neither the application or the file system has been modified</strong>. Only then, SCONE transparently encrypts/decrypts the files. In this way, SCONE ensures the <strong>confidentiality</strong> and <strong>integrity</strong> of the user provided files.</p>
 <p><center>
-<img alt="User" src="../img/user-files.svg" />
+<img alt="User" src="../img/user-files.png" />
 </center></p>
 <h2 id="application-provider">Application Provider<a class="headerlink" href="#application-provider" title="Permanent link">&para;</a></h2>
 <p>An <strong>application provider</strong> can create container images like, for example, <a href="../blender/">blender</a>, a 3D creation suite. SCONE helps the application provider to run <strong>unmodified applications</strong> inside of TEEs (trusted execution environments) such that the application is protected from accesses by attackers. SCONE can also transparently encrypt/decrypt the files stored in the
@@ -1365,26 +1365,26 @@ file system. The application container image can, for example, be created with t
 some cases, it might need a <a href="../multistagebuild/">multistage build</a>. We describe how to <a href="../groupcacheUseCase/">build a Go program</a> as part of this tutorial.</p>
 <p>An application provider can push its container images to a public repository like Docker hub or some private repository. The application provider can encrypt parts of the files to ensure the confidentiality and integrity of the files. For example, some of the application code might be written in Python and hence, the application provider must protect the integrity and confidentiality of that code:</p>
 <p><center>
-<img alt="Application Provider" src="../img/app-provider-and-user.svg" />
+<img alt="Application Provider" src="../img/app-provider-and-user.png" />
 </center></p>
 <p>Actually, the situation is even more difficult. The user might want to give the application access to some encrypted input and output files (as explained above). The application provider should not have the right to access the files since this is the data that the user must protect. The user should not have access to the files provided by the application provider. In particular, SCONE manages the keys such that the SCONE runtime of the application can get access  to the keys but neither the application provider nor the user will see these keys.
 We describe later how to do this for a simple <a href="../dapps/">decentralized copy application</a>.</p>
 <p><center>
-<img alt="Mutual Protection" src="../img/app-provider-and-user-protection.svg" />
+<img alt="Mutual Protection" src="../img/app-provider-and-user-protection.png" />
 </center></p>
 <h2 id="data-owner">Data Owner<a class="headerlink" href="#data-owner" title="Permanent link">&para;</a></h2>
 <p>A <strong>data owner</strong> is another stakeholder. The data owner provides data that can be processed by the application on behalf of the user. The data owner wants to protect its data not only accesses by access by attackers but also by direct access by the user and/or the application provider. The data owner therefore encrypts its data and only permits accesses by some explicitly specified application.  </p>
 <p><center>
-<img alt="Data Owner" src="../img/data-owner.svg" />
+<img alt="Data Owner" src="../img/data-owner.png" />
 </center></p>
 <p>SCONE supports security policies that ensure that the interests of the different stakeholders are satisfied. This is supported by security policies that are defined by the individual stakeholders. Parts of these policies can be exported to and imported from other policies. In this way, one can compose security policies of mutually distrusting stakeholders.</p>
 <p><center>
-<img alt="Data Owner" src="../img/composing-security-policies.svg" />
+<img alt="Data Owner" src="../img/composing-security-policies.png" />
 </center></p>
 <h2 id="auditor">Auditor<a class="headerlink" href="#auditor" title="Permanent link">&para;</a></h2>
 <p>In very critical application domains, neither the data owner nor the user might trust neither the application provider nor the SCONE platform sufficiently much, to entrust their data &amp; computations to the application. In these domains, an <strong>auditor</strong> can help to establish <strong>trust in the application</strong>. The auditor is an independent entity that can access all source code of the application as well as the SCONE platform. The auditor works typically offline, i.e., it is not involved in any of the computations. Instead, she determines which MrEnclaves together with what file system state (i.e., tag) can be trusted by the data owner and the user.</p>
 <p><center>
-<img alt="Auditor" src="../img/auditor.svg#smaller" />
+<img alt="Auditor" src="../img/auditor.png" />
 </center></p>
 <p>The auditor will also check the SCONE Configuration and Attestation Service (CAS): SCONE CAS enforces the security policies and manages the secrets on behalf of the SCONE platform. The auditor publishes the trusted MrEnclave and the file system tag of SCONE CAS.</p>
 <p>The data owner and the user can specify in their security policies a set of MrEnclaves, each with a specific file system tag, that they trust. Moreover, before submitting a security policy to SCONE CAS, they check that the instance of SCONE CAS has the correct MrEnclave as well as the correct initial file state. This is achieved with the help of the Intel attestation service.</p>
