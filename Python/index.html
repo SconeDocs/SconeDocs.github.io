@@ -1396,7 +1396,6 @@
                 <h1 id="python">Python<a class="headerlink" href="#python" title="Permanent link">&para;</a></h1>
 <p>SCONE supports running Python programs inside of SGX enclaves. We maintain Docker images for various Python versions / Python engines like:</p>
 <ul>
-<li><strong>Python 3.7.5</strong>: sconecuratedimages/python:3.7-alpine</li>
 <li><strong>Python 3.5.1</strong>: sconecuratedimages/appspython-3.5-alpine</li>
 <li><strong>Python 2.7</strong>: sconecuratedimages/apps:python-2.7.13-alpine3.6, and</li>
 <li><strong>PyPy 2.7</strong>: sconecuratedimages/apps:pypy-2.7.15-alpine3.7</li>
@@ -1408,7 +1407,7 @@
 </div>
 <h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
 <p>SCONE supports the typical Docker workflow to create Docker images that contain the Python engine as well as the Python program. SCONE supports the encryption of the Python programs to ensure both the confidentiality as well as the integrity of the programs. A typical workflow might look like this:</p>
-<p><img alt="SCONE Python Workflow" src="../img/python-workflow.png" /></p>
+<p><img alt="SCONE Python Workflow" src="../img/python-workflow.svg#fullwidth" /></p>
 <p>We at scontain.com maintain the SCONE-Python image and push this to hub.docker.com. This image can be used by authorized application developers to add encrypted Python programs and encrypted libraries. The SCONE runtime of the Python engine needs to get access to the encryption key to be able to decrypt transparently the Python scripts for the Python engine. To do so, the application developer defines a security policy that ensures that only the Python engine that executes the application of the application provider gets access to this encryption key.</p>
 <p>When the Python engine starts completely inside of a SGX enclave. The SCONE runtime transparently attests the Python engine as well as the <strong>filesystem</strong>: Only if both the Python engine has the expected MrEnclave as well as the filesystem state is exactly as expected, the SCONE runtime gets the encryption key from the SCONE CAS (Configuration and Attestation Service). The application developer therefore adds the expected MrEnclave and the initial filesystem state in form of a security policy to SCONE CAS.</p>
 <h2 id="complex-workflows">Complex Workflows<a class="headerlink" href="#complex-workflows" title="Permanent link">&para;</a></h2>
@@ -1496,7 +1495,7 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 <p>Python does not always deal gracefully with out of memory situations: often, it terminates with some misleading error message if Python runs out of heap or stack memory. Please try to give python sufficient stack and heap size if this happens. We recommend to start with a large heap, like, <strong>SCONE_HEAP=256M</strong> to ensure that Python has sufficient heap. If your program runs without any problem with a large heap, you can try to reduce the heap size to speedup program startup times.**</p>
 </div>
 <p>Note that you can set the environment variable of a process - in our case python - running inside a container with docker option <strong>-e</strong>:</p>
-<div class="codehilite"><pre><span></span>docker run --rm -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/apps:python-2-alpine3.6 python myapp.py
+<div class="codehilite"><pre><span></span>docker run --rm -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/apps:python-2-alpine3.6 python myapp.py
 </pre></div>
 
 <p>Will produce an output like</p>
@@ -1662,9 +1661,10 @@ Successfully installed pycairo-1.15.4
 <p>We use the Scholar's mate example from <a href="https://pypi.python.org/pypi/python-chess">https://pypi.python.org/pypi/python-chess</a></p>
 </li>
 </ul>
+<p><a href="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03"><img alt="asciicast" src="https://asciinema.org/a/kcXffCrpfAIjldgvnnSqtiE03.png" /></a></p>
 <h2 id="limitation">Limitation<a class="headerlink" href="#limitation" title="Permanent link">&para;</a></h2>
-<p>We do not yet support fork, i.e., you spawn new processes from within your Python programs. We are currently working on removing this limitation of SCONE. Until then, we expect you to have an external spawner.</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+<p>We do not yet support fork, i.e., you spawn new processes from within your Python programs. We are currently working on removing this limitation of SCONE. Until then, we expect you to have an external spawner. </p>
+<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
 <div class="footnote">
 <hr />
 <ol>
@@ -1731,7 +1731,7 @@ Successfully installed pycairo-1.15.4
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright Scontain © 2020
+            Copyright Scontain © 2019
           </div>
         
         powered by
