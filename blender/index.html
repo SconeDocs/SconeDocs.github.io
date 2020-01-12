@@ -1380,9 +1380,7 @@
                 <h1 id="blender-use-case">Blender Use Case<a class="headerlink" href="#blender-use-case" title="Permanent link">&para;</a></h1>
 <p><a href="https://www.blender.org/">Blender</a> is an open-source software  3D creation suite that in particular, supports rendering.  We show how to render images with the help of blender on a remote, untrusted host. </p>
 <p>In this use case, we show how to execute blender using simple <strong>ssh</strong> to run blender remotely: we encrypt the input file(s), ship the input files to the remote host, execute blender inside an enclave, and ship the results back to the local host. This Blender image also runs as a <a href="../dapps/"><strong>trusted DApp</strong></a> for the <a href="https://iex.ec/"><strong>iExec platform</strong></a>.</p>
-<p><center>
-<img alt="Workflow of Blender Example" src="../img/blender_python.svg#smaller" />
-</center></p>
+<p><img alt="Workflow of Blender Example" src="../img/blender_python.png" /></p>
 <h2 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h2>
 <p>Assuming the Python scripts are located in the <strong>INPUTS</strong> directory, we can compute the output image on host <strong>faye</strong> as follows:</p>
 <div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender_python --host faye
@@ -1394,14 +1392,10 @@ Opening this file  - <strong>which was computed inside an enclave with all input
 <p>For some more examples, scroll down.</p>
 <h2 id="technical-background">Technical Background<a class="headerlink" href="#technical-background" title="Permanent link">&para;</a></h2>
 <p><strong>Blender</strong> is a relative large binary that is almost 60MB large. It has multiple extensions / addons implemented in Python. These extensions are dynamically loaded when they are needed. The source files of these extensions are located at different places in the filesystem:</p>
-<p><center>
-<img alt="Files needing protection" src="../img/blenderfs.svg" />
-</center></p>
+<p><img alt="Files needing protection" src="../img/blenderfs.png" /></p>
 <p>As we show below, a user can add more Python extensions that help to render images and animations. These python extensions might contain intellectual properties of the user. The <strong>confidentiality as well as the integrity</strong> of these extensions mus be protected.</p>
 <p>The blender image contains all the above files but not the user extensions. We need to ensure <strong>the integrity of the blender application as well as the extensions</strong>, i.e., an attacker cannot modify the blender image without being detected.  We recommend that these container images are signed using <a href="https://docs.docker.com/engine/security/trust/content_trust/">Docker content trust</a>. Note that content trust is, however, not sufficient to ensure that <strong>blender</strong> will actually read the original, unmodified files. For example, an attacker with root access could change this image on the host on which blender is executed.</p>
-<p><center>
-<img alt="blender file regions" src="../img/blenderprotection.svg" />
-</center></p>
+<p><img alt="blender file regions" src="../img/blenderprotection.png" /></p>
 <p>We split the file system of the blender image in the following file regions:</p>
 <ul>
 <li>the root file system itself is not protected. In this unprotected part is the blender binary as well as a script to start the blender image.</li>
@@ -1411,18 +1405,14 @@ Opening this file  - <strong>which was computed inside an enclave with all input
 </ul>
 <h2 id="secrets-management">Secrets Management<a class="headerlink" href="#secrets-management" title="Permanent link">&para;</a></h2>
 <p>We can summarize the responsibilities of the image creator and the user as follows. The image creator ensures the integrity of blender and all extensions. The user ensures that both the confidentiality as well as the integrity of the user extensions:</p>
-<p><center>
-<img alt="responsibilities" src="../img/blender_responsibilities.svg" />
-</center></p>
+<p><img alt="responsibilities" src="../img/blender_responsibilities.png" /></p>
 <p>We should be explicit about the different roles in the context of the blender use case:</p>
 <ul>
 <li>the <strong>image creator</strong> encrypts the file system, i.e., defines the <strong>/usr</strong> authenticated file region and permits the user to map protected regions <strong>/encryptedInputs</strong> and <strong>/encryptedOutputs</strong> into the blender image. The image creator controls the key and tag of the root file system but must not be able to access the user-controlled protected regions. The image creator defines the expected <strong>tag</strong> of the file system as well as the expected <strong>MrEnclave</strong>.</li>
 <li>the <strong>user</strong> controls the  protected regions <strong>/encryptedInputs</strong> and <strong>/encryptedOutputs</strong>. However, the user must not be able to modify the authenticated files in the root file systems. Otherwise, an attacker might be able to use this right to modify the images of other users. Moreover, the user must not be able to access the protected file regions of other users.</li>
 <li>an attacker must not be able to read the protected regions of any user nor must an attacker be able to modify the authenticated files in the root filesystem.</li>
 </ul>
-<p><center>
-<img alt="blender roles" src="../img/blender_keys.svg" />
-</center></p>
+<p><img alt="blender roles" src="../img/blender_keys.png" /></p>
 <p>Based on these different roles, we need to manage the keys when executing the blender image. The key and tag of the blender image must be controlled by the image creator. In particular, neither a user nor an attacker must be able to get access to this key. Otherwise, this entity might be able to modify the image - which we would actually detect with the help of the tag. However, in case of protected images to protect the intellectual property of the image creator, this entity could read the content of the filesystem.</p>
 <p>The key and tag of the protected volumes of a user must only be visible by the user itself. Note, however, that all keys and tags must be accessible by the SCONE runtime of the blender image itself. In other words, the blender image must be able to get acceas to the keys while we need to prevent the user as well as the image creator to see all keys.</p>
 <p>The SCONE CAS (Configuration and Attestation System) can manage the keys in such a way that an image can gain access to the keys of multiple entities. The main mechanism to support this is the opaque export and import of keys. The creator of the blender image can export the key of root filesystem but can restrict the export to blender that is identified by a <strong>MrEnclave</strong> as well as <strong>tag</strong> of the file system.</p>
@@ -1641,7 +1631,7 @@ Python script on host <strong>faye</strong> as shown above.</p>
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright Scontain © 2019
+            Copyright Scontain © 2020
           </div>
         
         powered by
