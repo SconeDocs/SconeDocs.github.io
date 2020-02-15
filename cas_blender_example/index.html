@@ -1119,18 +1119,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../fork/" title="fork" class="md-nav__link">
-      fork
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1332,7 +1320,7 @@
                 
                 
                 <h1 id="posting-a-session">Posting a Session<a class="headerlink" href="#posting-a-session" title="Permanent link">&para;</a></h1>
-<p>We show how to interact with CAS s with the help of <code class="codehilite"><span class="err">curl</span></code> - this might be helpful during development since it simplifies scripting. Alternatively, we provide a <code class="codehilite"><span class="err">scone</span></code> command line interface that can be executed inside of an enclave itself.</p>
+<p>We show how to interact with CAS s with the help of <code class="codehilite">curl</code> - this might be helpful during development since it simplifies scripting. Alternatively, we provide a <code class="codehilite">scone</code> command line interface that can be executed inside of an enclave itself.</p>
 <p>We assume that you already started a <a href="../CASIntro/">CAS instance</a> and a <a href="../LASIntro/">LAS instance</a> on your local host. Alternatively, you can use our public CAS instance at <strong>scone.ml</strong>. Hence, we set the address of CAS as follows:</p>
 <div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
 </pre></div>
@@ -1377,40 +1365,40 @@
 </pre></div>
 
 <p>This results in an output similar like this:</p>
-<p><code class="codehilite"><span class="err">Created Session[id=00ed7ade-bba6-4d43-9135-51d0ca2da9ba, name=blender, status=Pending]</span></code></p>
+<p><code class="codehilite">Created Session[id=00ed7ade-bba6-4d43-9135-51d0ca2da9ba, name=blender, status=Pending]</code></p>
 <div class="admonition warning">
 <p class="admonition-title">Session already exists</p>
 <p>If the session with name "blender" already exists - which will be the case when you use <strong>scone.ml</strong> -  the following error message is issued:
-<code class="codehilite"><span class="err">Could not create successor session. Invalid previous session digest: ...</span></code></p>
+<code class="codehilite">Could not create successor session. Invalid previous session digest: ...</code></p>
 </div>
-<p>In case the session with name <code class="codehilite"><span class="err">blender</span></code> already exists, you must chose a different session name.</p>
+<p>In case the session with name <code class="codehilite">blender</code> already exists, you must chose a different session name.</p>
 <p>We can read the session as follows:</p>
 <div class="codehilite"><pre><span></span>curl -k -s --cert conf/client.crt --key conf/client-key.key https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session/blender
 </pre></div>
 
 <p>This will result in an output like this:</p>
-<div class="codehilite"><pre><span></span><span class="err">---</span>
-<span class="c">name: blender</span>
-<span class="c">digest: 313c6c3b824f0a560c445c8ef0cf69781345aae753bdbeaedbfff15c5a348099</span>
-<span class="c">board_members: []</span>
-<span class="c">board_policy:</span>
-<span class="c">  minimum: 0</span>
-<span class="c">  timeout: 30</span>
-<span class="c">images:</span>
-<span class="c">  - name: &quot;sconecuratedimages/iexec:blender&quot;</span>
-<span class="c">    mrenclaves:</span>
-<span class="c">      - 96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2</span>
-<span class="c">    tags:</span>
-<span class="c">      - demo</span>
-<span class="c">services:</span>
-<span class="c">  - name: application</span>
-<span class="c">    image_name: &quot;sconecuratedimages/iexec:blender&quot;</span>
-<span class="c">    mrenclaves:</span>
-<span class="c">      - 96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2</span>
-<span class="c">    environment:</span>
-<span class="c">      SCONE_MODE: hw</span>
-<span class="c">    command: blender -b /encryptedInputs/iexec-rlc.blend -o /encryptedOutputs/ -f 1</span>
-<span class="c">    pwd: /</span>
+<div class="codehilite"><pre><span></span>---
+name: blender
+digest: 313c6c3b824f0a560c445c8ef0cf69781345aae753bdbeaedbfff15c5a348099
+board_members: []
+board_policy:
+  minimum: 0
+  timeout: 30
+images:
+  - name: &quot;sconecuratedimages/iexec:blender&quot;
+    mrenclaves:
+      - 96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2
+    tags:
+      - demo
+services:
+  - name: application
+    image_name: &quot;sconecuratedimages/iexec:blender&quot;
+    mrenclaves:
+      - 96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2
+    environment:
+      SCONE_MODE: hw
+    command: blender -b /encryptedInputs/iexec-rlc.blend -o /encryptedOutputs/ -f 1
+    pwd: /
 </pre></div>
 
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, June 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>

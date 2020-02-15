@@ -1202,18 +1202,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../fork/" title="fork" class="md-nav__link">
-      fork
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1586,36 +1574,36 @@ a security policies.  We call such a security policy a  <strong>session</strong>
 <p><img alt="**Session specific keys**" src="../img/customization.png" /></p>
 <p>To address this issue, we provide a way to have individually encrypted volumes for each session. In other words, each client of a trusted DApp can customize the image by providing input and output volumes and only the instance of this client can access these volumes. <strong>No other client nor the image generator can access the keys and hence, these volumes</strong>.</p>
 <p>A client generates these keys (in the CLI). A <strong>session</strong> specifies these keys. A session is typically derived from a <strong>session template</strong>. The session template of the <strong>copy DApp</strong> looks like this:</p>
-<div class="codehilite"><pre><span></span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="k">SESSION</span><span class="w"></span>
-<span class="nl">digest</span><span class="p">:</span><span class="w"> </span><span class="k">create</span><span class="w"></span>
+<div class="codehilite"><pre><span></span>name: $SESSION
+digest: create
 
-<span class="nl">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">application</span><span class="w"></span>
-<span class="w">     </span><span class="nl">image_name</span><span class="p">:</span><span class="w"> </span><span class="n">sconecuratedimages</span><span class="o">/</span><span class="nl">iexecsgx</span><span class="p">:</span><span class="n">copy_demo</span><span class="w"></span>
-<span class="w">     </span><span class="nl">mrenclaves</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">e0f45a9a862c83f383730cc2aef144081025e3f925615da5b35c4d980faaa3c9</span><span class="o">]</span><span class="w"></span>
-<span class="w">     </span><span class="nl">tags</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">demo</span><span class="o">]</span><span class="w"></span>
-<span class="w">     </span><span class="nl">command</span><span class="p">:</span><span class="w"> </span><span class="o">/</span><span class="n">application</span><span class="w"></span>
-<span class="w">     </span><span class="nl">pwd</span><span class="p">:</span><span class="w"> </span><span class="o">/</span><span class="w"></span>
-<span class="w">     </span><span class="nl">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nl">SCONE_MODE</span><span class="p">:</span><span class="w"> </span><span class="n">hw</span><span class="w"></span>
+services:
+   - name: application
+     image_name: sconecuratedimages/iexecsgx:copy_demo
+     mrenclaves: [e0f45a9a862c83f383730cc2aef144081025e3f925615da5b35c4d980faaa3c9]
+     tags: [demo]
+     command: /application
+     pwd: /
+     environment:
+        SCONE_MODE: hw
 
-<span class="nl">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">encrypted</span><span class="o">-</span><span class="k">input</span><span class="o">-</span><span class="n">files</span><span class="w"></span>
-<span class="w">     </span><span class="nl">fspf_tag</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">INPUT_FSPF_TAG</span><span class="w"></span>
-<span class="w">     </span><span class="nl">fspf_key</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">INPUT_FSPF_KEY</span><span class="w"></span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">encrypted</span><span class="o">-</span><span class="k">output</span><span class="o">-</span><span class="n">files</span><span class="w"></span>
-<span class="w">     </span><span class="nl">fspf_tag</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">OUTPUT_FSPF_TAG</span><span class="w"></span>
-<span class="w">     </span><span class="nl">fspf_key</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">OUTPUT_FSPF_KEY</span><span class="w"></span>
+volumes:
+   - name: encrypted-input-files
+     fspf_tag: $INPUT_FSPF_TAG
+     fspf_key: $INPUT_FSPF_KEY
+   - name: encrypted-output-files
+     fspf_tag: $OUTPUT_FSPF_TAG
+     fspf_key: $OUTPUT_FSPF_KEY
 
-<span class="nl">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">sconecuratedimages</span><span class="o">/</span><span class="nl">iexecsgx</span><span class="p">:</span><span class="n">copy_demo</span><span class="w"></span>
-<span class="w">     </span><span class="nl">mrenclaves</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">e0f45a9a862c83f383730cc2aef144081025e3f925615da5b35c4d980faaa3c9</span><span class="o">]</span><span class="w"></span>
-<span class="w">     </span><span class="nl">tags</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="n">demo</span><span class="o">]</span><span class="w"></span>
-<span class="w">     </span><span class="nl">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">encrypted</span><span class="o">-</span><span class="k">input</span><span class="o">-</span><span class="n">files</span><span class="w"></span>
-<span class="w">          </span><span class="k">path</span><span class="err">:</span><span class="w"> </span><span class="o">/</span><span class="n">encryptedInputs</span><span class="w"></span>
-<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="nl">name</span><span class="p">:</span><span class="w"> </span><span class="n">encrypted</span><span class="o">-</span><span class="k">output</span><span class="o">-</span><span class="n">files</span><span class="w"></span>
-<span class="w">          </span><span class="k">path</span><span class="err">:</span><span class="w"> </span><span class="o">/</span><span class="n">encryptedOutputs</span><span class="w"></span>
+images:
+   - name: sconecuratedimages/iexecsgx:copy_demo
+     mrenclaves: [e0f45a9a862c83f383730cc2aef144081025e3f925615da5b35c4d980faaa3c9]
+     tags: [demo]
+     volumes:
+        - name: encrypted-input-files
+          path: /encryptedInputs
+        - name: encrypted-output-files
+          path: /encryptedOutputs
 </pre></div>
 
 <p>Note that in most cases you can start from a generic session template and you do not need to worry about the syntax and all the details of session descriptions.
@@ -1636,14 +1624,14 @@ The three differences are that</p>
 <p>We build this program with the help of the standard
 <strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile below). For convenience,
 we provide an Alpine image (i.e., sconecuratedimages/muslgcc) that has <strong>gcc</strong> preinstalled.</p>
-<div class="codehilite"><pre><span></span><span class="k">FROM</span> <span class="s">sconecuratedimages/muslgcc</span>
+<div class="codehilite"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/muslgcc</span>
 
 <span class="k">COPY</span> copy_files.c  /
 
 <span class="c"># compile with vanilla gcc</span>
 <span class="k">RUN</span> gcc -Wall copy_files.c -o /copy_files
 
-<span class="k">FROM</span> <span class="s">iexechub/sgx-scone:runtime</span>
+<span class="k">FROM</span><span class="s"> iexechub/sgx-scone:runtime</span>
 
 <span class="k">COPY</span> --from<span class="o">=</span><span class="m">0</span> /copy_files /application
 
@@ -1658,7 +1646,7 @@ Moreover, this image contains a script <strong>/application.sh</strong> that pul
 the encrypted input and output volumes from some transfer service, 
 executes the application inside of an enclave. For testing, the script can push the encrypted output volume to a transfer service (see below).  </p>
 <p>The image <strong>sconecuratedimages/iexecsgx:copy_demo</strong>
-is built by the script <code class="codehilite"><span class="err">build-image.sh</span></code>. This script also determines
+is built by the script <code class="codehilite">build-image.sh</code>. This script also determines
 <strong>MrEnclave</strong> of the application and writes a <strong>session template</strong> <em>copy_dapp.yml</em>.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <p>We now show how to test the trusted copy DApp. After building the image
@@ -1705,7 +1693,7 @@ since <strong>docker run</strong> does not pull/update the image.</p>
 <div class="codehilite"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/iexecsgx:copy_demo
 </pre></div>
 
-<p>Ensure that you are executing a bash shell (execute <code class="codehilite"><span class="err">bash</span></code>). Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
+<p>Ensure that you are executing a bash shell (execute <code class="codehilite">bash</code>). Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
 <div class="codehilite"><pre><span></span><span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/iexecsgx:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push filepush.co/upload<span class="k">)</span>
 </pre></div>
 
@@ -1729,11 +1717,11 @@ since <strong>docker run</strong> does not pull/update the image.</p>
 <div class="codehilite"><pre><span></span>cat OUTPUTS/f1.txt
 </pre></div>
 
-<p>results in  <code class="codehilite"><span class="err">Hello world</span></code> and</p>
+<p>results in  <code class="codehilite">Hello world</code> and</p>
 <div class="codehilite"><pre><span></span>cat OUTPUTS/f2.txt
 </pre></div>
 
-<p>results in  <code class="codehilite"><span class="err">Hello together</span></code>.</p>
+<p>results in  <code class="codehilite">Hello together</code>.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   

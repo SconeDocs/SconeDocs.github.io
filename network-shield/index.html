@@ -1072,18 +1072,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../fork/" title="fork" class="md-nav__link">
-      fork
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1312,7 +1300,7 @@
 <p>SCONE provides a <strong>network shield</strong> that automatically wraps TCP connections in TLS. The objectives of the network shield are as follows:</p>
 <ul>
 <li>
-<p><strong>Encryption of communication</strong>: Some services - like some versions of <code class="codehilite"><span class="err">memcached</span></code> -  that were designed at a time when communication within a data center was considered secure, might not support TLS protection of TCP connections.</p>
+<p><strong>Encryption of communication</strong>: Some services - like some versions of <code class="codehilite">memcached</code> -  that were designed at a time when communication within a data center was considered secure, might not support TLS protection of TCP connections.</p>
 </li>
 <li>
 <p><strong>Access control</strong>: The <strong>network shield</strong> can also be used for automatic access control, i.e., we can limit what clients can connect to a service. To do so, the <strong>network shield</strong> automatically generates TLS certificates that a specific to a <strong>session</strong> (i.e., an instance of a security policy).</p>
@@ -1322,104 +1310,104 @@
 </li>
 </ul>
 <h2 id="example-access-control">Example: Access Control<a class="headerlink" href="#example-access-control" title="Permanent link">&para;</a></h2>
-<p>Let's look at an example in which transparently protect all connections between the <code class="codehilite"><span class="err">nginx-server</span></code> and the <code class="codehilite"><span class="err">nginx-proxy</span></code>. In this case, we only permit connections from the <code class="codehilite"><span class="err">nginx-proxy</span></code>, i.e., only clients that have a valid <code class="codehilite"><span class="err">nginx-proxy</span></code> certificate are permitted to connect to the   <code class="codehilite"><span class="err">nginx-server</span></code>.</p>
-<div class="codehilite"><pre><span></span><span class="k">version</span><span class="p">:</span> <span class="s1">&#39;1.0beta&#39;</span>
-<span class="k">alias</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">benchmark</span>
+<p>Let's look at an example in which transparently protect all connections between the <code class="codehilite">nginx-server</code> and the <code class="codehilite">nginx-proxy</code>. In this case, we only permit connections from the <code class="codehilite">nginx-proxy</code>, i.e., only clients that have a valid <code class="codehilite">nginx-proxy</code> certificate are permitted to connect to the   <code class="codehilite">nginx-server</code>.</p>
+<div class="codehilite"><pre><span></span>version: &#39;1.0beta&#39;
+alias: nginx-benchmark
 
-<span class="n">services</span><span class="p">:</span>
-  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">server</span>
-    <span class="n">command</span><span class="p">:</span> <span class="p">[</span><span class="ss">&quot;nginx&quot;</span><span class="p">,</span> <span class="ss">&quot;-p&quot;</span><span class="p">,</span> <span class="ss">&quot;/nginx&quot;</span><span class="p">,</span> <span class="ss">&quot;-c&quot;</span><span class="p">,</span> <span class="ss">&quot;http_server.conf&quot;</span><span class="p">]</span>
-    <span class="n">pwd</span><span class="p">:</span> <span class="o">/</span>
-    <span class="n">attestation</span><span class="p">:</span>
-      <span class="n">disabled</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">testing</span><span class="o">-</span><span class="n">purposes</span><span class="p">:</span> <span class="k">true</span>
-    <span class="n">network</span><span class="p">:</span>
-      <span class="n">hostname</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">server</span>
-      <span class="n">incoming</span><span class="p">:</span>
-        <span class="n">ports</span><span class="p">:</span>
-          <span class="o">-</span> <span class="n">port</span><span class="p">:</span> <span class="mi">10000</span>
-            <span class="n">authorized</span><span class="o">-</span><span class="n">clients</span><span class="p">:</span>
-              <span class="n">services</span><span class="p">:</span>
-                <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">proxy</span>
-  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">proxy</span>
-    <span class="n">command</span><span class="p">:</span> <span class="p">[</span><span class="ss">&quot;nginx&quot;</span><span class="p">,</span> <span class="ss">&quot;-p&quot;</span><span class="p">,</span> <span class="ss">&quot;/nginx&quot;</span><span class="p">,</span> <span class="ss">&quot;-c&quot;</span><span class="p">,</span> <span class="ss">&quot;http_proxy.conf&quot;</span><span class="p">]</span>
-    <span class="n">pwd</span><span class="p">:</span> <span class="o">/</span>
-    <span class="n">attestation</span><span class="p">:</span>
-      <span class="n">disabled</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">testing</span><span class="o">-</span><span class="n">purposes</span><span class="p">:</span> <span class="k">true</span>
-    <span class="n">network</span><span class="p">:</span>
-      <span class="n">hostname</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">proxy</span>
-      <span class="n">outgoing</span><span class="p">:</span>
-        <span class="n">authorized</span><span class="o">-</span><span class="n">servers</span><span class="p">:</span>
-          <span class="n">services</span><span class="p">:</span>
-            <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">server</span>
-              <span class="n">port</span><span class="p">:</span> <span class="mi">10000</span>
-      <span class="n">incoming</span><span class="p">:</span>
-        <span class="n">ports</span><span class="p">:</span>
-          <span class="o">-</span> <span class="n">port</span><span class="p">:</span> <span class="mi">10001</span>
-            <span class="n">unprotected</span><span class="p">:</span> <span class="k">true</span>
+services:
+  - name: nginx-server
+    command: [&quot;nginx&quot;, &quot;-p&quot;, &quot;/nginx&quot;, &quot;-c&quot;, &quot;http_server.conf&quot;]
+    pwd: /
+    attestation:
+      disabled-for-testing-purposes: true
+    network:
+      hostname: nginx-server
+      incoming:
+        ports:
+          - port: 10000
+            authorized-clients:
+              services:
+                - name: nginx-proxy
+  - name: nginx-proxy
+    command: [&quot;nginx&quot;, &quot;-p&quot;, &quot;/nginx&quot;, &quot;-c&quot;, &quot;http_proxy.conf&quot;]
+    pwd: /
+    attestation:
+      disabled-for-testing-purposes: true
+    network:
+      hostname: nginx-proxy
+      outgoing:
+        authorized-servers:
+          services:
+            - name: nginx-server
+              port: 10000
+      incoming:
+        ports:
+          - port: 10001
+            unprotected: true
 </pre></div>
 
 <p>The http configuration of the server looks as follows:</p>
-<div class="codehilite"><pre><span></span><span class="n">events</span> <span class="err">{</span>
-    <span class="n">worker_connections</span> <span class="mi">512</span><span class="p">;</span>
-    <span class="n">use</span> <span class="k">select</span><span class="p">;</span>
-<span class="err">}</span>
+<div class="codehilite"><pre><span></span>events {
+    worker_connections 512;
+    use select;
+}
 
-<span class="n">error_log</span> <span class="n">stderr</span> <span class="n">info</span><span class="p">;</span>
-<span class="n">pid</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">nginx_server</span><span class="p">.</span><span class="n">pid</span><span class="p">;</span>
-<span class="n">master_process</span> <span class="k">off</span><span class="p">;</span>
-<span class="n">daemon</span> <span class="k">off</span><span class="p">;</span>
+error_log stderr info;
+pid /tmp/nginx_server.pid;
+master_process off;
+daemon off;
 
-<span class="n">http</span> <span class="err">{</span>
-  <span class="n">server</span> <span class="err">{</span>
-    <span class="n">root</span> <span class="p">.</span><span class="o">/</span><span class="n">content</span><span class="o">/</span><span class="p">;</span>
-    <span class="k">listen</span> <span class="mi">10000</span><span class="p">;</span>
-    <span class="n">access_log</span> <span class="k">off</span><span class="p">;</span>
-    <span class="n">open_file_cache</span> <span class="k">max</span><span class="o">=</span><span class="mi">1000</span> <span class="n">inactive</span><span class="o">=</span><span class="mi">120</span><span class="n">s</span><span class="p">;</span>
+http {
+  server {
+    root ./content/;
+    listen 10000;
+    access_log off;
+    open_file_cache max=1000 inactive=120s;
 
-    <span class="k">location</span> <span class="o">/</span> <span class="err">{</span>
-        <span class="n">tcp_nodelay</span>       <span class="k">on</span><span class="p">;</span>
-        <span class="n">keepalive_requests</span> <span class="mi">2000000000</span><span class="p">;</span>
-        <span class="n">keepalive_timeout</span> <span class="mi">300</span><span class="n">s</span><span class="p">;</span>
-    <span class="err">}</span>
-  <span class="err">}</span>
-<span class="err">}</span>
+    location / {
+        tcp_nodelay       on;
+        keepalive_requests 2000000000;
+        keepalive_timeout 300s;
+    }
+  }
+}
 </pre></div>
 
 <h2 id="example-tls-over-tls">Example: TLS-over-TLS<a class="headerlink" href="#example-tls-over-tls" title="Permanent link">&para;</a></h2>
-<p>We can wrap the TLS connection of <code class="codehilite"><span class="err">nginx</span></code> server that already uses <code class="codehilite"><span class="err">https</span></code>:</p>
-<div class="codehilite"><pre><span></span><span class="k">version</span><span class="p">:</span> <span class="s1">&#39;1.0beta&#39;</span>
-<span class="k">alias</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">benchmark</span>
+<p>We can wrap the TLS connection of <code class="codehilite">nginx</code> server that already uses <code class="codehilite">https</code>:</p>
+<div class="codehilite"><pre><span></span>version: &#39;1.0beta&#39;
+alias: nginx-benchmark
 
-<span class="n">services</span><span class="p">:</span>
-  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">server</span>
-    <span class="n">command</span><span class="p">:</span> <span class="p">[</span><span class="ss">&quot;nginx&quot;</span><span class="p">,</span> <span class="ss">&quot;-p&quot;</span><span class="p">,</span> <span class="ss">&quot;/nginx&quot;</span><span class="p">,</span> <span class="ss">&quot;-c&quot;</span><span class="p">,</span> <span class="ss">&quot;https_server.conf&quot;</span><span class="p">]</span>
-    <span class="n">pwd</span><span class="p">:</span> <span class="o">/</span>
-    <span class="n">attestation</span><span class="p">:</span>
-      <span class="n">disabled</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">testing</span><span class="o">-</span><span class="n">purposes</span><span class="p">:</span> <span class="k">true</span>
-    <span class="n">network</span><span class="p">:</span>
-      <span class="n">hostname</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">server</span>
-      <span class="n">incoming</span><span class="p">:</span>
-        <span class="n">ports</span><span class="p">:</span>
-          <span class="o">-</span> <span class="n">port</span><span class="p">:</span> <span class="mi">10000</span>
-            <span class="n">authorized</span><span class="o">-</span><span class="n">clients</span><span class="p">:</span>
-              <span class="n">services</span><span class="p">:</span>
-                <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">proxy</span>
-  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">proxy</span>
-    <span class="n">command</span><span class="p">:</span> <span class="p">[</span><span class="ss">&quot;nginx&quot;</span><span class="p">,</span> <span class="ss">&quot;-p&quot;</span><span class="p">,</span> <span class="ss">&quot;/nginx&quot;</span><span class="p">,</span> <span class="ss">&quot;-c&quot;</span><span class="p">,</span> <span class="ss">&quot;https_proxy.conf&quot;</span><span class="p">]</span>
-    <span class="n">pwd</span><span class="p">:</span> <span class="o">/</span>
-    <span class="n">attestation</span><span class="p">:</span>
-      <span class="n">disabled</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">testing</span><span class="o">-</span><span class="n">purposes</span><span class="p">:</span> <span class="k">true</span>
-    <span class="n">network</span><span class="p">:</span>
-      <span class="n">hostname</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">proxy</span>
-      <span class="n">outgoing</span><span class="p">:</span>
-        <span class="n">authorized</span><span class="o">-</span><span class="n">servers</span><span class="p">:</span>
-          <span class="n">services</span><span class="p">:</span>
-            <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">nginx</span><span class="o">-</span><span class="n">server</span>
-              <span class="n">port</span><span class="p">:</span> <span class="mi">10000</span>
-      <span class="n">incoming</span><span class="p">:</span>
-        <span class="n">ports</span><span class="p">:</span>
-          <span class="o">-</span> <span class="n">port</span><span class="p">:</span> <span class="mi">10001</span>
-            <span class="n">unprotected</span><span class="p">:</span> <span class="k">true</span>
+services:
+  - name: nginx-server
+    command: [&quot;nginx&quot;, &quot;-p&quot;, &quot;/nginx&quot;, &quot;-c&quot;, &quot;https_server.conf&quot;]
+    pwd: /
+    attestation:
+      disabled-for-testing-purposes: true
+    network:
+      hostname: nginx-server
+      incoming:
+        ports:
+          - port: 10000
+            authorized-clients:
+              services:
+                - name: nginx-proxy
+  - name: nginx-proxy
+    command: [&quot;nginx&quot;, &quot;-p&quot;, &quot;/nginx&quot;, &quot;-c&quot;, &quot;https_proxy.conf&quot;]
+    pwd: /
+    attestation:
+      disabled-for-testing-purposes: true
+    network:
+      hostname: nginx-proxy
+      outgoing:
+        authorized-servers:
+          services:
+            - name: nginx-server
+              port: 10000
+      incoming:
+        ports:
+          - port: 10001
+            unprotected: true
 </pre></div>
 
 <p>The nginx configuration looks as follows:</p>

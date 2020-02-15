@@ -1072,18 +1072,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../fork/" title="fork" class="md-nav__link">
-      fork
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -2056,12 +2044,12 @@ features for simulation mode:</p>
 <h3 id="my-processenclave-is-getting-killed-without-any-error-message">My process/enclave is getting killed without any error message<a class="headerlink" href="#my-processenclave-is-getting-killed-without-any-error-message" title="Permanent link">&para;</a></h3>
 <p><em>Context</em>: For SGX version 1, we have to preallocate all memory an enclave can use during its startup. This means that the enclave might request so much memory that the Linux Out-Of-Memory-Killer might kill the process in which this enclave runs. Ensure that you have enough free main memory such that your enclave can start.</p>
 <h3 id="my-machine-has-lots-of-main-memory-but-still-processes-are-getting-killed">My machine has lots of main memory but still processes are getting killed<a class="headerlink" href="#my-machine-has-lots-of-main-memory-but-still-processes-are-getting-killed" title="Permanent link">&para;</a></h3>
-<p>Try to figure out - using tools like top - which processes are using up your memory. Sometimes, you might have too many active docker containers running: check this with <code class="codehilite"><span class="err">docker ps -a</span></code>. Try to run docker containers  with <code class="codehilite"><span class="err">docker run --rm</span></code> to enforce automatic cleanup after a container exits.</p>
+<p>Try to figure out - using tools like top - which processes are using up your memory. Sometimes, you might have too many active docker containers running: check this with <code class="codehilite">docker ps -a</code>. Try to run docker containers  with <code class="codehilite">docker run --rm</code> to enforce automatic cleanup after a container exits.</p>
 <h3 id="my-program-does-not-start-up">My program does not start up<a class="headerlink" href="#my-program-does-not-start-up" title="Permanent link">&para;</a></h3>
 <p><em>Context</em>: For SGX version 1, we have to preallocate all memory an enclave can use during its startup. We cannot estimate how much memory your application needs. Hence, for SGX version 1, we provide environment variables 
 <a href="SCONE_ENV/#memory-related-environment-variables">SCONE_HEAP</a> and <a href="SCONE_ENV/#memory-related-environment-variables">SCONE_STACK</a>.</p>
 <p>For Java and GO programs, set <strong>SCONE_HEAP</strong> to at least <em>1G</em>. The default heap size is 64MB.</p>
-<p>The default stack size is 64KBytes. This is too little for some applications like Python and MariaDB. A good value for applications that use lots of stack seem to be 4MBytes, i.e., set <code class="codehilite"><span class="err">export  SCONE_STACK=4M</span></code>.</p>
+<p>The default stack size is 64KBytes. This is too little for some applications like Python and MariaDB. A good value for applications that use lots of stack seem to be 4MBytes, i.e., set <code class="codehilite">export  SCONE_STACK=4M</code>.</p>
 <h3 id="my-program-has-a-very-large-virt-memory-footprint">My program has a very large VIRT memory footprint<a class="headerlink" href="#my-program-has-a-very-large-virt-memory-footprint" title="Permanent link">&para;</a></h3>
 <p>SCONE reserves 64GB of the <strong>virtual address space</strong> for each enclave using the SGX driver.
 Hence, when monitoring a process, e.g., with <strong>top</strong>, <strong>VIRT</strong> is reported as at least <strong>64g</strong>. Note that
@@ -2129,7 +2117,7 @@ In future, we plan to enforce this property.</p>
 encrypted file region. In this way, you can protect the integrity as well as the confidentiality
 of your code.</p>
 <h2 id="library-path">Library Path<a class="headerlink" href="#library-path" title="Permanent link">&para;</a></h2>
-<p>If you experience undefined symbols like <code class="codehilite"><span class="err">__cxa_init_primary_exception</span></code>, ensure that your library path (<code class="codehilite"><span class="err">LD_LIBRARY_PATH</span></code>) is set such that if finds the SCONE libraries. For example, inside our SCONE crosscompiler container, you might set</p>
+<p>If you experience undefined symbols like <code class="codehilite">__cxa_init_primary_exception</code>, ensure that your library path (<code class="codehilite">LD_LIBRARY_PATH</code>) is set such that if finds the SCONE libraries. For example, inside our SCONE crosscompiler container, you might set</p>
 <div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/opt/scone/cross-compiler/x86_64-linux-musl/lib/
 </pre></div>
 

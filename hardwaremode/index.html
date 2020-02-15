@@ -1119,18 +1119,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../fork/" title="fork" class="md-nav__link">
-      fork
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -1376,46 +1364,46 @@ Hardware mode is only supported in Linux, since the Intel SGX driver is only ava
 </pre></div>
 
 <p>This will print something like:</p>
-<div class="codehilite"><pre><span></span><span class="n">export</span> <span class="n">SCONE_QUEUES</span><span class="o">=</span><span class="mi">4</span>
-<span class="n">export</span> <span class="n">SCONE_SLOTS</span><span class="o">=</span><span class="mi">256</span>
-<span class="n">export</span> <span class="n">SCONE_SIGPIPE</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">export</span> <span class="n">SCONE_MMAP32BIT</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">export</span> <span class="n">SCONE_SSPINS</span><span class="o">=</span><span class="mi">100</span>
-<span class="n">export</span> <span class="n">SCONE_SSLEEP</span><span class="o">=</span><span class="mi">4000</span>
-<span class="n">export</span> <span class="n">SCONE_KERNEL</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">export</span> <span class="n">SCONE_HEAP</span><span class="o">=</span><span class="mi">67108864</span>
-<span class="n">export</span> <span class="n">SCONE_STACK</span><span class="o">=</span><span class="mi">81920</span>
-<span class="n">export</span> <span class="n">SCONE_CONFIG</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">sgx</span><span class="o">-</span><span class="n">musl</span><span class="p">.</span><span class="n">conf</span>
-<span class="n">export</span> <span class="n">SCONE_MODE</span><span class="o">=</span><span class="n">hw</span>
-<span class="n">export</span> <span class="n">SCONE_SGXBOUNDS</span><span class="o">=</span><span class="k">no</span>
-<span class="n">export</span> <span class="n">SCONE_VARYS</span><span class="o">=</span><span class="k">no</span>
-<span class="n">export</span> <span class="n">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="k">no</span>
-<span class="n">export</span> <span class="n">SCONE_MPROTECT</span><span class="o">=</span><span class="k">no</span>
-<span class="n">Revision</span><span class="p">:</span> <span class="n">b1e014e64b4d332a51802580ec3252370ffe44bb</span>
-<span class="n">Branch</span><span class="p">:</span> <span class="n">master</span>
-<span class="n">Configure</span> <span class="k">options</span><span class="p">:</span> <span class="c1">--enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl</span>
+<div class="codehilite"><pre><span></span>export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=67108864
+export SCONE_STACK=81920
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=hw
+export SCONE_SGXBOUNDS=no
+export SCONE_VARYS=no
+export SCONE_ALLOW_DLOPEN=no
+export SCONE_MPROTECT=no
+Revision: b1e014e64b4d332a51802580ec3252370ffe44bb
+Branch: master
+Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl
 
-<span class="n">Enclave</span> <span class="n">hash</span><span class="p">:</span> <span class="mi">9</span><span class="n">d601c360ce9b6100e35dc42ec2800c1c20478328a0d4450d8d5163c00289dea</span>
-<span class="n">Hello</span> <span class="n">World</span>
+Enclave hash: 9d601c360ce9b6100e35dc42ec2800c1c20478328a0d4450d8d5163c00289dea
+Hello World
 </pre></div>
 
 <p>The output shows that SCONE is running in <strong>hardware mode</strong>: <em>export SCONE_MODE=hw</em></p>
 <h2 id="background-info">Background Info<a class="headerlink" href="#background-info" title="Permanent link">&para;</a></h2>
 <p>For ease of use, we create all Docker images such that applications run inside of enclaves if enclaves are available (<a href="SCONE_ENV/#run-mode"><strong>AUTO</strong> mode</a>). If SGX is not available, they run in simulation mode, i.e., outside of an enclave but all SCONE software is running. To disable simulation mode, you can set environment variable <strong>SCONE_MODE=HW</strong>:</p>
-<div class="codehilite"><pre><span></span><span class="err">docker run --device=/dev/isgx -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers</span>
+<div class="codehilite"><pre><span></span>docker run --device=/dev/isgx -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>If you would start your container in hardware mode but forget to give it access to the sgx device, i.e.,</p>
-<div class="codehilite"><pre><span></span><span class="err">docker run -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers</span>
+<div class="codehilite"><pre><span></span>docker run -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>compilation of the <em>helloworld</em> will succeed  but running the <em>helloworld</em> program will fail:</p>
-<div class="codehilite"><pre><span></span><span class="err">bash-4.4# echo $SCONE_MODE</span>
-<span class="err">HW</span>
-<span class="err">bash-4.4# ls -l /dev/isgx</span>
-<span class="c">ls: /dev/isgx: No such file or directory</span>
-<span class="err">bash-4.4# ./helloworld</span>
-<span class="err">[SCONE|ERROR] ./tools/starter-exec.c:993:_dl_main(): Could not create enclave: Error opening SGX device</span>
+<div class="codehilite"><pre><span></span>bash-4.4# echo $SCONE_MODE
+HW
+bash-4.4# ls -l /dev/isgx
+ls: /dev/isgx: No such file or directory
+bash-4.4# ./helloworld
+[SCONE|ERROR] ./tools/starter-exec.c:993:_dl_main(): Could not create enclave: Error opening SGX device
 </pre></div>
 
 <p>When running your software in operations, you would force the programs to run inside of enclaves: this can be enforced with the help of SCONE <a href="../cas_intro/">configuration and attestation service</a>. </p>
