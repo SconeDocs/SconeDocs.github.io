@@ -13,7 +13,7 @@
         <meta name="description" content="Scone Documentation - Secure Containers">
       
       
-        <link rel="canonical" href="https://sconedocs.github.io/cas_blender_example/">
+        <link rel="canonical" href="https://sconedocs.github.io/whyscone/">
       
       
         <meta name="author" content="Christof Fetzer">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Posting Sessions - SCONE</title>
+        <title>SCONE vs Intel SGX SDK - SCONE</title>
       
     
     
@@ -87,7 +87,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#posting-a-session" tabindex="1" class="md-skip">
+      <a href="../#scone-vs-intel-sgx-sdk" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -113,7 +113,7 @@
                 SCONE
               </span>
               <span class="md-header-nav__topic">
-                Posting Sessions
+                SCONE vs Intel SGX SDK
               </span>
             
           
@@ -181,10 +181,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
     
     <label class="md-nav__link" for="nav-1">
       Introduction
@@ -224,11 +226,20 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../whyscone/" title="SCONE vs Intel SGX SDK" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+    <a href="./" title="SCONE vs Intel SGX SDK" class="md-nav__link md-nav__link--active">
       SCONE vs Intel SGX SDK
     </a>
+    
   </li>
 
         
@@ -385,12 +396,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
     
     <label class="md-nav__link" for="nav-3">
       Configuration & Attestation
@@ -454,56 +463,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Posting Sessions
-      </label>
-    
-    <a href="./" title="Posting Sessions" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../cas_blender_example/" title="Posting Sessions" class="md-nav__link">
       Posting Sessions
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#client-certificate" title="Client Certificate" class="md-nav__link">
-    Client Certificate
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#hello-world-session" title="Hello World Session" class="md-nav__link">
-    Hello World Session
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1297,29 +1261,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#client-certificate" title="Client Certificate" class="md-nav__link">
-    Client Certificate
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#hello-world-session" title="Hello World Session" class="md-nav__link">
-    Hello World Session
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1331,89 +1272,104 @@
               
                 
                 
-                <h1 id="posting-a-session">Posting a Session<a class="headerlink" href="#posting-a-session" title="Permanent link">&para;</a></h1>
-<p>We show how to interact with CAS s with the help of <code class="codehilite">curl</code> - this might be helpful during development since it simplifies scripting. Alternatively, we provide a <code class="codehilite">scone</code> command line interface that can be executed inside of an enclave itself.</p>
-<p>We assume that you already started a <a href="../CASIntro/">CAS instance</a> and a <a href="../LASIntro/">LAS instance</a> on your local host. Alternatively, you can use our public CAS instance at <strong>scone.ml</strong>. Hence, we set the address of CAS as follows:</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
-</pre></div>
-
-<p>If you use our public CAS instance, set it as follows:</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone.ml
-</pre></div>
-
-<h2 id="client-certificate">Client Certificate<a class="headerlink" href="#client-certificate" title="Permanent link">&para;</a></h2>
-<p>To interact with CAS, we need to create a client certificate.  When we create a session, it is associated with the client certificate of the creator. Any access to this session requires that the client knows the private key of the client certificate.</p>
-<p>Let's create a client certificate without a password. Note that you would typically add a password!</p>
-<div class="codehilite"><pre><span></span>    mkdir -p conf
-    <span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-        openssl req -new -newkey rsa:4096 -days <span class="m">365</span> -nodes -x509 -subj <span class="s2">&quot;/C=EU/ST=CAS/L=CLIENT/O=Internet/CN=scontain.com&quot;</span> -out conf/client.crt -keyout conf/client-key.key
-    <span class="k">fi</span>
-</pre></div>
-
-<h2 id="hello-world-session">Hello World Session<a class="headerlink" href="#hello-world-session" title="Permanent link">&para;</a></h2>
-<p>Let's create a minimal session:</p>
-<div class="codehilite"><pre><span></span>cat &gt; session.yml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: blender</span>
-<span class="s">digest: create</span>
-
-<span class="s">services:</span>
-<span class="s">   - name: application</span>
-<span class="s">     image_name: sconecuratedimages/iexec:blender</span>
-<span class="s">     mrenclaves: [96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2]</span>
-<span class="s">     command: blender -b /encryptedInputs/iexec-rlc.blend -o /encryptedOutputs/ -f 1</span>
-<span class="s">     pwd: /</span>
-<span class="s">     environment:</span>
-<span class="s">        SCONE_MODE: hw</span>
-
-<span class="s">images:</span>
-<span class="s">   - name: sconecuratedimages/iexec:blender</span>
-<span class="s">     mrenclaves: [96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2]</span>
-<span class="s">     tags: [demo]</span>
-<span class="s">EOF</span>
-</pre></div>
-
-<p>We can now upload the session as follows:</p>
-<div class="codehilite"><pre><span></span>    curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
-</pre></div>
-
-<p>This results in an output similar like this:</p>
-<p><code class="codehilite">Created Session[id=00ed7ade-bba6-4d43-9135-51d0ca2da9ba, name=blender, status=Pending]</code></p>
-<div class="admonition warning">
-<p class="admonition-title">Session already exists</p>
-<p>If the session with name "blender" already exists - which will be the case when you use <strong>scone.ml</strong> -  the following error message is issued:
-<code class="codehilite">Could not create successor session. Invalid previous session digest: ...</code></p>
-</div>
-<p>In case the session with name <code class="codehilite">blender</code> already exists, you must chose a different session name.</p>
-<p>We can read the session as follows:</p>
-<div class="codehilite"><pre><span></span>curl -k -s --cert conf/client.crt --key conf/client-key.key https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session/blender
-</pre></div>
-
-<p>This will result in an output like this:</p>
-<div class="codehilite"><pre><span></span>---
-name: blender
-digest: 313c6c3b824f0a560c445c8ef0cf69781345aae753bdbeaedbfff15c5a348099
-board_members: []
-board_policy:
-  minimum: 0
-  timeout: 30
-images:
-  - name: &quot;sconecuratedimages/iexec:blender&quot;
-    mrenclaves:
-      - 96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2
-    tags:
-      - demo
-services:
-  - name: application
-    image_name: &quot;sconecuratedimages/iexec:blender&quot;
-    mrenclaves:
-      - 96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2
-    environment:
-      SCONE_MODE: hw
-    command: blender -b /encryptedInputs/iexec-rlc.blend -o /encryptedOutputs/ -f 1
-    pwd: /
-</pre></div>
-
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, June 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+                <h1 id="scone-vs-intel-sgx-sdk">SCONE vs Intel SGX SDK<a class="headerlink" href="#scone-vs-intel-sgx-sdk" title="Permanent link">&para;</a></h1>
+<p>In this section, we present the <a href="../advantages/">advantages</a> of SCONE compared with Intel SGX SDK. The table below shows why should we use SCONE for <em>Confidential Computing</em> instead of Intel SGX SDK.</p>
+<table>
+<thead>
+<tr>
+<th>Features</th>
+<th align="center">Intel SGX SDK</th>
+<th align="center">SCONE Platform</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SLA: Startup times</td>
+<td align="center">Slow</td>
+<td align="center">Efficient startup/attestation</td>
+</tr>
+<tr>
+<td>SLA: Scheduling</td>
+<td align="center">-</td>
+<td align="center">SLA-based scheduling</td>
+</tr>
+<tr>
+<td>SLA: Efficiency</td>
+<td align="center">Many enclave exits</td>
+<td align="center">Reduced enclave exits</td>
+</tr>
+<tr>
+<td>Security: CVEs</td>
+<td align="center">CVE handling by application</td>
+<td align="center">CVEs addressed by platform</td>
+</tr>
+<tr>
+<td>Security: policy</td>
+<td align="center">No policy support</td>
+<td align="center">Advanced-policy support</td>
+</tr>
+<tr>
+<td>Security: platform</td>
+<td align="center">-</td>
+<td align="center">Integrated OS and Application Sec.</td>
+</tr>
+<tr>
+<td>Security: Side-channel</td>
+<td align="center">No protection</td>
+<td align="center">Side-channel protection</td>
+</tr>
+<tr>
+<td>Monitoring: SLA</td>
+<td align="center">-</td>
+<td align="center">SLA-based monitoring</td>
+</tr>
+<tr>
+<td>Monitoring: SGX</td>
+<td align="center">-</td>
+<td align="center">SGX-resources &amp; scheduling</td>
+</tr>
+<tr>
+<td>Encryption at rest / in transit</td>
+<td align="center">Source code changes required</td>
+<td align="center">No source code changes</td>
+</tr>
+<tr>
+<td>Encryption at use</td>
+<td align="center">Source code changes required</td>
+<td align="center">No source code changes</td>
+</tr>
+<tr>
+<td>Attestation</td>
+<td align="center">Explicit code required</td>
+<td align="center">Automatic by SCONE</td>
+</tr>
+<tr>
+<td>Key Provisioning</td>
+<td align="center">Explicit code required</td>
+<td align="center">Automatic by SCONE</td>
+</tr>
+<tr>
+<td>CI/CD Integration</td>
+<td align="center">-</td>
+<td align="center">Modern IDE</td>
+</tr>
+<tr>
+<td>Languages</td>
+<td align="center">C/C++</td>
+<td align="center">Most modern languages (C/C++, Python, Rust, Java, Nodejs, R, ...)</td>
+</tr>
+<tr>
+<td>Portability</td>
+<td align="center">Intel SGX-specific</td>
+<td align="center">(eventually other CPUs)</td>
+</tr>
+<tr>
+<td>TCO</td>
+<td align="center">Higher</td>
+<td align="center">Lower</td>
+</tr>
+</tbody>
+</table>
                 
                   
                 
@@ -1435,7 +1391,7 @@ services:
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../LASIntro/" title="Starting LAS" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../advantages/" title="Advantages of SCONE" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1444,19 +1400,19 @@ services:
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Starting LAS
+                Advantages of SCONE
               </span>
             </div>
           </a>
         
         
-          <a href="../print-arg-env/" title="Secure Arguments" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../technical_summary/" title="Technical summary of SCONE" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Secure Arguments
+                Technical summary of SCONE
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
