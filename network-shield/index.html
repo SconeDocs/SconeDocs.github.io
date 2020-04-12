@@ -1324,7 +1324,7 @@
 <p>SCONE provides a <strong>network shield</strong> that automatically wraps TCP connections in TLS. The objectives of the network shield are as follows:</p>
 <ul>
 <li>
-<p><strong>Encryption of communication</strong>: Some services - like some versions of <code class="codehilite">memcached</code> -  that were designed at a time when communication within a data center was considered secure, might not support TLS protection of TCP connections.</p>
+<p><strong>Encryption of communication</strong>: Some services - like some versions of <code>memcached</code> -  that were designed at a time when communication within a data center was considered secure, might not support TLS protection of TCP connections.</p>
 </li>
 <li>
 <p><strong>Access control</strong>: The <strong>network shield</strong> can also be used for automatic access control, i.e., we can limit what clients can connect to a service. To do so, the <strong>network shield</strong> automatically generates TLS certificates that a specific to a <strong>session</strong> (i.e., an instance of a security policy).</p>
@@ -1334,8 +1334,8 @@
 </li>
 </ul>
 <h2 id="example-access-control">Example: Access Control<a class="headerlink" href="#example-access-control" title="Permanent link">&para;</a></h2>
-<p>Let's look at an example in which transparently protect all connections between the <code class="codehilite">nginx-server</code> and the <code class="codehilite">nginx-proxy</code>. In this case, we only permit connections from the <code class="codehilite">nginx-proxy</code>, i.e., only clients that have a valid <code class="codehilite">nginx-proxy</code> certificate are permitted to connect to the   <code class="codehilite">nginx-server</code>.</p>
-<div class="codehilite"><pre><span></span>version: &#39;1.0beta&#39;
+<p>Let's look at an example in which transparently protect all connections between the <code>nginx-server</code> and the <code>nginx-proxy</code>. In this case, we only permit connections from the <code>nginx-proxy</code>, i.e., only clients that have a valid <code>nginx-proxy</code> certificate are permitted to connect to the   <code>nginx-server</code>.</p>
+<div class="highlight"><pre><span></span>version: &#39;1.0beta&#39;
 alias: nginx-benchmark
 
 services:
@@ -1371,7 +1371,7 @@ services:
 </pre></div>
 
 <p>The http configuration of the server looks as follows:</p>
-<div class="codehilite"><pre><span></span>events {
+<div class="highlight"><pre><span></span>events {
     worker_connections 512;
     use select;
 }
@@ -1398,8 +1398,8 @@ http {
 </pre></div>
 
 <h2 id="example-tls-over-tls">Example: TLS-over-TLS<a class="headerlink" href="#example-tls-over-tls" title="Permanent link">&para;</a></h2>
-<p>We can wrap the TLS connection of <code class="codehilite">nginx</code> server that already uses <code class="codehilite">https</code>:</p>
-<div class="codehilite"><pre><span></span>version: &#39;1.0beta&#39;
+<p>We can wrap the TLS connection of <code>nginx</code> server that already uses <code>https</code>:</p>
+<div class="highlight"><pre><span></span>version: &#39;1.0beta&#39;
 alias: nginx-benchmark
 
 services:
@@ -1435,39 +1435,39 @@ services:
 </pre></div>
 
 <p>The nginx configuration looks as follows:</p>
-<div class="codehilite"><pre><span></span><span class="nt">events</span> <span class="p">{</span>
-    <span class="err">worker_connections</span> <span class="err">512</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="highlight"><pre><span></span>events {
+    worker_connections 512;
+}
 
-<span class="nt">error_log</span> <span class="nt">stderr</span> <span class="nt">warn</span><span class="o">;</span>
-<span class="nt">pid</span> <span class="o">/</span><span class="nt">tmp</span><span class="o">/</span><span class="nt">nginx_server</span><span class="p">.</span><span class="nc">pid</span><span class="o">;</span>
-<span class="nt">master_process</span> <span class="nt">off</span><span class="o">;</span>
-<span class="nt">daemon</span> <span class="nt">off</span><span class="o">;</span>
+error_log stderr warn;
+pid /tmp/nginx_server.pid;
+master_process off;
+daemon off;
 
-<span class="nt">http</span> <span class="p">{</span>
-  <span class="err">server</span> <span class="err">{</span>
-    <span class="err">root</span> <span class="err">./content/</span><span class="p">;</span>
-    <span class="err">listen</span> <span class="err">10000</span> <span class="err">ssl</span><span class="p">;</span>
-    <span class="err">access_log</span> <span class="err">off</span><span class="p">;</span>
-    <span class="err">open_file_cache</span> <span class="err">max=1000</span> <span class="err">inactive=120s</span><span class="p">;</span>
+http {
+  server {
+    root ./content/;
+    listen 10000 ssl;
+    access_log off;
+    open_file_cache max=1000 inactive=120s;
 
-    <span class="err">location</span> <span class="err">/</span> <span class="err">{</span>
-        <span class="err">tcp_nodelay</span>       <span class="err">on</span><span class="p">;</span>
-        <span class="err">keepalive_requests</span> <span class="err">2000000000</span><span class="p">;</span>
-        <span class="err">keepalive_timeout</span> <span class="err">300s</span><span class="p">;</span>
-    <span class="p">}</span>
+    location / {
+        tcp_nodelay       on;
+        keepalive_requests 2000000000;
+        keepalive_timeout 300s;
+    }
 
-    <span class="nt">ssl_protocols</span> <span class="nt">TLSv1</span><span class="p">.</span><span class="nc">2</span><span class="o">;</span>
-    <span class="nt">ssl_ciphers</span> <span class="s2">&quot;ECDHE-ECDSA-AES256-GCM-SHA384&quot;</span><span class="o">;</span>
-    <span class="nt">ssl_ecdh_curve</span> <span class="s2">&quot;secp384r1:prime256v1&quot;</span><span class="o">;</span> <span class="err">#</span> <span class="nt">Note</span> <span class="nt">that</span> <span class="nt">the</span> <span class="nt">curve</span> <span class="nt">of</span> <span class="nt">the</span> <span class="nt">certificate</span><span class="o">,</span> <span class="nt">prime256v1</span> <span class="nt">in</span> <span class="nt">this</span> <span class="nt">case</span><span class="o">,</span> <span class="nt">MUST</span> <span class="nt">be</span> <span class="nt">listed</span> <span class="nt">here</span><span class="o">,</span> <span class="nt">otherwise</span> <span class="nt">the</span> <span class="nt">connection</span> <span class="nt">fails</span><span class="o">.</span> <span class="nt">ECDHE</span> <span class="nt">still</span> <span class="nt">chooses</span> <span class="nt">the</span> <span class="nt">first</span> <span class="nt">curve</span> <span class="nt">if</span> <span class="nt">possible</span><span class="o">.</span>
-    <span class="nt">ssl_prefer_server_ciphers</span> <span class="nt">on</span><span class="o">;</span>
-    <span class="nt">ssl_session_tickets</span> <span class="nt">off</span><span class="o">;</span>
-    <span class="nt">ssl_session_cache</span> <span class="nt">off</span><span class="o">;</span>
+    ssl_protocols TLSv1.2;
+    ssl_ciphers &quot;ECDHE-ECDSA-AES256-GCM-SHA384&quot;;
+    ssl_ecdh_curve &quot;secp384r1:prime256v1&quot;; # Note that the curve of the certificate, prime256v1 in this case, MUST be listed here, otherwise the connection fails. ECDHE still chooses the first curve if possible.
+    ssl_prefer_server_ciphers on;
+    ssl_session_tickets off;
+    ssl_session_cache off;
 
-    <span class="nt">ssl_certificate_key</span> <span class="o">./</span><span class="nt">pki</span><span class="o">/</span><span class="nt">srv</span><span class="p">.</span><span class="nc">pem</span><span class="p">.</span><span class="nc">key</span><span class="o">;</span>
-    <span class="nt">ssl_certificate</span> <span class="o">./</span><span class="nt">pki</span><span class="o">/</span><span class="nt">srv</span><span class="p">.</span><span class="nc">bundle</span><span class="p">.</span><span class="nc">pem</span><span class="p">.</span><span class="nc">crt</span><span class="o">;</span>
-  <span class="err">}</span>
-<span class="err">}</span>
+    ssl_certificate_key ./pki/srv.pem.key;
+    ssl_certificate ./pki/srv.bundle.pem.crt;
+  }
+}
 </pre></div>
                 
                   

@@ -1598,7 +1598,7 @@ a security policies.  We call such a security policy a  <strong>session</strong>
 <p><img alt="**Session specific keys**" src="../img/customization.png" /></p>
 <p>To address this issue, we provide a way to have individually encrypted volumes for each session. In other words, each client of a trusted DApp can customize the image by providing input and output volumes and only the instance of this client can access these volumes. <strong>No other client nor the image generator can access the keys and hence, these volumes</strong>.</p>
 <p>A client generates these keys (in the CLI). A <strong>session</strong> specifies these keys. A session is typically derived from a <strong>session template</strong>. The session template of the <strong>copy DApp</strong> looks like this:</p>
-<div class="codehilite"><pre><span></span>name: $SESSION
+<div class="highlight"><pre><span></span>name: $SESSION
 digest: create
 
 services:
@@ -1640,7 +1640,7 @@ The three differences are that</p>
 </ul>
 <h2 id="building-an-dapp">Building an DApp<a class="headerlink" href="#building-an-dapp" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/scontain/copy_dapp">source code of this application</a>, you can retrieve from</p>
-<div class="codehilite"><pre><span></span>git clone https://github.com/scontain/copy_dapp.git
+<div class="highlight"><pre><span></span>git clone https://github.com/scontain/copy_dapp.git
 <span class="nb">cd</span> copy_dapp
 </pre></div>
 
@@ -1648,7 +1648,7 @@ The three differences are that</p>
 <p>We build this program with the help of the standard
 <strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile below). For convenience,
 we provide an Alpine image (i.e., sconecuratedimages/muslgcc) that has <strong>gcc</strong> preinstalled.</p>
-<div class="codehilite"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/muslgcc</span>
+<div class="highlight"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/muslgcc</span>
 
 <span class="k">COPY</span> copy_files.c  /
 
@@ -1670,12 +1670,12 @@ Moreover, this image contains a script <strong>/application.sh</strong> that pul
 the encrypted input and output volumes from some transfer service, 
 executes the application inside of an enclave. For testing, the script can push the encrypted output volume to a transfer service (see below).  </p>
 <p>The image <strong>sconecuratedimages/iexecsgx:copy_demo</strong>
-is built by the script <code class="codehilite">build-image.sh</code>. This script also determines
+is built by the script <code>build-image.sh</code>. This script also determines
 <strong>MrEnclave</strong> of the application and writes a <strong>session template</strong> <em>copy_dapp.yml</em>.</p>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
 <p>We now show how to test the trusted copy DApp. After building the image
 by executing</p>
-<div class="codehilite"><pre><span></span>./build-image.sh
+<div class="highlight"><pre><span></span>./build-image.sh
 </pre></div>
 
 <p>We can execute this image on a SGX-capable host. This host has to have the SCONE local attestation service and Docker installed. We describe in the <a href="../iexec_install/">installation section</a> on how to install these prerequisites.</p>
@@ -1686,7 +1686,7 @@ We create an INPUTS directory and store some files there.
 We also create some OUTPUTS directory and some directory to hold some generated keys (KEYS) and
 to hold some temporary files (ZIP). We also copy the session template generated when building the
 container image.</p>
-<div class="codehilite"><pre><span></span>mkdir -p EXAMPLE
+<div class="highlight"><pre><span></span>mkdir -p EXAMPLE
 <span class="nb">cd</span> EXAMPLE
 mkdir -p KEYS INPUTS OUTPUTS ZIP
 <span class="nb">echo</span> <span class="s2">&quot;Hello world&quot;</span> &gt; INPUTS/f1.txt
@@ -1697,15 +1697,15 @@ cp ../copy_dapp.yml KEYS/
 <h3 id="step-1">Step 1<a class="headerlink" href="#step-1" title="Permanent link">&para;</a></h3>
 <p>We encrypt these files and push the zipped up files for now to <strong>filepush.co</strong>.</p>
 <p>Let's execute the first step of encrypting the files and pushing these to the transfer service:</p>
-<div class="codehilite"><pre><span></span><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs sconecuratedimages/iexecsgx:scone.cli encryptedpush --application sconecuratedimages/iexecsgx:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
+<div class="highlight"><pre><span></span><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs sconecuratedimages/iexecsgx:scone.cli encryptedpush --application sconecuratedimages/iexecsgx:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
 </pre></div>
 
 <p>Let's look at the output:</p>
-<div class="codehilite"><pre><span></span><span class="nb">echo</span> <span class="nv">$CMD</span>
+<div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="nv">$CMD</span>
 </pre></div>
 
 <p>should result in an output like:</p>
-<div class="codehilite"><pre><span></span> <span class="s2">&quot;cmdline&quot;</span>: --sessionID <span class="m">180713033312847980809017601</span>/application --secretManagementService <span class="m">87</span>.190.236.136 --url https://filepush.co/XPHT/scone-upload.zip
+<div class="highlight"><pre><span></span> <span class="s2">&quot;cmdline&quot;</span>: --sessionID <span class="m">180713033312847980809017601</span>/application --secretManagementService <span class="m">87</span>.190.236.136 --url https://filepush.co/XPHT/scone-upload.zip
 </pre></div>
 
 <p>You can look in your browser at the URL to see the uploaded files!</p>
@@ -1714,38 +1714,38 @@ cp ../copy_dapp.yml KEYS/
 want to test it on some SGX-capable host.</p>
 <p>Ensure that the newest image is loaded on <strong>host</strong>. This step is only needed if it is expected that the image has changed
 since <strong>docker run</strong> does not pull/update the image.</p>
-<div class="codehilite"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/iexecsgx:copy_demo
+<div class="highlight"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/iexecsgx:copy_demo
 </pre></div>
 
-<p>Ensure that you are executing a bash shell (execute <code class="codehilite">bash</code>). Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
-<div class="codehilite"><pre><span></span><span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/iexecsgx:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push filepush.co/upload<span class="k">)</span>
+<p>Ensure that you are executing a bash shell (execute <code>bash</code>). Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
+<div class="highlight"><pre><span></span><span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/iexecsgx:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push filepush.co/upload<span class="k">)</span>
 </pre></div>
 
 <p>Let's look at the output:</p>
-<div class="codehilite"><pre><span></span><span class="nb">echo</span> <span class="nv">$URL</span>
+<div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="nv">$URL</span>
 </pre></div>
 
 <p>this results in an output like:</p>
-<div class="codehilite"><pre><span></span>https://filepush.co/qSMf/scone-upload.zip
+<div class="highlight"><pre><span></span>https://filepush.co/qSMf/scone-upload.zip
 </pre></div>
 
 <p>You can now download this (if running a <strong>bash</strong> shell) </p>
-<div class="codehilite"><pre><span></span>curl --output ZIP/encryptedOutputFiles.zip <span class="si">${</span><span class="nv">URL</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>
+<div class="highlight"><pre><span></span>curl --output ZIP/encryptedOutputFiles.zip <span class="si">${</span><span class="nv">URL</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>
 </pre></div>
 
 <h3 id="step-3">Step 3<a class="headerlink" href="#step-3" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/ZIP:/encryptedOutputs  -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs sconecuratedimages/iexecsgx:scone.cli decrypt
+<div class="highlight"><pre><span></span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/ZIP:/encryptedOutputs  -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs sconecuratedimages/iexecsgx:scone.cli decrypt
 </pre></div>
 
 <p>We can now look at the files in OUTPUTS directory:</p>
-<div class="codehilite"><pre><span></span>cat OUTPUTS/f1.txt
+<div class="highlight"><pre><span></span>cat OUTPUTS/f1.txt
 </pre></div>
 
-<p>results in  <code class="codehilite">Hello world</code> and</p>
-<div class="codehilite"><pre><span></span>cat OUTPUTS/f2.txt
+<p>results in  <code>Hello world</code> and</p>
+<div class="highlight"><pre><span></span>cat OUTPUTS/f2.txt
 </pre></div>
 
-<p>results in  <code class="codehilite">Hello together</code>.</p>
+<p>results in  <code>Hello together</code>.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   

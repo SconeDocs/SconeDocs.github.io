@@ -1378,12 +1378,12 @@ SCONE can protect these secrets by permitting to encrypt shared libraries.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>We use the SCONE crosscompiler image and start an container with access to the
 SGX device:</p>
-<div class="codehilite"><pre><span></span>docker pull sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>docker pull sconecuratedimages/crosscompilers
 docker run --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>Let's create some program that stores a secret (<strong>MYBIGS</strong>) in a local variable <em>secret</em>:</p>
-<div class="codehilite"><pre><span></span>cat &gt; mysecret.c <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>cat &gt; mysecret.c <span class="s">&lt;&lt; EOF</span>
 <span class="s">#include &lt;stdio.h&gt;</span>
 <span class="s">#include &lt;unistd.h&gt;</span>
 
@@ -1407,23 +1407,23 @@ docker run --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/cros
 </pre></div>
 
 <p>Compile this program with the SCONE crosscompiler (i.e., gcc):</p>
-<div class="codehilite"><pre><span></span>gcc -g -o mysecret mysecret.c
+<div class="highlight"><pre><span></span>gcc -g -o mysecret mysecret.c
 </pre></div>
 
 <h2 id="simulation-mode">Simulation Mode<a class="headerlink" href="#simulation-mode" title="Permanent link">&para;</a></h2>
 <p>You can run this program in <strong>SIMULATION MODE</strong>, i.e., this program does not protect your secrets:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM <span class="nv">SCONE_HEAP</span><span class="o">=</span>128K <span class="nv">SCONE_STACK</span><span class="o">=</span>1K ./mysecret
+<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM <span class="nv">SCONE_HEAP</span><span class="o">=</span>128K <span class="nv">SCONE_STACK</span><span class="o">=</span>1K ./mysecret
 </pre></div>
 
 <p>Log into a different terminal on your <strong>host</strong>. Let us figure out the process ID of the mysecret program:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
+<div class="highlight"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
 </pre></div>
 
 <p>Now, we can dump the memory of this process via the <em>/proc</em> filesystem. You can determine
-the different memory regions of your process via <code class="codehilite">cat /proc/$SPID/maps</code> and
+the different memory regions of your process via <code>cat /proc/$SPID/maps</code> and
 the memory is stored in <em>/proc/$SPID/mem</em>. We can use the following
 Python program to write all pages to <em>stdout</em>: </p>
-<div class="codehilite"><pre><span></span>cat &gt; dumpstack.py <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>cat &gt; dumpstack.py <span class="s">&lt;&lt; EOF</span>
 <span class="s">import sys, os, string, re</span>
 
 <span class="s">pid = sys.argv[1]</span>
@@ -1457,7 +1457,7 @@ Python program to write all pages to <em>stdout</em>: </p>
 </pre></div>
 
 <p>Run this program and grep for the prefix of our secret:</p>
-<div class="codehilite"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
+<div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
 </pre></div>
 
 <p>This will take some time but eventually it will print the full secret <strong>MYBIGS</strong>.</p>
@@ -1468,15 +1468,15 @@ by typing <em>control-C</em>.</p>
 <img alt="Finding secret in prerelease mode" src="../img/prerelease_finding_secrets.png" />
 </center></p>
 <p>Let's start mysecret in an enclave, i.e., in hardware mode inside the container:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>HW <span class="nv">SCONE_HEAP</span><span class="o">=</span>128K <span class="nv">SCONE_STACK</span><span class="o">=</span>1K ./mysecret
+<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>HW <span class="nv">SCONE_HEAP</span><span class="o">=</span>128K <span class="nv">SCONE_STACK</span><span class="o">=</span>1K ./mysecret
 </pre></div>
 
 <p>Update environment variable <em>SPID</em> in a second terminal on your host:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
+<div class="highlight"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
 </pre></div>
 
 <p>and then try to find the secret:</p>
-<div class="codehilite"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
+<div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
 </pre></div>
 
 <p>This will run for much less time and in particular, it will not print any secrets.</p>
@@ -1485,7 +1485,7 @@ not encrypted: a copy of the original binary - which is used to start the enclav
 stays in main memory outside the enclave. </p>
 <p>Let's look for the string <strong>THIS_IS_NOT_SECRET</strong> in our example application. 
 We can find this secret as follows:</p>
-<div class="codehilite"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep THIS_IS_NOT_SECRET
+<div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep THIS_IS_NOT_SECRET
 </pre></div>
 
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, July 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>

@@ -1494,12 +1494,12 @@
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>Sometimes, we might only need to protect the files that are passed to a container via some volume. In this case, it would be sufficient that the volume is either authenticated or encrypted.</p>
 <p>Let us demonstrate this via a simple example in which we pass an encrypted volume to a container. We create this encrypted volume in our local filesystem (in directory <strong>volume</strong>) and we will later mount this in the container as <strong>/data</strong>. The original (non-encrypted) files are stored in directory <strong>data-original</strong>.</p>
-<div class="codehilite"><pre><span></span>&gt; mkdir -p volume
+<div class="highlight"><pre><span></span>&gt; mkdir -p volume
 &gt; mkdir -p data-original
 </pre></div>
 
 <p>Let's write some files in the <em>data-original</em> directory:</p>
-<div class="codehilite"><pre><span></span>cat &gt; data-original/hello.txt <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>cat &gt; data-original/hello.txt <span class="s">&lt;&lt; EOF</span>
 <span class="s">Hello World</span>
 <span class="s">EOF</span>
 cat &gt; data-original/world.py <span class="s">&lt;&lt; EOF</span>
@@ -1509,21 +1509,21 @@ cat &gt; data-original/world.py <span class="s">&lt;&lt; EOF</span>
 </pre></div>
 
 <p>Let's check that <strong>volume</strong> is empty and we print the hash values of the two files in <strong>data-original</strong>:</p>
-<div class="codehilite"><pre><span></span>&gt; ls volume
+<div class="highlight"><pre><span></span>&gt; ls volume
 &gt; shasum data-original/*
 648a6a6ffffdaa0badb23b8baf90b6168dd16b3a  data-original/hello.txt
 deda99d44e880ea8f2250f45c5c20c15d568d84c  data-original/world.py
 </pre></div>
 
 <p>Now, we start the SCONE crosscompiler in a container to create the encrypted volume:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data-original:/data-original&quot;</span> sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>&gt; docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data-original:/data-original&quot;</span> sconecuratedimages/crosscompilers
 </pre></div>
 
 <h3 id="file-system-protection-file">File System Protection File<a class="headerlink" href="#file-system-protection-file" title="Permanent link">&para;</a></h3>
 <p>All the metadata required for checking the consistency of the files is stored in a <em>file system protection file</em>, or, short <em>fspf</em>. SCONE supports multiple *fspf*s. </p>
 <p>Let's start with a simple example with a single <em>fspf</em>. The <em>fspf</em> file is created via command <strong>scone fspf create</strong> and let us name this file <strong>fspf.pb</strong>. We execute the following commands
 inside the container (as indicated by the $ prompt):</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">cd</span> /data
+<div class="highlight"><pre><span></span>$ <span class="nb">cd</span> /data
 $ scone fspf create fspf.pb
 Created empty file system protection file in fspf.pb. AES-GCM tag: 0e3da7ad62f5bc7c7bb08c67b16f2423
 </pre></div>
@@ -1537,13 +1537,13 @@ Created empty file system protection file in fspf.pb. AES-GCM tag: 0e3da7ad62f5b
 </ul>
 <p>File system changes of containers are typically ephemeral in the sense that file updates are lost when a container terminates. When specifying option <strong>--ephemeral</strong>, files in this region are not written to disk, the are written to an in memory file system instead. </p>
 <p>Say for now, that by default we do not protect files and we want to read files and write  back  changed files to the file system. To do so, we define that the root tree is  <strong>--kernel</strong> as well as  <strong>--not-protected</strong>:</p>
-<div class="codehilite"><pre><span></span>$ scone fspf addr fspf.pb / --kernel / --not-protected
+<div class="highlight"><pre><span></span>$ scone fspf addr fspf.pb / --kernel / --not-protected
 Added region / to file system protection file fspf.pb new AES-GCM tag: dd961af10b5aaa5cb1044c35a3f42c84
 </pre></div>
 
 <p>Let us add another region <strong>/data</strong> that should be encrypted and persisted. To encrypt the files,  we specify option <strong>--encrypted</strong>.
 We specify option <strong>--kernel</strong> followed by a path (here, also <strong>/data</strong>) to request that files in this region are written to the kernel file system into directory <strong>/data</strong>.</p>
-<div class="codehilite"><pre><span></span>$ scone fspf addr fspf.pb /data --encrypted --kernel /data
+<div class="highlight"><pre><span></span>$ scone fspf addr fspf.pb /data --encrypted --kernel /data
 Added region /data to file system protection file fspf.pb new AES-GCM tag: 8481369d3ffdd9b6aeb30d044bf5c1c7
 </pre></div>
 
@@ -1554,7 +1554,7 @@ Note, the first <strong>/data</strong> argument specifies the protection region 
 The second, specifies where the encrypted files will be stored.
 That is, the command iterates over and reads the existing files in <strong>/data-original</strong> and encrypts them.
 The encrypted file content is written into the directory <strong>/data</strong> while the protection metadata of the individual files is added to the <strong>fsfp.pb</strong> file.</p>
-<div class="codehilite"><pre><span></span>$ scone fspf addf fspf.pb /data /data-original /data
+<div class="highlight"><pre><span></span>$ scone fspf addf fspf.pb /data /data-original /data
 Added files to file system protection file fspf.pb new AES-GCM tag: 39a268166e628cf76e3fca80aa2d4f63
 </pre></div>
 
@@ -1562,7 +1562,7 @@ Added files to file system protection file fspf.pb new AES-GCM tag: 39a268166e62
 It will only add the file names and the checksums (tags) of the files located in <strong>/data-original</strong> to the <strong>fspf.pb</strong> file.
 Thus, you could drop the last argument in this case.</p>
 <p>Coming back to the above example, we can now compare the hash values of the original files and the encrypted files:</p>
-<div class="codehilite"><pre><span></span>$ shasum /data/*
+<div class="highlight"><pre><span></span>$ shasum /data/*
 87fd97468024e3d2864516ff5840e15d9615340d  /data/fspf.pb
 31732914910f4a08b9832c442074b0932915476c  /data/hello.txt
 8d07f3f576785c373a5e70e8dbcfa8ee06ca6d0c  /data/world.py
@@ -1573,11 +1573,11 @@ deda99d44e880ea8f2250f45c5c20c15d568d84c  /data-original/world.py
 
 <p>The fspf itself is not yet encrypted. We encrypt this file via command
 <strong>scone fspf encrypt fspf.pb</strong></p>
-<p><div class="codehilite"><pre><span></span>$ scone fspf encrypt fspf.pb &gt; /data-original/keytag
+<p><div class="highlight"><pre><span></span>$ scone fspf encrypt fspf.pb &gt; /data-original/keytag
 </pre></div>
 We store the random encryption key as well as the tag of file <strong>fspf.pb</strong> in file  <strong>/data-original/keytag</strong>.</p>
 <p>We introduce a very simple program that reads the two files:</p>
-<div class="codehilite"><pre><span></span>$ cat &gt; example.c <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>$ cat &gt; example.c <span class="s">&lt;&lt; EOF</span>
 <span class="s">#include &lt;stdio.h&gt;</span>
 <span class="s">#include &lt;stdlib.h&gt;</span>
 
@@ -1598,11 +1598,11 @@ EOF
 </pre></div>
 
 <p>Let's crosscompile this program:</p>
-<div class="codehilite"><pre><span></span>scone gcc example.c -o example
+<div class="highlight"><pre><span></span>scone gcc example.c -o example
 </pre></div>
 
 <p>Executing this program results in an output like this:</p>
-<div class="codehilite"><pre><span></span>$./example
+<div class="highlight"><pre><span></span>$./example
 R??C?
     q?z??E??<span class="p">|</span>Ю?<span class="o">}</span>ü ?o
 <span class="nv">$?</span>?!rga??·*<span class="sb">`</span>?????????Gw?
@@ -1610,13 +1610,13 @@ R??C?
 
 <p>We need to activate the file system shield via environment variables by setting the location of the file system protection file (in <strong>SCONE_FSPF</strong>), the encryption key of the file (in <strong>SCONE_FSPF_KEY</strong>) and the tag of the fspf (in <strong>SCONE_FSPF_TAG</strong>). 
 We can extract the encryption key as well as the tag of <strong>fspf.pb</strong> from file <strong>/data-original/keytag</strong>:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span><span class="k">$(</span>cat /data-original/keytag <span class="p">|</span> awk <span class="s1">&#39;{print $11}&#39;</span><span class="k">)</span>
+<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span><span class="k">$(</span>cat /data-original/keytag <span class="p">|</span> awk <span class="s1">&#39;{print $11}&#39;</span><span class="k">)</span>
 $ <span class="nb">export</span> <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span><span class="k">$(</span>cat /data-original/keytag <span class="p">|</span> awk <span class="s1">&#39;{print $9}&#39;</span><span class="k">)</span>
 $ <span class="nb">export</span> <span class="nv">SCONE_FSPF</span><span class="o">=</span>/data/fspf.pb
 </pre></div>
 
 <p>We can now execute this program again:</p>
-<div class="codehilite"><pre><span></span>$ ./example
+<div class="highlight"><pre><span></span>$ ./example
 Hello World
 <span class="nv">f</span> <span class="o">=</span> open<span class="o">(</span><span class="s1">&#39;/data/hello.txt&#39;</span>, <span class="s1">&#39;r&#39;</span><span class="o">)</span>
 print str<span class="o">(</span>f.read<span class="o">())</span>
@@ -1626,22 +1626,22 @@ print str<span class="o">(</span>f.read<span class="o">())</span>
 <h2 id="python">Python<a class="headerlink" href="#python" title="Permanent link">&para;</a></h2>
 <p>Let's try a similar approach for Python. 
 In the above example, we encrypted a Python program. Let's try to execute this encrypted program that accesses an encrypted file:</p>
-<div class="codehilite"><pre><span></span>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> sconecuratedimages/apps:python-2.7-alpine3.6 bash
+<div class="highlight"><pre><span></span>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> sconecuratedimages/apps:python-2.7-alpine3.6 bash
 </pre></div>
 
 <p>The files <em>/data/world.py</em> and  <em>/data/hello.txt</em> are encrypted:</p>
-<div class="codehilite"><pre><span></span>$ cat /data/world.py
+<div class="highlight"><pre><span></span>$ cat /data/world.py
 ?<span class="o">=</span>??J??0?6+?Q?nKd?*N,??.?G???????R?cO?t?y??&gt;f?
 </pre></div>
 
 <p>Let's activate the file shield:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span>... extract from data-original/keytag ...
+<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span>... extract from data-original/keytag ...
 $ <span class="nb">export</span> <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span>... extract from data-original/keytag ...
 $ <span class="nb">export</span> <span class="nv">SCONE_FSPF</span><span class="o">=</span>/data/fspf.pb
 </pre></div>
 
 <p>We can now run the encrypted <strong>world.py</strong> program with the  the Python interpreter:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">100000000</span> <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python /data/world.py
+<div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">100000000</span> <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python /data/world.py
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">1</span>
 ...
 Hello World
@@ -1650,48 +1650,48 @@ Hello World
 <h2 id="protecting-the-root-region">Protecting the Root Region<a class="headerlink" href="#protecting-the-root-region" title="Permanent link">&para;</a></h2>
 <p>Note that in the above example, Python will not be permitted to load dynamic libraries  outside of the protected directory <strong>/data</strong>: a dynamic library must reside in either an authenticated or an encrypted region.  To deal with this, we must define one or more authenticated or encrypted file regions that contain the dynamic libraries.  </p>
 <p>Let us show how to authenticate all files in region <strong>/</strong></p>
-<div class="codehilite"><pre><span></span>$ scone fspf addr fspf.pb / --kernel / --authenticated
+<div class="highlight"><pre><span></span>$ scone fspf addr fspf.pb / --kernel / --authenticated
 </pre></div>
 
 <p>We need to add all files that our application might access. Often, these files in the root region might be defined in some container image. Let's see how we can add these files to our region <strong>/</strong>.</p>
 <h3 id="adding-files-from-an-existing-container-image">Adding files from an existing container image<a class="headerlink" href="#adding-files-from-an-existing-container-image" title="Permanent link">&para;</a></h3>
 <p>We show how to add a subset of the files of container image <strong>sconecuratedimages/apps:python-2.7-alpine3.6</strong> to our root region.
 To do so, we ensure that we have the newest images:</p>
-<div class="codehilite"><pre><span></span>&gt; docker pull sconecuratedimages/apps:python-2.7-alpine3.6
+<div class="highlight"><pre><span></span>&gt; docker pull sconecuratedimages/apps:python-2.7-alpine3.6
 &gt; docker pull sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>How can we add all files in a container to the <em>fspf</em>? One way to do so requires to run Docker inside of a Docker container. To be able to do so, we need to permit our outermost docker container to have access to  <em>/var/run/docker.sock</em>:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -it -v /var/run/docker.sock:/var/run/docker.sock -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data-original:/data-original&quot;</span> sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>&gt; docker run -it -v /var/run/docker.sock:/var/run/docker.sock -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data-original:/data-original&quot;</span> sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>Let us ensure that Docker is installed in this container:</p>
-<div class="codehilite"><pre><span></span>apt-get update
+<div class="highlight"><pre><span></span>apt-get update
 apt-get install -y docker.io
 </pre></div>
 
 <p>Now, we want to add all files of some target container. In our example,
 this is an instance of image <em>sconecuratedimages/apps:python-2.7-alpine3.6</em>.
 We ensure that we pulled the latest image before we start the container:</p>
-<div class="codehilite"><pre><span></span><span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker run -d sconecuratedimages/apps:python-2.7-alpine3.6 <span class="nb">printf</span> OK<span class="sb">`</span> 
+<div class="highlight"><pre><span></span><span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker run -d sconecuratedimages/apps:python-2.7-alpine3.6 <span class="nb">printf</span> OK<span class="sb">`</span> 
 </pre></div>
 
 <p>We can now copy all files from this container into a new directory <strong>rootvol</strong>:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">cd</span>
+<div class="highlight"><pre><span></span>$ <span class="nb">cd</span>
 $ mkdir -p rootvol
 $ docker cp <span class="nv">$CONTAINER_ID</span>:/ ./rootvol
 </pre></div>
 
 <p>Now that we have a copy of the files, we should not forget to garbage collect this container:</p>
-<div class="codehilite"><pre><span></span>docker rm <span class="nv">$CONTAINER_ID</span>
+<div class="highlight"><pre><span></span>docker rm <span class="nv">$CONTAINER_ID</span>
 </pre></div>
 
 <p>Let's remove some directories that we do not want our program to access, like for example, <strong>/dev</strong>:</p>
-<div class="codehilite"><pre><span></span>$ rm -rf rootvol/dev rootvol/proc rootvol/bin rootvol/media rootvol/mnt rootvol/usr/share/X11 rootvol/usr/share/terminfo rootvol/optrootvol/usr/include/c++/ rootvol/usr/lib/tcl8.6 rootvol/usr/lib/gcc rootvol/opt rootvol/sys rootvol/usr/include/c++
+<div class="highlight"><pre><span></span>$ rm -rf rootvol/dev rootvol/proc rootvol/bin rootvol/media rootvol/mnt rootvol/usr/share/X11 rootvol/usr/share/terminfo rootvol/optrootvol/usr/include/c++/ rootvol/usr/lib/tcl8.6 rootvol/usr/lib/gcc rootvol/opt rootvol/sys rootvol/usr/include/c++
 </pre></div>
 
 <p>Now, we create a root <em>fspf</em>:</p>
-<div class="codehilite"><pre><span></span>$ scone fspf create fspf.pb
+<div class="highlight"><pre><span></span>$ scone fspf create fspf.pb
 $ scone fspf addr fspf.pb / --kernel / --authenticated
 $ scone fspf addf fspf.pb / ./rootvol /
 $ scone fspf encrypt fspf.pb &gt; keytag
@@ -1699,7 +1699,7 @@ $ scone fspf encrypt fspf.pb &gt; keytag
 
 <p>We can now create a new container image with this file system protection file
 using this Dockerfile</p>
-<div class="codehilite"><pre><span></span>$ cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>$ cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
 <span class="s">FROM sconecuratedimages/apps:python-2.7-alpine3.6</span>
 <span class="s">COPY fspf.pb /</span>
 <span class="s">EOF</span>
@@ -1707,29 +1707,29 @@ $ docker build -t sconecuratedimages/apps:python-2.7-alpine3.6-authenticated .
 </pre></div>
 
 <p>We can run a container as follows:
-<div class="codehilite"><pre><span></span>$ docker run -it sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
+<div class="highlight"><pre><span></span>$ docker run -it sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
 </pre></div></p>
 <p>Let us activate the file shield:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span>... extract from data-original/keytag ...
+<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span>... extract from data-original/keytag ...
 $ <span class="nb">export</span> <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span>... extract from data-original/keytag ...
 $ <span class="nb">export</span> <span class="nv">SCONE_FSPF</span><span class="o">=</span>/fspf.pb
 </pre></div>
 
 <p>Let's run python with authenticated file system:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000000000</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>  <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python
+<div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000000000</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>  <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python
 </pre></div>
 
 <h2 id="checking-the-file-system-shield">Checking the File System Shield<a class="headerlink" href="#checking-the-file-system-shield" title="Permanent link">&para;</a></h2>
 <p>Let's us check the file shield by creating a new python program (<em>helloworld-manual.py</em>) in
 side of a python container:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -i sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
+<div class="highlight"><pre><span></span>&gt; docker run -i sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
 $ cat &gt; helloworld-manual.py <span class="s">&lt;&lt; EOF</span>
 <span class="s">print &quot;Hello World&quot;</span>
 <span class="s">EOF</span>
 </pre></div>
 
 <p>When we switch on the file shield, the execution of this program inside the enclave will fail: since this file was not part of the original file system, the file system shield will prevent accessing this file.</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span>... extract from data-original/keytag ...
+<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span>... extract from data-original/keytag ...
 $ <span class="nb">export</span> <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span>... extract from data-original/keytag ...
 $ <span class="nb">export</span> <span class="nv">SCONE_FSPF</span><span class="o">=</span>/fspf.pb
 $ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000000000</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>  <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python helloworld-manual.py
@@ -1738,7 +1738,7 @@ $ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000
 
 <p>We can, however, add a new file via programs that have access to the key of the <em>fspf</em>. We can, for example, write a python program to add a new python program to the file system.</p>
 <p>By default, we disable that the root fspf is updated. We can enable updates by setting environment variable <strong>SCONE_FSPF_MUTABLE=1</strong>. We plan to permit updates of the root fspf by default in the near future (i.e., we will remove variable <strong>SCONE_FSPF_MUTABLE=1</strong>).</p>
-<div class="codehilite"><pre><span></span>$ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000000000</span> <span class="nv">SCONE_FSPF_MUTABLE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>  <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python  <span class="s">&lt;&lt; PYTHON</span>
+<div class="highlight"><pre><span></span>$ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000000000</span> <span class="nv">SCONE_FSPF_MUTABLE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>  <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python  <span class="s">&lt;&lt; PYTHON</span>
 <span class="s">f = open(&#39;helloworld.py&#39;, &#39;w&#39;)</span>
 <span class="s">f.write(&#39;print &quot;Hello World&quot;\n&#39;)</span>
 <span class="s">f.close()</span>
@@ -1746,11 +1746,11 @@ $ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000
 </pre></div>
 
 <p>The tag of the file system protection file is now changed. We can determine the new TAG with the help of command <strong>scone fspf show</strong>:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span><span class="k">$(</span>scone fspf show --tag /fspf.pb<span class="k">)</span>
+<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span><span class="k">$(</span>scone fspf show --tag /fspf.pb<span class="k">)</span>
 </pre></div>
 
 <p>Now, we can run the new <strong>helloworld.py</strong>:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000000000</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>  <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python helloworld.py
+<div class="highlight"><pre><span></span>$ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000000000</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>  <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python helloworld.py
 ...
 Hello World
 </pre></div>
@@ -1760,7 +1760,7 @@ Hello World
 please have a look at the following screencast.</p>
 <p><a href="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt"><img alt="asciicast" src="https://asciinema.org/a/xPkMNkeUfDiTonn5fgZZSV3Xt.png" /></a></p>
 <p>Below is the script that is executed in the screencast:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -it -v <span class="nv">$PWD</span>:/mnt sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>&gt; docker run -it -v <span class="nv">$PWD</span>:/mnt sconecuratedimages/crosscompilers
 
 $ mkdir -p /example
 $ mkdir -p /mnt/authenticated/

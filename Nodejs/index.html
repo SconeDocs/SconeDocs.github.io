@@ -1359,25 +1359,25 @@
                 
                 <h1 id="node">Node<a class="headerlink" href="#node" title="Permanent link">&para;</a></h1>
 <p>We provide Node 8.9.4 image that runs inside of an enclave:</p>
-<div class="codehilite"><pre><span></span>docker pull sconecuratedimages/apps:node-8.9.4-alpine
+<div class="highlight"><pre><span></span>docker pull sconecuratedimages/apps:node-8.9.4-alpine
 </pre></div>
 
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>Let's look at a little <em>hello world</em> program. First, we need to start a <strong>node</strong> container: </p>
-<div class="codehilite"><pre><span></span>docker run -it --device<span class="o">=</span>/dev/isgx -p3000:3000 sconecuratedimages/apps:node-8.9.4-alpine sh
+<div class="highlight"><pre><span></span>docker run -it --device<span class="o">=</span>/dev/isgx -p3000:3000 sconecuratedimages/apps:node-8.9.4-alpine sh
 </pre></div>
 
 <p>In case you have no sgx driver installed, you can drop option <strong>--device=/dev/isgx</strong> for testing. <strong>The programs will then run in simulation mode</strong>, i.e., the SCONE software runs but in native mode and not inside an enclave.</p>
 <p>Inside of the container, we first add <strong>npm</strong>: </p>
-<div class="codehilite"><pre><span></span>apk add --no-cache nodejs-npm
+<div class="highlight"><pre><span></span>apk add --no-cache nodejs-npm
 </pre></div>
 
 <p>Ensure we can run even in a resource-constrainted VM by setting the maximum heap size to a reasonable value of 1GB:</p>
-<div class="codehilite"><pre><span></span>export SCONE_HEAP=1G
+<div class="highlight"><pre><span></span>export SCONE_HEAP=1G
 </pre></div>
 
 <p>We create a new application <strong>myapp</strong>:</p>
-<div class="codehilite"><pre><span></span>mkdir myapp
+<div class="highlight"><pre><span></span>mkdir myapp
 <span class="nb">cd</span> myapp
 cat &gt; package.json <span class="s">&lt;&lt; EOF</span>
 <span class="s">{</span>
@@ -1395,11 +1395,11 @@ cat &gt; package.json <span class="s">&lt;&lt; EOF</span>
 </pre></div>
 
 <p>We install <strong>express</strong> with the help of <strong>npm</strong>:</p>
-<div class="codehilite"><pre><span></span>npm install express --save
+<div class="highlight"><pre><span></span>npm install express --save
 </pre></div>
 
 <p>Let's store the <strong>hello world</strong> code:</p>
-<div class="codehilite"><pre><span></span>cat &gt; app.js <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>cat &gt; app.js <span class="s">&lt;&lt; EOF</span>
 <span class="s">var express = require(&#39;express&#39;);</span>
 <span class="s">var app = express();</span>
 <span class="s">app.get(&#39;/&#39;, function (req, res) {</span>
@@ -1413,11 +1413,11 @@ cat &gt; package.json <span class="s">&lt;&lt; EOF</span>
 
 <p>We can run this application inside of an enclave with <strong>node</strong>. We can also enable some debug
 messages by setting environment variable <strong>SCONE_VERSION=1</strong> to print that we run inside of an enclave:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> node app.js
+<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> node app.js
 </pre></div>
 
 <p>This results in an output like this:</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
@@ -1443,16 +1443,16 @@ Example app listening on port <span class="m">3000</span>!
 <p>You can now try to send a request to <strong>myapp</strong> from another shell in the container.
 Assuming that you did not start a new container in meantime, execute in another
 shell of your host:</p>
-<div class="codehilite"><pre><span></span>docker <span class="nb">exec</span> -it <span class="k">$(</span>docker ps -l -q<span class="k">)</span> sh
+<div class="highlight"><pre><span></span>docker <span class="nb">exec</span> -it <span class="k">$(</span>docker ps -l -q<span class="k">)</span> sh
 </pre></div>
 
 <p>Inside of the container, first install <strong>curl</strong> and then query <strong>myapp</strong>:</p>
-<div class="codehilite"><pre><span></span>apk add --no-cache curl
+<div class="highlight"><pre><span></span>apk add --no-cache curl
 curl localhost:3000/
 </pre></div>
 
 <p>This results in an output like this:</p>
-<div class="codehilite"><pre><span></span>Hello World!/ <span class="c1">#</span>
+<div class="highlight"><pre><span></span>Hello World!/ <span class="c1">#</span>
 </pre></div>
 
 <p>Potential error messages:</p>
@@ -1482,7 +1482,7 @@ In case you run out of memory inside the enclave, increase the heap size. In cas
 and software emulation otherwise.</p>
 <h2 id="dockerfile">Dockerfile<a class="headerlink" href="#dockerfile" title="Permanent link">&para;</a></h2>
 <p>The above example, you could more easily put the following text in a Dockerfile:</p>
-<div class="codehilite"><pre><span></span>FROM sconecuratedimages/apps:node-8.9.4-alpine
+<div class="highlight"><pre><span></span>FROM sconecuratedimages/apps:node-8.9.4-alpine
 ENV <span class="nv">SCONE_HEAP</span><span class="o">=</span>1G
 EXPOSE <span class="m">3000</span>
 RUN apk add --no-cache nodejs-npm <span class="se">\</span>
@@ -1513,19 +1513,19 @@ CMD <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m"
 </pre></div>
 
 <p>Now create an image <strong>myapp</strong> as follows:</p>
-<div class="codehilite"><pre><span></span>docker build -t myapp .
+<div class="highlight"><pre><span></span>docker build -t myapp .
 </pre></div>
 
 <p>You can run a container of this image as a daemon as follows:</p>
-<div class="codehilite"><pre><span></span>docker run -d -p <span class="m">3000</span>:3000 myapp
+<div class="highlight"><pre><span></span>docker run -d -p <span class="m">3000</span>:3000 myapp
 </pre></div>
 
 <p>You can now query <strong>myapp</strong> as follows:</p>
-<div class="codehilite"><pre><span></span>curl localhost:3000
+<div class="highlight"><pre><span></span>curl localhost:3000
 </pre></div>
 
 <p>This results in an output like this:</p>
-<div class="codehilite"><pre><span></span>Hello World!
+<div class="highlight"><pre><span></span>Hello World!
 </pre></div>
 
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, March 2018. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>

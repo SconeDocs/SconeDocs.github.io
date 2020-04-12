@@ -1431,7 +1431,7 @@
 <p><img alt="Workflow of Blender Example" src="../img/blender_python.png" /></p>
 <h2 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h2>
 <p>Assuming the Python scripts are located in the <strong>INPUTS</strong> directory, we can compute the output image on host <strong>faye</strong> as follows:</p>
-<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender_python --host faye
+<div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender_python --host faye
 </pre></div>
 
 <p>The output of this script is stored in file <em>simple_sphere.png</em> directory <strong>OUTPUTS</strong>. 
@@ -1467,45 +1467,45 @@ Opening this file  - <strong>which was computed inside an enclave with all input
 <h2 id="sessions">Sessions<a class="headerlink" href="#sessions" title="Permanent link">&para;</a></h2>
 <p>A <strong>session</strong> is a security policy that defines secrets and who can access these secrets. The session of the image will define the key and tag and also defines if and what other sessions can access this information. In this case, we export to blender services. CAS ensures that only blender images that have the expected image tag (i.e., <em>fspf_tag</em>) and enclaves with the expected MrEnclave (i.e., <em>mrenclaves</em>) can access the key (i.e., <em>fspf_key</em>).</p>
 <p>The session will also determine the arguments of blender. In this case, the base image defines that an python program <strong>/encryptedInputs/application.py</strong> is executed.  The python program itself is defined in a volume that is provided by the user, i.e., it is not under the control of the image creator.</p>
-<div class="codehilite"><pre><span></span><span class="n">name</span><span class="o">:</span> <span class="n">scone</span><span class="o">:</span><span class="n">blender</span>
-<span class="n">digest</span><span class="o">:</span> <span class="n">create</span>
+<div class="highlight"><pre><span></span>name: scone:blender
+digest: create
 
-<span class="n">services</span><span class="o">:</span>
-   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">blender</span>
-     <span class="n">image_name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexecsgx</span><span class="o">:</span><span class="n">blender_python</span>
-     <span class="n">mrenclaves</span><span class="o">:</span> <span class="o">[</span><span class="n">$MRENCLAVE</span><span class="o">]</span>
-     <span class="n">tags</span><span class="o">:</span> <span class="o">[</span><span class="n">demo</span><span class="o">]</span>
-     <span class="n">pwd</span><span class="o">:</span> <span class="o">/</span>
-     <span class="n">command</span><span class="o">:</span> <span class="n">blender</span> <span class="o">-</span><span class="n">b</span> <span class="o">-</span><span class="n">P</span> <span class="sr">/encryptedInputs/</span><span class="n">application</span><span class="o">.</span><span class="na">py</span>
-     <span class="n">fspf_path</span><span class="o">:</span> <span class="sr">/usr/</span><span class="n">fspf</span><span class="o">.</span><span class="na">pb</span>
-     <span class="n">fspf_key</span><span class="o">:</span> <span class="n">$FSPF_KEY</span>
-     <span class="n">fspf_tag</span><span class="o">:</span> <span class="n">$FSPF_TAG</span>
-     <span class="n">environment</span><span class="o">:</span>
-        <span class="n">SCONE_NO_MMAP_ACCESS</span><span class="o">:</span> <span class="mi">1</span>
-        <span class="n">SCONE_ALLOW_DLOPEN</span><span class="o">:</span> <span class="mi">1</span>
+services:
+   - name: blender
+     image_name: sconecuratedimages/iexecsgx:blender_python
+     mrenclaves: [$MRENCLAVE]
+     tags: [demo]
+     pwd: /
+     command: blender -b -P /encryptedInputs/application.py
+     fspf_path: /usr/fspf.pb
+     fspf_key: $FSPF_KEY
+     fspf_tag: $FSPF_TAG
+     environment:
+        SCONE_NO_MMAP_ACCESS: 1
+        SCONE_ALLOW_DLOPEN: 1
 
-<span class="n">images</span><span class="o">:</span>
-   <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexecsgx</span><span class="o">:</span><span class="n">blender_python</span>
-     <span class="n">mrenclaves</span><span class="o">:</span> <span class="o">[</span><span class="n">$MRENCLAVE</span><span class="o">]</span>
-     <span class="n">tags</span><span class="o">:</span> <span class="o">[</span><span class="n">demo</span><span class="o">]</span>
-     <span class="n">volumes</span><span class="o">:</span>
-        <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">encrypted</span><span class="o">-</span><span class="n">input</span><span class="o">-</span><span class="n">files</span>
-          <span class="n">path</span><span class="o">:</span> <span class="o">/</span><span class="n">encryptedInputs</span>
-        <span class="o">-</span> <span class="n">name</span><span class="o">:</span> <span class="n">encrypted</span><span class="o">-</span><span class="n">output</span><span class="o">-</span><span class="n">files</span>
-          <span class="n">path</span><span class="o">:</span> <span class="o">/</span><span class="n">encryptedOutputs</span>
+images:
+   - name: sconecuratedimages/iexecsgx:blender_python
+     mrenclaves: [$MRENCLAVE]
+     tags: [demo]
+     volumes:
+        - name: encrypted-input-files
+          path: /encryptedInputs
+        - name: encrypted-output-files
+          path: /encryptedOutputs
 
-<span class="n">exports</span><span class="o">:</span>
-  <span class="o">-</span> <span class="kd">namespace</span><span class="o">:</span> <span class="n">service</span>
-    <span class="n">name</span><span class="o">:</span> <span class="n">blender</span>
-    <span class="n">export</span><span class="o">:</span> <span class="s2">&quot;*&quot;</span>
-  <span class="o">-</span> <span class="kd">namespace</span><span class="o">:</span> <span class="n">image</span>
-    <span class="n">name</span><span class="o">:</span> <span class="n">sconecuratedimages</span><span class="o">/</span><span class="n">iexecsgx</span><span class="o">:</span><span class="n">blender_python</span>
-    <span class="n">export</span><span class="o">:</span> <span class="s2">&quot;*&quot;</span>
+exports:
+  - namespace: service
+    name: blender
+    export: &quot;*&quot;
+  - namespace: image
+    name: sconecuratedimages/iexecsgx:blender_python
+    export: &quot;*&quot;
 </pre></div>
 
 <p>In this case, the volumes themselves are defined by the user. To simplify this process of defining the session, creating encrypted volumes and pushing these to the site at which the image is executed, we provide a simple CLI (Command Line Interface).</p>
 <p>When a user executes blender, this blender container will be started in the context of a CAS session. The session defines the actually keys and tags of the volumes that are mapped into the blender container. The actually session is derived by the CLI from a session template that looks like this:</p>
-<div class="codehilite"><pre><span></span>name: $SESSION
+<div class="highlight"><pre><span></span>name: $SESSION
 digest: create
 
 services:
@@ -1542,14 +1542,14 @@ images:
 </ul>
 <p>To remotely start a container with the help of <strong>ssh</strong>, we need to give the CLI container access via command <strong>add-host</strong>. After giving ssh access, we can start the blend applications. To do so, we can
 give it </p>
-<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender_python --host faye
+<div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender_python --host faye
 </pre></div>
 
 <h3 id="blender-scripting">Blender Scripting<a class="headerlink" href="#blender-scripting" title="Permanent link">&para;</a></h3>
 <p>Let us show an example with an encrypted Python program that is executed on the remote site along with blender to
 render an image. We take an example from <a href="https://github.com/njanakiev/blender-scripting/blob/master/scripts/simple_sphere.py">github</a> by <a href="https://github.com/njanakiev">Nikolai Janakiev</a>: This Python program is unmodified an will be shipped and run in an encrypted fashion on the remote host that executes the blender image. While this is probably not necessary for open source
 code to protect its <strong>confidentiality</strong>, it is important to protect its <strong>integrity</strong>: if an attacker could change the code, it could get access to all data of the image and could modify the results. In general, we want to protect both the integrity as well as the confidentiality of the Python code.</p>
-<div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">bpy</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">bpy</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">pi</span>
 <span class="kn">from</span> <span class="nn">mathutils</span> <span class="kn">import</span> <span class="n">Euler</span>
 <span class="n">tau</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span>

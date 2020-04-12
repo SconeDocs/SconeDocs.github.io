@@ -1277,7 +1277,7 @@
 <p>SCONE supports to run secure applications  consisting of multiple secure containers. To do so, SCONE introduces slightly extended Docker <a href="https://docs.docker.com/docker-cloud/apps/stack-yaml-reference/"><em>stack</em></a> file. Such an extended stack file defines for each process that runs inside of an enclave, a unique hash value (<strong>MRENCLAVE</strong>). During startup, SCONE performs an <em>attestation</em> for all these <em>secure processes</em> to ensure that the hash of the started program is as expected, i.e., is equal to <strong>MRENCLAVE</strong>. Only if it is equal, the arguments and the environment variables are passed to the process. In this way, we can pass secrets as arguments or environment variables in a secure fashion to a secure process.</p>
 <p>By default, all containers are started with SCONE and the arguments are passed in a secure fashion to the started processes. However, you might not want to run all processes inside of enclaves. For containers that should be directly started with Docker Swarm, you need to set field <strong>not_scone: "true"</strong>. In this case, all arguments and the environment variables are directly passed to the container with Docker Swarm (instead of SCONE).</p>
 <p>Let's consider an example, that consists of a <em>haproxy</em> that runs in native mode and is directly started with Docker Swarm (indicated by line <strong>not_scone: "true"</strong>) Moreover, we start <em>myapp</em> (defined in container image <em>myapp-image</em>) and specify <strong>MRENCLAVE</strong>. Only after ensuring that the program started in the enclave has the expected <strong>MRENCLAVE</strong> the arguments and the environment variables are passed to <em>myapp</em>.</p>
-<div class="codehilite"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&quot;3.1.scone&quot;</span>
+<div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&quot;3.1.scone&quot;</span>
 <span class="nt">services</span><span class="p">:</span>
     <span class="nt">primary-service</span><span class="p">:</span>
         <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myapp-image:latest</span>
@@ -1307,14 +1307,14 @@
 <p><img alt="*scone stack deploy*" src="../img/SCONE-compose.png" /></p>
 <p>In the current version of scone, we assume that the stack file is stored on a trusted host. </p>
 <p>The <em>split</em> functionality is part of the <strong>scone CLI</strong>, i.e., you can split a stack file via</p>
-<div class="codehilite"><pre><span></span>$ scone cas split &lt;STACK_FILE&gt; --stack &lt;STACK_ID&gt;
+<div class="highlight"><pre><span></span>$ scone cas split &lt;STACK_FILE&gt; --stack &lt;STACK_ID&gt;
 </pre></div>
 
 <p>The stack ID is a randomly chose unique ID.</p>
 <p>This creates a stack file that can be used to start a set of services in your Swarm. Read <a href="../SCONE_EE2EE/">nginx example</a> for some more details how to do this.</p>
 <p>To be able to use a CAS, you are required to login to a CAS. We assume that your CAS is available at IP address <strong>$IP</strong>. If you have set up the CAS in the way specified in <a href="../SCONE_CAS/">CAS Setup</a>, set environment variable IP to the external IP address of the swarm manager node.</p>
 <p>You can login into CAS via:</p>
-<div class="codehilite"><pre><span></span>$ scone cas login -c CA.PEM YOURID CASALIAS --host <span class="nv">$IP</span>:8081:18765
+<div class="highlight"><pre><span></span>$ scone cas login -c CA.PEM YOURID CASALIAS --host <span class="nv">$IP</span>:8081:18765
 </pre></div>
 
 <p>Replace <strong>YOURID</strong> by your desired user id and <strong>CASALIAS</strong> by a name that you want to use to refer to this cas (see <a href="../SCONE_EE2EE/">example</a>).</p>

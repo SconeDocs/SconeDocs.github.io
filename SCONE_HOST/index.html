@@ -1394,7 +1394,7 @@
 <br/>
 <strong>Example:</strong> To install host <strong>dorothy</strong> without joining any swarm, just execute</li>
 </ul>
-<div class="codehilite"><pre><span></span>$ scone host install --name dorothy 
+<div class="highlight"><pre><span></span>$ scone host install --name dorothy 
 </pre></div>
 
 <ul>
@@ -1403,11 +1403,11 @@
 <br/>
 <strong>Example:</strong> To install host <strong>faye</strong> and create a new swarm with <strong>faye</strong> as a manager, just execute</li>
 </ul>
-<div class="codehilite"><pre><span></span>$ scone host install --name faye --as-manager
+<div class="highlight"><pre><span></span>$ scone host install --name faye --as-manager
 </pre></div>
 
 <p>You can now check your swarm with <a href="../SCONE_SWARM/">scone swarm</a> to see the members of your new swarm:</p>
-<div class="codehilite"><pre><span></span>$ scone swarm ls --manager faye
+<div class="highlight"><pre><span></span>$ scone swarm ls --manager faye
 NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STATUS     AVAILABILITY  MANAGER   
 <span class="m">1</span>             <span class="m">1</span>             SCONE         SCONE         faye                 Ready      Active        Leader    
 </pre></div>
@@ -1418,11 +1418,11 @@ NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STA
 <br/>
 <strong>Example:</strong> To install host <strong>edna</strong> and then join the swarm managed by manager <strong>faye</strong>, execute:</li>
 </ul>
-<div class="codehilite"><pre><span></span>$ scone host install --name edna --join faye
+<div class="highlight"><pre><span></span>$ scone host install --name edna --join faye
 </pre></div>
 
 <p>You can now check your swarm with <a href="../SCONE_SWARM/">scone swarm</a> to see the members of your new swarm:</p>
-<div class="codehilite"><pre><span></span>$ scone swarm ls --manager faye<span class="sb">`</span>
+<div class="highlight"><pre><span></span>$ scone swarm ls --manager faye<span class="sb">`</span>
 NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STATUS     AVAILABILITY  MANAGER   
 <span class="m">1</span>             <span class="m">1</span>             SCONE         SCONE         edna                 Ready      Active                  
 <span class="m">2</span>             <span class="m">1</span>             SCONE         SCONE         faye                 Ready      Active        Leader    
@@ -1434,40 +1434,40 @@ NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STA
 <br/>
 <strong>Example:</strong> To install host <strong>edna</strong> and then join the swarm managed by manager <strong>faye</strong> as a manager, execute:</li>
 </ul>
-<div class="codehilite"><pre><span></span>$ scone host install --name edna --join faye --as-manager
+<div class="highlight"><pre><span></span>$ scone host install --name edna --join faye --as-manager
 </pre></div>
 
 <h3 id="scone-host-swarm">scone host swarm<a class="headerlink" href="#scone-host-swarm" title="Permanent link">&para;</a></h3>
 <p>In the above example, we installed host <strong>dorothy</strong> without joining any swarm. Sometimes one wants to revise this decision via command <strong>swarm</strong>. You can add an existing node to another swarm or you can as a node to become a manager of an existing or a new node. You need to set the options <strong>--join MANAGER</strong> and <strong>--as-manager</strong> as described for <strong>scone host install</strong>.</p>
 <p><strong>Example:</strong> To add host <strong>dorothy</strong> to the swarm managed by host <strong>faye</strong>, just execute:</p>
-<div class="codehilite"><pre><span></span>$ scone host swarm --name dorothy --join faye 
+<div class="highlight"><pre><span></span>$ scone host swarm --name dorothy --join faye 
 </pre></div>
 
 <p><strong>Example:</strong> To add host <strong>dorothy</strong> to the swarm managed by host <strong>faye</strong> as a manager, just execute:</p>
-<div class="codehilite"><pre><span></span>$ scone host swarm --name dorothy --join faye --as-manager
+<div class="highlight"><pre><span></span>$ scone host swarm --name dorothy --join faye --as-manager
 </pre></div>
 
 <h3 id="scone-host-check">scone host check<a class="headerlink" href="#scone-host-check" title="Permanent link">&para;</a></h3>
 <p>To check if a host is properly installed, you can use command <strong>check</strong>.</p>
 <p><strong>Example:</strong> To check if host <strong>faye</strong> is properly installed, just execute:</p>
-<div class="codehilite"><pre><span></span>$ scone host check --name faye
+<div class="highlight"><pre><span></span>$ scone host check --name faye
 </pre></div>
 
 <p>If the host is not properly installed, warnings or errors are issued. Typically, you can fix errors and warnings be reinstalling the host.</p>
 <h3 id="scone-host-reboot">scone host reboot<a class="headerlink" href="#scone-host-reboot" title="Permanent link">&para;</a></h3>
 <p>Sometimes, the installation of an host fails because the existing SGX driver cannot be removed. Most of the time, the issue is an enclave that currently uses the SGX driver. You can find these processes, for example, with Linux utility <strong>lsof</strong>:</p>
-<div class="codehilite"><pre><span></span>$ sudo lsof <span class="p">|</span> grep dev/isgx 
+<div class="highlight"><pre><span></span>$ sudo lsof <span class="p">|</span> grep dev/isgx 
 </pre></div>
 
 <p>Sometimes removing an existing Intel SGX driver fails, despite the fact that no process seems to use the driver. In case this happens, one last resort is to reboot the machine. You issue the reboot manually or you can perform this with <strong>scone host reboot</strong>. </p>
 <p>You must specify options <strong>--name HOST</strong> to indicate which host to reboot. Moreover,   <strong>scone host reboot</strong> will exit with an error unless you specify option <strong>--force</strong>.</p>
 <p><strong>Example:</strong> To reboot host dorothy, just execute the following:</p>
-<div class="codehilite"><pre><span></span>$ scone host reboot --name  dorothy --force 
+<div class="highlight"><pre><span></span>$ scone host reboot --name  dorothy --force 
 </pre></div>
 
 <p>If you want to wait until the host is again available, you can specify option <strong>--wait</strong>.</p>
 <p><strong>Example:</strong> To reboot host dorothy and only return after the host has indeed rebooted, just execute the following:</p>
-<div class="codehilite"><pre><span></span>$ scone host reboot --name  dorothy --force --wait
+<div class="highlight"><pre><span></span>$ scone host reboot --name  dorothy --force --wait
 </pre></div>
 
 <h3 id="scone-host-uninstall">scone host uninstall<a class="headerlink" href="#scone-host-uninstall" title="Permanent link">&para;</a></h3>
@@ -1502,22 +1502,22 @@ NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STA
 <p><strong>Note:</strong> While other objects / commands support the use of environment variable <strong>SCONE_MANAGER</strong>
 as an implicit definition of <strong>--manager $SCONE_MANAGER</strong>, we decided that users must explicitly specify the manager of the swarm for command <strong>uninstall</strong>.</p>
 <p><strong>Example:</strong> To uninstall a host <strong>edna</strong> that is part of a swarm managed by host <strong>faye</strong>, execute:</p>
-<div class="codehilite"><pre><span></span>$ scone host uninstall --name  edna --force --manager faye
+<div class="highlight"><pre><span></span>$ scone host uninstall --name  edna --force --manager faye
 </pre></div>
 
 <p><strong>Example:</strong> Let's assume that host <strong>edna</strong> is not part of a swarm. To uninstall host <strong>edna</strong>, execute:</p>
-<div class="codehilite"><pre><span></span>$ scone host uninstall --name  edna --force --noswarm
+<div class="highlight"><pre><span></span>$ scone host uninstall --name  edna --force --noswarm
 </pre></div>
 
 <p><strong>Example:</strong> To uninstall a host <strong>faye</strong> which is also manager can be tricky. First, make sure that all other nodes are removed from the swarm. To check the status, execute:</p>
-<div class="codehilite"><pre><span></span>$ scone host check --name faye
+<div class="highlight"><pre><span></span>$ scone host check --name faye
 $ scone swarm ls --manager faye
 NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STATUS     AVAILABILITY  MANAGER   
 <span class="m">1</span>             <span class="m">1</span>             SCONE         SCONE         faye                 Ready      Active        Leader    
 </pre></div>
 
 <p>If the output matches the above execute the following to uninstall host <strong>faye</strong> (both parameters <strong>--manager MANAGERHOST</strong> and <strong>--noswarm</strong> must be added):</p>
-<div class="codehilite"><pre><span></span>$ scone host uninstall --name faye --noswarm --manager faye --force
+<div class="highlight"><pre><span></span>$ scone host uninstall --name faye --noswarm --manager faye --force
 </pre></div>
 
 <h3 id="general-options">General options<a class="headerlink" href="#general-options" title="Permanent link">&para;</a></h3>

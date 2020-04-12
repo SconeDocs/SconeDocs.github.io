@@ -1469,20 +1469,20 @@ your docker hub ID to get access to this repository.</p>
 </div>
 <p>Currently, we provde a simple Python 2.7 image that is based on the standard Python image python:2.7-alpine.</p>
 <p>You can pull this image as follows:</p>
-<div class="codehilite"><pre><span></span>docker pull sconecuratedimages/apps:python-2-alpine3.6
+<div class="highlight"><pre><span></span>docker pull sconecuratedimages/apps:python-2-alpine3.6
 </pre></div>
 
 <h2 id="python-interpreter">Python Interpreter<a class="headerlink" href="#python-interpreter" title="Permanent link">&para;</a></h2>
 <p>To run the Python interpreter inside an enclave in interactive mode, first start the container:</p>
-<div class="codehilite"><pre><span></span>docker run --rm -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/apps:python-2-alpine3.6 sh
+<div class="highlight"><pre><span></span>docker run --rm -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/apps:python-2-alpine3.6 sh
 </pre></div>
 
 <p>The execute python inside of the container:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
+<div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
 </pre></div>
 
 <p>Since we set <strong>SCONE_VERSION=1</strong>, we get the following outputs<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">1</a></sup>:</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
@@ -1544,11 +1544,11 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 <p>Python does not always deal gracefully with out of memory situations: often, it terminates with some misleading error message if Python runs out of heap or stack memory. Please try to give python sufficient stack and heap size if this happens. We recommend to start with a large heap, like, <strong>SCONE_HEAP=256M</strong> to ensure that Python has sufficient heap. If your program runs without any problem with a large heap, you can try to reduce the heap size to speedup program startup times.**</p>
 </div>
 <p>Note that you can set the environment variable of a process - in our case python - running inside a container with docker option <strong>-e</strong>:</p>
-<div class="codehilite"><pre><span></span>docker run --rm -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/apps:python-2-alpine3.6 python myapp.py
+<div class="highlight"><pre><span></span>docker run --rm -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/apps:python-2-alpine3.6 python myapp.py
 </pre></div>
 
 <p>Will produce an output like</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
@@ -1558,20 +1558,20 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 <h2 id="numpy">NumPy<a class="headerlink" href="#numpy" title="Permanent link">&para;</a></h2>
 <p>Let's see how we can install some extra packages that your python program might need. Let us focus on <strong>NumPy</strong> first, a very popular package for scientific computing. Note that the following steps you would typically perform as part of a <a href="../SCONE_Dockerfile/">Dockerfile</a>.</p>
 <p>First, we start the SCONE Python  image:</p>
-<div class="codehilite"><pre><span></span>docker run -it --rm sconecuratedimages/apps:python-2-alpine3.6 sh
+<div class="highlight"><pre><span></span>docker run -it --rm sconecuratedimages/apps:python-2-alpine3.6 sh
 </pre></div>
 
 <p>This is a minimal image and you need to add some packages to be able to
 install packages that compile external code:</p>
-<div class="codehilite"><pre><span></span>apk add --no-cache bats libbsd openssl musl-dev build-base
+<div class="highlight"><pre><span></span>apk add --no-cache bats libbsd openssl musl-dev build-base
 </pre></div>
 
 <p>We then install <strong>numpy</strong> inside of the container with the help of <strong>pip</strong>:</p>
-<div class="codehilite"><pre><span></span>pip install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
+<div class="highlight"><pre><span></span>pip install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
 </pre></div>
 
 <p>This results in an output like</p>
-<div class="codehilite"><pre><span></span>Collecting <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
+<div class="highlight"><pre><span></span>Collecting <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
   Downloading https://files.pythonhosted.org/packages/d5/6e/f00492653d0fdf6497a181a1c1d46bbea5a2383e7faf4c8ca6d6f3d2581d/numpy-1.14.5.zip <span class="o">(</span><span class="m">4</span>.9MB<span class="o">)</span>
     <span class="m">100</span>% <span class="p">|</span>████████████████████████████████<span class="p">|</span> <span class="m">4</span>.9MB 375kB/s
 Installing collected packages: numpy
@@ -1580,11 +1580,11 @@ Successfully installed numpy-1.14.5
 </pre></div>
 
 <p>Ok, let's try to execute some examples with <strong>NumPy</strong>. Let's  run Python inside an enclave, give it plenty of heap memory and ask SCONE to print some debug messages:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
+<div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
 </pre></div>
 
 <p>during startup this issues the following messages</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
 <span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
@@ -1610,7 +1610,7 @@ Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&
 </pre></div>
 
 <p>Now, we can import numpy and execute some commands:</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; import numpy as np
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; import numpy as np
 &gt;&gt;&gt; <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span><span class="m">15</span><span class="o">)</span>.reshape<span class="o">(</span><span class="m">3</span>, <span class="m">5</span><span class="o">)</span>
 &gt;&gt;&gt; a
 array<span class="o">([[</span> <span class="m">0</span>,  <span class="m">1</span>,  <span class="m">2</span>,  <span class="m">3</span>,  <span class="m">4</span><span class="o">]</span>,
@@ -1633,9 +1633,9 @@ array<span class="o">([[</span> <span class="m">0</span>,  <span class="m">1</sp
 <p>Let's look at another popular library: the <strong>cairo</strong> graphics library. <strong>cairo</strong>  is written in C and has 
 Python bindings provided by package <strong>pycairo</strong>. In this case, we need to install the C-library first:</p>
 <p>In Alpine Linux - which is the basis of the SCONE Python image - we can install cairo as follows:</p>
-<p><div class="codehilite"><pre><span></span>apk add --no-cache  cairo-dev cairo 
+<p><div class="highlight"><pre><span></span>apk add --no-cache  cairo-dev cairo 
 </pre></div>
-<div class="codehilite"><pre><span></span>fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/main/x86_64/APKINDEX.tar.gz
+<div class="highlight"><pre><span></span>fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/main/x86_64/APKINDEX.tar.gz
 fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/community/x86_64/APKINDEX.tar.gz
 <span class="o">(</span><span class="m">1</span>/55<span class="o">)</span> Installing expat-dev <span class="o">(</span><span class="m">2</span>.2.5-r0<span class="o">)</span>
 ...
@@ -1647,9 +1647,9 @@ OK: <span class="m">297</span> MiB in <span class="m">112</span> packages
 $ 
 </pre></div></p>
 <p>Now we can install the Python bindings of cairo with <strong>pip</strong>:</p>
-<p><div class="codehilite"><pre><span></span>pip install pycairo
+<p><div class="highlight"><pre><span></span>pip install pycairo
 </pre></div>
-<div class="codehilite"><pre><span></span>Collecting pycairo
+<div class="highlight"><pre><span></span>Collecting pycairo
   Downloading pycairo-1.15.4.tar.gz <span class="o">(</span>178kB<span class="o">)</span>
     <span class="m">100</span>% <span class="p">|</span>████████████████████████████████<span class="p">|</span> 184kB <span class="m">1</span>.7MB/s 
 Building wheels <span class="k">for</span> collected packages: pycairo
@@ -1660,11 +1660,11 @@ Installing collected packages: pycairo
 Successfully installed pycairo-1.15.4
 </pre></div></p>
 <p>We can now start Python again via </p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
+<div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
 </pre></div>
 
 <p>before we execute some cairo examples:</p>
-<div class="codehilite"><pre><span></span>&gt;&gt;&gt; import cairo
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; import cairo
 &gt;&gt;&gt; import math
 &gt;&gt;&gt; WIDTH, <span class="nv">HEIGHT</span> <span class="o">=</span> <span class="m">256</span>, <span class="m">256</span>
 &gt;&gt;&gt; 

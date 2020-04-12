@@ -1504,44 +1504,44 @@
 <h3 id="root-cas">Root CAS<a class="headerlink" href="#root-cas" title="Permanent link">&para;</a></h3>
 <p>Scontain.com operates its own <strong>root CAS</strong>. Customers might, however, want to operate their own <strong>rootCAS</strong>. This root CAS runs inside an enclave and uses an encrypted filesystem.</p>
 <p>Starting up a root CAS is different from a <em>child</em> CAS:
- A root CAS uses the SGX sealing key (mrenclave-based) to encrypt its database. This can be enabled by setting <code class="codehilite">sealed</code> to <code class="codehilite">true</code> in the CAS config file, in the database section. If this option is enabled during the first start of CAS, it will</p>
+ A root CAS uses the SGX sealing key (mrenclave-based) to encrypt its database. This can be enabled by setting <code>sealed</code> to <code>true</code> in the CAS config file, in the database section. If this option is enabled during the first start of CAS, it will</p>
 <ol>
-<li>create a <code class="codehilite">volume.fspf</code> with an encrypted region for the database file (<code class="codehilite">palaemon.db</code>),</li>
-<li>encrypt the <code class="codehilite">volume.fspf</code> with the sealing key and store the fspf file in the fs,</li>
-<li>initialize the FS shield with the newly created <code class="codehilite">volume.fspf</code>, and</li>
-<li>create an empty <code class="codehilite">palaemon.db</code> in this protected volume.</li>
+<li>create a <code>volume.fspf</code> with an encrypted region for the database file (<code>palaemon.db</code>),</li>
+<li>encrypt the <code>volume.fspf</code> with the sealing key and store the fspf file in the fs,</li>
+<li>initialize the FS shield with the newly created <code>volume.fspf</code>, and</li>
+<li>create an empty <code>palaemon.db</code> in this protected volume.</li>
 </ol>
 <p>Note that the creation is done inside of the enclave, i.e., only the encrypted DB and volume.fspf is visible outside of the enclave. During subsequent runs, CAS will detect that the volume/database already exist, and will simply initialize the FS shield using already existing volume.fspf.</p>
 <p><strong>Limitations:</strong>
 The <strong>root CAS</strong> does no have rollback protection: Intel has stopped supporting monotonic counters which are implemented by the Intel Management Engine (ME) when using Linux.  We plan to add rollback protection in a later version of CAS using an alternative mechanism.</p>
 <h3 id="cas-configuration-protection">CAS Configuration Protection<a class="headerlink" href="#cas-configuration-protection" title="Permanent link">&para;</a></h3>
-<p>As we mentioned above, the CAS configuration file will need to set <code class="codehilite">sealed</code> to <code class="codehilite">true</code>. An attacker could try to attack the initial configuration of CAS. Hence, the CAS configuration file needs to be protected too, as it contains security relevant configuration options. For example, it contains hashes of trusted SCONE quoting enclaves. One possibility would be to hardcode the config into CAS itself, however this is not sufficiently flexible since modifications of a config requires CAS recompilation.</p>
-<p>We use a different approach: we tie the fs tag with the mrenclave by adding the tag into enclave_parms structure. This can be done by setting <code class="codehilite">SCONE_FSPF_TAG</code> during enclave signing to provide fspf tag that shall be added to enclave_parms, e.g.</p>
-<div class="codehilite"><pre><span></span>$ <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span>84cae7af24a94f52f5de5dd36c1843dc scone-signer sign /myapp
+<p>As we mentioned above, the CAS configuration file will need to set <code>sealed</code> to <code>true</code>. An attacker could try to attack the initial configuration of CAS. Hence, the CAS configuration file needs to be protected too, as it contains security relevant configuration options. For example, it contains hashes of trusted SCONE quoting enclaves. One possibility would be to hardcode the config into CAS itself, however this is not sufficiently flexible since modifications of a config requires CAS recompilation.</p>
+<p>We use a different approach: we tie the fs tag with the mrenclave by adding the tag into enclave_parms structure. This can be done by setting <code>SCONE_FSPF_TAG</code> during enclave signing to provide fspf tag that shall be added to enclave_parms, e.g.</p>
+<div class="highlight"><pre><span></span>$ <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span>84cae7af24a94f52f5de5dd36c1843dc scone-signer sign /myapp
 </pre></div>
 
 <p>Since mrenclave with this approach depends on the fspf tag, a client can make sure that the configuration file has not been manipulated by performing CAS attestation.</p>
-<p>If an application was signed with <code class="codehilite">SCONE_FSPF_TAG</code>, environment variable <code class="codehilite">SCONE_BOOTSTRAP_FSPF</code> shall be used to provide path to FSPF (the runtime will terminate execution if it detects that it has an expected fspf tag, but no FSPF was provided):</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_BOOTSTRAP_FSPF</span><span class="o">=</span>/fspf.pb /myapp
+<p>If an application was signed with <code>SCONE_FSPF_TAG</code>, environment variable <code>SCONE_BOOTSTRAP_FSPF</code> shall be used to provide path to FSPF (the runtime will terminate execution if it detects that it has an expected fspf tag, but no FSPF was provided):</p>
+<div class="highlight"><pre><span></span><span class="nv">SCONE_BOOTSTRAP_FSPF</span><span class="o">=</span>/fspf.pb /myapp
 </pre></div>
 
-<p>During FS shield initialization, fspf tag from enclave_parms must match the tag of the FSPF provided via SCONE_BOOTSTRAP_FSPF, otherwise execution will be terminated. Note that when <code class="codehilite">SCONE_BOOTSTRAP_FSPF</code> is used, no application arguments or environment variables will be passed to the application, as they cannot be trusted (this would require application-level modifications to check whether args and env are sane).</p>
-<p>To protect CAS, we create a FSPF covering everything that needs to be integrity protected, and use <code class="codehilite">SCONE_FSPF_TAG</code> to add the tag into mrenclave of CAS.</p>
+<p>During FS shield initialization, fspf tag from enclave_parms must match the tag of the FSPF provided via SCONE_BOOTSTRAP_FSPF, otherwise execution will be terminated. Note that when <code>SCONE_BOOTSTRAP_FSPF</code> is used, no application arguments or environment variables will be passed to the application, as they cannot be trusted (this would require application-level modifications to check whether args and env are sane).</p>
+<p>To protect CAS, we create a FSPF covering everything that needs to be integrity protected, and use <code>SCONE_FSPF_TAG</code> to add the tag into mrenclave of CAS.</p>
 <p>Limitations:
 - read-only file system
 - no args/env
 - no secrets in the initial fs state</p>
 <h2 id="cas-attestation">CAS Attestation<a class="headerlink" href="#cas-attestation" title="Permanent link">&para;</a></h2>
-<p>To establish trust into a root CAS, the client needs to perform a remote attestation of the root CAS. CAS provides a REST endpoint (<code class="codehilite">/v1/attest</code>) to request its quote, which can then be validated by a remote party. The quote will contain a hash of the CAS's certificate chain (in the report data), allowing the client to verify whether the hash of the certificates presented by CAS matches the hash in the report data, and use these certificates for future communication with CAS without the need for re-attestation.</p>
+<p>To establish trust into a root CAS, the client needs to perform a remote attestation of the root CAS. CAS provides a REST endpoint (<code>/v1/attest</code>) to request its quote, which can then be validated by a remote party. The quote will contain a hash of the CAS's certificate chain (in the report data), allowing the client to verify whether the hash of the certificates presented by CAS matches the hash in the report data, and use these certificates for future communication with CAS without the need for re-attestation.</p>
 <h3 id="cas-attestation-api">CAS Attestation API<a class="headerlink" href="#cas-attestation-api" title="Permanent link">&para;</a></h3>
 <p>The following types of attestation information are provided by CAS:</p>
 <ul>
-<li><code class="codehilite">IAS verification report</code> (<code class="codehilite">IASReport</code>) - verification report provided by the Intel Attestation Service (IAS)</li>
-<li><code class="codehilite">EPID quote</code> (<code class="codehilite">EPID</code>) - unverified quote produced by a quoting enclave. Such quote needs to be verified by the requester via IAS</li>
+<li><code>IAS verification report</code> (<code>IASReport</code>) - verification report provided by the Intel Attestation Service (IAS)</li>
+<li><code>EPID quote</code> (<code>EPID</code>) - unverified quote produced by a quoting enclave. Such quote needs to be verified by the requester via IAS</li>
 </ul>
-<p>To request CAS attestation information, make a <code class="codehilite">GET</code> request to <code class="codehilite">v1/attest</code>,
+<p>To request CAS attestation information, make a <code>GET</code> request to <code>v1/attest</code>,
 for example:</p>
-<div class="codehilite"><pre><span></span><span class="err">GET /v1/attest</span>
+<div class="highlight"><pre><span></span>GET /v1/attest
 </pre></div>
 
 <h3 id="query-parameters">Query parameters<a class="headerlink" href="#query-parameters" title="Permanent link">&para;</a></h3>
@@ -1557,7 +1557,7 @@ for example:</p>
 <tr>
 <td>type</td>
 <td>string</td>
-<td>Type of requested attestation information. Accepted values: <code class="codehilite">IASReport</code>, <code class="codehilite">EPID</code>. If no type is specified, <code class="codehilite">IASReport</code> is assumed. <br> This is an optional field</td>
+<td>Type of requested attestation information. Accepted values: <code>IASReport</code>, <code>EPID</code>. If no type is specified, <code>IASReport</code> is assumed. <br> This is an optional field</td>
 </tr>
 <tr>
 <td>nonce</td>
@@ -1567,12 +1567,12 @@ for example:</p>
 <tr>
 <td>spid</td>
 <td>16 byte hex string</td>
-<td>Identifier of the IAS user. Valid only for <code class="codehilite">EPID</code> requests.  <br> This is a mandatory field (if <code class="codehilite">type</code> is <code class="codehilite">EPID</code>)</td>
+<td>Identifier of the IAS user. Valid only for <code>EPID</code> requests.  <br> This is a mandatory field (if <code>type</code> is <code>EPID</code>)</td>
 </tr>
 <tr>
 <td>linkable</td>
 <td>boolean</td>
-<td>Whether linkable or unlinkable signature scheme should be used.  Valid only for <code class="codehilite">EPID</code> requests. <br> This is a mandatory field (if <code class="codehilite">type</code> is <code class="codehilite">EPID</code>)</td>
+<td>Whether linkable or unlinkable signature scheme should be used.  Valid only for <code>EPID</code> requests. <br> This is a mandatory field (if <code>type</code> is <code>EPID</code>)</td>
 </tr>
 </tbody>
 </table>
@@ -1592,17 +1592,17 @@ for example:</p>
 </tr>
 <tr>
 <td>additional_data</td>
-<td>Additional data integrity protected via <code class="codehilite">proof</code></td>
+<td>Additional data integrity protected via <code>proof</code></td>
 </tr>
 </tbody>
 </table>
 <h3 id="proof-data">Proof Data<a class="headerlink" href="#proof-data" title="Permanent link">&para;</a></h3>
-<p><code class="codehilite">proof_data</code> is a JSON map.</p>
+<p><code>proof_data</code> is a JSON map.</p>
 <p>The returned proof data depends on the requested attestation method.
 Accordingly, "IASReport", and "EPID" proof data might be returned.
-The returned type of the proof data is specified in the <code class="codehilite">type</code> field.</p>
-<p><strong><code class="codehilite">IASReport</code></strong></p>
-<p>The data returned for an <code class="codehilite">IASReport</code> is equivalent to the data obtained from Intel's IAS.
+The returned type of the proof data is specified in the <code>type</code> field.</p>
+<p><strong><code>IASReport</code></strong></p>
+<p>The data returned for an <code>IASReport</code> is equivalent to the data obtained from Intel's IAS.
 Please refer to
 <a href="https://api.trustedservices.intel.com/documents/IAS-API-Spec-rev-4.0.pdf">Intel Attestation Service API documentation, section 3.2</a> for description of the individual data fields.
 Data obtained from headers are put into the following JSON fields:
@@ -1612,10 +1612,10 @@ Data obtained from headers are put into the following JSON fields:
  - advisory_url
  - advisory_ids
  - body</p>
-<p>The IAS response's body is found in the <code class="codehilite">body</code> field.
+<p>The IAS response's body is found in the <code>body</code> field.
 See the example below.</p>
-<p><strong><code class="codehilite">EPID</code></strong></p>
-<p>The proof data returned for an <code class="codehilite">EPID</code> quote is a JSON map with the following fields:</p>
+<p><strong><code>EPID</code></strong></p>
+<p>The proof data returned for an <code>EPID</code> quote is a JSON map with the following fields:</p>
 <table>
 <thead>
 <tr>
@@ -1626,7 +1626,7 @@ See the example below.</p>
 <tbody>
 <tr>
 <td>type</td>
-<td>Will be "<code class="codehilite">EPID</code>"</td>
+<td>Will be "<code>EPID</code>"</td>
 </tr>
 <tr>
 <td>quote</td>
@@ -1638,17 +1638,17 @@ See the example below.</p>
 </tr>
 <tr>
 <td>linkable</td>
-<td><code class="codehilite">true</code> or <code class="codehilite">false</code> as specified in the request</td>
+<td><code>true</code> or <code>false</code> as specified in the request</td>
 </tr>
 </tbody>
 </table>
-<p><code class="codehilite">spid</code> and <code class="codehilite">linkable</code> merely reflect the provided query parameters of the request.
-For verification, <code class="codehilite">quote</code> has to be sent to Intel's IAS service.
-IAS has to be queried with the specified <code class="codehilite">spid</code> and <code class="codehilite">linkable</code> settings to obtain verification reports successfully.</p>
+<p><code>spid</code> and <code>linkable</code> merely reflect the provided query parameters of the request.
+For verification, <code>quote</code> has to be sent to Intel's IAS service.
+IAS has to be queried with the specified <code>spid</code> and <code>linkable</code> settings to obtain verification reports successfully.</p>
 <h3 id="additional-data">Additional Data<a class="headerlink" href="#additional-data" title="Permanent link">&para;</a></h3>
-<p>The <code class="codehilite">additional_data</code> value of the response's JSON contains additional data that is integrity protected and sent along with the attestation proof.
+<p>The <code>additional_data</code> value of the response's JSON contains additional data that is integrity protected and sent along with the attestation proof.
 This data is typically used to, but not limited to, transmit identification information and replay protection that is cryptographically bound to the attestation proof.</p>
-<p>The <code class="codehilite">additional_data</code> values is a JSON map with the following fields:</p>
+<p>The <code>additional_data</code> values is a JSON map with the following fields:</p>
 <table>
 <thead>
 <tr>
@@ -1659,7 +1659,7 @@ This data is typically used to, but not limited to, transmit identification info
 <tbody>
 <tr>
 <td>type</td>
-<td>Must be "<code class="codehilite">CasAttestationDataV1</code>"</td>
+<td>Must be "<code>CasAttestationDataV1</code>"</td>
 </tr>
 <tr>
 <td>nonce</td>
@@ -1671,8 +1671,8 @@ This data is typically used to, but not limited to, transmit identification info
 </tr>
 </tbody>
 </table>
-<p>To protect the <code class="codehilite">additional_data</code>'s integrity it is hashed and its hash value is embedded in the <code class="codehilite">proof</code> field in an attestation method specific manner (see the Proof Data section below).
-The hash is created by hashing <code class="codehilite">additional_data</code>'s unprettified JSON representation with SHA512 yielding a 64-byte long hash value.</p>
+<p>To protect the <code>additional_data</code>'s integrity it is hashed and its hash value is embedded in the <code>proof</code> field in an attestation method specific manner (see the Proof Data section below).
+The hash is created by hashing <code>additional_data</code>'s unprettified JSON representation with SHA512 yielding a 64-byte long hash value.</p>
 <h3 id="response-status-codes">Response Status Codes<a class="headerlink" href="#response-status-codes" title="Permanent link">&para;</a></h3>
 <ul>
 <li>200 ok - no error</li>
@@ -1681,14 +1681,14 @@ The hash is created by hashing <code class="codehilite">additional_data</code>'s
 </ul>
 <h3 id="example-cas-attestation-with-iasreport-method">Example: CAS Attestation with IASReport method<a class="headerlink" href="#example-cas-attestation-with-iasreport-method" title="Permanent link">&para;</a></h3>
 <p><em>Request</em></p>
-<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/v1/attest?type=IASReport&amp;nonce=12121212121212121212121212121211</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Host</span><span class="o">:</span> <span class="l">cas:8081</span>
-<span class="na">User-Agent</span><span class="o">:</span> <span class="l">curl/7.58.0</span>
-<span class="na">Accept</span><span class="o">:</span> <span class="l">*/*</span>
+<div class="highlight"><pre><span></span>GET /v1/attest?type=IASReport&amp;nonce=12121212121212121212121212121211 HTTP/1.1
+Host: cas:8081
+User-Agent: curl/7.58.0
+Accept: */*
 </pre></div>
 
 <p><em>Response</em></p>
-<div class="codehilite"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
+<div class="highlight"><pre><span></span><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">200</span> <span class="ne">OK</span>
 <span class="na">content-type</span><span class="o">:</span> <span class="l">application/json</span>
 <span class="na">content-length</span><span class="o">:</span> <span class="l">6713</span>
 <span class="na">date</span><span class="o">:</span> <span class="l">Fri, 19 Jul 2019 14:31:47 GMT</span>
@@ -1713,14 +1713,14 @@ The hash is created by hashing <code class="codehilite">additional_data</code>'s
 
 <h3 id="example-cas-attestation-with-epid-method">Example: CAS Attestation with EPID method<a class="headerlink" href="#example-cas-attestation-with-epid-method" title="Permanent link">&para;</a></h3>
 <p><em>Request</em></p>
-<div class="codehilite"><pre><span></span><span class="nf">GET</span> <span class="nn">/v1/attest?type=EPID&amp;nonce=12121212121212121212121212121211&amp;spid=12121212121212121212121212121211&amp;linkable=false</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/v1/attest?type=EPID&amp;nonce=12121212121212121212121212121211&amp;spid=12121212121212121212121212121211&amp;linkable=false</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">localhost:8081</span>
 <span class="na">User-Agent</span><span class="o">:</span> <span class="l">curl/7.58.0</span>
 <span class="na">Accept</span><span class="o">:</span> <span class="l">*/*</span>
 </pre></div>
 
 <p><em>Response</em></p>
-<div class="codehilite"><pre><span></span><span class="err">HTTP/</span><span class="mf">1.1</span> <span class="mi">200</span> <span class="err">OK</span>
+<div class="highlight"><pre><span></span><span class="err">HTTP/</span><span class="mf">1.1</span> <span class="mi">200</span> <span class="err">OK</span>
 <span class="err">content-type:</span> <span class="err">application/json</span>
 <span class="err">content-length:</span> <span class="mi">2891</span>
 <span class="err">date:</span> <span class="err">Fri,</span> <span class="mi">19</span> <span class="err">Jul</span> <span class="mi">2019</span> <span class="mi">14</span><span class="err">:</span><span class="mi">35</span><span class="err">:</span><span class="mi">12</span> <span class="err">GMT</span>
@@ -1742,7 +1742,7 @@ The hash is created by hashing <code class="codehilite">additional_data</code>'s
 
 <h3 id="scone-cli-extension">scone CLI extension<a class="headerlink" href="#scone-cli-extension" title="Permanent link">&para;</a></h3>
 <p>We provide a new cas subcommand in scone-cli to simplify attestation and key provisioning.</p>
-<div class="codehilite"><pre><span></span>scone cas attest
+<div class="highlight"><pre><span></span>scone cas attest
 Attest a CAS instance
 
 USAGE:
@@ -1762,40 +1762,40 @@ OPTIONS:
     -n, --nonce &lt;nonce&gt;            Random number to include in report data
 </pre></div>
 
-<p>This command will contact CAS, request its certificate chain (via <code class="codehilite">/v1/attest</code>), request IAS report, validate the verification response and finally ensure that the hash of the certificate chain matches the hash in the report data. Upon successful verification, will print certificate chain to stdout, or return an error otherwise.</p>
+<p>This command will contact CAS, request its certificate chain (via <code>/v1/attest</code>), request IAS report, validate the verification response and finally ensure that the hash of the certificate chain matches the hash in the report data. Upon successful verification, will print certificate chain to stdout, or return an error otherwise.</p>
 <p>Example:</p>
-<div class="codehilite"><pre><span></span>$ scone cas attest -m ad9c03d643d740435a2b1841266ed3a928c42a797c21809fe2332054021af40f -a cas:8081 -G -C
+<div class="highlight"><pre><span></span>$ scone cas attest -m ad9c03d643d740435a2b1841266ed3a928c42a797c21809fe2332054021af40f -a cas:8081 -G -C
 </pre></div>
 
 <h2 id="policy-access-control">Policy Access Control<a class="headerlink" href="#policy-access-control" title="Permanent link">&para;</a></h2>
 <p>By default, access to a security policy is granted to the client that creates the policy. The creator is identified by a certificate which the client provides when it sets up the TLS connection to Palaemon. For any operation that Palaemon executes, it will first perform access control with the help of the provided client certificate. If the operation is not explicitly permitted, the operation will fail.</p>
-<p>A policy can be created by any client ‒ as long as the name of the policy is unique.  A policy can define <strong>Access Control Lists</strong> (ACLs) in section <code class="codehilite">access_control</code> - lists of certificates allowed to perform a particular operation. For each operation for which no ACL is defined, some default lists is defined (see below).</p>
+<p>A policy can be created by any client ‒ as long as the name of the policy is unique.  A policy can define <strong>Access Control Lists</strong> (ACLs) in section <code>access_control</code> - lists of certificates allowed to perform a particular operation. For each operation for which no ACL is defined, some default lists is defined (see below).</p>
 <p>For any operation that Palaemon executes, it will first perform access control, i.e., it checks that the provided client certificate is permitted to perform the operation. Note that TLS checks that the client knows the private key of the client certificate.</p>
 <h3 id="predefined-names">Predefined Names<a class="headerlink" href="#predefined-names" title="Permanent link">&para;</a></h3>
-<p>Palaemon also defines a constant for the client certificate  creator, i.e., <code class="codehilite">CREATOR</code> of the policy, i.e., this represents the public key of the client that created the policy. We also define constants</p>
+<p>Palaemon also defines a constant for the client certificate  creator, i.e., <code>CREATOR</code> of the policy, i.e., this represents the public key of the client that created the policy. We also define constants</p>
 <ul>
-<li><code class="codehilite">ANY</code>: To permit access by anybody, define a list with a single member <code class="codehilite">ANY</code></li>
-<li><code class="codehilite">NONE</code>: To emphasize that nobody has access, you can define a ACL with a single member <code class="codehilite">NONE</code>.</li>
+<li><code>ANY</code>: To permit access by anybody, define a list with a single member <code>ANY</code></li>
+<li><code>NONE</code>: To emphasize that nobody has access, you can define a ACL with a single member <code>NONE</code>.</li>
 </ul>
-<p>Note that <code class="codehilite">ANY</code> and <code class="codehilite">NONE</code> can only be part of a list with a single entry. <code class="codehilite">CREATOR</code> can be part of lists with arbitrarily many public keys.</p>
+<p>Note that <code>ANY</code> and <code>NONE</code> can only be part of a list with a single entry. <code>CREATOR</code> can be part of lists with arbitrarily many public keys.</p>
 <h2 id="palaemon-operations-on-sessions">PALAEMON Operations on sessions<a class="headerlink" href="#palaemon-operations-on-sessions" title="Permanent link">&para;</a></h2>
 <p>For any RUD operation, as well for reading the policy certificate, the policy can define an ACL:</p>
 <ul>
-<li><code class="codehilite">read</code>: permit to read the policy - without the secrets. By default this set to <code class="codehilite">CREATOR</code>.</li>
-<li><code class="codehilite">secrets</code>: permit to read the policy including the secrets. This can be used for migrating sessions and must be used with care. By default this is set to <code class="codehilite">NONE</code>.</li>
-<li><code class="codehilite">update</code>: permit to update the policy. By default this set to <code class="codehilite">CREATOR</code>.</li>
-<li><code class="codehilite">delete</code>: permit to delete the policy. By default this set to <code class="codehilite">CREATOR</code>.</li>
+<li><code>read</code>: permit to read the policy - without the secrets. By default this set to <code>CREATOR</code>.</li>
+<li><code>secrets</code>: permit to read the policy including the secrets. This can be used for migrating sessions and must be used with care. By default this is set to <code>NONE</code>.</li>
+<li><code>update</code>: permit to update the policy. By default this set to <code>CREATOR</code>.</li>
+<li><code>delete</code>: permit to delete the policy. By default this set to <code>CREATOR</code>.</li>
 </ul>
 <p>In other words, to perform any of these operations, a client has to provide a certificate that matches a certificate in the specified ACL. TLS will ensure that the client knows the private key to the given public key.</p>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
-<p>To prohibit any read access of a policy, i.e., even by the creator, define a <code class="codehilite">NONE</code> policy:</p>
-<div class="codehilite"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
+<p>To prohibit any read access of a policy, i.e., even by the creator, define a <code>NONE</code> policy:</p>
+<div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">NONE</span>
 </pre></div>
 
-<p>To permit access by anybody, define a list with a single member <code class="codehilite">ANY</code>:</p>
-<div class="codehilite"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
+<p>To permit access by anybody, define a list with a single member <code>ANY</code>:</p>
+<div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ANY</span>
 </pre></div>
@@ -1803,7 +1803,7 @@ OPTIONS:
 <p><strong>Notes:</strong> Alternatives to specifying certificates are i) public keys, ii) hashes of certificates, or iii) names of certificates. We decided to support certificates instead of public keys or hashes of certificates since they provide some more information and can be verified if they are revoked or expired.</p>
 <h3 id="example-access-control">Example: Access Control<a class="headerlink" href="#example-access-control" title="Permanent link">&para;</a></h3>
 <p>A certificate  has to be encoded in PEM format like this:</p>
-<div class="codehilite"><pre><span></span>  -----BEGIN CERTIFICATE-----
+<div class="highlight"><pre><span></span>  -----BEGIN CERTIFICATE-----
       MIIGGzCCBAOgAwIBAgIJALrB28lSsN6VMA0GCSqGSIb3DQEBCwUAMGYxCzAJBgNV
       BAYTAkRFMQ8wDQYDVQQIEwZTYXhvbnkxEDAOBgNVBAcTB0RyZXNkZW4xITAfBgNV
       HhcNMTgwNDI0MTc1MjU0WhcNMzgwNDE5MTc1MjU0WjBmMQswCQYDVQQGEwJERTEP
@@ -1815,8 +1815,8 @@ OPTIONS:
 </pre></div>
 
 <p>We can pack this in an access control list. Reading a policy is controlled via
-a <code class="codehilite">read</code> ACL. This can be defined as part of the policy as follows:</p>
-<div class="codehilite"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
+a <code>read</code> ACL. This can be defined as part of the policy as follows:</p>
+<div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="p p-Indicator">|-</span>
       <span class="no">-----BEGIN CERTIFICATE-----</span>
@@ -1843,7 +1843,7 @@ a <code class="codehilite">read</code> ACL. This can be defined as part of the p
 
 <h3 id="default-acl">Default ACL<a class="headerlink" href="#default-acl" title="Permanent link">&para;</a></h3>
 <p>When a policy is created, each ACL is set to a default value that can be overwritten by the policy. The default ACLs are defined as follows:</p>
-<div class="codehilite"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
    <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="nv">CREATOR</span><span class="p p-Indicator">]</span>
   <span class="nt">secrets</span><span class="p">:</span>
@@ -1857,7 +1857,7 @@ a <code class="codehilite">read</code> ACL. This can be defined as part of the p
 <p>This means that by default, the creator can read the policy (without the secrets), can read the policy certificate and  can update the policy, but it cannot delete the policy not read the secrets.</p>
 <h3 id="example-policy-readable-by-all-clients">Example: Policy Readable by all Clients<a class="headerlink" href="#example-policy-readable-by-all-clients" title="Permanent link">&para;</a></h3>
 <p>To ensure that all clients can read the policy, a policy can be defined as follows:</p>
-<div class="codehilite"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="nv">ANY</span><span class="p p-Indicator">]</span>
 </pre></div>
@@ -1865,7 +1865,7 @@ a <code class="codehilite">read</code> ACL. This can be defined as part of the p
 <p>Note that the creator can change and delete the policy.</p>
 <h3 id="example-immutable-policy">Example: Immutable Policy<a class="headerlink" href="#example-immutable-policy" title="Permanent link">&para;</a></h3>
 <p>To ensure that the above policy cannot be modified, we prevent that it can be deleted and that it can be updated:</p>
-<div class="codehilite"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="p p-Indicator">[</span><span class="nv">ANY</span><span class="p p-Indicator">]</span>
   <span class="nt">secrets</span><span class="p">:</span>
@@ -1880,7 +1880,7 @@ a <code class="codehilite">read</code> ACL. This can be defined as part of the p
 <h2 id="automatic-volume-creation">Automatic Volume Creation<a class="headerlink" href="#automatic-volume-creation" title="Permanent link">&para;</a></h2>
 <p>Palaemon can create an empty volume automatically during the first use of this volume. A random key is generated by Palaemon. As soon as the volume is created, Palaemon will track the tag and the key. In other words, the volume is guaranteed to be initialized only once. Palaemon creates an initialized volume only if neither a filesystem key nor a filesystem tag is specified for this volume.</p>
 <p>In this way, we can ensure that the key for the file system is only visible inside of Palaemon and the application(s) that get access to this volume, i.e., no system administrator will ever seen that key during the creation of the volume.</p>
-<div class="codehilite"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DB</span>
      <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/db</span>
 </pre></div>
@@ -1888,7 +1888,7 @@ a <code class="codehilite">read</code> ACL. This can be defined as part of the p
 <p>One could, for example, initialize a volume with one service that pulls the initial content from a trusted repository or that explicitly initializes all files in this volume.</p>
 <h2 id="palaemon-files">PALAEMON Files<a class="headerlink" href="#palaemon-files" title="Permanent link">&para;</a></h2>
 <p>We can inject the service certificate and the private key of a service into its container as follows. Right now these files must contain PALAEMON variables that refer to secrets and these variables  are replaced by the values of the secrets.</p>
-<div class="codehilite"><pre><span></span><span class="nt">images</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><span class="nt">images</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">server_image</span>
     <span class="nt">palaemons</span><span class="p">:</span>
       <span class="c1"># content: $$PALAEMON::server-tls-credentials.chain$$</span>
@@ -1900,7 +1900,7 @@ a <code class="codehilite">read</code> ACL. This can be defined as part of the p
 </pre></div>
 
 <p>We will extend this mechanism to inject directly the values of secrets without the need to define these files in the first place: this is represented by the key <strong>content:</strong> In this way, one does not need to place any trust in the original file system of the service.</p>
-<div class="codehilite"><pre><span></span><span class="nt">services</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">myservice</span>
     <span class="nt">palaemons</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="nt">file</span><span class="p">:</span> <span class="s">&quot;/etc/myservice/sessioncert.crt&quot;</span>
@@ -1919,7 +1919,7 @@ a <code class="codehilite">read</code> ACL. This can be defined as part of the p
 <p>PALAEMON can create certificates for services in the context of a security policy. These certificates are signed by the <strong>session certificate</strong>. The <strong>session certificate</strong> is specific to a given security policy an is itself is signed by the <strong>Palaemon instance certificate</strong>.</p>
 <p>A service can access these certificates either via palaemon files (see above),
 or via environment variables:</p>
-<div class="codehilite"><pre><span></span><span class="nt">services</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">server</span>
     <span class="nt">environment</span><span class="p">:</span>
       <span class="c1"># Inject into the application environment variables with TLS credentials</span>
@@ -1953,10 +1953,10 @@ or via environment variables:</p>
    description: CAS Instace CA certificate, signed by CAS CA
  - subject: CN = cas-session:test
    issuer: CN = cas-instance
-   description: session CA certificate for session <code class="codehilite">test</code>, signed by CAS Instance CA
+   description: session CA certificate for session <code>test</code>, signed by CAS Instance CA
  - subject: CN = server-tls-credentials, L = 91a05b97059623ffd447411b40fabefd167c929fa4951d509c89060fac9c0c7d
    issuer: CN = cas-session:test
-   description: leaf certificate generated by Palaemon from session key named <code class="codehilite">server-tls-credentials</code>,  signed by <code class="codehilite">test</code> session CA certificate. <code class="codehilite">L</code> attribute contains platform id on which the service instance runs.</p>
+   description: leaf certificate generated by Palaemon from session key named <code>server-tls-credentials</code>,  signed by <code>test</code> session CA certificate. <code>L</code> attribute contains platform id on which the service instance runs.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, Aug 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   

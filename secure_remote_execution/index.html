@@ -1491,15 +1491,15 @@ a simple <strong>CLI</strong> (Command Line Interface). The CLI runs inside a co
 <p>You need to install the <a href="../installation/">SGX driver and Docker engine</a>.</p>
 </div>
 <p>So far, we support the execution on remote hosts / VMs via <strong>ssh</strong> and via the iExec platform. To start a container on a remote host via this <strong>CLI</strong>, you need to give the CLI the credentials of this hosts. These credentials are stored in a volume stored on the client's computer. In this example, we use directory <strong>$PWD/conf/</strong> to store the credentials. Ensure that only you have access to this directory to protect the credentials. This directory must be mapped in the container at location <strong>/conf</strong>:</p>
-<div class="codehilite"><pre><span></span><span class="nb">eval</span> docker run -it --rm -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli add-host --alias caroline --hostname <span class="m">1</span>.2.3.4
+<div class="highlight"><pre><span></span><span class="nb">eval</span> docker run -it --rm -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli add-host --alias caroline --hostname <span class="m">1</span>.2.3.4
 </pre></div>
 
 <p>This adds an alias (<strong>caroline</strong>) for the host identified by option <strong>--hostname</strong>. The argument <strong>--hostname</strong> can either be a hostname or an IP address. The CLI generates a key pair inside the container and stores it in <strong>/conf</strong>. The public key is used to grant access to the container on the remote host.  </p>
 <p>The output of <strong>add-host</strong> will look something like this:</p>
-<div class="codehilite"><pre><span></span><span class="n">ssh</span> <span class="n">ubuntu</span><span class="mf">@1.2.3.4</span> <span class="s">&quot;echo </span><span class="se">\&quot;</span><span class="s">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXVqr0diJjgMPx7WNTQWJVhV3ea8L1I/8mDZTsQUH5gazB+laIiM7tEAKbddbessItmA9bLOZEq4CIrYmtXpjG2tBSES2YpqNhQ8+3r4U3ozSBD1XAc6OzRmnHP+wmuVpCQw0QxBKj0Qq5MCehmLIXLYephOtjVWwsA3EprVHIq0+/wYZp4mU3evCgcvE46nxOrmHzu5X4iDUMSY59XHdavIVkkS87qp4RlyFQa0gBRHOfcGEVJ3oS/pmKHxasdLwjiVmCovLG4RPS88RoKCf8zWis8vpPUKt/04xjlj4gqsV/U7VR2S/kFcvq1yuvOno+BhcsGme2U2CKTV4Y16ZJ scone-CLI</span><span class="se">\&quot;</span><span class="s"> &gt;&gt; .ssh/authorized_keys&quot;</span>
+<div class="highlight"><pre><span></span>ssh ubuntu@1.2.3.4 &quot;echo \&quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXVqr0diJjgMPx7WNTQWJVhV3ea8L1I/8mDZTsQUH5gazB+laIiM7tEAKbddbessItmA9bLOZEq4CIrYmtXpjG2tBSES2YpqNhQ8+3r4U3ozSBD1XAc6OzRmnHP+wmuVpCQw0QxBKj0Qq5MCehmLIXLYephOtjVWwsA3EprVHIq0+/wYZp4mU3evCgcvE46nxOrmHzu5X4iDUMSY59XHdavIVkkS87qp4RlyFQa0gBRHOfcGEVJ3oS/pmKHxasdLwjiVmCovLG4RPS88RoKCf8zWis8vpPUKt/04xjlj4gqsV/U7VR2S/kFcvq1yuvOno+BhcsGme2U2CKTV4Y16ZJ scone-CLI\&quot; &gt;&gt; .ssh/authorized_keys&quot;
 </pre></div>
 
-<p><code class="codehilite">eval</code> executes the output and gives your local client to give the container access to the remote host.</p>
+<p><code>eval</code> executes the output and gives your local client to give the container access to the remote host.</p>
 <p><center>
 <img alt="add-host: add ssh credentials" src="../img/add-host.png" />
 </center></p>
@@ -1519,26 +1519,26 @@ We show how to execute the simple <strong>copy application</strong> that we intr
 <li>the CLI pulls the output files from the <strong>remote file service</strong> and decrypts the files and stores the files inside the OUTPUT directory.</li>
 </ul>
 <p>The copy application is stored in image <strong>sconecuratedimages/iexecsgx:copy_demo</strong> on <strong>hub.docker.com</strong>. You can execute this image as follows:</p>
-<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:copy_demo --host caroline
+<div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:copy_demo --host caroline
 </pre></div>
 
 <h3 id="example-copy-demo">Example: Copy Demo<a class="headerlink" href="#example-copy-demo" title="Permanent link">&para;</a></h3>
 <p>You could perform the following steps to see the <strong>copy_demo</strong> in action. Create some directory and a file to copy.</p>
-<div class="codehilite"><pre><span></span>mkdir -p INPUTS OUTPUTS
+<div class="highlight"><pre><span></span>mkdir -p INPUTS OUTPUTS
 <span class="nb">echo</span> <span class="s2">&quot;Hello World&quot;</span> &gt; INPUTS/f1.txt
 </pre></div>
 
 <p>Now execute the copy application (as shown above):</p>
-<div class="codehilite"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:copy_demo --host caroline
+<div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:copy_demo --host caroline
 </pre></div>
 
 <p>The file <strong>f1.txt</strong> was copied to directory <strong>OUTPUTS</strong>.
 You can check the output, by executing:</p>
-<div class="codehilite"><pre><span></span>cat OUTPUTS/f1.txt
+<div class="highlight"><pre><span></span>cat OUTPUTS/f1.txt
 </pre></div>
 
 <p>which results in the output:</p>
-<div class="codehilite"><pre><span></span>Hello World
+<div class="highlight"><pre><span></span>Hello World
 </pre></div>
 
 <p><center>
@@ -1554,7 +1554,7 @@ We also need to specify </p>
 <li>a remote file service like <strong>transfer.sh</strong> or <strong>filepush.co/upload</strong>, and</li>
 <li>an instance of the <strong>SCONE CAS</strong> configuration and attestation service. </li>
 </ul>
-<div class="codehilite"><pre><span></span>mkdir -p EXAMPLE
+<div class="highlight"><pre><span></span>mkdir -p EXAMPLE
 <span class="nv">TRANSFER</span><span class="o">=</span><span class="s2">&quot;transfer.sh&quot;</span>
 <span class="nv">CAS</span><span class="o">=</span>scone.ml
 <span class="nb">cd</span> EXAMPLE
@@ -1562,21 +1562,21 @@ mkdir -p conf INPUTS OUTPUTS
 </pre></div>
 
 <p>To reduce the typing, let's define an <em>alias</em> for the secure remote execution of blender:</p>
-<div class="codehilite"><pre><span></span><span class="nb">alias</span> <span class="nv">aeblender</span><span class="o">=</span><span class="s2">&quot;docker run -it --rm -v </span><span class="nv">$PWD</span><span class="s2">/INPUTS:/inputs -v  </span><span class="nv">$PWD</span><span class="s2">/OUTPUTS:/decryptedOutputs  -v </span><span class="nv">$PWD</span><span class="s2">/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender --host caroline  -r </span><span class="nv">$TRANSFER</span><span class="s2">  -s </span><span class="nv">$CAS</span><span class="s2">&quot;</span>
+<div class="highlight"><pre><span></span><span class="nb">alias</span> <span class="nv">aeblender</span><span class="o">=</span><span class="s2">&quot;docker run -it --rm -v </span><span class="nv">$PWD</span><span class="s2">/INPUTS:/inputs -v  </span><span class="nv">$PWD</span><span class="s2">/OUTPUTS:/decryptedOutputs  -v </span><span class="nv">$PWD</span><span class="s2">/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender --host caroline  -r </span><span class="nv">$TRANSFER</span><span class="s2">  -s </span><span class="nv">$CAS</span><span class="s2">&quot;</span>
 </pre></div>
 
 <p>We assume that you added the host (in this case <strong>caroline</strong>) already via <strong>add-host</strong> (see above).</p>
 <h3 id="render-image">Render Image<a class="headerlink" href="#render-image" title="Permanent link">&para;</a></h3>
 <p>Let's first download a blender file:</p>
-<div class="codehilite"><pre><span></span>curl https://raw.githubusercontent.com/iExecBlockchainComputing/iexec-dapps-registry/master/iExecBlockchainComputing/Blender/iexec-rlc.blend -o INPUTS/iexec-rlc.blend
+<div class="highlight"><pre><span></span>curl https://raw.githubusercontent.com/iExecBlockchainComputing/iexec-dapps-registry/master/iExecBlockchainComputing/Blender/iexec-rlc.blend -o INPUTS/iexec-rlc.blend
 </pre></div>
 
 <p>and we <strong>render</strong> this blender file remotely ensuring all artifacts are <strong>always encrypted</strong>:</p>
-<div class="codehilite"><pre><span></span>aeblender
+<div class="highlight"><pre><span></span>aeblender
 </pre></div>
 
 <p>We can now look at the files in OUTPUT directory:</p>
-<div class="codehilite"><pre><span></span>open OUTPUTS/0001.png
+<div class="highlight"><pre><span></span>open OUTPUTS/0001.png
 </pre></div>
 
 <p>Which shows the following picture which was computed using <strong>always encrypted</strong> approach:</p>
@@ -1585,11 +1585,11 @@ mkdir -p conf INPUTS OUTPUTS
 </center></p>
 <h3 id="cube">Cube<a class="headerlink" href="#cube" title="Permanent link">&para;</a></h3>
 <p>Let's download another blender file from github:</p>
-<div class="codehilite"><pre><span></span>curl  --output INPUTS/iexec-rlc.blend  https://raw.githubusercontent.com/golemfactory/golem/develop/apps/blender/benchmark/test_task/cube.blend
+<div class="highlight"><pre><span></span>curl  --output INPUTS/iexec-rlc.blend  https://raw.githubusercontent.com/golemfactory/golem/develop/apps/blender/benchmark/test_task/cube.blend
 </pre></div>
 
 <p>and render this blender file on the remote and untrusted host <strong>caroline</strong>:</p>
-<div class="codehilite"><pre><span></span>aeblender
+<div class="highlight"><pre><span></span>aeblender
 </pre></div>
 
 <p>The OUTPUT directory contains the following picture - which was computed remotely with all data and processing being <strong>always encrypted</strong>:</p>
@@ -1598,11 +1598,11 @@ mkdir -p conf INPUTS OUTPUTS
 </center></p>
 <h3 id="helicopter-example">Helicopter Example<a class="headerlink" href="#helicopter-example" title="Permanent link">&para;</a></h3>
 <p>Another example from <strong>github</strong>:</p>
-<div class="codehilite"><pre><span></span>curl  --output INPUTS/iexec-rlc.blend  https://raw.githubusercontent.com/golemfactory/golem/develop/apps/blender/benchmark/test_task/scene-Helicopter-27-cycles.blend
+<div class="highlight"><pre><span></span>curl  --output INPUTS/iexec-rlc.blend  https://raw.githubusercontent.com/golemfactory/golem/develop/apps/blender/benchmark/test_task/scene-Helicopter-27-cycles.blend
 </pre></div>
 
 <p>We are execution with the same command as above:</p>
-<div class="codehilite"><pre><span></span>aeblender
+<div class="highlight"><pre><span></span>aeblender
 </pre></div>
 
 <p>The OUTPUT directory contains the following picture - which was computed remotely with all data and processing being <strong>always encrypted</strong>:</p>
@@ -1611,11 +1611,11 @@ mkdir -p conf INPUTS OUTPUTS
 </center></p>
 <h3 id="car-example">Car Example<a class="headerlink" href="#car-example" title="Permanent link">&para;</a></h3>
 <p>We show one more example:</p>
-<div class="codehilite"><pre><span></span>curl  --output INPUTS/iexec-rlc.blend  https://raw.githubusercontent.com/golemfactory/golem/develop/apps/blender/benchmark/test_task/bmw27_cpu.blend
+<div class="highlight"><pre><span></span>curl  --output INPUTS/iexec-rlc.blend  https://raw.githubusercontent.com/golemfactory/golem/develop/apps/blender/benchmark/test_task/bmw27_cpu.blend
 </pre></div>
 
 <p>and render this (as above):</p>
-<div class="codehilite"><pre><span></span>aeblender
+<div class="highlight"><pre><span></span>aeblender
 </pre></div>
 
 <p>The OUTPUT directory contains the following picture - which was computed remotely with all data and processing being <strong>always encrypted</strong>:</p>

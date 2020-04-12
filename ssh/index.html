@@ -1375,7 +1375,7 @@
 <p>As a caveat, this basename must be sufficient for other hosts in the <em>same swarm</em> to reach <em>node2</em>. In the above figure, <em>manager</em> must be able to resolve <em>node2</em> to the IP address of <em>node2.my.very.long.domain.com</em>. By default most swarms are setup this way.</p>
 <p>On your development machine (or, more precisely in your development container), 
 you need to add an alias <em>node2</em> for <em>node2.my.very.long.domain.com</em>, you could add the following lines to your <em>ssh config</em> (stored in <em>$HOME/.ssh/config</em>):</p>
-<div class="codehilite"><pre><span></span>Host node2
+<div class="highlight"><pre><span></span>Host node2
      HostName node2.my.very.long.domain.com
      Port <span class="m">22</span>
      User scone
@@ -1384,7 +1384,7 @@ you need to add an alias <em>node2</em> for <em>node2.my.very.long.domain.com</e
 
 <h3 id="ssh-connection-reuse">ssh connection reuse<a class="headerlink" href="#ssh-connection-reuse" title="Permanent link">&para;</a></h3>
 <p>To be able to reuse a ssh connection, you must configure ssh appropriately. You should set <em>ControlMaster</em> to <em>auto</em> and you have to specify a control path via option <em>ControlPath</em>. You can define a generic path like <em>~/.ssh/ssh_mux_%h_%p_%r</em> - this can be the same for all hosts. For example, for some host <em>alice</em> you might add the following lines to <em>$HOME/.ssh/config</em>:</p>
-<div class="codehilite"><pre><span></span>Host alice
+<div class="highlight"><pre><span></span>Host alice
         ControlMaster auto
         ControlPath ~/.ssh/ssh_mux_%h_%p_%r
         user ubuntu
@@ -1394,33 +1394,33 @@ you need to add an alias <em>node2</em> for <em>node2.my.very.long.domain.com</e
 
 <h2 id="container-configuration">Container Configuration<a class="headerlink" href="#container-configuration" title="Permanent link">&para;</a></h2>
 <p>To simplify the <em>ssh</em> setup inside of containers, you might want to map your <em>ssh</em> configuration residing in your home directory into the containers in which you run the <strong>scone</strong> CLI. Since you probably have a different user ID inside and outside the container, you might want to copy the original <em>ssh</em> configuration:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -it -v <span class="nv">$HOME</span>/.ssh:/root/.xssh  sconecuratedimages/sconecli
+<div class="highlight"><pre><span></span>&gt; docker run -it -v <span class="nv">$HOME</span>/.ssh:/root/.xssh  sconecuratedimages/sconecli
 </pre></div>
 
 <p>Inside the container, copy the external <em>ssh</em> configuration:</p>
-<div class="codehilite"><pre><span></span>$ cp -rf <span class="nv">$HOME</span>/.xssh/* <span class="nv">$HOME</span>/.ssh
+<div class="highlight"><pre><span></span>$ cp -rf <span class="nv">$HOME</span>/.xssh/* <span class="nv">$HOME</span>/.ssh
 </pre></div>
 
 <h3 id="ssh-agent">SSH Agent<a class="headerlink" href="#ssh-agent" title="Permanent link">&para;</a></h3>
 <p>In the container running the <em>scone</em> CLI, you need to start a <em>ssh-agent</em> in the container in which you run the <em>scone</em> CLI:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nv">SA</span><span class="o">=</span><span class="k">$(</span>ssh-agent<span class="k">)</span>
+<div class="highlight"><pre><span></span>$ <span class="nv">SA</span><span class="o">=</span><span class="k">$(</span>ssh-agent<span class="k">)</span>
 $ <span class="nb">eval</span> <span class="s2">&quot;</span><span class="nv">$SA</span><span class="s2">&quot;</span>
 </pre></div>
 
 <p>and add your public key by executing:</p>
-<div class="codehilite"><pre><span></span>$ ssh-add
+<div class="highlight"><pre><span></span>$ ssh-add
 </pre></div>
 
 <p>Ensure that you are now able to log into all hosts of your swarm.</p>
 <h2 id="sgx-host-setup">SGX Host Setup<a class="headerlink" href="#sgx-host-setup" title="Permanent link">&para;</a></h2>
 <p><strong>scone</strong> expects to have password-less access to all SGX hosts that you want to use for Scone. To do so, you need to add one of your public ssh keys to <strong>~/.ssh/authorized_keys</strong> on all SGX host. For example, you could add your public key <em>~/.ssh/id_rsa.pub</em> to file  <em>~/.ssh/authorized_keys</em> on each of these hosts.</p>
 <p>Some commands are required to be executed with <strong>sudo</strong>.  We assume that the user has the right to perform a password-less <strong>sudo</strong> on the SGX hosts. In case the user does not yet have this right, the user should be added to <strong>/etc/sudoers</strong>. Typically, one would add the user with the help of command <strong>visudo</strong>. The entry for user <em>alice</em> might look like this:</p>
-<div class="codehilite"><pre><span></span>alice <span class="nv">ALL</span><span class="o">=(</span>ALL<span class="o">)</span> NOPASSWD: ALL
+<div class="highlight"><pre><span></span>alice <span class="nv">ALL</span><span class="o">=(</span>ALL<span class="o">)</span> NOPASSWD: ALL
 </pre></div>
 
 <h2 id="ssh-credentials">SSH Credentials<a class="headerlink" href="#ssh-credentials" title="Permanent link">&para;</a></h2>
 <p>In case you do not want to use your standard credentials inside of a container, you need to ensure that you have a pair of authentication keys inside the container. If there exists no public key <em>$HOME/.ssh/id_rsa.pub</em> (often the case if you use a container), you can generate a new pair by executing:</p>
-<div class="codehilite"><pre><span></span>$ ssh-keygen -b <span class="m">4096</span> -t rsa
+<div class="highlight"><pre><span></span>$ ssh-keygen -b <span class="m">4096</span> -t rsa
 </pre></div>
 
 <p>Append the generated public key <em><span><span class="MathJax_Preview">HOME/.ssh/id_rsa.pub* to file *</span><script type="math/tex">HOME/.ssh/id_rsa.pub* to file *</script></span>HOME/.ssh/authorized_keys</em> on the SGX hosts for which you to be able to log in without a password.</p>

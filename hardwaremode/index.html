@@ -1351,7 +1351,7 @@ Actually, the only change is to <strong>give the container access to the SGX dev
 <h2 id="detailed-description">Detailed Description<a class="headerlink" href="#detailed-description" title="Permanent link">&para;</a></h2>
 <p>We first need to start a container which includes the SCONE crosscompiler and
 give the container access to the Intel SGX driver:</p>
-<div class="codehilite"><pre><span></span>docker run --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>docker run --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <div class="admonition warning">
@@ -1363,7 +1363,7 @@ If your hosts have already a Intel SGX driver installed, you are all set.
 Hardware mode is only supported in Linux, since the Intel SGX driver is only available on Linux.</p>
 </div>
 <p>Now execute the following command inside the container to create the hello world program:</p>
-<div class="codehilite"><pre><span></span><span class="n">cat</span> <span class="o">&gt;</span> <span class="n">helloworld</span><span class="p">.</span><span class="n">c</span> <span class="o">&lt;&lt;</span> <span class="n">EOF</span>
+<div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">&gt;</span> <span class="n">helloworld</span><span class="p">.</span><span class="n">c</span> <span class="o">&lt;&lt;</span> <span class="n">EOF</span>
 <span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
 <span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
@@ -1372,10 +1372,10 @@ Hardware mode is only supported in Linux, since the Intel SGX driver is only ava
 </pre></div>
 
 <p>Compile the program with:
-<div class="codehilite"><pre><span></span>gcc -o helloworld helloworld.c
+<div class="highlight"><pre><span></span>gcc -o helloworld helloworld.c
 </pre></div></p>
 <p>You can run this program:</p>
-<div class="codehilite"><pre><span></span>./helloworld
+<div class="highlight"><pre><span></span>./helloworld
 </pre></div>
 
 <p>This will print <em>Hello World</em>. </p>
@@ -1384,11 +1384,11 @@ Hardware mode is only supported in Linux, since the Intel SGX driver is only ava
 <p class="admonition-title">Use this mode only for development and debugging</p>
 <p>The program <strong>runs inside of a hardware enclave</strong>. However, the enclave is in debug mode, i.e., one can actually introspect the content of the enclave.</p>
 </div>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
+<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
 </pre></div>
 
 <p>This will print something like:</p>
-<div class="codehilite"><pre><span></span>export SCONE_QUEUES=4
+<div class="highlight"><pre><span></span>export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -1414,15 +1414,15 @@ Hello World
 <p>The output shows that SCONE is running in <strong>hardware mode</strong>: <em>export SCONE_MODE=hw</em></p>
 <h2 id="background-info">Background Info<a class="headerlink" href="#background-info" title="Permanent link">&para;</a></h2>
 <p>For ease of use, we create all Docker images such that applications run inside of enclaves if enclaves are available (<a href="SCONE_ENV/#run-mode"><strong>AUTO</strong> mode</a>). If SGX is not available, they run in simulation mode, i.e., outside of an enclave but all SCONE software is running. To disable simulation mode, you can set environment variable <strong>SCONE_MODE=HW</strong>:</p>
-<div class="codehilite"><pre><span></span>docker run --device=/dev/isgx -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>docker run --device=/dev/isgx -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>If you would start your container in hardware mode but forget to give it access to the sgx device, i.e.,</p>
-<div class="codehilite"><pre><span></span>docker run -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>docker run -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>compilation of the <em>helloworld</em> will succeed  but running the <em>helloworld</em> program will fail:</p>
-<div class="codehilite"><pre><span></span>bash-4.4# echo $SCONE_MODE
+<div class="highlight"><pre><span></span>bash-4.4# echo $SCONE_MODE
 HW
 bash-4.4# ls -l /dev/isgx
 ls: /dev/isgx: No such file or directory

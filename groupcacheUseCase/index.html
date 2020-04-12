@@ -1424,23 +1424,23 @@ second, please read how to build <a href="../multistagebuild/">container images 
 <h2 id="building-groupcache-without-shielding">Building <strong>groupcache</strong> - without shielding<a class="headerlink" href="#building-groupcache-without-shielding" title="Permanent link">&para;</a></h2>
 <p>First, start a crosscompiler container. Give it access to the <strong>sgx device</strong> if your host has 
 this device - otherwise, just drop argument <strong>--device=/dev/isgx</strong>:</p>
-<div class="codehilite"><pre><span></span>docker run --device<span class="o">=</span>/dev/isgx -it  sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>docker run --device<span class="o">=</span>/dev/isgx -it  sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>Second, install the <strong>go</strong> command to simplify the building of <strong>groupcache</strong>:</p>
-<div class="codehilite"><pre><span></span>apk update
+<div class="highlight"><pre><span></span>apk update
 apk add go git curl
 </pre></div>
 
 <p>Now you can build the <strong>groupcache</strong> library as follows:</p>
-<div class="codehilite"><pre><span></span>go get -compiler gccgo -u github.com/golang/groupcache
+<div class="highlight"><pre><span></span>go get -compiler gccgo -u github.com/golang/groupcache
 </pre></div>
 
 <p>Note that flag <strong>-compiler gccgo</strong> is required to ensure that the scone-gccgo is used to compile <strong>groupcache</strong>.</p>
 <p><strong>That's it!</strong>  </p>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
 <p>OK, we should show how to use group cache. We show this for a simple application from <a href="https://gist.github.com/fiorix/816117cfc7573319b72d">fiorix</a>:</p>
-<div class="codehilite"><pre><span></span>    cat &gt; groupcache.go <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>    cat &gt; groupcache.go <span class="s">&lt;&lt; EOF</span>
 <span class="s">    // Simple groupcache example: https://github.com/golang/groupcache</span>
 <span class="s">    // Running 3 instances:</span>
 <span class="s">    // go run groupcache.go -addr=:8080 -pool=http://127.0.0.1:8080,http://127.0.0.1:8081,http://127.0.0.1:8082</span>
@@ -1502,16 +1502,16 @@ apk add go git curl
 </pre></div>
 
 <p>Let's compile this with <strong>scone-gccgo</strong>:</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>1G
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>1G
 go build -compiler gccgo -buildmode<span class="o">=</span>exe -gccgoflags -g groupcache.go
 </pre></div>
 
 <p>Run groupcache in the background:</p>
-<div class="codehilite"><pre><span></span>./groupcache -addr<span class="o">=</span>:8080 -pool<span class="o">=</span>http://127.0.0.1:8080 <span class="p">&amp;</span>
+<div class="highlight"><pre><span></span>./groupcache -addr<span class="o">=</span>:8080 -pool<span class="o">=</span>http://127.0.0.1:8080 <span class="p">&amp;</span>
 </pre></div>
 
 <p>And let's query groupcache:</p>
-<div class="codehilite"><pre><span></span>curl localhost:8080/color?name<span class="o">=</span>green
+<div class="highlight"><pre><span></span>curl localhost:8080/color?name<span class="o">=</span>green
 <span class="c1">#00FF00</span>
 curl localhost:8080/color?name<span class="o">=</span>red
 <span class="c1">#FF0000</span>

@@ -1346,17 +1346,17 @@
                 <h1 id="java">Java<a class="headerlink" href="#java" title="Permanent link">&para;</a></h1>
 <p>SCONE supports Java: we maintain an image containing OpenJDK8. Ensure that you have the newest version of
 this image cached:</p>
-<div class="codehilite"><pre><span></span>docker pull sconecuratedimages/apps:8-jdk-alpine
+<div class="highlight"><pre><span></span>docker pull sconecuratedimages/apps:8-jdk-alpine
 </pre></div>
 
 <p>In case the pull fails, ask us for access to evalutate SCONE.</p>
-<p>Now, run the image. On some hosts, JVM needs <code class="codehilite">--privileged</code> access:
-<div class="codehilite"><pre><span></span>docker run --privileged --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/apps:8-jdk-alpine
+<p>Now, run the image. On some hosts, JVM needs <code>--privileged</code> access:
+<div class="highlight"><pre><span></span>docker run --privileged --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/apps:8-jdk-alpine
 </pre></div></p>
 <p>Please drop argument <em>--device=/dev/isgx</em> in case you do not have an SGX driver installed.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p>Let us start with a simple hello world example:</p>
-<div class="codehilite"><pre><span></span>cat &gt; HelloWorld.java <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>cat &gt; HelloWorld.java <span class="s">&lt;&lt; EOF</span>
 <span class="s">public class HelloWorld {</span>
 
 <span class="s">    public static void main(String[] args) {</span>
@@ -1368,26 +1368,26 @@ this image cached:</p>
 </pre></div>
 
 <p>We can compile as follows:</p>
-<div class="codehilite"><pre><span></span>javac HelloWorld.java
+<div class="highlight"><pre><span></span>javac HelloWorld.java
 </pre></div>
 
 <p>and run inside of an enclave as follows:</p>
-<div class="codehilite"><pre><span></span>java HelloWorld
+<div class="highlight"><pre><span></span>java HelloWorld
 </pre></div>
 
-<p>This might produce some warnings (since we disable access to the <code class="codehilite">proc filesystem</code>):</p>
-<div class="codehilite"><pre><span></span>/ # java HelloWorld
+<p>This might produce some warnings (since we disable access to the <code>proc filesystem</code>):</p>
+<div class="highlight"><pre><span></span>/ # java HelloWorld
 Picked up JAVA_TOOL_OPTIONS: -Xmx256m
 OpenJDK 64-Bit Server VM warning: Can&#39;t detect initial thread stack location - find_vma failed
 Hello World
 </pre></div>
 
 <p>We can run Java with some additional log messages to see what accesses are blocked:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span> java HelloWorld
+<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span> java HelloWorld
 </pre></div>
 
 <p>which results in the following output</p>
-<div class="codehilite"><pre><span></span>export SCONE_QUEUES=4
+<div class="highlight"><pre><span></span>export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -1438,11 +1438,11 @@ Hello World
 In case you run out of memory inside the enclave, increase the heap size. In case your program gets <strong>killed</strong> by the OS, you might have selected a too large heap that is not supported by your VM, container or your host.</p>
 <p>Similarily, you can increase the stack size of threads running inside of enclaves by setting environment variable <strong>SCONE_STACK</strong>.</p>
 <p>You can increase the heap to ensure that JVM does not run out of heap memory:</p>
-<div class="codehilite"><pre><span></span><span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>12G java HelloWorld
+<div class="highlight"><pre><span></span><span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>12G java HelloWorld
 </pre></div>
 
 <p>will result in the following output:</p>
-<div class="codehilite"><pre><span></span>Picked up JAVA_TOOL_OPTIONS: -Xmx256m
+<div class="highlight"><pre><span></span>Picked up JAVA_TOOL_OPTIONS: -Xmx256m
 [SCONE|WARN] src/scone-shielding/proc_fs.c:324:_proc_fs_open(): open: /proc/self/mountinfo is not supported
 [SCONE|WARN] src/scone-shielding/proc_fs.c:324:_proc_fs_open(): open: /proc/self/maps is not supported
 OpenJDK 64-Bit Server VM warning: Can&#39;t detect initial thread stack location - find_vma failed

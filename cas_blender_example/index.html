@@ -1344,19 +1344,19 @@
                 
                 
                 <h1 id="posting-a-session">Posting a Session<a class="headerlink" href="#posting-a-session" title="Permanent link">&para;</a></h1>
-<p>We show how to interact with CAS s with the help of <code class="codehilite">curl</code> - this might be helpful during development since it simplifies scripting. Alternatively, we provide a <code class="codehilite">scone</code> command line interface that can be executed inside of an enclave itself.</p>
+<p>We show how to interact with CAS s with the help of <code>curl</code> - this might be helpful during development since it simplifies scripting. Alternatively, we provide a <code>scone</code> command line interface that can be executed inside of an enclave itself.</p>
 <p>We assume that you already started a <a href="../CASIntro/">CAS instance</a> and a <a href="../LASIntro/">LAS instance</a> on your local host. Alternatively, you can use our public CAS instance at <strong>scone.ml</strong>. Hence, we set the address of CAS as follows:</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
 </pre></div>
 
 <p>If you use our public CAS instance, set it as follows:</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone.ml
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone.ml
 </pre></div>
 
 <h2 id="client-certificate">Client Certificate<a class="headerlink" href="#client-certificate" title="Permanent link">&para;</a></h2>
 <p>To interact with CAS, we need to create a client certificate.  When we create a session, it is associated with the client certificate of the creator. Any access to this session requires that the client knows the private key of the client certificate.</p>
 <p>Let's create a client certificate without a password. Note that you would typically add a password!</p>
-<div class="codehilite"><pre><span></span>    mkdir -p conf
+<div class="highlight"><pre><span></span>    mkdir -p conf
     <span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
         openssl req -new -newkey rsa:4096 -days <span class="m">365</span> -nodes -x509 -subj <span class="s2">&quot;/C=EU/ST=CAS/L=CLIENT/O=Internet/CN=scontain.com&quot;</span> -out conf/client.crt -keyout conf/client-key.key
     <span class="k">fi</span>
@@ -1364,7 +1364,7 @@
 
 <h2 id="hello-world-session">Hello World Session<a class="headerlink" href="#hello-world-session" title="Permanent link">&para;</a></h2>
 <p>Let's create a minimal session:</p>
-<div class="codehilite"><pre><span></span>cat &gt; session.yml <span class="s">&lt;&lt;EOF</span>
+<div class="highlight"><pre><span></span>cat &gt; session.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">name: blender</span>
 <span class="s">digest: create</span>
 
@@ -1385,23 +1385,23 @@
 </pre></div>
 
 <p>We can now upload the session as follows:</p>
-<div class="codehilite"><pre><span></span>    curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
+<div class="highlight"><pre><span></span>    curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
 </pre></div>
 
 <p>This results in an output similar like this:</p>
-<p><code class="codehilite">Created Session[id=00ed7ade-bba6-4d43-9135-51d0ca2da9ba, name=blender, status=Pending]</code></p>
+<p><code>Created Session[id=00ed7ade-bba6-4d43-9135-51d0ca2da9ba, name=blender, status=Pending]</code></p>
 <div class="admonition warning">
 <p class="admonition-title">Session already exists</p>
 <p>If the session with name "blender" already exists - which will be the case when you use <strong>scone.ml</strong> -  the following error message is issued:
-<code class="codehilite">Could not create successor session. Invalid previous session digest: ...</code></p>
+<code>Could not create successor session. Invalid previous session digest: ...</code></p>
 </div>
-<p>In case the session with name <code class="codehilite">blender</code> already exists, you must chose a different session name.</p>
+<p>In case the session with name <code>blender</code> already exists, you must chose a different session name.</p>
 <p>We can read the session as follows:</p>
-<div class="codehilite"><pre><span></span>curl -k -s --cert conf/client.crt --key conf/client-key.key https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session/blender
+<div class="highlight"><pre><span></span>curl -k -s --cert conf/client.crt --key conf/client-key.key https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session/blender
 </pre></div>
 
 <p>This will result in an output like this:</p>
-<div class="codehilite"><pre><span></span>---
+<div class="highlight"><pre><span></span>---
 name: blender
 digest: 313c6c3b824f0a560c445c8ef0cf69781345aae753bdbeaedbfff15c5a348099
 board_members: []

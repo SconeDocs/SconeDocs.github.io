@@ -1400,9 +1400,9 @@
                 
                 
                 <h1 id="encrypted-python-programs-and-encrypted-input">Encrypted Python Programs and Encrypted Input<a class="headerlink" href="#encrypted-python-programs-and-encrypted-input" title="Permanent link">&para;</a></h1>
-<p>With the help of a simple <code class="codehilite">wordcount</code> Python program, we show how to <strong>execute encrypted Python code</strong> inside of an SGX enclave.
+<p>With the help of a simple <code>wordcount</code> Python program, we show how to <strong>execute encrypted Python code</strong> inside of an SGX enclave.
 In this example, we also show how to encrypt an input file. The Python engine itself also runs inside the same enclave.</p>
-<p>We put both the Python code as well as the input file of the <code class="codehilite">wordcount</code> in the same encrypted filesystem.
+<p>We put both the Python code as well as the input file of the <code>wordcount</code> in the same encrypted filesystem.
 Typically, we would put the Python code in the encrypted filesystem of the image and the encrypted input
 and output files in one or more <strong>encrypted volumes</strong> mapped into the container.</p>
 <p><center>
@@ -1418,17 +1418,17 @@ and output files in one or more <strong>encrypted volumes</strong> mapped into t
 </div>
 <h2 id="getting-the-code">Getting the Code<a class="headerlink" href="#getting-the-code" title="Permanent link">&para;</a></h2>
 <p>After you gotten access to the repos, you can get the code via:</p>
-<div class="codehilite"><pre><span></span>git clone https://github.com/scontain/EncryptedWordCount.git
+<div class="highlight"><pre><span></span>git clone https://github.com/scontain/EncryptedWordCount.git
 </pre></div>
 
-<p>and then enter directory <code class="codehilite">EncryptedWordCount</code></p>
-<div class="codehilite"><pre><span></span><span class="nb">cd</span> EncryptedWordCount
+<p>and then enter directory <code>EncryptedWordCount</code></p>
+<div class="highlight"><pre><span></span><span class="nb">cd</span> EncryptedWordCount
 </pre></div>
 
 <h2 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h2>
-<p>The Python source code and the input file is stored in directory <code class="codehilite">native-files/</code>. The <code class="codehilite">wordcount.py</code> code is just some very simple
+<p>The Python source code and the input file is stored in directory <code>native-files/</code>. The <code>wordcount.py</code> code is just some very simple
 Python code to count the frequency of words in a given file:</p>
-<div class="codehilite"><pre><span></span><span class="ch">#!/usr/bin/python</span>
+<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="nb">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;r+&quot;</span><span class="p">)</span>
 
@@ -1442,10 +1442,10 @@ Python code to count the frequency of words in a given file:</p>
     <span class="k">print</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span>
 </pre></div>
 
-<h2 id="creating-image-with-encrypted-wordcount">Creating Image with Encrypted <code class="codehilite">wordcount</code><a class="headerlink" href="#creating-image-with-encrypted-wordcount" title="Permanent link">&para;</a></h2>
-<p>The repository includes a script <code class="codehilite">create_image.sh</code> that</p>
+<h2 id="creating-image-with-encrypted-wordcount">Creating Image with Encrypted <code>wordcount</code><a class="headerlink" href="#creating-image-with-encrypted-wordcount" title="Permanent link">&para;</a></h2>
+<p>The repository includes a script <code>create_image.sh</code> that</p>
 <ul>
-<li>encrypts the files in directory <code class="codehilite">native-files/</code>: the files are <strong>integrity</strong>, <strong>confidentiality</strong> and <strong>rollback</strong> protected</li>
+<li>encrypts the files in directory <code>native-files/</code>: the files are <strong>integrity</strong>, <strong>confidentiality</strong> and <strong>rollback</strong> protected</li>
 <li>attests that CAS is a proper CAS running inside an enclave and then stores the TLS certificate of the CAS in the local file system</li>
 <li>generates a docker image containing a Python engine which runs inside of an enclave </li>
 <li>pushes a <strong>security policy</strong> to CAS via TLS (checking the certificate of CAS) that includes
@@ -1454,25 +1454,25 @@ Python code to count the frequency of words in a given file:</p>
 <li>access to the security policy is controlled via a self-generated key pair</li>
 </ul>
 <p>Perform all of the above steps by executing the following shell script:</p>
-<div class="codehilite"><pre><span></span>./create_image.sh
+<div class="highlight"><pre><span></span>./create_image.sh
 </pre></div>
 
-<p>This creates an image <code class="codehilite">encryptedwordcount</code> stored in the local registry and
+<p>This creates an image <code>encryptedwordcount</code> stored in the local registry and
 a session in a SCONE Configuration and Attestation Service (CAS) running on a remote site.</p>
-<p><em>We assume in this demo that the creation of the <code class="codehilite">wordcount</code> image is performed on a trusted host.</em> 
-The execution of the <code class="codehilite">wordcount</code> can be performed on an untrusted host. For simplicity, we execute on the
+<p><em>We assume in this demo that the creation of the <code>wordcount</code> image is performed on a trusted host.</em> 
+The execution of the <code>wordcount</code> can be performed on an untrusted host. For simplicity, we execute on the
 same host.</p>
-<h2 id="running-the-wordcount-image">Running the <code class="codehilite">wordcount</code> image<a class="headerlink" href="#running-the-wordcount-image" title="Permanent link">&para;</a></h2>
-<p>First, read some environment variables set by <code class="codehilite">./create_image.sh</code></p>
-<div class="codehilite"><pre><span></span><span class="nb">source</span> myenv
+<h2 id="running-the-wordcount-image">Running the <code>wordcount</code> image<a class="headerlink" href="#running-the-wordcount-image" title="Permanent link">&para;</a></h2>
+<p>First, read some environment variables set by <code>./create_image.sh</code></p>
+<div class="highlight"><pre><span></span><span class="nb">source</span> myenv
 </pre></div>
 
-<p>and then start the <code class="codehilite">wordcount.py</code> with <code class="codehilite">docker-compose</code>:</p>
-<div class="codehilite"><pre><span></span>docker-compose up
+<p>and then start the <code>wordcount.py</code> with <code>docker-compose</code>:</p>
+<div class="highlight"><pre><span></span>docker-compose up
 </pre></div>
 
 <p>You will see quite some log output ending with</p>
-<div class="codehilite"><pre><span></span>...
+<div class="highlight"><pre><span></span>...
 python_1  | scone 1
 python_1  | region. 3
 python_1  | Hence, 1
@@ -1491,14 +1491,14 @@ encryptedwordcount_python_1 exited with code 0
 <p>Stop the compose file with control-C.</p>
 <h2 id="cleanup">Cleanup<a class="headerlink" href="#cleanup" title="Permanent link">&para;</a></h2>
 <p>Cleanup afterwards by executing:</p>
-<div class="codehilite"><pre><span></span>docker-compose down
+<div class="highlight"><pre><span></span>docker-compose down
 </pre></div>
 
 <p>also remove temporary files if so desired</p>
-<div class="codehilite"><pre><span></span>rm -rf encrypted-files/ fspf-file myenv client-key.pem client.pem myenv native-files/keytag session.yml
+<div class="highlight"><pre><span></span>rm -rf encrypted-files/ fspf-file myenv client-key.pem client.pem myenv native-files/keytag session.yml
 </pre></div>
 
-<p>before starting it with <code class="codehilite">docker-compose up</code> again.</p>
+<p>before starting it with <code>docker-compose up</code> again.</p>
 <h2 id="contacts">Contacts<a class="headerlink" href="#contacts" title="Permanent link">&para;</a></h2>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, July 2019. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 

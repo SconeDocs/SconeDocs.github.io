@@ -1326,14 +1326,14 @@
 <p><strong>Note:</strong> In many applications, we might split the file shielding along the volumes that we map into a container. There is a top-level FSPF that gets its information from the stack file of that container.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p><strong>scone image protect</strong>: we can generate a fspf for an existing image and update the image with the help of a stack file like this:</p>
-<div class="codehilite"><pre><span></span><span class="n">aptsigner</span><span class="o">:</span>
-  <span class="n">image</span><span class="o">:</span> <span class="n">aptsigner</span>
-  <span class="n">target_num_containers</span><span class="o">:</span> <span class="mi">1</span>
+<div class="highlight"><pre><span></span>aptsigner:
+  image: aptsigner
+  target_num_containers: 1
 
-  <span class="n">command</span><span class="o">:</span> <span class="n">aptsign</span> <span class="o">...</span>
-  <span class="n">volumes</span><span class="o">:</span>
-   <span class="o">-</span> <span class="sr">/infinit/myself/etc-mysql:/</span><span class="n">packages</span>
-   <span class="o">-</span> <span class="sr">/infinit/myself/apt-keyring:/</span><span class="n">keyring</span>
+  command: aptsign ...
+  volumes:
+   - /infinit/myself/etc-mysql:/packages
+   - /infinit/myself/apt-keyring:/keyring
 </pre></div>
 
 <p>The stack file gives us the image names and the volumes that might be mapped into the containers.</p>
@@ -1388,7 +1388,7 @@
 <h2 id="encrypt-volume">Encrypt Volume<a class="headerlink" href="#encrypt-volume" title="Permanent link">&para;</a></h2>
 <p>A user can run a container by specifying a stack file. This stack file contains all information for SCONE to figure out the signatures to run the services / images. However, we need to run the stack in the context of the same session in which the volume was encrypted (or, the session was given access to these keys). </p>
 <p>Encrypt volume and store tag in CAS:</p>
-<div class="codehilite"><pre><span></span>scone volume encrypt --as tenant --name vol
+<div class="highlight"><pre><span></span>scone volume encrypt --as tenant --name vol
 </pre></div>
 
 <p>This call will fail if the volume is already encrypted. To simplify encryption, you will be able to create an already encrypted volume (via flag <strong>--encrypt</strong>).</p>
@@ -1396,7 +1396,7 @@
 <p>The key is stored in the current session as <strong>volume/tenant/vol/key</strong> and the tag as <strong>volume/tenant/vol/tag</strong>.</p>
 <h2 id="updating-tag">Updating TAG<a class="headerlink" href="#updating-tag" title="Permanent link">&para;</a></h2>
 <p>In case the volume has been updated and you want to map it into a  container, you need first to update the TAG in CAS. To update the tag, perform the following </p>
-<div class="codehilite"><pre><span></span>scone volume encrypt --as tenant --name vol --update-tag --no-check
+<div class="highlight"><pre><span></span>scone volume encrypt --as tenant --name vol --update-tag --no-check
 </pre></div>
 
 <table>
@@ -1423,13 +1423,13 @@
 </table>
 <p>A container can update the TAG and store the update TAG in a file and encrypt the TAG with a shared key <strong>volume/tenant/vol/tagkey</strong>. </p>
 <h2 id="example-nginx">Example: nginx<a class="headerlink" href="#example-nginx" title="Permanent link">&para;</a></h2>
-<div class="codehilite"><pre><span></span><span class="n">sconedocs</span><span class="o">:</span>
-  <span class="n">image</span><span class="o">:</span> <span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="o">:</span><span class="mi">5000</span><span class="o">/</span><span class="n">sconetainer</span><span class="o">:</span><span class="n">fss</span>
+<div class="highlight"><pre><span></span>sconedocs:
+  image: 127.0.0.1:5000/sconetainer:fss
 
-  <span class="n">command</span><span class="o">:</span> <span class="sr">/bin/nginx -p /</span><span class="n">nginx</span> <span class="o">-</span><span class="n">c</span> <span class="n">nginx</span><span class="o">.</span><span class="na">conf</span>
-  <span class="n">volumes</span><span class="o">:</span>
-   <span class="o">-</span> <span class="sr">/infinit/scone/sconedocs:/</span><span class="n">nginx</span>
-   <span class="o">-</span> <span class="sr">/infinit/scone/sconedocs-etc:/</span><span class="n">nginx</span><span class="o">-</span><span class="n">etc</span>
+  command: /bin/nginx -p /nginx -c nginx.conf
+  volumes:
+   - /infinit/scone/sconedocs:/nginx
+   - /infinit/scone/sconedocs-etc:/nginx-etc
 </pre></div>
                 
                   

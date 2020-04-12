@@ -1449,7 +1449,7 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <p>For statically linked binaries, we make available a (private) docker image <em>sconecuratedimages/crosscompilers</em> which can produce statically linked binaries. In the statically linked binaries, we replace the interface to the operating system (i.e., libc) by a variant that enables programs to run inside Intel SGX enclaves.</p>
 <p><img alt="Static Compilation" src="../img/staticcompilation.jpg" /></p>
 <p>Note that a statically linked binaries might look like a dynamically-linked binary. For example, if you look at a statically-linked program <em>web-srv-go</em>, you will still see dynamic dependencies:</p>
-<div class="codehilite"><pre><span></span>$ ldd web-srv-go 
+<div class="highlight"><pre><span></span>$ ldd web-srv-go 
     linux-vdso.so.1 <span class="o">=</span>&gt;  <span class="o">(</span>0x00007ffe423fd000<span class="o">)</span>
     libpthread.so.0 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libpthread.so.0 <span class="o">(</span>0x00007effa344f000<span class="o">)</span>
     libc.so.6 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libc.so.6 <span class="o">(</span>0x00007effa3085000<span class="o">)</span>
@@ -1470,26 +1470,26 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <p>For an example how to use the crosscompilers, see how to compile a programs written in <a href="../GO/">GO</a>.</p>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
 <p><strong>Note</strong>  on some systems you will need to run <em>docker</em> with root permissions, i.e., in this case you should prefix a </p>
-<div class="codehilite"><pre><span></span>&gt; docker ...
+<div class="highlight"><pre><span></span>&gt; docker ...
 </pre></div>
 
 <p>command with <em>sudo</em>, i.e., you execute </p>
-<div class="codehilite"><pre><span></span>&gt; sudo docker ...
+<div class="highlight"><pre><span></span>&gt; sudo docker ...
 </pre></div>
 
 <p>One can run the above compiler inside of a container while the compiled files reside outside the container. Say, your code is
 in file <em>myapp.c</em> in your current directory (<em>$PWD</em>). You can compile this code as follows:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc myapp.c
+<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc myapp.c
 </pre></div>
 
 <p>This call will generate a binary <em>a.out</em> in your working directory. This binary is dynamically linked against musl:</p>
-<div class="codehilite"><pre><span></span>&gt; ldd a.out 
+<div class="highlight"><pre><span></span>&gt; ldd a.out 
     /lib/ld-musl-x86_64.so.1 <span class="o">(</span>0x7fb0379f9000<span class="o">)</span>
     libc.musl-x86_64.so.1 <span class="o">=</span>&gt; /lib/ld-musl-x86_64.so.1 <span class="o">(</span>0x7fb0379f9000<span class="o">)</span>
 </pre></div>
 
 <p>This binary can run natively only if you have musl installed at the correct position in your development machine (and your development machine runs Linux). Alternatively, you can run the binary in a container:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./a.out
+<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./a.out
 </pre></div>
 
 <p>To run this inside of SGX enclaves with SCONE, you need access to the SCONE runtime systems. For more details, see our <em>hello world</em> in Section <a href="../SCONE_TUTORIAL/">SCONE Tutorial</a>. This is not very convenient and hence, we provide a) a simpler version with the help of <a href="../SCONE_Dockerfile/">Dockerfiles</a>. </p>

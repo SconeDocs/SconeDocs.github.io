@@ -1302,7 +1302,7 @@
 <p>To set up a development environment with CAS, you can perform the following steps.</p>
 <p>We assume that you run the following commands inside of a container with the scone CLI like <strong>sconecuratedimages/sconecli</strong>. Also, we assume that you have access to a Docker swarm managed by some node called <strong>faye</strong>. </p>
 <p>First, check that the swarm is properly installed:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_MANAGER</span><span class="o">=</span>faye
+<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_MANAGER</span><span class="o">=</span>faye
 $ scone swarm ls
 NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STATUS     AVAILABILITY  MANAGER   
 <span class="m">1</span>             <span class="m">1</span>             SCONE         SCONE         edna                 Ready      Active        Reachable 
@@ -1311,12 +1311,12 @@ NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STA
 
 <p>If <strong>scone swarm ls</strong> issues some warnings or there are no SGX-capable machines listed, you might want to run <strong>scone swarm check</strong> to update the labels of the swarm nodes.</p>
 <p>To run LAS on all nodes of a cluster managed by node <strong>faye</strong>, pull the newest LAS image and then execute on all nodes of a SWARM:</p>
-<div class="codehilite"><pre><span></span>$ scone service pull sconecuratedimages/services:las
+<div class="highlight"><pre><span></span>$ scone service pull sconecuratedimages/services:las
 $ scone service create --detach<span class="o">=</span><span class="nb">true</span> --mode global --publish <span class="nv">mode</span><span class="o">=</span>host,target<span class="o">=</span><span class="m">18766</span>,published<span class="o">=</span><span class="m">18766</span> --name<span class="o">=</span>las localhost:5000/services:las
 </pre></div>
 
 <p>Check that the service <em>las</em> is indeed running, check with command <em>ps</em>:
-<div class="codehilite"><pre><span></span>$ scone service ps las
+<div class="highlight"><pre><span></span>$ scone service ps las
 ID                  NAME                            IMAGE                            NODE                DESIRED STATE       CURRENT STATE           ERROR               PORTS
 xvnsruar64qx        las.q26sp44pp12uf81zlyhb5pnxf   localhost:5000/services:las       edna                Running             Running <span class="m">3</span> minutes ago                       *:18766-&gt;18766/tcp
 zfgx4t292ew6        las.cr3bxhy0nqmg77goxaih5sw8d   localhost:5000/services:las       dorothy             Running             Running <span class="m">3</span> minutes ago                       *:18766-&gt;18766/tcp
@@ -1324,12 +1324,12 @@ n441o9qqmnwa        las.os7ihjrel2jb4bplcn81h7f0i   localhost:5000/services:las 
 </pre></div></p>
 <p>Now, we can start the CAS service as follows. We first pull the newest
 CAS image and run it on one node of the swarm.</p>
-<div class="codehilite"><pre><span></span>$ scone service pull sconecuratedimages/services:cas
+<div class="highlight"><pre><span></span>$ scone service pull sconecuratedimages/services:cas
 $ scone service create --name cas --detach<span class="o">=</span><span class="nb">true</span>  --publish <span class="m">8081</span>:8081 --publish <span class="m">18765</span>:18765 localhost:5000/services:cas
 </pre></div>
 
 <p>Let's check that CAS is indeed running:</p>
-<div class="codehilite"><pre><span></span>$ scone service ps cas
+<div class="highlight"><pre><span></span>$ scone service ps cas
 ID                  NAME                IMAGE                            NODE                DESIRED STATE       CURRENT STATE         ERROR               PORTS
 e6b0skuph9ve        cas.1               localhost:5000/services:cas   edna                Running             Running <span class="m">3</span> hours ago                       
 </pre></div>

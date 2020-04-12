@@ -1353,7 +1353,7 @@ site</a>.</p>
 ensure that all nodes get access to the same container image. The scone CLI expects the
 registry to be available at <strong>localhost:5000</strong>. You can start a default registry with the
 help of <strong>scone</strong>:</p>
-<div class="codehilite"><pre><span></span>$ scone service registry --verbose
+<div class="highlight"><pre><span></span>$ scone service registry --verbose
 Registry is already running in swarm beatrix
 </pre></div>
 
@@ -1361,14 +1361,14 @@ Registry is already running in swarm beatrix
 an image from docker hub and then to push this image to the local registry. For example, to pull image
 <em>sconecuratedimages/sconetainer:noshielding</em> and store it as <em>localhost:5000/sconetainer:noshielding</em>,
 just execute:</p>
-<div class="codehilite"><pre><span></span>$ scone service pull sconecuratedimages/sconetainer:noshielding
+<div class="highlight"><pre><span></span>$ scone service pull sconecuratedimages/sconetainer:noshielding
 new tag: localhost:5000/sconetainer:noshielding
 </pre></div>
 
 <h3 id="sgx-support">SGX Support<a class="headerlink" href="#sgx-support" title="Permanent link">&para;</a></h3>
 <p>Services are automatically restarted. In case, there is a persistent failure in some service <em>ha</em>, we would see
 repeated restarts like: </p>
-<div class="codehilite"><pre><span></span>$ scone service ps ha
+<div class="highlight"><pre><span></span>$ scone service ps ha
 ID                  NAME                IMAGE                      NODE                DESIRED STATE       CURRENT STATE           ERROR                       PORTS
 f65id6ow5n6w        ha.1                sconecuratedimages/nginx   beatrix             Ready               Ready <span class="m">1</span> second ago                                  
 jt6wj5e3lso4         <span class="se">\_</span> ha.1            sconecuratedimages/nginx   beatrix             Shutdown            Failed <span class="m">3</span> seconds ago    <span class="s2">&quot;task: non-zero exit (1)&quot;</span>   
@@ -1379,13 +1379,13 @@ p3bw780pu63b         <span class="se">\_</span> ha.1            sconecuratedimag
 
 <p>Reasons for such failures might be that that the containers might not have access to the sgx device. </p>
 <p>There are multiple reasons why the driver might not be accessible inside of a container: Did you indeed install the patched docker version? Did you indeed label the nodes correctly? To automatically diagnoses and in some cases, to perform some automatic corrections, just execute <strong>scone swarm check</strong>:</p>
-<div class="codehilite"><pre><span></span>$ scone swarm check
+<div class="highlight"><pre><span></span>$ scone swarm check
 warning:  <span class="s1">&#39;sgx device is not automatically mapped inside of container on host beatrix (stack=198 434 0)&#39;</span>  <span class="o">(</span>Line numer: <span class="s1">&#39;198&#39;</span><span class="o">)</span>
 warning:  <span class="s1">&#39;--device=/dev/isgx: device mapper does not work inside of container on host beatrix (stack=199 434 0)&#39;</span>  <span class="o">(</span>Line numer: <span class="s1">&#39;199&#39;</span><span class="o">)</span>
 </pre></div>
 
 <p>To get a summary view of a swarm after you performed a check, just executed:</p>
-<div class="codehilite"><pre><span></span>$ scone swarm ls
+<div class="highlight"><pre><span></span>$ scone swarm ls
 NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STATUS     AVAILABILITY  MANAGER   
 <span class="m">2</span>             <span class="m">1</span>             SCONE         SCONE         caroline             Ready      Active        Reachable 
 <span class="m">3</span>             <span class="m">1</span>             SCONE         SCONE         dorothy              Ready      Active                  
@@ -1398,23 +1398,23 @@ NODENO        SGX VERSION   DOCKER-ENGINE SGX-DRIVER    HOST                 STA
 start a service in the swarm via <strong>scone service create</strong>.
 Docker swarm will start the image and it also takes care of failures by restarting failed services.</p>
 <p>For the next steps, make sure that all nodes have access to image <em>sconecuratedimages/sconetainer:noshielding</em> and pull this image via:</p>
-<div class="codehilite"><pre><span></span>$ scone service pull sconecuratedimages/sconetainer:noshielding
+<div class="highlight"><pre><span></span>$ scone service pull sconecuratedimages/sconetainer:noshielding
 new tag: localhost:5000/sconetainer:noshielding
 </pre></div>
 
 <p>We start a nginx service including a version of the scontain.com website. We start two replicas running inside separate enclaves - most likely on two different nodes:</p>
-<div class="codehilite"><pre><span></span>$ scone service create --name sconeweb --detach<span class="o">=</span><span class="nb">true</span>  --publish <span class="m">80</span>:80 --publish <span class="m">443</span>:443 --replicas<span class="o">=</span><span class="m">2</span> localhost:5000/sconetainer:noshielding
+<div class="highlight"><pre><span></span>$ scone service create --name sconeweb --detach<span class="o">=</span><span class="nb">true</span>  --publish <span class="m">80</span>:80 --publish <span class="m">443</span>:443 --replicas<span class="o">=</span><span class="m">2</span> localhost:5000/sconetainer:noshielding
 </pre></div>
 
 <p>In case the service starts up correctly, you will see a status like this:</p>
-<div class="codehilite"><pre><span></span>$ scone service ps sconeweb
+<div class="highlight"><pre><span></span>$ scone service ps sconeweb
 ID                  NAME           IMAGE                              NODE                DESIRED STATE       CURRENT STATE            ERROR                              PORTS
 ba3odjkz6mx2        sconeweb.1     localhost:5000/nginx:noshielding   alice               Running             Running <span class="m">8</span> minutes ago         
 x2xq1c3aede7        sconeweb.2     localhost:5000/nginx:noshielding   beatrix               Running             Running <span class="m">8</span> minutes ago         
 </pre></div>
 
 <p>If, for example, an image is not available on all nodes, you might see the following status:</p>
-<div class="codehilite"><pre><span></span>$ scone service ps sconeweb
+<div class="highlight"><pre><span></span>$ scone service ps sconeweb
 ID                  NAME                IMAGE                                        NODE                DESIRED STATE       CURRENT STATE          ERROR                              PORTS
 o79714pw2fpn        sconeweb.1          sconecuratedimages/sconetainer:noshielding   alice               Running             Running <span class="m">4</span> hours ago                                       
 t0byepte0fzj         <span class="se">\_</span> sconeweb.1      sconecuratedimages/sconetainer:noshielding   beatrix             Shutdown            Rejected <span class="m">4</span> hours ago   <span class="s2">&quot;No such image: sconecuratedim…&quot;</span>   
@@ -1426,33 +1426,33 @@ zxj74inh2zdf        sconeweb.2          sconecuratedimages/sconetainer:noshieldi
 
 <h2 id="stopping-the-service">Stopping the service<a class="headerlink" href="#stopping-the-service" title="Permanent link">&para;</a></h2>
 <p>Stop the service via:</p>
-<div class="codehilite"><pre><span></span>$ scone service rm sconeweb
+<div class="highlight"><pre><span></span>$ scone service rm sconeweb
 </pre></div>
 
 <h2 id="updating-the-image-of-a-service">Updating the image of a service<a class="headerlink" href="#updating-the-image-of-a-service" title="Permanent link">&para;</a></h2>
 <p>Say, there is a new version of the sconetainer image available. We can update this image in our local registry
 as follows:</p>
-<div class="codehilite"><pre><span></span>$ scone pull sconecuratedimages/sconetainer:noshielding
+<div class="highlight"><pre><span></span>$ scone pull sconecuratedimages/sconetainer:noshielding
 </pre></div>
 
 <p>We can now update the service as follows:</p>
-<div class="codehilite"><pre><span></span>$ scone service update --image  localhost:5000/sconetainer sconeweb
+<div class="highlight"><pre><span></span>$ scone service update --image  localhost:5000/sconetainer sconeweb
 </pre></div>
 
 <h2 id="draining-a-node">Draining a node<a class="headerlink" href="#draining-a-node" title="Permanent link">&para;</a></h2>
 <p>To be able to drain all containers from a node, we need to figure out the node's id. We can do this manually by executing the following command on the leader node:</p>
-<div class="codehilite"><pre><span></span>&gt; sudo docker node ls
+<div class="highlight"><pre><span></span>&gt; sudo docker node ls
 ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS
 91a1vvex4dgozfrzy1y136gmg *   alice               Ready               Active              Leader
 jhrayos9ylu02egwvkxpqtbwb     beatrix             Ready               Active              
 </pre></div>
 
 <p>You can now take node <em>alice</em> out of service by executing:</p>
-<div class="codehilite"><pre><span></span>&gt; sudo docker node update --availability drain 91a1vvex4dgozfrzy1y136gmg
+<div class="highlight"><pre><span></span>&gt; sudo docker node update --availability drain 91a1vvex4dgozfrzy1y136gmg
 </pre></div>
 
 <p>To put the node back in service by executing:</p>
-<div class="codehilite"><pre><span></span>&gt; sudo docker node update --availability active 91a1vvex4dgozfrzy1y136gmg
+<div class="highlight"><pre><span></span>&gt; sudo docker node update --availability active 91a1vvex4dgozfrzy1y136gmg
 </pre></div>
 
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, November 2017. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>

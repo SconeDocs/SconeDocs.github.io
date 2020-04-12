@@ -1292,20 +1292,20 @@
                 <h1 id="example-end-to-end-encryption">Example: End-to-End Encryption<a class="headerlink" href="#example-end-to-end-encryption" title="Permanent link">&para;</a></h1>
 <p>We show how to encrypt an application end-to-end, i.e., all the data in the file system is encrypted, all data in main memory is encrypted and all data on the wire is encrypted.</p>
 <p>In what follows, we only interact with one swarm. Hence, we set environment variable <strong>SCONE_MANAGER</strong> to point to the manager node of the swarm. Say, in our case the manage is called <strong>faye</strong>:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_MANAGER</span><span class="o">=</span>faye
+<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_MANAGER</span><span class="o">=</span>faye
 </pre></div>
 
 <p>We have prepared an nginx image that contains this website as encrypted files and nginx is running inside of an enclave reading the encrypted files
 from the file system and decrypting these files inside the enclave.</p>
 <p>Let's assume that we have the newest image in our local swarm registry:</p>
-<div class="codehilite"><pre><span></span>$ scone service pull sconecuratedimages/sconetainer:fss
+<div class="highlight"><pre><span></span>$ scone service pull sconecuratedimages/sconetainer:fss
 ...
 fss: digest: sha256:2e76b4a0b090cc75c2e56594e20c7ec36bc1abd13e36e2f00d36e2f67b13c1d5 size: <span class="m">1783</span>
 new tag: localhost:5000/sconetainer:fss
 </pre></div>
 
 <p>We will start this service as a stack. Hence, we define a simple stack/compose file:</p>
-<div class="codehilite"><pre><span></span>$ cat &gt; compose.yml <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>$ cat &gt; compose.yml <span class="s">&lt;&lt; EOF</span>
 <span class="s">version: &quot;3.1.scone&quot;</span>
 <span class="s">services:</span>
 <span class="s">    nginx:</span>
@@ -1335,7 +1335,7 @@ us to to pass some secrets like the <strong>fspf_key</strong> to an enclave and 
 the confidentiality as well as the integrity of this secret.</p>
 <p>Clients can identify the CAS via its certificate. In this example,
 we explicitly specify the certificate of the CAS:</p>
-<div class="codehilite"><pre><span></span>$ cat &gt; ca.pem <span class="s">&lt;&lt; EOF</span>
+<div class="highlight"><pre><span></span>$ cat &gt; ca.pem <span class="s">&lt;&lt; EOF</span>
 <span class="s">-----BEGIN CERTIFICATE-----</span>
 <span class="s">MIICFzCCAb2gAwIBAgIJAOawWIYrvd1oMAoGCCqGSM49BAMCMGgxCzAJBgNVBAYT</span>
 <span class="s">AkRFMQ8wDQYDVQQIDAZTYXhvbnkxEDAOBgNVBAcMB0RyZXNkZW4xFDASBgNVBAoM</span>
@@ -1354,19 +1354,19 @@ we explicitly specify the certificate of the CAS:</p>
 </pre></div>
 
 <p>and now log into the CAS:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">export</span> <span class="nv">IP</span><span class="o">=</span>x.y.z.u
+<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">IP</span><span class="o">=</span>x.y.z.u
 $ mkdir -p ~/.config
 $ rm -f ~/.config/scone_cmd.conf
 $ scone cas login -c ca.pem christof cas --host <span class="nv">$IP</span>:8081:18765
 </pre></div>
 
 <p>We split our stack file into two parts: public part sent to the docker engine and a secret part that is directly sent to the CAS:</p>
-<div class="codehilite"><pre><span></span>$ scone cas split compose.yml  --stack <span class="m">283299</span>
+<div class="highlight"><pre><span></span>$ scone cas split compose.yml  --stack <span class="m">283299</span>
 </pre></div>
 
 <p>For now, the stack ID is a randomly chose unique ID. If you want to modify this stack later, you need to use the same stack ID.  </p>
 <p>Show public part that is sent to <strong>docker stack</strong> (which is the original stack file name appended with "docker.yml"):</p>
-<div class="codehilite"><pre><span></span>$ cat compose.yml.docker.yml
+<div class="highlight"><pre><span></span>$ cat compose.yml.docker.yml
 ---
 services: 
   nginx: 
@@ -1384,33 +1384,33 @@ version: <span class="s2">&quot;3.1&quot;</span>
 
 <p>Note: in the above example we assume that the host on which nginx is running is available at address  <strong>172.17.0.1</strong>. Hence, the <strong>LAS</strong> is available at  address <strong>"172.17.0.1:18766</strong>. In case you run a non-standard configuration, you might need to change  <strong>SCONE_LAS_ADDR</strong> to the ip address and port where the LAS  is available. The LAS must run on the same host for the attestation to work.</p>
 <p>We can now deploy the service with the help of docker/scone stack:</p>
-<div class="codehilite"><pre><span></span>$ scone stack deploy --compose-file compose.yml  nginx
+<div class="highlight"><pre><span></span>$ scone stack deploy --compose-file compose.yml  nginx
 Creating network nginx_default
 Creating service nginx_nginx
 </pre></div>
 
 <p>Show running stack:</p>
-<div class="codehilite"><pre><span></span>$ scone stack ls
+<div class="highlight"><pre><span></span>$ scone stack ls
 NAME        SERVICES
 nginx       <span class="m">1</span>
 </pre></div>
 
 <p>We can get some more information about this stack:</p>
-<div class="codehilite"><pre><span></span>$ scone stack ps nginx
+<div class="highlight"><pre><span></span>$ scone stack ps nginx
 ID                  NAME                IMAGE                            NODE                DESIRED STATE       CURRENT STATE             ERROR                       PORTS
 h08r5hmeu9bt        nginx_nginx.1       <span class="m">127</span>.0.0.1:5000/sconetainer:fss   dorothy             Running             Starting <span class="m">19</span> seconds ago       
 </pre></div>
 
 <h2 id="file-encryption">File Encryption<a class="headerlink" href="#file-encryption" title="Permanent link">&para;</a></h2>
 <p>Let's check that the files inside of nginx container are indeed encrypted. To do so, we ssh to node  <strong>dorothy</strong> and execute the following commands:</p>
-<div class="codehilite"><pre><span></span>&gt; sudo docker ps
+<div class="highlight"><pre><span></span>&gt; sudo docker ps
 CONTAINER ID        IMAGE                                    COMMAND                  CREATED             STATUS              PORTS                      NAMES
 b01ab65e1579        <span class="m">127</span>.0.0.1:5000/sconetainer:fss           <span class="s2">&quot;nginx&quot;</span>                  <span class="m">6</span> minutes ago       Up <span class="m">6</span> minutes        <span class="m">8080</span>/tcp, <span class="m">8082</span>/tcp         nginx_nginx.1.0wh80346mpmm5f3l1rc8dipix
 ...
 </pre></div>
 
 <p>Let's look inside the container:</p>
-<div class="codehilite"><pre><span></span>&gt; sudo docker <span class="nb">exec</span> -it b01ab65e1579 sh
+<div class="highlight"><pre><span></span>&gt; sudo docker <span class="nb">exec</span> -it b01ab65e1579 sh
 $ ls
 bin             media           proc            srv
 dev             mnt             root            sys
@@ -1420,7 +1420,7 @@ lib             opt             scone-test.key  var
 </pre></div>
 
 <p>The nginx configuration file as well as the html files should be encrypted. Let's verify this:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">cd</span> nginx
+<div class="highlight"><pre><span></span>$ <span class="nb">cd</span> nginx
 $ ls
 certificate.pem  key.pem          nginx.conf       www_root
 fspf.pb          mime.types       nginx.pid
@@ -1429,7 +1429,7 @@ $ head -c <span class="m">80</span> nginx.conf
 </pre></div>
 
 <p>Ok, the nginx configuration file seems to be encrypted. Now, look at the html files too:</p>
-<div class="codehilite"><pre><span></span>$ <span class="nb">cd</span> www_root
+<div class="highlight"><pre><span></span>$ <span class="nb">cd</span> www_root
 $ ls 
 4K                               SCONE_TUTORIAL
 GO                               aboutScone

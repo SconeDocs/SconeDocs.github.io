@@ -1467,25 +1467,25 @@
 <p>We show how to generate a first secure container image with the help of a Dockerfile.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <h3 id="ensure-that-the-sgx-driver-is-installed">Ensure that the sgx driver is installed<a class="headerlink" href="#ensure-that-the-sgx-driver-is-installed" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span>&gt; ls /dev/isgx 
+<div class="highlight"><pre><span></span>&gt; ls /dev/isgx 
 /dev/isgx
 </pre></div>
 
 <p>If the driver is not installed, read Section <a href="../sgxinstall/">Installation of SGX driver</a> to learn how to install the SGX driver.</p>
 <h3 id="install-the-tutorial">Install the tutorial<a class="headerlink" href="#install-the-tutorial" title="Permanent link">&para;</a></h3>
 <p>Clone the tutorial: </p>
-<div class="codehilite"><pre><span></span>&gt; git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
+<div class="highlight"><pre><span></span>&gt; git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
 </pre></div>
 
 <h3 id="access-to-scone-curated-images">Access to SCONE Curated Images<a class="headerlink" href="#access-to-scone-curated-images" title="Permanent link">&para;</a></h3>
 <p>Right now, access to the curated images is still restricted. Please, send email to <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#101;&#111;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#101;&#111;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a> to request access.</p>
 <h2 id="generate-helloagain-image-dynamically-linked">Generate HelloAgain image (dynamically-linked)<a class="headerlink" href="#generate-helloagain-image-dynamically-linked" title="Permanent link">&para;</a></h2>
 <p>We first generate a <em>hello again</em> container image with a dynamically-linked secure program:</p>
-<div class="codehilite"><pre><span></span>&gt; <span class="nb">cd</span> SCONE_TUTORIAL/DLDockerFile
+<div class="highlight"><pre><span></span>&gt; <span class="nb">cd</span> SCONE_TUTORIAL/DLDockerFile
 </pre></div>
 
 <p>The Dockerfile to generate the new image looks like this:</p>
-<div class="codehilite"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/crosscompilers:runtime</span>
+<div class="highlight"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/crosscompilers:runtime</span>
 
 <span class="k">RUN</span> mkdir /hello
 
@@ -1497,15 +1497,15 @@
 
 <p>This assumes that we already generated the dynamically linked binary with
 an appropriately configured gcc. We generate this with the provided gcc image:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_again.c -o dyn_hello_again
+<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_again.c -o dyn_hello_again
 </pre></div>
 
 <p>We provide a little script that generates the image and pushes it to Docker hub (which should fail since you should not have the credentials):</p>
-<div class="codehilite"><pre><span></span>&gt; ./generate.sh
+<div class="highlight"><pre><span></span>&gt; ./generate.sh
 </pre></div>
 
 <p>You can run this program inside of enclave (with the output of debug messages):</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -it sconecuratedimages/helloworld:dynamic
+<div class="highlight"><pre><span></span>&gt; docker run -it sconecuratedimages/helloworld:dynamic
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
@@ -1523,7 +1523,7 @@ Hello Again
 
 <p>This image is nicely small (only 11MB) since it only contains the runtime environment and no development environment.</p>
 <p>Running on a docker engine without access to SGX, we get an error message:</p>
-<div class="codehilite"><pre><span></span>&gt; docker run -it sconecuratedimages/helloworld:dynamic
+<div class="highlight"><pre><span></span>&gt; docker run -it sconecuratedimages/helloworld:dynamic
 <span class="o">[</span>Error<span class="o">]</span> Could not create enclave: Error opening SGX device 
 </pre></div>
 
@@ -1531,11 +1531,11 @@ Hello Again
 <p><a href="https://asciinema.org/a/hg9jwPbAZSFjAIkwagf95z9Sj"><img alt="asciicast" src="https://asciinema.org/a/hg9jwPbAZSFjAIkwagf95z9Sj.png" /></a></p>
 <h2 id="generate-helloagain-image-statically-linked">Generate HelloAgain image (statically-linked)<a class="headerlink" href="#generate-helloagain-image-statically-linked" title="Permanent link">&para;</a></h2>
 <p>We generate a <em>hello again</em> container image. </p>
-<div class="codehilite"><pre><span></span>&gt; <span class="nb">cd</span> SCONE_TUTORIAL/DockerFile
+<div class="highlight"><pre><span></span>&gt; <span class="nb">cd</span> SCONE_TUTORIAL/DockerFile
 </pre></div>
 
 <p>The Dockerfile is quite straight forward:</p>
-<div class="codehilite"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/crosscompilers</span>
+<div class="highlight"><pre><span></span><span class="k">FROM</span><span class="s"> sconecuratedimages/crosscompilers</span>
 
 <span class="k">MAINTAINER</span><span class="s"> Christof Fetzer &quot;christof.fetzer@gmail.com&quot;</span>
 
@@ -1549,29 +1549,29 @@ Hello Again
 </pre></div>
 
 <p>You can either execute all step manually (see below) or you can just execute</p>
-<div class="codehilite"><pre><span></span>&gt; docker login
+<div class="highlight"><pre><span></span>&gt; docker login
 ./generate.sh
 </pre></div>
 
 <p>and watch the outputs. The push of the image should fail since you should not have the access rights to push the image to Docker hub.</p>
 <p>We define the image name and tag that we want to generate:</p>
-<div class="codehilite"><pre><span></span><span class="nb">export</span> <span class="nv">TAG</span><span class="o">=</span><span class="s2">&quot;again&quot;</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">TAG</span><span class="o">=</span><span class="s2">&quot;again&quot;</span>
 <span class="nb">export</span> <span class="nv">FULLTAG</span><span class="o">=</span><span class="s2">&quot;sconecuratedimages/helloworld:</span><span class="nv">$TAG</span><span class="s2">&quot;</span>
 </pre></div>
 
 <p>We build the image:</p>
-<div class="codehilite"><pre><span></span>&gt; docker build --pull -t <span class="nv">$FULLTAG</span> .
+<div class="highlight"><pre><span></span>&gt; docker build --pull -t <span class="nv">$FULLTAG</span> .
 </pre></div>
 
-<div class="codehilite"><pre><span></span>&gt; docker run -it <span class="nv">$FULLTAG</span>
+<div class="highlight"><pre><span></span>&gt; docker run -it <span class="nv">$FULLTAG</span>
 </pre></div>
 
 <p>We push it to docker hub (will fail unless you have the right to push <em>$FULLTAG</em>):</p>
-<div class="codehilite"><pre><span></span>&gt; docker push <span class="nv">$FULLTAG</span>
+<div class="highlight"><pre><span></span>&gt; docker push <span class="nv">$FULLTAG</span>
 </pre></div>
 
 <p>Please change the image name to a repository on docker hub to which you can write:</p>
-<div class="codehilite"><pre><span></span>&gt; <span class="nb">export</span> <span class="nv">TAG</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span>
+<div class="highlight"><pre><span></span>&gt; <span class="nb">export</span> <span class="nv">TAG</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span>
 &gt; <span class="nb">export</span> <span class="nv">IMAGE_NAME</span><span class="o">=</span><span class="s2">&quot;myrepository/helloAgain&quot;</span>
 </pre></div>
 
