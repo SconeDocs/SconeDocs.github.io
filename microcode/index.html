@@ -87,7 +87,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#l1tf-aka-foreshadow-mitigation" tabindex="1" class="md-skip">
+      <a href="../#microcode-update-side-channel-mitigation" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -1379,9 +1379,10 @@
               
                 
                 
-                <h1 id="l1tf-aka-foreshadow-mitigation">L1TF (a.k.a. Foreshadow) Mitigation<a class="headerlink" href="#l1tf-aka-foreshadow-mitigation" title="Permanent link">&para;</a></h1>
-<p>Intel SGX is susceptible to a side channel attack in which an attacker can read the
-secrets of an enclave <strong>E</strong> by starting an enclave <strong>A</strong> on the same core as <strong>E</strong>. This attack only works for secrets of <strong>E</strong> stored in a L1 cache  and if <strong>A</strong> and <strong>E</strong> run 
+                <h1 id="microcode-update-side-channel-mitigation">Microcode update / Side-channel Mitigation<a class="headerlink" href="#microcode-update-side-channel-mitigation" title="Permanent link">&para;</a></h1>
+<p>Intel SGX is susceptible to certain side channel attacks in which an attacker can read the
+secrets of an enclave <strong>E</strong> by starting an enclave <strong>A</strong> on the same core as <strong>E</strong>. 
+This attack only works for secrets of <strong>E</strong> stored in a L1 cache  and if <strong>A</strong> and <strong>E</strong> run 
 on the same core. This attack is referred to as <strong>enclave-to-enclave (E2E)</strong> attack.
 E2E <strong>does not work</strong> if <strong>E</strong> and <strong>A</strong> run on different cores since each core has its own dedicated L1 cache.</p>
 <p>The current Intel microcode ensures that the L1 cache of a core is flushed when a
@@ -1416,32 +1417,20 @@ sudo apt-get install -y intel-microcode
 <span class="k">fi</span>
 </pre></div>
 
-<p>You can check that a new microcode was updated by executing:</p>
-<div class="highlight"><pre><span></span>dmesg <span class="p">|</span> grep microcode
+<p>You can also execute the a script that we provide:</p>
+<div class="highlight"><pre><span></span>curl -fssl https://raw.githubusercontent.com/SconeDocs/SH/master/install_microcode.sh <span class="p">|</span> bash
 </pre></div>
 
-<p>This will result in an output like</p>
-<div class="highlight"><pre><span></span>[  108.121907] microcode: CPU0 sig=0x506e3, pf=0x2, revision=0xc2
-[  108.129335] microcode: CPU0 updated to revision 0xc6, date = 2018-04-17
-[  108.129406] microcode: CPU1 sig=0x506e3, pf=0x2, revision=0xc2
-[  108.129484] microcode: CPU1 updated to revision 0xc6, date = 2018-04-17
-[  108.129539] microcode: CPU2 sig=0x506e3, pf=0x2, revision=0xc2
-[  108.129611] microcode: CPU2 updated to revision 0xc6, date = 2018-04-17
-[  108.129696] microcode: CPU3 sig=0x506e3, pf=0x2, revision=0xc2
-[  108.129768] microcode: CPU3 updated to revision 0xc6, date = 2018-04-17
-[  108.129816] microcode: CPU4 sig=0x506e3, pf=0x2, revision=0xc2
-[  108.129905] microcode: CPU4 updated to revision 0xc6, date = 2018-04-17
-[  108.129953] microcode: CPU5 sig=0x506e3, pf=0x2, revision=0xc2
-[  108.130025] microcode: CPU5 updated to revision 0xc6, date = 2018-04-17
-[  108.130070] microcode: CPU6 sig=0x506e3, pf=0x2, revision=0xc2
-[  108.130142] microcode: CPU6 updated to revision 0xc6, date = 2018-04-17
-[  108.130224] microcode: CPU7 sig=0x506e3, pf=0x2, revision=0xc2
-[  108.130296] microcode: CPU7 updated to revision 0xc6, date = 2018-04-17
-[  108.130298] microcode: Enabling Indirect Branch Prediction Barrier
-[  108.130300] microcode: Enabling Indirect Branch Restricted Speculation
+<p>In case your microcode is already up-to-date, it will print a message like this:</p>
+<div class="highlight"><pre><span></span>Already newest version of microcode installed:  [ 0.000000] microcode: microcode updated early to revision 0xca, date = 2019-10-03
 </pre></div>
 
-<p>When you are sure that this works out, you can load this microcode during reboot as follows:</p>
+<p>In case your microcode is not yet up-to-date, it will print a message like this:</p>
+<div class="highlight"><pre><span></span>Updated microcode from version:
+                    to version:  [ 0.000000] microcode: microcode updated early to revision 0xca, date = 2019-10-03
+</pre></div>
+
+<p>When you do not have the newest microcode installed, you can load this microcode during reboot as follows:</p>
 <div class="highlight"><pre><span></span>cat &gt; /tmp/load-intel-ucode.sh <span class="s">&lt;&lt; EOF</span>
 <span class="s">#!/bin/bash</span>
 <span class="s">echo &quot;1&quot; | sudo tee /sys/devices/system/cpu/microcode/reload</span>
