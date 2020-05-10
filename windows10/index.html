@@ -13,7 +13,7 @@
         <meta name="description" content="Scone Documentation - Secure Containers">
       
       
-        <link rel="canonical" href="https://sconedocs.github.io/SCONE_EE2EE/">
+        <link rel="canonical" href="https://sconedocs.github.io/windows10/">
       
       
         <meta name="author" content="Christof Fetzer">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Example: End-to-End Encryption - SCONE Confidential Computing</title>
+        <title>Windows 10 - SCONE Confidential Computing</title>
       
     
     
@@ -87,7 +87,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#example-end-to-end-encryption" tabindex="1" class="md-skip">
+      <a href="../#windows-10" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -113,7 +113,7 @@
                 SCONE Confidential Computing
               </span>
               <span class="md-header-nav__topic">
-                Example: End-to-End Encryption
+                Windows 10
               </span>
             
           
@@ -697,10 +697,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" checked>
     
     <label class="md-nav__link" for="nav-6">
       Installation
@@ -788,11 +790,20 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../windows10/" title="Windows 10" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+    <a href="./" title="Windows 10" class="md-nav__link md-nav__link--active">
       Windows 10
     </a>
+    
   </li>
 
         
@@ -1346,22 +1357,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#file-encryption" title="File Encryption" class="md-nav__link">
-    File Encryption
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1373,156 +1368,11 @@
               
                 
                 
-                <h1 id="example-end-to-end-encryption">Example: End-to-End Encryption<a class="headerlink" href="#example-end-to-end-encryption" title="Permanent link">&para;</a></h1>
-<p>We show how to encrypt an application end-to-end, i.e., all the data in the file system is encrypted, all data in main memory is encrypted and all data on the wire is encrypted.</p>
-<p>In what follows, we only interact with one swarm. Hence, we set environment variable <strong>SCONE_MANAGER</strong> to point to the manager node of the swarm. Say, in our case the manage is called <strong>faye</strong>:</p>
-<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCONE_MANAGER</span><span class="o">=</span>faye
-</pre></div>
-
-<p>We have prepared an nginx image that contains this website as encrypted files and nginx is running inside of an enclave reading the encrypted files
-from the file system and decrypting these files inside the enclave.</p>
-<p>Let's assume that we have the newest image in our local swarm registry:</p>
-<div class="highlight"><pre><span></span>$ scone service pull sconecuratedimages/sconetainer:fss
-...
-fss: digest: sha256:2e76b4a0b090cc75c2e56594e20c7ec36bc1abd13e36e2f00d36e2f67b13c1d5 size: <span class="m">1783</span>
-new tag: localhost:5000/sconetainer:fss
-</pre></div>
-
-<p>We will start this service as a stack. Hence, we define a simple stack/compose file:</p>
-<div class="highlight"><pre><span></span>$ cat &gt; compose.yml <span class="s">&lt;&lt; EOF</span>
-<span class="s">version: &quot;3.1.scone&quot;</span>
-<span class="s">services:</span>
-<span class="s">    nginx:</span>
-<span class="s">        image: 127.0.0.1:5000/sconetainer:fss</span>
-<span class="s">        command: nginx -p /nginx -c nginx.conf</span>
-<span class="s">        mrenclave: 1516e3d41590cf3842282c6f037535af64336138a6b5eff7e8754e97b4c64ecb</span>
-<span class="s">        fspf_path: /nginx/fspf.pb</span>
-<span class="s">        fspf_key: 970f4925bb7b221461f3d1a3f17450aa42844539de24f5acc1b45b8c140f9467</span>
-<span class="s">        fspf_tag: 5930bffbd9ea2f1317e6872b032334db</span>
-<span class="s">        working_dir: /</span>
-<span class="s">        ports:</span>
-<span class="s">          - 8190:8080</span>
-<span class="s">          - 8192:8082</span>
-<span class="s">EOF</span>
-</pre></div>
-
-<p>We explain in section <a href="../MrEnclave/">MrEnclave</a> how to determine mrenclave.</p>
-<p>For now, this file contains some metadata related to the encrypted files:</p>
-<ul>
-<li><strong>fspf_path</strong> the path of the <em>file system protection file</em></li>
-<li><strong>fspf_key</strong> the key used to encrypt the <em>file system protection file</em></li>
-<li><strong>fspf_tag</strong> the tag (i.e., MAC) of the <em>file system protection file</em></li>
-</ul>
-<p>We provide a low level for encrypting files with the help of <a href="../SCONE_Fileshield/">scone fspf</a>. (We will soon release a higher level support that will simplify the encryption of files). </p>
-<p>In this swarm, we have a CAS (Configuration and Attestation Service running): the CAS helps
-us to to pass some secrets like the <strong>fspf_key</strong> to an enclave and protecting both
-the confidentiality as well as the integrity of this secret.</p>
-<p>Clients can identify the CAS via its certificate. In this example,
-we explicitly specify the certificate of the CAS:</p>
-<div class="highlight"><pre><span></span>$ cat &gt; ca.pem <span class="s">&lt;&lt; EOF</span>
-<span class="s">-----BEGIN CERTIFICATE-----</span>
-<span class="s">MIICFzCCAb2gAwIBAgIJAOawWIYrvd1oMAoGCCqGSM49BAMCMGgxCzAJBgNVBAYT</span>
-<span class="s">AkRFMQ8wDQYDVQQIDAZTYXhvbnkxEDAOBgNVBAcMB0RyZXNkZW4xFDASBgNVBAoM</span>
-<span class="s">C3Njb250YWluIFVHMSAwHgYJKoZIhvcNAQkBFhFpbmZvQHNjb250YWluLmNvbTAe</span>
-<span class="s">Fw0xODA0MDYxMDIyMzdaFw0yODA0MDMxMDIyMzdaMGgxCzAJBgNVBAYTAkRFMQ8w</span>
-<span class="s">DQYDVQQIDAZTYXhvbnkxEDAOBgNVBAcMB0RyZXNkZW4xFDASBgNVBAoMC3Njb250</span>
-<span class="s">YWluIFVHMSAwHgYJKoZIhvcNAQkBFhFpbmZvQHNjb250YWluLmNvbTBZMBMGByqG</span>
-<span class="s">SM49AgEGCCqGSM49AwEHA0IABD9u85bK+nFdbnQVgZuR/rA9BmNmow3v4v5srS3M</span>
-<span class="s">YGpVmRqpNbb/QYQ9iJN854N42L9T6mGyI402tKPYyfwz3k+jUDBOMB0GA1UdDgQW</span>
-<span class="s">BBRhGJGv9MWohiZD3AySHz/otlxbyDAfBgNVHSMEGDAWgBRhGJGv9MWohiZD3AyS</span>
-<span class="s">Hz/otlxbyDAMBgNVHRMEBTADAQH/MAoGCCqGSM49BAMCA0gAMEUCIQCWkKHgeDgn</span>
-<span class="s">4PrHfmfjYYerxyFyGmWOKjO5UcijrPqI9wIgUyhZ2OwuyzsjTEC6ofR4fzlnrUQJ</span>
-<span class="s">XlkFOKY2/HqOPVE=</span>
-<span class="s">-----END CERTIFICATE-----</span>
-<span class="s">EOF</span>
-</pre></div>
-
-<p>and now log into the CAS:</p>
-<div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">IP</span><span class="o">=</span>x.y.z.u
-$ mkdir -p ~/.config
-$ rm -f ~/.config/scone_cmd.conf
-$ scone cas login -c ca.pem christof cas --host <span class="nv">$IP</span>:8081:18765
-</pre></div>
-
-<p>We split our stack file into two parts: public part sent to the docker engine and a secret part that is directly sent to the CAS:</p>
-<div class="highlight"><pre><span></span>$ scone cas split compose.yml  --stack <span class="m">283299</span>
-</pre></div>
-
-<p>For now, the stack ID is a randomly chose unique ID. If you want to modify this stack later, you need to use the same stack ID.  </p>
-<p>Show public part that is sent to <strong>docker stack</strong> (which is the original stack file name appended with "docker.yml"):</p>
-<div class="highlight"><pre><span></span>$ cat compose.yml.docker.yml
----
-services: 
-  nginx: 
-    command: nginx
-    environment: 
-      SCONE_CAS_ADDR: <span class="s2">&quot;x.y.z.u:18765&quot;</span>
-      SCONE_CONFIG_ID: christof/283299/nginx
-      SCONE_LAS_ADDR: <span class="s2">&quot;172.17.0.1:18766&quot;</span>
-    image: <span class="s2">&quot;127.0.0.1:5000/sconetainer:fss&quot;</span>
-    ports: 
-      - <span class="s2">&quot;8190:8080&quot;</span>
-      - <span class="s2">&quot;8192:8082&quot;</span>
-version: <span class="s2">&quot;3.1&quot;</span>
-</pre></div>
-
-<p>Note: in the above example we assume that the host on which nginx is running is available at address  <strong>172.17.0.1</strong>. Hence, the <strong>LAS</strong> is available at  address <strong>"172.17.0.1:18766</strong>. In case you run a non-standard configuration, you might need to change  <strong>SCONE_LAS_ADDR</strong> to the ip address and port where the LAS  is available. The LAS must run on the same host for the attestation to work.</p>
-<p>We can now deploy the service with the help of docker/scone stack:</p>
-<div class="highlight"><pre><span></span>$ scone stack deploy --compose-file compose.yml  nginx
-Creating network nginx_default
-Creating service nginx_nginx
-</pre></div>
-
-<p>Show running stack:</p>
-<div class="highlight"><pre><span></span>$ scone stack ls
-NAME        SERVICES
-nginx       <span class="m">1</span>
-</pre></div>
-
-<p>We can get some more information about this stack:</p>
-<div class="highlight"><pre><span></span>$ scone stack ps nginx
-ID                  NAME                IMAGE                            NODE                DESIRED STATE       CURRENT STATE             ERROR                       PORTS
-h08r5hmeu9bt        nginx_nginx.1       <span class="m">127</span>.0.0.1:5000/sconetainer:fss   dorothy             Running             Starting <span class="m">19</span> seconds ago       
-</pre></div>
-
-<h2 id="file-encryption">File Encryption<a class="headerlink" href="#file-encryption" title="Permanent link">&para;</a></h2>
-<p>Let's check that the files inside of nginx container are indeed encrypted. To do so, we ssh to node  <strong>dorothy</strong> and execute the following commands:</p>
-<div class="highlight"><pre><span></span>&gt; sudo docker ps
-CONTAINER ID        IMAGE                                    COMMAND                  CREATED             STATUS              PORTS                      NAMES
-b01ab65e1579        <span class="m">127</span>.0.0.1:5000/sconetainer:fss           <span class="s2">&quot;nginx&quot;</span>                  <span class="m">6</span> minutes ago       Up <span class="m">6</span> minutes        <span class="m">8080</span>/tcp, <span class="m">8082</span>/tcp         nginx_nginx.1.0wh80346mpmm5f3l1rc8dipix
-...
-</pre></div>
-
-<p>Let's look inside the container:</p>
-<div class="highlight"><pre><span></span>&gt; sudo docker <span class="nb">exec</span> -it b01ab65e1579 sh
-$ ls
-bin             media           proc            srv
-dev             mnt             root            sys
-etc             nginx           run             tmp
-home            nginx-etc       sbin            usr
-lib             opt             scone-test.key  var
-</pre></div>
-
-<p>The nginx configuration file as well as the html files should be encrypted. Let's verify this:</p>
-<div class="highlight"><pre><span></span>$ <span class="nb">cd</span> nginx
-$ ls
-certificate.pem  key.pem          nginx.conf       www_root
-fspf.pb          mime.types       nginx.pid
-$ head -c <span class="m">80</span> nginx.conf
-<span class="o">]</span>P?ɟ<span class="s2">&quot;4???zS????Ƶ?kjƘ?Ec?!S^!??????8j-?e;?t&#39;?2?L????????y??˲?ߋ   </span>
-</pre></div>
-
-<p>Ok, the nginx configuration file seems to be encrypted. Now, look at the html files too:</p>
-<div class="highlight"><pre><span></span>$ <span class="nb">cd</span> www_root
-$ ls 
-4K                               SCONE_TUTORIAL
-GO                               aboutScone
-Python                           appsecurity
-...
-$ head -c <span class="m">80</span> index.html 
-????V?ͪ?rhk?<span class="s2">&quot;k????</span><span class="nv">$?</span><span class="s2">    .???k?Ь?y&lt;??٠n?+????P2?G;o_&#39;.i?);?I??xFg[???[f?</span>
-</pre></div>
-
+                <h1 id="windows-10">Windows 10<a class="headerlink" href="#windows-10" title="Permanent link">&para;</a></h1>
+<p>First, SCONE-based applications run on top of Linux. We actually support multiple flavors like Alpine Linux, Ubuntu, Fedora and RHEL/Centos. Our recommended distribution for SCONE-based application is Alpine Linux since it is ideally suited to run in contains.</p>
+<p>Second, you can run SCONE-based applications on top of Windows 10/HyperV hosts by running a Linux VM. You can test this by running SCONE-based applications in <a href="SCONE_TUTORIAL/#hardware-mode-vs-simulation-mode">simulation mode</a> in a Docker engine - which runs on Windows 10 systems with HyperV support.</p>
+<p>Of course, you would like to run your applications in hardware mode. To do so, you need to give your Linux VM access to SGX. You can follow our <a href="https://github.com/scontain/Windows10">Windows tutorial</a> to learn how to install Alpine Linux and to run SCONE-based applications on top of Windows 10.</p>
+<p>Note that these SCONE-based applications run with paging on, i.e., the memory size of these applications can be as large as 32GB on current CPUs and much larger on future CPUs.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, 2020. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
@@ -1541,6 +1391,41 @@ $ head -c <span class="m">80</span> index.html
         
 <footer class="md-footer">
   
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../iexec_install/" title="Patched driver & engine" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Patched driver & engine
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../scone_semantic_versioning/" title="Scone Semantic Versioning" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Scone Semantic Versioning
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
