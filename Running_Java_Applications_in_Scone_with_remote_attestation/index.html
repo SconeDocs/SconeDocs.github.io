@@ -1,0 +1,1870 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Scone Documentation - Secure Containers">
+      
+      
+        <link rel="canonical" href="https://sconedocs.github.io/Running_Java_Applications_in_Scone_with_remote_attestation/">
+      
+      
+        <meta name="author" content="Christof Fetzer">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching pages">
+      
+        <meta name="lang:search.result.one" content="1 matching page">
+      
+        <meta name="lang:search.result.other" content="# matching page">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../img/scone-favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-3.0.3">
+    
+    
+      
+        <title>Java with remote attestation - SCONE Confidential Computing</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.451f80e5.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.22915126.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:300,400,400i,700|">
+        <style>body,input{font-family:"PT Sans","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="white" data-md-color-accent="purple">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="../#running-java-applications-in-scone-with-cas-policy" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://sconedocs.github.io" title="SCONE Confidential Computing" class="md-header-nav__button md-logo">
+          
+            <img src="../img/logo-yellow-square.png" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                SCONE Confidential Computing
+              </span>
+              <span class="md-header-nav__topic">
+                Java with remote attestation
+              </span>
+            
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+            <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+            
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search this site" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching this site
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+          
+        
+      </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://sconedocs.github.io" title="SCONE Confidential Computing" class="md-nav__button md-logo">
+      
+        <img src="../img/logo-yellow-square.png" width="48" height="48">
+      
+    </a>
+    SCONE Confidential Computing
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1">
+    
+    <label class="md-nav__link" for="nav-1">
+      Introduction
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        Introduction
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Executive summary" class="md-nav__link">
+      Executive summary
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../advantages/" title="Advantages of SCONE" class="md-nav__link">
+      Advantages of SCONE
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../whyscone/" title="SCONE vs Intel SGX SDK" class="md-nav__link">
+      SCONE vs Intel SGX SDK
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../technical_summary/" title="Technical summary of SCONE" class="md-nav__link">
+      Technical summary of SCONE
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../buildingApps/" title="(No) Cross-Compilation" class="md-nav__link">
+      (No) Cross-Compilation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../curated_images/" title="Curated Images" class="md-nav__link">
+      Curated Images
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../community_version/" title="Community Version" class="md-nav__link">
+      Community Version
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Tutorial
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Tutorial
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../scone-use-case-overview/" title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../hello_world_kubernetes/" title="Hello World Kubernetes" class="md-nav__link">
+      Hello World Kubernetes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../secure_remote_execution/" title="Secure Remote Execution" class="md-nav__link">
+      Secure Remote Execution
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../dockerfileexample/" title="Dockerfile Example" class="md-nav__link">
+      Dockerfile Example
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../multistagebuild/" title="Multi-stage build" class="md-nav__link">
+      Multi-stage build
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../groupcacheUseCase/" title="GO example" class="md-nav__link">
+      GO example
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../memory_dump/" title="Finding Secrets" class="md-nav__link">
+      Finding Secrets
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../dapps/" title="Trusted DApps" class="md-nav__link">
+      Trusted DApps
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Configuration & Attestation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Configuration & Attestation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CASOverview/" title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cas_intro/" title="Introduction" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CASIntro/" title="Starting CAS" class="md-nav__link">
+      Starting CAS
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../LASIntro/" title="Starting LAS" class="md-nav__link">
+      Starting LAS
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../cas_blender_example/" title="Posting Sessions" class="md-nav__link">
+      Posting Sessions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../print-arg-env/" title="Secure Arguments" class="md-nav__link">
+      Secure Arguments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../EncryptedWordCount/" title="Encrypted Code and Input" class="md-nav__link">
+      Encrypted Code and Input
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Use Cases
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Use Cases
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usecases/" title="Introduction" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../blender/" title="Blender" class="md-nav__link">
+      Blender
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pyspark/" title="PySpark" class="md-nav__link">
+      PySpark
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../tensorflow/" title="TensorFlow" class="md-nav__link">
+      TensorFlow
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../tensorflowlite/" title="TensorFlow Lite" class="md-nav__link">
+      TensorFlow Lite
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../openvino/" title="OpenVino" class="md-nav__link">
+      OpenVino
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../vault/" title="Vault" class="md-nav__link">
+      Vault
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Execution Modes
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        Execution Modes
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../outline/" title="Overview" class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../firstcontainer/" title="Simulation Mode" class="md-nav__link">
+      Simulation Mode
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../hardwaremode/" title="Hardware Mode" class="md-nav__link">
+      Hardware Mode
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../hostexample/" title="Host Execution" class="md-nav__link">
+      Host Execution
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
+    
+    <label class="md-nav__link" for="nav-6">
+      Installation
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        Installation
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../installation/" title="Installation overview" class="md-nav__link">
+      Installation overview
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../dockerinstall/" title="Installing docker" class="md-nav__link">
+      Installing docker
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sgxinstall/" title="Installing Intel SGX driver" class="md-nav__link">
+      Installing Intel SGX driver
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sconeinstall/" title="Installing SCONE" class="md-nav__link">
+      Installing SCONE
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../microcode/" title="Updating CPU microcode" class="md-nav__link">
+      Updating CPU microcode
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
+      Patched driver & engine
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../windows10/" title="Windows 10" class="md-nav__link">
+      Windows 10
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7">
+    
+    <label class="md-nav__link" for="nav-7">
+      Continuous Integration
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        Continuous Integration
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../scone_semantic_versioning/" title="Scone Semantic Versioning" class="md-nav__link">
+      Scone Semantic Versioning
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-8" type="checkbox" id="nav-8" checked>
+    
+    <label class="md-nav__link" for="nav-8">
+      Language Support
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-8">
+        Language Support
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../C/" title="C" class="md-nav__link">
+      C
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../C++/" title="C++" class="md-nav__link">
+      C++
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Fortran/" title="Fortran" class="md-nav__link">
+      Fortran
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../GO/" title="GO" class="md-nav__link">
+      GO
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Java/" title="Java" class="md-nav__link">
+      Java
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Java with remote attestation
+      </label>
+    
+    <a href="./" title="Java with remote attestation" class="md-nav__link md-nav__link--active">
+      Java with remote attestation
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" title="Requirements" class="md-nav__link">
+    Requirements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#posting-a-scone-policy-to-configure-the-execution-inside-of-enclave" title="Posting a SCONE-Policy to configure the execution inside of Enclave" class="md-nav__link">
+    Posting a SCONE-Policy to configure the execution inside of Enclave
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-errors" title="Common errors" class="md-nav__link">
+    Common errors
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-ld_library_path" title="Missing LD_LIBRARY_PATH" class="md-nav__link">
+    Missing LD_LIBRARY_PATH
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Python/" title="Python" class="md-nav__link">
+      Python
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../pypyscone/" title="PyPy" class="md-nav__link">
+      PyPy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Nodejs/" title="Node" class="md-nav__link">
+      Node
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../R/" title="R" class="md-nav__link">
+      R
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Rust/" title="Rust" class="md-nav__link">
+      Rust
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-9" type="checkbox" id="nav-9">
+    
+    <label class="md-nav__link" for="nav-9">
+      IDE Integration
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-9">
+        IDE Integration
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../eclipse/" title="Eclipse" class="md-nav__link">
+      Eclipse
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-10" type="checkbox" id="nav-10">
+    
+    <label class="md-nav__link" for="nav-10">
+      Command Line Interface
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-10">
+        Command Line Interface
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../SCONE_CLI/" title="SCONE CLI" class="md-nav__link">
+      SCONE CLI
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../SCONE_toolchain/" title="SCONE SGX toolchain" class="md-nav__link">
+      SCONE SGX toolchain
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../SCONE_Curated_Images/" title="SCONE Curated Images" class="md-nav__link">
+      SCONE Curated Images
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../SCONE_TUTORIAL/" title="SCONE Static vs Dynamic" class="md-nav__link">
+      SCONE Static vs Dynamic
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../SCONE_GENERATE_IMAGE/" title="SCONE Create Image" class="md-nav__link">
+      SCONE Create Image
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../SCONE_Dockerfile/" title="SCONE Dockerfile" class="md-nav__link">
+      SCONE Dockerfile
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-11" type="checkbox" id="nav-11">
+    
+    <label class="md-nav__link" for="nav-11">
+      Manuals
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-11">
+        Manuals
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../SCONE_Fileshield/" title="scone fspf" class="md-nav__link">
+      scone fspf
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../SCONE_ENV/" title="environment variables" class="md-nav__link">
+      environment variables
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../MrEnclave/" title="MrEnclave" class="md-nav__link">
+      MrEnclave
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../scone_affinity/" title="affinity" class="md-nav__link">
+      affinity
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-12" type="checkbox" id="nav-12">
+    
+    <label class="md-nav__link" for="nav-12">
+      Performance
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-12">
+        Performance
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../performance/" title="Applications" class="md-nav__link">
+      Applications
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../teemon/" title="Monitoring tool" class="md-nav__link">
+      Monitoring tool
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-13" type="checkbox" id="nav-13">
+    
+    <label class="md-nav__link" for="nav-13">
+      Background
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-13">
+        Background
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../appsecurity/" title="Application-Oriented Security" class="md-nav__link">
+      Application-Oriented Security
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../background/" title="SCONE Background" class="md-nav__link">
+      SCONE Background
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../SCONE_Publications/" title="Publications" class="md-nav__link">
+      Publications
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../aboutScone/" title="About" class="md-nav__link">
+      About
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../glossary/" title="Glossary" class="md-nav__link">
+      Glossary
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../faq/" title="FAQ" class="md-nav__link">
+      FAQ
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" title="Requirements" class="md-nav__link">
+    Requirements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#posting-a-scone-policy-to-configure-the-execution-inside-of-enclave" title="Posting a SCONE-Policy to configure the execution inside of Enclave" class="md-nav__link">
+    Posting a SCONE-Policy to configure the execution inside of Enclave
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-errors" title="Common errors" class="md-nav__link">
+    Common errors
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-ld_library_path" title="Missing LD_LIBRARY_PATH" class="md-nav__link">
+    Missing LD_LIBRARY_PATH
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="running-java-applications-in-scone-with-cas-policy">Running Java Applications in Scone with CAS-Policy<a class="headerlink" href="#running-java-applications-in-scone-with-cas-policy" title="Permanent link">&para;</a></h1>
+<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
+<p>The following steps assume that you have a running CAS container and a running LAS server and know its addresses.</p>
+<p>Some of the latest containers for CAS and LAS are available at</p>
+<div class="highlight"><pre><span></span>docker pull sconecuratedimages/services:cas
+docker pull sconecuratedimages/kubernetes:las
+</pre></div>
+
+<p>but the <code>service</code>  repository requires a commercial subscription. You can use the public CAS server <code>scone-cas.cf</code> instead.</p>
+<p>Make sure the sgx driver and  docker is installed and running correctly by doing the java hello world sample:</p>
+<div class="highlight"><pre><span></span>docker run --privileged --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/apps:openjdk-8-alpine
+</pre></div>
+
+<p>or, in case the container does not start the bash command automatically:</p>
+<div class="highlight"><pre><span></span>docker run --privileged --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/apps:openjdk-8-alpine /bin/sh
+</pre></div>
+
+<p>For Java 11 or Java 15 instead of Java 8:</p>
+<div class="highlight"><pre><span></span>docker run --privileged --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/apps:openjdk-11-alpine /bin/sh
+docker run --privileged --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/apps:openjdk-15-alpine /bin/sh
+</pre></div>
+
+<p>We provide a quick hello-world sample in Java</p>
+<div class="highlight"><pre><span></span>cat &gt; HelloWorld.java <span class="s">&lt;&lt; EOF</span>
+<span class="s">import java.util.Map;</span>
+<span class="s">public class HelloWorld {</span>
+<span class="s">    public static void main(String[] args) {</span>
+<span class="s">        System.out.println(&quot;Hello World&quot;);</span>
+<span class="s">        Map&lt;String, String&gt; env = System.getenv();</span>
+<span class="s">        for (String envName : env.keySet()) {</span>
+<span class="s">            System.out.format(&quot;%s=%s%n&quot;, envName, env.get(envName));</span>
+<span class="s">        }</span>
+<span class="s">    }</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</pre></div>
+
+<p>Compile it, by executing:</p>
+<div class="highlight"><pre><span></span>javac HelloWorld.java
+</pre></div>
+
+<p>Expected output:</p>
+<div class="highlight"><pre><span></span># javac HelloWorld.java
+Picked up JAVA_TOOL_OPTIONS: -Xmx256m
+#
+</pre></div>
+
+<p>You need to set some environment variables:</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf  <span class="c1"># we use the public CAS service</span>
+<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1 <span class="c1"># we must run a local LAS service</span>
+<span class="nb">export</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span>   <span class="c1"># show the SCONE version</span>
+<span class="nb">export</span> <span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span>   <span class="c1"># maximum LOG level</span>
+java HelloWorld
+</pre></div>
+
+<p>Expected output after 2-3 minutes with a NUC and 8GB memory. Note that if you have a CPU that supports EDMM (Enclave dynamic memory management), the startup times will be much quicker.</p>
+<div class="highlight"><pre><span></span><span class="o">/</span> <span class="err">#</span> <span class="n">export</span> <span class="n">SCONE_VERSION</span><span class="o">=</span><span class="mi">1</span>
+<span class="o">/</span> <span class="err">#</span> <span class="n">export</span> <span class="n">SCONE_LOG</span><span class="o">=</span><span class="mi">7</span>
+<span class="o">/</span> <span class="err">#</span> <span class="n">java</span> <span class="n">HelloWorld</span>
+<span class="n">export</span> <span class="n">SCONE_QUEUES</span><span class="o">=</span><span class="mi">4</span>
+<span class="n">export</span> <span class="n">SCONE_SLOTS</span><span class="o">=</span><span class="mi">256</span>
+<span class="n">export</span> <span class="n">SCONE_SIGPIPE</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">export</span> <span class="n">SCONE_MMAP32BIT</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">export</span> <span class="n">SCONE_SSPINS</span><span class="o">=</span><span class="mi">100</span>
+<span class="n">export</span> <span class="n">SCONE_SSLEEP</span><span class="o">=</span><span class="mi">4000</span>
+<span class="n">export</span> <span class="n">SCONE_LOG</span><span class="o">=</span><span class="mi">7</span>
+<span class="n">export</span> <span class="n">SCONE_HEAP</span><span class="o">=</span><span class="mi">4294967296</span>
+<span class="n">export</span> <span class="n">SCONE_STACK</span><span class="o">=</span><span class="mi">2097152</span>
+<span class="n">export</span> <span class="n">SCONE_CONFIG</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">sgx</span><span class="o">-</span><span class="n">musl</span><span class="o">.</span><span class="na">conf</span>
+<span class="n">export</span> <span class="n">SCONE_ESPINS</span><span class="o">=</span><span class="mi">10000</span>
+<span class="n">export</span> <span class="n">SCONE_MODE</span><span class="o">=</span><span class="n">hw</span>
+<span class="n">export</span> <span class="n">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="n">yes</span> <span class="o">(</span><span class="n">unprotected</span><span class="o">)</span>
+<span class="n">export</span> <span class="n">SCONE_MPROTECT</span><span class="o">=</span><span class="n">yes</span>
+<span class="n">musl</span> <span class="n">version</span><span class="o">:</span> <span class="mf">1.1.24</span>
+<span class="nl">Revision:</span> <span class="n">efb2bdadba60c120f36864a1d675c4c4ca35ed69</span> <span class="o">(</span><span class="n">Tue</span> <span class="n">Apr</span> <span class="mi">28</span> <span class="mo">06</span><span class="o">:</span><span class="mi">29</span><span class="o">:</span><span class="mi">26</span> <span class="mi">2020</span> <span class="o">+</span><span class="mo">0000</span><span class="o">)</span>
+<span class="nl">Branch:</span> <span class="mi">6</span><span class="n">ab648c20350b71cfeb8468001e8ebd78779870a</span>
+
+<span class="n">Enclave</span> <span class="n">hash</span><span class="o">:</span> <span class="mi">7954791612</span><span class="n">f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">syscall</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">698</span><span class="o">:</span><span class="n">__scone_syscall_unshielded</span><span class="o">():</span> <span class="n">system</span> <span class="n">call</span><span class="o">:</span> <span class="n">SYS_membarrier</span><span class="o">,</span> <span class="n">number</span> <span class="mi">324</span> <span class="n">is</span> <span class="n">not</span> <span class="n">implemented</span><span class="o">.</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">syscall</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">698</span><span class="o">:</span><span class="n">__scone_syscall_unshielded</span><span class="o">():</span> <span class="n">system</span> <span class="n">call</span><span class="o">:</span> <span class="n">SYS_membarrier</span><span class="o">,</span> <span class="n">number</span> <span class="mi">324</span> <span class="n">is</span> <span class="n">not</span> <span class="n">implemented</span><span class="o">.</span>
+<span class="n">Picked</span> <span class="n">up</span> <span class="n">JAVA_TOOL_OPTIONS</span><span class="o">:</span> <span class="o">-</span><span class="n">Xmx256m</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">shielding</span><span class="o">/</span><span class="n">proc_fs</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">368</span><span class="o">:</span><span class="n">_proc_fs_open</span><span class="o">():</span> <span class="n">open</span><span class="o">:</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">self</span><span class="o">/</span><span class="n">mountinfo</span> <span class="n">is</span> <span class="n">not</span> <span class="n">supported</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">shielding</span><span class="o">/</span><span class="n">proc_fs</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">368</span><span class="o">:</span><span class="n">_proc_fs_open</span><span class="o">():</span> <span class="n">open</span><span class="o">:</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">self</span><span class="o">/</span><span class="n">maps</span> <span class="n">is</span> <span class="n">not</span> <span class="n">supported</span>
+<span class="n">OpenJDK</span> <span class="mi">64</span><span class="o">-</span><span class="n">Bit</span> <span class="n">Server</span> <span class="n">VM</span> <span class="n">warning</span><span class="o">:</span> <span class="n">Can</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">detect</span> <span class="n">primordial</span> <span class="n">thread</span> <span class="n">stack</span> <span class="n">location</span> <span class="o">-</span> <span class="n">find_vma</span> <span class="n">failed</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">144</span><span class="o">:</span><span class="n">mmap_anon</span><span class="o">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="o">.</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">144</span><span class="o">:</span><span class="n">mmap_anon</span><span class="o">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="o">.</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">144</span><span class="o">:</span><span class="n">mmap_anon</span><span class="o">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="o">.</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">144</span><span class="o">:</span><span class="n">mmap_anon</span><span class="o">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="o">.</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">144</span><span class="o">:</span><span class="n">mmap_anon</span><span class="o">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="o">.</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">144</span><span class="o">:</span><span class="n">mmap_anon</span><span class="o">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="o">.</span>
+<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="o">.</span><span class="na">c</span><span class="o">:</span><span class="mi">144</span><span class="o">:</span><span class="n">mmap_anon</span><span class="o">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="o">.</span>
+<span class="n">Hello</span> <span class="n">World</span>
+<span class="n">PATH</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">sbin</span><span class="o">:/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">:/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">:/</span><span class="n">usr</span><span class="o">/</span><span class="n">bin</span><span class="o">:/</span><span class="n">sbin</span><span class="o">:/</span><span class="n">bin</span><span class="o">:/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">bin</span><span class="o">:/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">bin</span>
+<span class="n">SCONE_VERSION</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">SCONE_HEAP</span><span class="o">=</span><span class="mi">4</span><span class="n">G</span>
+<span class="n">SCONE_LOG</span><span class="o">=</span><span class="mi">7</span>
+<span class="n">SCONE_CAS_ADDR</span><span class="o">=</span><span class="n">scone</span><span class="o">-</span><span class="n">cas</span><span class="o">.</span><span class="na">cf</span>
+<span class="n">JAVA_HOME</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span>
+<span class="n">TERM</span><span class="o">=</span><span class="n">xterm</span>
+<span class="n">LANG</span><span class="o">=</span><span class="n">C</span><span class="o">.</span><span class="na">UTF</span><span class="o">-</span><span class="mi">8</span>
+<span class="n">SCONE_ALPINE</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">HOSTNAME</span><span class="o">=</span><span class="mi">86</span><span class="n">fd2f848e41</span>
+<span class="n">SCONE_MPROTECT</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">SCONE_LAS_ADDR</span><span class="o">=</span><span class="mf">127.0.0.1</span>
+<span class="n">LD_LIBRARY_PATH</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">amd64</span><span class="o">/</span><span class="n">server</span><span class="o">:/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">amd64</span><span class="o">:/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">jre</span><span class="o">/../</span><span class="n">lib</span><span class="o">/</span><span class="n">amd64</span>
+<span class="n">JAVA_TOOL_OPTIONS</span><span class="o">=-</span><span class="n">Xmx256m</span>
+<span class="n">PWD</span><span class="o">=/</span>
+<span class="n">HOME</span><span class="o">=/</span><span class="n">root</span>
+<span class="n">SHLVL</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">/</span> <span class="err">#</span>
+</pre></div>
+
+<h2 id="posting-a-scone-policy-to-configure-the-execution-inside-of-enclave">Posting a SCONE-Policy to configure the execution inside of Enclave<a class="headerlink" href="#posting-a-scone-policy-to-configure-the-execution-inside-of-enclave" title="Permanent link">&para;</a></h2>
+<p>Using the CAS container to provision an execution inside of an enclave with environment variables etc. which were previously set.
+Therefore, the SCONE-Policy for Java executions must include the following parameters LD_LIBRARY_PATH and if necessary JAVA_TOOL_OPTIONS and the CLASSPATH of the required Java libraries:</p>
+<p>First, similar to the <a href="../cas_blender_example/">posting sessions tutorial</a>,
+we create a yaml file for java 1.8 openjdk</p>
+<div class="highlight"><pre><span></span>cat &gt; sessionJavaHelloWorld.yml <span class="s">&lt;&lt;EOF</span>
+<span class="s">name: java</span>
+<span class="s">services:</span>
+<span class="s">   - name: hello</span>
+<span class="s">     mrenclaves: [7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb] # MRENCLAVE = Enclave hash: from execution with SCONE_VERSION=1</span>
+<span class="s">     command: &quot;java HelloWorld&quot;</span>
+<span class="s">     pwd: /</span>
+<span class="s">     environment:</span>
+<span class="s">       LD_LIBRARY_PATH: &quot;/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64&quot;</span>
+<span class="s">       JAVA_TOOL_OPTIONS: &quot;-Xmx256m&quot;</span>
+<span class="s">       CLASSPATH: &quot;/&quot; # path to directory contained your code</span>
+<span class="s">       TMP_SECRET_VAR: &quot;This is a protected secret distributed by Scone CAS!&quot;</span>
+<span class="s">EOF</span>
+</pre></div>
+
+<p>We create client certificate and key material to identify this client:
+<div class="highlight"><pre><span></span>    mkdir -p conf
+    <span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+        openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key  -days <span class="m">31</span> -nodes -sha256 -subj <span class="s2">&quot;/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com&quot;</span> -reqexts SAN -extensions SAN -config &lt;<span class="o">(</span>cat /etc/ssl/openssl.cnf <span class="se">\</span>
+    &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;[SAN]\nsubjectAltName=DNS:www.scontain.com&#39;</span><span class="o">))</span>
+    <span class="k">fi</span>
+</pre></div></p>
+<p>Next, we will upload this session to CAS:</p>
+<div class="highlight"><pre><span></span>curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @sessionJavaHelloWorld.yml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
+</pre></div>
+
+<p>Expected output (please ignore the 'not-supported' fields):</p>
+<div class="highlight"><pre><span></span>Created Session<span class="o">[</span><span class="nv">id</span><span class="o">=</span>b11ac009c564f6e0c8c2b61d7b4774e89f896e83ec09ef3f919bd420aa3ab252, <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;not-supported&#39;</span>, <span class="nv">status</span><span class="o">=</span><span class="s1">&#39;not-supported&#39;</span><span class="o">]</span>
+</pre></div>
+
+<p>If the output is not giving out an idea the session was not created. One possible reasons can be formatting errors like not using quotation marks ("java Helloworld") or single quotation marks ('java HelloWorld')</p>
+<p>If we have set up the SCONE_CAS_ADDR and SCONE_LAS_ADDR, we export the environment variable according to the policy's name "java" and the service "hello"</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="s2">&quot;java/hello&quot;</span>
+<span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="nv">$YOUR_CAS_ADDR</span>
+<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="nv">$YOUR_LAS_ADDR</span>
+<span class="nb">export</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> 
+<span class="nb">export</span> <span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span> 
+</pre></div>
+
+<p>Now if we start the command  "java HelloWorld" again, we see the following output.</p>
+<div class="highlight"><pre><span></span>/ <span class="c1"># java HelloWorld</span>
+<span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
+<span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span> <span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
+<span class="nb">export</span> <span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
+<span class="nb">export</span> <span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span>
+<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">4294967296</span>
+<span class="nb">export</span> <span class="nv">SCONE_STACK</span><span class="o">=</span><span class="m">2097152</span>
+<span class="nb">export</span> <span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
+<span class="nb">export</span> <span class="nv">SCONE_ESPINS</span><span class="o">=</span><span class="m">10000</span>
+<span class="nb">export</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>hw
+<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>yes <span class="o">(</span>unprotected<span class="o">)</span>
+<span class="nb">export</span> <span class="nv">SCONE_MPROTECT</span><span class="o">=</span>yes
+musl version: <span class="m">1</span>.1.24
+Revision: efb2bdadba60c120f36864a1d675c4c4ca35ed69 <span class="o">(</span>Tue Apr <span class="m">28</span> <span class="m">06</span>:29:26 <span class="m">2020</span> +0000<span class="o">)</span>
+Branch: 6ab648c20350b71cfeb8468001e8ebd78779870a
+
+Enclave hash: 7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb
+<span class="o">[</span>SCONE<span class="p">|</span>INFO<span class="o">]</span> src/shielding/crypto.c:222:crypto_get_identity<span class="o">()</span>: Generated enclave certificate
+<span class="o">[</span>SCONE<span class="p">|</span>INFO<span class="o">]</span> src/shielding/eai_attestor.c:174:eai_attestor_init<span class="o">()</span>: Created TLS context to communicate with CAS
+<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/shielding/eai_attestor.c:288:eai_attestor_attest<span class="o">()</span>: Sending Attestation Request to LAS
+<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/shielding/eai_attestor.c:311:eai_attestor_attest<span class="o">()</span>: Got Quote from LAS
+<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/shielding/eai_attestor.c:324:eai_attestor_attest<span class="o">()</span>: Sending enclave hello message to CAS
+<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/shielding/eai_attestor.c:349:eai_attestor_attest<span class="o">()</span>: Successfully attested enclave via CAS
+<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/process/init.c:639:__scone_prepare_secure_config<span class="o">()</span>: Sending configuration request to CAS!
+<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/process/init.c:666:__scone_prepare_secure_config<span class="o">()</span>: Received configuration from CAS!
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/syscall.c:698:__scone_syscall_unshielded<span class="o">()</span>: system call: SYS_membarrier, number <span class="m">324</span> is not implemented.
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/syscall.c:698:__scone_syscall_unshielded<span class="o">()</span>: system call: SYS_membarrier, number <span class="m">324</span> is not implemented.
+Picked up JAVA_TOOL_OPTIONS: -Xmx256m
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/shielding/proc_fs.c:368:_proc_fs_open<span class="o">()</span>: open: /proc/self/mountinfo is not supported
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/shielding/proc_fs.c:368:_proc_fs_open<span class="o">()</span>: open: /proc/self/maps is not supported
+OpenJDK <span class="m">64</span>-Bit Server VM warning: Can<span class="err">&#39;</span>t detect primordial thread stack location - find_vma failed
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+Hello World
+<span class="nv">TMP_SECRET_VAR</span><span class="o">=</span>This is a protected secret distributed by Scone CAS!
+<span class="nv">CLASSPATH</span><span class="o">=</span>/
+<span class="nv">JAVA_TOOL_OPTIONS</span><span class="o">=</span>-Xmx256m
+<span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64
+/ <span class="c1">#</span>
+</pre></div>
+
+<p>Note that the content of TMP_SECRET_VAR came from the Scone policy which was posted earlier to the CAS.</p>
+<p>And we see the following logfiles in the containers of CAS (in case you are running a local copy):</p>
+<div class="highlight"><pre><span></span>ubuntu@kmaster:~$ docker logs cas_cas_1
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG rustls::server::hs<span class="o">]</span> decided upon suite SupportedCipherSuite <span class="o">{</span> suite: TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, kx: ECDHE, bulk: AES_256_GCM, hash: SHA384, sign: ECDSA, enc_key_len: <span class="m">32</span>, fixed_iv_len: <span class="m">4</span>, explicit_nonce_len: <span class="m">8</span>, hkdf_algorithm: Algorithm<span class="o">(</span>Algorithm<span class="o">(</span>SHA384<span class="o">))</span> <span class="o">}</span>
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG rustls::server::tls12<span class="o">]</span> Session saved
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Received length of next message
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Next message will be <span class="m">518</span> bytes long
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Protobuf message received completely, interpreting it...
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai<span class="o">]</span> Got message EnclaveMessage::EnclaveHello from enclave
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: In current state: Fresh got message: EnclaveMessage::EnclaveHello
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Processing enclave hello message
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: SconeQuote is valid, it has not been tampared with.
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z WARN  cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: CAS is running in debug mode, simulation mode or w/o SCONE runtime: It will accept quotes from SCONE quoting enclaves running in debug mode
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Hash of channel certificate: ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976, SGX reportdata: ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Secure channel terminates in enclave: Hash of channel certifacte matches SGX reportdata
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: SconeQuote is signed by known and trusted quoting enclave: <span class="nb">true</span>
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Trust established into enclave integrity. Sending attestation <span class="nb">complete</span> message
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai<span class="o">]</span> Sending message Complete to enclave
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Waiting <span class="k">for</span> more data before decoding protobuf message
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Received length of next message
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Next message will be <span class="m">16</span> bytes long
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Protobuf message received completely, interpreting it...
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai<span class="o">]</span> Got message EnclaveMessage::ConfigRequest from enclave
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: In current state: Attested got message: EnclaveMessage::ConfigRequest
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Received configuration request <span class="k">for</span> config id javax2/hello
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas_backend::backend<span class="o">]</span> Got request <span class="k">for</span> service: hello in session: javax2. Attificate is: SCONE<span class="o">(</span>
+        SCONEAttificate <span class="o">{</span>
+            identifier: <span class="s2">&quot;791f84651890514eefe32ecfe54a75d95475636f61180a6ca1765cbbee0253dd&quot;</span>,
+            certificate: <span class="s2">&quot;-----BEGIN CERTIFICATE-----\nMIIBZjCB6qADAgECAhEA9vVqCQoOsEgtQ7Lo09QqNjAMBggqhkjOPQQDAwUAMA0x\nCzAJBgNVBAYTAkRFMCAXDTE4MDkxNzE5MzAwMFoYDzIwNTAwMTAxMDEwMDAwWjAA\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEoavE7JGhE5YqrBV979f8NTxUzGURrDE2\naU3vuZukWkioO8g+3Ec+YaVMu0N3CWy0hnwKD4nyCr7criLlXhvRaxQdJdp6d+4b\nMJXGtrgvcF4I1ZAb17FJOHoUD9Q5IVKSoxcwFTATBgNVHREEDDAKgghlbmNsYXZl\nADAMBggqhkjOPQQDAwUAA2kAMGYCMQCusCCDg8EKrrP75FL5kUShjoG28dWsAMVN\nDfv2InlX5ZCATrZ3YwSl8+MfV1Key0sCMQDMaA+jVF+bqr82C9iIYZhr4vXCWUhI\njYVnKAo+/GP+pwwvNE7XZwPTXbEPdRoyrbw=\n-----END CERTIFICATE-----\n&quot;</span>,
+            report: SgxReportBody <span class="o">{</span>
+                cpusvn: <span class="s2">&quot;02020000000000000000000000000000&quot;</span>,
+                miscselect: <span class="s2">&quot;00000000&quot;</span>,
+                attributes: SgxAttributes <span class="o">{</span>
+                    flags: <span class="m">7</span>,
+                    xfrm: <span class="m">27</span>,
+                <span class="o">}</span>,
+                mrenclave: <span class="s2">&quot;7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb&quot;</span>,
+                mrsigner: <span class="s2">&quot;11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd&quot;</span>,
+                isvprodid: <span class="m">0</span>,
+                isvsvn: <span class="m">0</span>,
+                reportdata: <span class="s2">&quot;ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976&quot;</span>,
+            <span class="o">}</span>,
+            scone_qe_pub_key: a470cda5245af18ef5d8d3e1b30982a3bc74848376ca4fd03237c0f342e97239,
+        <span class="o">}</span>,
+    <span class="o">)</span>
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z INFO  cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Provisioned configuration javax2/hello
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai<span class="o">]</span> Sending message Config to enclave
+<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Waiting <span class="k">for</span> more data before decoding protobuf message
+<span class="o">[</span><span class="m">2020</span>-05-08T11:34:50Z DEBUG eai::convert<span class="o">]</span> Waiting <span class="k">for</span> more data before decoding protobuf message
+<span class="o">[</span><span class="m">2020</span>-05-08T11:34:50Z WARN  cas::api::enclave<span class="o">]</span> Failure <span class="k">while</span> handling enclave connection: DisplayChain<span class="o">(</span>Error<span class="o">(</span>Msg<span class="o">(</span><span class="s2">&quot;Connection closed&quot;</span><span class="o">)</span>, State <span class="o">{</span> next_error: None, backtrace: InternalBacktrace <span class="o">{</span> backtrace: None <span class="o">}</span> <span class="o">}))</span>
+</pre></div>
+
+<p>And we see the following logfiles in the containers of LAS:</p>
+<div class="highlight"><pre><span></span>ubuntu@kmaster:~$ docker logs las_las_1
+jhi<span class="o">[</span><span class="m">8</span><span class="o">]</span>: --&gt; jhi start
+jhi<span class="o">[</span><span class="m">8</span><span class="o">]</span>: &lt;-- jhi start
+aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: <span class="o">[</span>ADMIN<span class="o">]</span>White List update requested
+aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: The server sock is 0x55c64a935e30
+aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: <span class="o">[</span>ADMIN<span class="o">]</span>White list update request successful <span class="k">for</span> Version: <span class="m">73</span>
+<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:01:42<span class="o">]</span> APP: Creating LAS target information message.
+aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: <span class="o">[</span>ADMIN<span class="o">]</span>EPID Provisioning initiated
+aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: The Request ID is f6131707e3714d359f33dca65dc72308
+aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: The Request ID is 23c495fac0b94c8984546fbddc0a75f3
+aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: <span class="o">[</span>ADMIN<span class="o">]</span>EPID Provisioning successful
+<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:01:44<span class="o">]</span> STARTER: SCONE QE has MRENCLAVE D9A05D04E07CD75F4251D41A4D7F0FCA63BF392A19BEDE5C69A5BB60A94E376F
+<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:01:44<span class="o">]</span> STARTER: SCONE QE has public key A470CDA5245AF18EF5D8D3E1B30982A3BC74848376CA4FD03237C0F342E97239
+<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:01:44<span class="o">]</span> STARTER: LAS is listening on <span class="m">0</span>.0.0.0:18766
+<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:40:46<span class="o">]</span> CONNECTION_HANDLER: Received attestation request
+<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:40:46<span class="o">]</span> CONNECTION_HANDLER: Sent quote success: <span class="m">1</span>, type: <span class="m">3</span>, size: <span class="m">480</span>
+<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:40:46<span class="o">]</span> CONNECTION_HANDLER: Received attestation request
+<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:40:46<span class="o">]</span> CONNECTION_HANDLER: Sent quote success: <span class="m">1</span>, type: <span class="m">2</span>, size: <span class="m">1116</span>
+<span class="o">[</span><span class="m">01000</span>:WARNING@04.05.2020/11:40:47<span class="o">]</span> RECV_FUNC: Connection closed <span class="k">while</span> reading message length.
+<span class="o">[</span><span class="m">01000</span>:WARNING@04.05.2020/11:40:47<span class="o">]</span> CONNECTION_HANDLER: Unable to decode received message. Terminating connection!
+...multiple log entries
+<span class="o">[</span><span class="m">10000</span>:INFO@08.05.2020/11:38:27<span class="o">]</span> CONNECTION_HANDLER: Received attestation request
+<span class="o">[</span><span class="m">10000</span>:INFO@08.05.2020/11:38:27<span class="o">]</span> CONNECTION_HANDLER: Sent quote success: <span class="m">1</span>, type: <span class="m">3</span>, size: <span class="m">480</span>
+<span class="o">[</span><span class="m">01000</span>:WARNING@08.05.2020/11:38:27<span class="o">]</span> RECV_FUNC: Connection closed <span class="k">while</span> reading message length.
+<span class="o">[</span><span class="m">01000</span>:WARNING@08.05.2020/11:38:27<span class="o">]</span> CONNECTION_HANDLER: Unable to decode received message. Terminating connection!
+</pre></div>
+
+<h2 id="common-errors">Common errors<a class="headerlink" href="#common-errors" title="Permanent link">&para;</a></h2>
+<h3 id="missing-ld_library_path">Missing LD_LIBRARY_PATH<a class="headerlink" href="#missing-ld_library_path" title="Permanent link">&para;</a></h3>
+<p>If the system is started without the default LD_LIBRARY_PATH and the SCONE-Policy is missing its environment variable the output will be:</p>
+<div class="highlight"><pre><span></span>[SCONE|ERROR] src/syscall/execve.c:108:syscall_SYS_execve(): execve is only supported after a vfork (vfork is not active!) 
+No error information
+Error: trying to exec /usr/lib/jvm/java-1.8-openjdk/jre/bin/java.
+Check if file exists and permissions are set correctly.
+</pre></div>
+
+<p>The solution is settings the LD_LIBRARY_PATH according to the posting session example given above:</p>
+<div class="highlight"><pre><span></span>LD_LIBRARY_PATH: <span class="s2">&quot;/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/.</span>
+</pre></div>
+
+<p>Author: Hendrik</p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../Java/" title="Java" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Java
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../Python/" title="Python" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Python
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright Scontain © 2020
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.e72fd936.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      
+        <script src="../search/main.js"></script>
+      
+    
+    
+      
+    
+  </body>
+</html>
