@@ -70,6 +70,8 @@
     
       <link rel="stylesheet" href="../css/custom.css">
     
+      <link rel="stylesheet" href="../css/tooltips.css">
+    
     
   </head>
   
@@ -1694,7 +1696,7 @@
 
 <p>The code has some more error handling and also some more details not discussed in this tutorial. Still, it will eventually fail with an error message since it will not be able to push a certain image (<code>IMAGE3</code>): you will not be able to execute an encrypted image of another <em>session</em>.</p>
 <p>You need to change definition:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE3</span><span class="o">=</span>sconecuratedimagesx/kubernetes:hello-k8s-scone0.3
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE3</span><span class="o">=</span>sconecuratedimages/kubernetes:hello-k8s-scone0.3
 </pre></div>
 
 <p>in <code>run_hello_world.sh</code> to point to a container repo that you are permitted to push to.</p>
@@ -2157,14 +2159,14 @@ $�ʇ<span class="o">(</span>E@��
 </pre></div>
 
 <p>Choose the new image name and build it:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span>sconecuratedimages/kubernetes:hello-k8s-scone-0.3
-docker build --pull . -t <span class="nv">$IMAGE</span> <span class="o">&amp;&amp;</span> docker push <span class="nv">$IMAGE</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE3</span><span class="o">=</span>sconecuratedimages/kubernetes:hello-k8s-scone0.3
+docker build --pull . -t <span class="nv">$IMAGE3</span> <span class="o">&amp;&amp;</span> docker push <span class="nv">$IMAGE3</span>
 </pre></div>
 
 <h3 id="run-in-kubernetes">Run in Kubernetes<a class="headerlink" href="#run-in-kubernetes" title="Permanent link">&para;</a></h3>
 <p>Time to deploy our server to Kubernetes. Let's setup the attestation first, so we make sure that only our application (identified by its <code>MRENCLAVE</code>) will have access to the secrets to read the encrypted filesystem, as well as our secret greeting.</p>
 <p>Extract the <code>MRENCLAVE</code>:</p>
-<div class="highlight"><pre><span></span><span class="nv">MRENCLAVE</span><span class="o">=</span><span class="k">$(</span>docker run -i --rm --device /dev/isgx -e <span class="s2">&quot;SCONE_HASH=1&quot;</span> <span class="nv">$IMAGE</span><span class="k">)</span>
+<div class="highlight"><pre><span></span><span class="nv">MRENCLAVE</span><span class="o">=</span><span class="k">$(</span>docker run -i --rm --device /dev/isgx -e <span class="s2">&quot;SCONE_HASH=1&quot;</span> <span class="nv">$IMAGE3</span><span class="k">)</span>
 </pre></div>
 
 <p>Extract <code>SCONE_FSPF_KEY</code> and <code>SCONE_FSPF_TAG</code>:</p>
@@ -2180,7 +2182,7 @@ docker build --pull . -t <span class="nv">$IMAGE</span> <span class="o">&amp;&am
 
 <span class="s">services:</span>
 <span class="s">   - name: application</span>
-<span class="s">     image_name: $IMAGE</span>
+<span class="s">     image_name: $IMAGE3</span>
 <span class="s">     mrenclaves: [$MRENCLAVE]</span>
 <span class="s">     command: python /app/server-tls.py</span>
 <span class="s">     pwd: /</span>
@@ -2191,7 +2193,7 @@ docker build --pull . -t <span class="nv">$IMAGE</span> <span class="o">&amp;&am
 <span class="s">     fspf_tag: $SCONE_FSPF_TAG</span>
 
 <span class="s">images:</span>
-<span class="s">   - name: $IMAGE</span>
+<span class="s">   - name: $IMAGE3</span>
 <span class="s">     injection_files:</span>
 <span class="s">       - path:  /app/cert.pem</span>
 <span class="s">         content: \$\$SCONE::SERVER_CERT.crt\$\$</span>
@@ -2226,7 +2228,7 @@ docker build --pull . -t <span class="nv">$IMAGE</span> <span class="o">&amp;&am
 <span class="s">    spec:</span>
 <span class="s">      containers:</span>
 <span class="s">      - name: attested-hello-world-tls</span>
-<span class="s">        image: $IMAGE</span>
+<span class="s">        image: $IMAGE3</span>
 <span class="s">        imagePullPolicy: Always</span>
 <span class="s">        ports:</span>
 <span class="s">        - containerPort: 4443</span>

@@ -70,6 +70,8 @@
     
       <link rel="stylesheet" href="../css/custom.css">
     
+      <link rel="stylesheet" href="../css/tooltips.css">
+    
     
   </head>
   
@@ -1463,7 +1465,10 @@
                 
                 <h1 id="kubernetes-and-scone-basics">Kubernetes and SCONE Basics<a class="headerlink" href="#kubernetes-and-scone-basics" title="Permanent link">&para;</a></h1>
 <p>In this tutorial, we describe how you can build confidential compute application with the help of
-SCONE that run on top of a vanilla Kubernetes cluster. We assume that you are already familiar with
+SCONE that run on top of a <strong>vanilla</strong> <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> cluster. This means that you do not need to modify <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> in any way.  </p>
+<p>We assume that you are already familiar with
 basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-Computing-Concepts">confidential computing concepts</a> and continue with a in-depth <a href="../hello_world_kubernetes/">hello world tutorial</a>.</p>
 <p>Over time, we will add more pages that explain how to reduce the complexity of building, deploying and operating  confidential applications on top of Kubernetes.</p>
 <h2 id="scone-confidential-computing-concepts">SCONE Confidential Computing Concepts<a class="headerlink" href="#scone-confidential-computing-concepts" title="Permanent link">&para;</a></h2>
@@ -1473,13 +1478,13 @@ basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-
 <p>When developing a CC application, we need to consider the following concepts:</p>
 <ul>
 <li>
-<p><strong>service</strong>: a service is a Kubernetes concept. It is a  way to expose an application as a network service at one or more network ports. The network ports are actually served by one or more processes. To refer to service that is not protected by SCONE, we use the term <strong>native service</strong>.</p>
+<p><strong>(native) service</strong>: a service is a Kubernetes concept. It is a  way to expose an application as a network service at one or more network ports. The network ports are actually served by one or more processes. To refer to service that is not protected by SCONE, we use the term <strong>native service</strong>.</p>
 </li>
 <li>
-<p><strong>enclaved service</strong>:  SCONE permits to run the processes of a service inside of SGX enclaves.  Hence, we call these <em>enclaved services</em>. If such an enclave is in <strong>release mode</strong>, its memory cannot be read by any other process nor by the operating system or the hypervisor or any user.</p>
+<p><strong>enclaved service</strong>:  SCONE permits to run the processes of a service inside of SGX enclaves.  Hence, we call these <em>enclaved services</em>. If such an enclave is in <span data-tooltip="The enclave will be launched in production mode, i.e., any access - including debug access - will be prevented. Moreover, the code is typically compiled with optimizations switched on and without debug symbols.">release mode</span>, its memory cannot be read by any other process nor by the operating system or the hypervisor or any user.</p>
 </li>
 <li>
-<p><strong>container</strong>:  a container is a way to deploy services. Note that a container can be entered by users and the users can inspect all files in the container as well as the memory of the processes (unless they run enclaves in release mode)</p>
+<p><strong>container</strong>:  a container is a way to deploy services. Note that a container can be entered by users and the users can inspect all files in the container as well as the memory of the processes - unless they run enclaves in release mode.</p>
 </li>
 <li>
 <p><strong>containerized CC App</strong>:  an application consisting of enclaved service. The enclaved services cannot be inspected by users. However, the file system can still be inspected unless we encrypt the file system.</p>
@@ -1490,10 +1495,13 @@ basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-
 </center></p>
 <ul>
 <li>
-<p><strong>encrypted volume</strong>: an enclaved service can get access to transparently encrypted volumes. To Kubernetes, these look like standard volumes. However, users that log into a container will only see encrypted files. An authorized enclaved service the files look like plain files because SCONE transparently decrypts/encrypts the files inside of the enclave.</p>
+<p><strong>(transparently) encrypted volume</strong>: an enclaved service can get access to transparently encrypted volumes. To Kubernetes, these look like standard volumes. However, users that log into a container will only see encrypted files. An authorized enclaved service the files look like plain files because SCONE transparently decrypts/encrypts the files inside of the enclave.</p>
 </li>
 <li>
 <p><strong>pod</strong>: a pod is a Kubernetes concept. It is the minimal deployable unit consisting of one or more containers executed on the same node. A pod can consist of enclaved as well as native services.</p>
+</li>
+<li>
+<p><strong>CC pod</strong> is a SCONE concept. It is a pod that contains only enclaved services and all volumes are encrypted. Also, all communication between enclaved services is encrypted.</p>
 </li>
 <li>
 <p><strong>IP address</strong>:  a pod has an IP address. The network communication can be inspected unless it is encrypted. We explain below how SCONE helps to provide enclaved services with certificates such that secure channels can be established between enclaved services as well as between containerized CC Apps.</p>
@@ -1513,7 +1521,9 @@ basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-
 <p><strong>client certs</strong>: SCONE can also generate client certificates. SCONE CAS can provides a containerized CC app with policy-controlled CA (as part of the SCONE CAS). In this way, one can enforce access control to services: only services with the appropriate client certificate are permitted to access a service.</p>
 </li>
 <li>
-<p><strong>CA certificates</strong>: SCONE can inject the CA certificates for the clients as well as the services. In this way, one can perform a <strong>mutual attestation</strong> via TLS: only if both communication partners run inside of enclaves, were properly initialized, have encrypted volumes that were not tempered with and run an untempered code, will be able to establish a TLS connection.</p>
+<p><strong>CA certs</strong>: SCONE can inject the CA certificates for the clients as well as the services. In this way, one can perform a <strong><span data-tooltip="Process of two components proving to each other the integrity and authenticity of their software
+and/or hardware components.
+This can include multiple aspects like that neither their code nor their filesystem was modified.">mutual attestation</span></strong> via TLS: only if both communication partners run inside of enclaves, were properly initialized, have encrypted volumes that were not tempered with and run an untempered code, will be able to establish a TLS connection.</p>
 </li>
 </ul>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, 2020. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
