@@ -1511,7 +1511,7 @@
               
                 
                 
-                <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
+                <h1 id="configuration">Configuration</h1>
 <p>CAS's configuration is read from a <a href="https://en.wikipedia.org/wiki/TOML">TOML</a>-formatted file.</p>
 <p>CAS, as most services, needs to be told how to behave with a configuration.
 This configuration is under the control of the CAS owner.
@@ -1522,7 +1522,7 @@ Thus, CAS users are protected from malicious intend of the owner.</p>
 This configuration is encrytped during the first startup with the secret seal key of CAS. In other words, attesting a root CAS includes attesting
 that the CAS was initialized with the expected configuration file.</p>
 </div>
-<h2 id="database">Database<a class="headerlink" href="#database" title="Permanent link">&para;</a></h2>
+<h2 id="database">Database</h2>
 <p>CAS stores its data in a SQLite database.
 The location of which is determined in by the <code>path</code> option of the configuration in the <code>database</code> section:</p>
 <div class="highlight"><pre><span></span>[database]
@@ -1544,7 +1544,7 @@ path = &quot;:memory:&quot;
 <p>During attestation we need to attest a <strong>root CAS</strong> which is guaranteed to have an encrypted database, runs in a production enclave and checks its
 configuration file during attestation.</p>
 </div>
-<h2 id="interfaces">Interfaces<a class="headerlink" href="#interfaces" title="Permanent link">&para;</a></h2>
+<h2 id="interfaces">Interfaces</h2>
 <p>At the moment, CAS offers two interfaces:</p>
 <ul>
 <li>a client API with which clients can upload, upgrade and query sessions, and </li>
@@ -1559,7 +1559,7 @@ api_listen = &quot;0.0.0.0:8080&quot;
 </pre></div>
 
 <p>Note, a configuration with an IP address of <code>0.0.0.0</code> will make the CAS listen on any available network interface.</p>
-<h2 id="ias-client">IAS Client<a class="headerlink" href="#ias-client" title="Permanent link">&para;</a></h2>
+<h2 id="ias-client">IAS Client</h2>
 <p>The IAS client enables CAS to verify enclave EPID quotes using <a href="https://api.portal.trustedservices.intel.com/EPID-attestation">Intel SGX Attestation Service</a>.</p>
 <p>Its configuration consists of the Service Provider ID (SPID), linkability setting and the TLS identity used to authenticated to the IAS service.
 <code>spid</code> has to be a 32 character or 16 byte long hex string.
@@ -1584,7 +1584,7 @@ key = &quot;ias_client.key&quot;
 <li>The confidentiality of the IAS client configuration, in particular of the private key, is of concern for the CAS owner/operator. Anybody obtaining the private key can impersonate as the CAS owner/operator to Intel's service.</li>
 <li>CAS users do not have to trust this configuration. Intel's service signs responses.</li>
 </ul>
-<h2 id="attestation">Attestation<a class="headerlink" href="#attestation" title="Permanent link">&para;</a></h2>
+<h2 id="attestation">Attestation</h2>
 <p>There are a couple of attestation related configuration options defined in the <code>attestation</code> dictionary.</p>
 <p><strong>Security: These options are security sensitive as they define how trust is established into enclaves.
 As these are configured via a file in the file system which is not authenticated by default the trusted computing base
@@ -1593,7 +1593,7 @@ of the CAS users is at the mercy of the CAS owner/operator which himself is at t
 <p class="admonition-title">Note</p>
 <p>These options are <em>security sensitive</em> as they define how trust is established into enclaves. As these are configured via the config file in the file system, the config file must be part of the attestation.</p>
 </div>
-<h3 id="policy">Policy<a class="headerlink" href="#policy" title="Permanent link">&para;</a></h3>
+<h3 id="policy">Policy</h3>
 <p>The attestation policy determines by which method enclave are attested.
 You can choose from <code>without</code>, <code>intel</code>, and <code>scone</code>.</p>
 <table>
@@ -1622,12 +1622,12 @@ You can choose from <code>without</code>, <code>intel</code>, and <code>scone</c
 <div class="highlight"><pre><span></span>attestation.policy = &quot;scone&quot;
 </pre></div>
 
-<h3 id="trusting-imperfect-platforms">Trusting Imperfect Platforms<a class="headerlink" href="#trusting-imperfect-platforms" title="Permanent link">&para;</a></h3>
+<h3 id="trusting-imperfect-platforms">Trusting Imperfect Platforms</h3>
 <p>By default only enclaves running on perfectly trustworthy platforms will be trusted by CAS.
 However, maintaining a platform perfectly trustworthy 24/7 is a high burden or might not be desired due to the involved performance penalty.
 Thus, CAS can be configured to trust platforms with minor imperfections enabling a user defined trade-off.</p>
 <p>This options are only regarded if the attestation policy is either <code>scone</code> or <code>intel</code>.</p>
-<h4 id="outdated-platforms">Outdated Platforms<a class="headerlink" href="#outdated-platforms" title="Permanent link">&para;</a></h4>
+<h4 id="outdated-platforms">Outdated Platforms</h4>
 <p>An update has been released for at least one component of the platforms trust stack which is not installed.
 The platform has not been identified as compromised and thus is not revoked, but depending on the nature
 of the update the platform's trust state might be at risk.</p>
@@ -1637,14 +1637,14 @@ of the update the platform's trust state might be at risk.</p>
 <div class="highlight"><pre><span></span>attestation.trust_group_out_of_date = true
 </pre></div>
 
-<h4 id="imperfect-configured-platforms">Imperfect Configured Platforms<a class="headerlink" href="#imperfect-configured-platforms" title="Permanent link">&para;</a></h4>
+<h4 id="imperfect-configured-platforms">Imperfect Configured Platforms</h4>
 <p>Platforms with enabled Hyper-Threading allow certain types of side-channel attacks to be mounted against enclaves.
 This can be prevented by turning of Hyper-Threading in the BIOS which might introduce performance penalities.</p>
 <p>CAS can be configured to trust platforms with Hyper-Threading by setting <code>attestation.trust_configuration_needed</code> to <code>true</code>.</p>
 <div class="highlight"><pre><span></span>attestation.trust_configuration_needed = false
 </pre></div>
 
-<h3 id="scone-quoting-enclave-configuration">SCONE Quoting Enclave Configuration<a class="headerlink" href="#scone-quoting-enclave-configuration" title="Permanent link">&para;</a></h3>
+<h3 id="scone-quoting-enclave-configuration">SCONE Quoting Enclave Configuration</h3>
 <p>SCONE's attestation scheme is built around a separate quoting enclave into which trust has to be established.</p>
 <p>This trust can either be established using Intel's attestation scheme or manually.</p>
 <p>To establish trust using Intel's attestation scheme the expected SCONE quoting enclaves' measurement value has to be specified.
@@ -1681,7 +1681,7 @@ scone_qe_pubkey_whitelist = [
 <span class="o">[</span><span class="m">10000</span>:INFO@21.06.2019/20:39:16<span class="o">]</span> STARTER: LAS is listening on <span class="m">0</span>.0.0.0:18766
 </pre></div>
 
-<h2 id="tls-identity">TLS Identity<a class="headerlink" href="#tls-identity" title="Permanent link">&para;</a></h2>
+<h2 id="tls-identity">TLS Identity</h2>
 <p>A TLS identity consists of a certificate and the associated private key.</p>
 <p>Certificate and private key have to be provided as file system paths where CAS can open and read the certificate resp. private key.
 CAS will ensure that certificate and private key belong together.</p>
@@ -1695,7 +1695,7 @@ key = &quot;private_key.pem&quot;
 <li>the key is not protected at all.</li>
 </ul>
 <p>The <a href="../ProductionModeCAS/">production CAS</a> generates the TLS certificate/key on-the-fly, signing it by CAS (instance) CA certificate, and storing it in the <code>palaemon.db</code>. The <code>palaemon.db</code> is protected as we show above.</p>
-<h3 id="private-keys">Private Keys<a class="headerlink" href="#private-keys" title="Permanent link">&para;</a></h3>
+<h3 id="private-keys">Private Keys</h3>
 <p>We support RSA and PKCS8 encoded private keys.
 By default, <code>openssl</code> will encode elliptic curve keys in the incompatible format specified in <a href="http://www.secg.org/">SEC 1: Elliptic Curve Cryptography</a>.
 You can use the <code>openssl</code> cli to convert these keys into <a href="https://tools.ietf.org/html/rfc5208">PKCS8</a>:</p>

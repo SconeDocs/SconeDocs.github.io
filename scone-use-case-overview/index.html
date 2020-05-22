@@ -1519,16 +1519,16 @@
               
                 
                 
-                <h1 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h1>
+                <h1 id="overview">Overview</h1>
 <p>The SCONE Platform is a generic platform to execute applications inside of trusted execution environments like Intel SGX. It can be used in different settings with <strong>multiple stakeholders</strong> that might not all trust each other: <a href="#user">User</a>,  <a href="#application-provider">Application Provider</a>,  <a href="#data-owner">Data Owner</a>,  and <a href="#auditor">Auditor</a>.</p>
 <p><strong>SCONE  protects the IP (intellectual property) of multiple stakeholders</strong>. In this section, we introduce the different stakeholders and sketch how SCONE can be used to protect the data, code, and secrets not only from attackers but also from other stakeholders. We also give some recommendations - in the form of forward links - on how one could proceed reading about SCONE.</p>
-<h2 id="attacker">Attacker<a class="headerlink" href="#attacker" title="Permanent link">&para;</a></h2>
+<h2 id="attacker">Attacker</h2>
 <p>In SCONE, we assume a very powerful <strong>attacker</strong> that has root access on the hosts on which we execute applications. The attacker can hence <a href="../memory_dump/">dump the memory</a> of the application using standard features of the operating system. In this way, the attacker can gain access to the code, the data and all the keys that are stored in main memory.</p>
 <p><center>
 <img alt="Attacker" src="../img/attacker.svg" />
 </center></p>
 <p>Note that the attacker can read all files of the application since operating system based access control does not apply to an attacker with root access. Moreover, any operating system based encryption of files does prevent file system accesses by the attacker either. If the application encrypts the files itself, the encryption key has to be stored somewhere in main memory - otherwise, the application would not be able to encrypt and decrypt files. An attacker can dump the main memory to get a hold of this encryption key.</p>
-<h2 id="user">User<a class="headerlink" href="#user" title="Permanent link">&para;</a></h2>
+<h2 id="user">User</h2>
 <p>A <strong>user</strong> wants to protect his computations, data and keys from accesses by other parties and in particular, by accesses by attackers with root access rights:</p>
 <ul>
 <li>Protection against <strong>read</strong> accesses by attackers protects the <strong>confidentiality</strong> of the data, keys, and code.</li>
@@ -1541,7 +1541,7 @@
 <p><center>
 <img alt="User" src="../img/user-files.svg#fullwidth" />
 </center></p>
-<h2 id="application-provider">Application Provider<a class="headerlink" href="#application-provider" title="Permanent link">&para;</a></h2>
+<h2 id="application-provider">Application Provider</h2>
 <p>An <strong>application provider</strong> can create container images like, for example, <a href="../blender/">blender</a>, a 3D creation suite. SCONE helps the application provider to run <strong>unmodified applications</strong> inside of TEEs (trusted execution environments) such that the application is protected from accesses by attackers. SCONE can also transparently encrypt/decrypt the files stored in the
 file system. The application container image can, for example, be created with the help of a <a href="../dockerfileexample/">Dockerfile</a> and in
 some cases, it might need a <a href="../multistagebuild/">multistage build</a>. We describe how to <a href="../groupcacheUseCase/">build a Go program</a> as part of this tutorial.</p>
@@ -1554,7 +1554,7 @@ We describe later how to do this for a simple <a href="../dapps/">decentralized 
 <p><center>
 <img alt="Mutual Protection" src="../img/app-provider-and-user-protection.svg#fullwidth" />
 </center></p>
-<h2 id="data-owner">Data Owner<a class="headerlink" href="#data-owner" title="Permanent link">&para;</a></h2>
+<h2 id="data-owner">Data Owner</h2>
 <p>A <strong>data owner</strong> is another stakeholder. The data owner provides data that can be processed by the application on behalf of the user. The data owner wants to protect its data not only accesses by access by attackers but also by direct access by the user and/or the application provider. The data owner therefore encrypts its data and only permits accesses by some explicitly specified application.  </p>
 <p><center>
 <img alt="Data Owner" src="../img/data-owner.svg#fullwidth" />
@@ -1563,7 +1563,7 @@ We describe later how to do this for a simple <a href="../dapps/">decentralized 
 <p><center>
 <img alt="Data Owner" src="../img/composing-security-policies.svg#fullwidth" />
 </center></p>
-<h2 id="auditor">Auditor<a class="headerlink" href="#auditor" title="Permanent link">&para;</a></h2>
+<h2 id="auditor">Auditor</h2>
 <p>In very critical application domains, neither the data owner nor the user might trust neither the application provider nor the SCONE platform sufficiently much, to entrust their data &amp; computations to the application. In these domains, an <strong>auditor</strong> can help to establish <strong>trust in the application</strong>. The auditor is an independent entity that can access all source code of the application as well as the SCONE platform. The auditor works typically offline, i.e., it is not involved in any of the computations. Instead, she determines which MrEnclaves together with what file system state (i.e., tag) can be trusted by the data owner and the user.</p>
 <p><center>
 <img alt="Auditor" src="../img/auditor.svg" />

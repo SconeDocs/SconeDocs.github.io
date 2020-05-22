@@ -1599,13 +1599,13 @@
               
                 
                 
-                <h1 id="scone-file-protection">SCONE File Protection<a class="headerlink" href="#scone-file-protection" title="Permanent link">&para;</a></h1>
+                <h1 id="scone-file-protection">SCONE File Protection</h1>
 <p>SCONE supports the transparent encryption and/or authentication of files. By <strong>transparent</strong>, we mean that there are no application code changes needed to support this. We support two ways to use the SCONE file protection:</p>
 <ul>
 <li>a <strong>low-level interface</strong> intended to be used at the developer site. We assume that the developer machine is sufficiently trust worthy. This is made available via command <strong>scone fspf</strong> and described in this document.</li>
 <li>a <strong>high-level interface</strong> simplifies the use of the file protection and it does and in particular, takes care of key management. (<em>The high-level interface is not yet available</em>).</li>
 </ul>
-<h2 id="concepts">Concepts<a class="headerlink" href="#concepts" title="Permanent link">&para;</a></h2>
+<h2 id="concepts">Concepts</h2>
 <p>The underlying idea of SCONE file protection is that a user specifies that each file is <strong>either</strong>: </p>
 <ul>
 <li>
@@ -1625,7 +1625,7 @@
 <p>All files that need to be persistent should be stored in a non-ephemeral region instead. We refer to this as a <strong>kernel</strong>  region. For each region, you need to specify if the region is either <strong>ephemeral</strong> or <strong>kernel</strong>.</p>
 <p>Each region belongs to one of the following six classes:
    <center>{<strong>ephemeral</strong> | <strong>kernel</strong>} X {<strong>not-protected</strong> | <strong>authenticated</strong> | <strong>encrypted</strong> }</center></p>
-<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<h2 id="example">Example</h2>
 <p>Sometimes, we might only need to protect the files that are passed to a container via some volume. In this case, it would be sufficient that the volume is either authenticated or encrypted.</p>
 <p>Let us demonstrate this via a simple example in which we pass an encrypted volume to a container. We create this encrypted volume in our local filesystem (in directory <strong>volume</strong>) and we will later mount this in the container as <strong>/data</strong>. The original (non-encrypted) files are stored in directory <strong>data-original</strong>.</p>
 <div class="highlight"><pre><span></span>&gt; mkdir -p volume
@@ -1653,7 +1653,7 @@ deda99d44e880ea8f2250f45c5c20c15d568d84c  data-original/world.py
 <div class="highlight"><pre><span></span>&gt; docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data-original:/data-original&quot;</span> sconecuratedimages/crosscompilers
 </pre></div>
 
-<h3 id="file-system-protection-file">File System Protection File<a class="headerlink" href="#file-system-protection-file" title="Permanent link">&para;</a></h3>
+<h3 id="file-system-protection-file">File System Protection File</h3>
 <p>All the metadata required for checking the consistency of the files is stored in a <em>file system protection file</em>, or, short <em>fspf</em>. SCONE supports multiple *fspf*s. </p>
 <p>Let's start with a simple example with a single <em>fspf</em>. The <em>fspf</em> file is created via command <strong>scone fspf create</strong> and let us name this file <strong>fspf.pb</strong>. We execute the following commands
 inside the container (as indicated by the $ prompt):</p>
@@ -1757,7 +1757,7 @@ print str<span class="o">(</span>f.read<span class="o">())</span>
 </pre></div>
 
 <p>Variables <strong>SCONE_FSPF_KEY</strong>, <strong>SCONE_FSPF_TAG</strong> and <strong>SCONE_FSPF</strong> should only be set manually for debugging since they cannot securely be passed in this way to programs running inside enclaves. To securely pass environment variables, please use <a href="../cas_intro/">CAS</a>.</p>
-<h2 id="python">Python<a class="headerlink" href="#python" title="Permanent link">&para;</a></h2>
+<h2 id="python">Python</h2>
 <p>Let's try a similar approach for Python. 
 In the above example, we encrypted a Python program. Let's try to execute this encrypted program that accesses an encrypted file:</p>
 <div class="highlight"><pre><span></span>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> sconecuratedimages/apps:python-2.7-alpine3.6 bash
@@ -1781,14 +1781,14 @@ $ <span class="nb">export</span> <span class="nv">SCONE_FSPF</span><span class="
 Hello World
 </pre></div>
 
-<h2 id="protecting-the-root-region">Protecting the Root Region<a class="headerlink" href="#protecting-the-root-region" title="Permanent link">&para;</a></h2>
+<h2 id="protecting-the-root-region">Protecting the Root Region</h2>
 <p>Note that in the above example, Python will not be permitted to load dynamic libraries  outside of the protected directory <strong>/data</strong>: a dynamic library must reside in either an authenticated or an encrypted region.  To deal with this, we must define one or more authenticated or encrypted file regions that contain the dynamic libraries.  </p>
 <p>Let us show how to authenticate all files in region <strong>/</strong></p>
 <div class="highlight"><pre><span></span>$ scone fspf addr fspf.pb / --kernel / --authenticated
 </pre></div>
 
 <p>We need to add all files that our application might access. Often, these files in the root region might be defined in some container image. Let's see how we can add these files to our region <strong>/</strong>.</p>
-<h3 id="adding-files-from-an-existing-container-image">Adding files from an existing container image<a class="headerlink" href="#adding-files-from-an-existing-container-image" title="Permanent link">&para;</a></h3>
+<h3 id="adding-files-from-an-existing-container-image">Adding files from an existing container image</h3>
 <p>We show how to add a subset of the files of container image <strong>sconecuratedimages/apps:python-2.7-alpine3.6</strong> to our root region.
 To do so, we ensure that we have the newest images:</p>
 <div class="highlight"><pre><span></span>&gt; docker pull sconecuratedimages/apps:python-2.7-alpine3.6
@@ -1853,7 +1853,7 @@ $ <span class="nb">export</span> <span class="nv">SCONE_FSPF</span><span class="
 <div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000000000</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>  <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /usr/local/bin/python
 </pre></div>
 
-<h2 id="checking-the-file-system-shield">Checking the File System Shield<a class="headerlink" href="#checking-the-file-system-shield" title="Permanent link">&para;</a></h2>
+<h2 id="checking-the-file-system-shield">Checking the File System Shield</h2>
 <p>Let's us check the file shield by creating a new python program (<em>helloworld-manual.py</em>) in
 side of a python container:</p>
 <div class="highlight"><pre><span></span>&gt; docker run -i sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
@@ -1889,7 +1889,7 @@ $ <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">1000
 Hello World
 </pre></div>
 
-<h2 id="extended-example">Extended Example<a class="headerlink" href="#extended-example" title="Permanent link">&para;</a></h2>
+<h2 id="extended-example">Extended Example</h2>
 <p>To learn how to use multiple file system protection files, 
 please have a look at the following screencast.</p>
 <script id="asciicast-285843" src="https://asciinema.org/a/285843.js" async></script>
@@ -1977,7 +1977,7 @@ $ scone gcc cat.c -o sgxcat
 $ <span class="nv">SCONE_FSPF</span><span class="o">=</span>fspf.pb ./sgxcat
 </pre></div>
 
-<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
+<h2 id="notes">Notes</h2>
 <p>The SCONE File Protection documentation is not yet completed and more information will be provided soon.</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, 2020. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 

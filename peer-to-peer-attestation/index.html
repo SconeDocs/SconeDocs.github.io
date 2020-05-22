@@ -1458,11 +1458,11 @@
               
                 
                 
-                <h1 id="peer-to-peer-attestation">Peer-to-Peer Attestation<a class="headerlink" href="#peer-to-peer-attestation" title="Permanent link">&para;</a></h1>
+                <h1 id="peer-to-peer-attestation">Peer-to-Peer Attestation</h1>
 <p><center>
 <img alt="SCONE Peer-To-Peer" src="../img/CASOverview-5.png" title="SCONE CAS supports peer-to-peer based attestation of services operated by mutually distrusting peers." />
 </center></p>
-<h2 id="motivation">Motivation<a class="headerlink" href="#motivation" title="Permanent link">&para;</a></h2>
+<h2 id="motivation">Motivation</h2>
 <p>CAS supports <strong>peers</strong> to <strong>attest</strong> each others. The term <strong>peer</strong> refers an instance of a program such that</p>
 <ul>
 <li>each peer might be operated by a different organizations, and</li>
@@ -1471,7 +1471,7 @@
 </ul>
 <p>A dishonest organization might try to operate a modified program to gain advantages. As we explain below, it might
   even be sufficient for an organization to change the configuration of the program or some files on the disk to change the program's behavior to its advantage. For example, the behavior of a Python program is not only determined by the Python engine that executes the Python program but also the set of Python files and dynamic link libraries and configuration files in the filesystem. An organization could try to modify one of the program's Python files or a file belonging to the Python standard library to change the behavior of the program to its advantage.</p>
-<h2 id="general-approach">General Approach<a class="headerlink" href="#general-approach" title="Permanent link">&para;</a></h2>
+<h2 id="general-approach">General Approach</h2>
 <p>For a set of mutually distrusting organizations to be able to work together, we propose the following approach</p>
 <ul>
 <li><strong>all agree to run the same, agreed-upon program</strong>: This program could be stored in a global git repository and is identified by a hash value - like the commit timestamp.</li>
@@ -1485,14 +1485,14 @@
 <li>very that the peers run in the <strong>context of a honest SCONE CAS</strong> (SCONE Configuration and Attestation Service), and</li>
 <li>a peer needs to <strong>check the security policy</strong> of it peers.</li>
 </ul>
-<h2 id="peer-attestation">Peer Attestation<a class="headerlink" href="#peer-attestation" title="Permanent link">&para;</a></h2>
+<h2 id="peer-attestation">Peer Attestation</h2>
 <p>The basic idea of peer attestation is as follows. A peer program <strong>A</strong> is connected via TLS to a peer <strong>B</strong> and <strong>A</strong> wants to ensure that it can trust  program <strong>B</strong>. To do so, <strong>A</strong> verifies the TLS certificate of <strong>B</strong>. This certificate, <strong>B_CERT</strong>, is issued in the context of a <a href="cas_blender_example/#hello-world-session">CAS session</a> in which <strong>B</strong> runs, i.e., it is issued and signed by the CAS, <strong>B_CAS</strong>, that <strong>B</strong> is using. <strong>B_CERT</strong> includes a chain of certificates which also includes the TLS certificate of <strong>B_CAS</strong>.</p>
 <p>Peer <strong>A</strong> can now perform the following steps:</p>
 <ul>
 <li><strong>A</strong> checks that <strong>B_CERT</strong> was issued by <strong>B_CAS</strong> by attesting that  <strong>B_CAS</strong> is a honest CAS running inside of a production enclave. See <a href="ProductionModeCAS/#cas-attestation">CAS Attestation</a> for more details on how to attest CAS itself.</li>
 <li><strong>B_CERT</strong> contains the session name <strong>B_session</strong> and <strong>A</strong> downloads this CAS session from <strong>B_CAS</strong> using its certificate determined during attestation to exclude man-in-the middle attacks: to ensure that <strong>B's</strong> session is as expected, <strong>B</strong> checks that it is an instance of an agreed upon session template.</li>
 </ul>
-<h2 id="session">Session<a class="headerlink" href="#session" title="Permanent link">&para;</a></h2>
+<h2 id="session">Session</h2>
 <p>The session <strong>B_session</strong> defines how the files are initialized and which programs can access the files. Usually there are two programs:</p>
 <ul>
 <li>the <strong>programm</strong> that provides a service, and</li>
@@ -1506,7 +1506,7 @@
 </ul>
 <p>The behavior of <strong>pull_code</strong> is completely defined by its <strong>MrEnclave</strong> and its environment variables which are specified in session <strong>B_session</strong>. In other words, peer <strong>A</strong> can verify that <strong>pull_code</strong> does exactly that what it is supposed to do.</p>
 <p>A dishonest organization could try to circumvent <strong>pull_code</strong> by trying to modify a session <strong>B_CERT</strong> such that during attestation is the expected format. We can prevent this by specifying inside the session that it cannot be deleted nor can it be updated: this ensures that the current session is immutable. However, there could be a predecessor session that was mutable and in which a program under control of an adversary initialized the files. To be able to detect this, we check that the session <strong>B_session</strong> is the first session of this name, i.e., it has no <code>predecessor</code> field.</p>
-<h2 id="program-attestation">Program Attestation<a class="headerlink" href="#program-attestation" title="Permanent link">&para;</a></h2>
+<h2 id="program-attestation">Program Attestation</h2>
 <p>The term <strong>program attestation</strong> refers to the process of helping to ensure that an enclave was started and that the file system is in the correct state. In the context of the peer-to-peer attestation, this helps to ensure that the file system is actually properly initialized and only a program <strong>B</strong> with the correct <strong>MrEnclave</strong> has access to the private key of <strong>B_CERT</strong>.</p>
 <p>In the SCONE platform, CAS performs a program attestation of a program in context of a session to ensure that it is
 permitted to pass arguments, environment variables, and the file system keys to the program. CAS performs the following steps:</p>
@@ -1516,7 +1516,7 @@ permitted to pass arguments, environment variables, and the file system keys to 
 <li><strong>the content of files were not modified</strong>, i.e., all files are in the expected state.</li>
 </ul>
 <p><strong>MrEnclave</strong> and the <strong>expected file state</strong> are defined in the session. </p>
-<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<h2 id="summary">Summary</h2>
 <p>The  state of a program consists of multiple components, like</p>
 <ul>
 <li>a Python engine that can be attested via its <strong>MrEnclave</strong>, and</li>

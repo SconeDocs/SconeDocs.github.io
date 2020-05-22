@@ -1589,7 +1589,7 @@
               
                 
                 
-                <h1 id="python">Python<a class="headerlink" href="#python" title="Permanent link">&para;</a></h1>
+                <h1 id="python">Python</h1>
 <p>SCONE supports running Python programs inside of SGX enclaves. We maintain Docker images for various Python versions / Python engines like:</p>
 <ul>
 <li><strong>Python 3.7.5</strong>: sconecuratedimages/python:3.7-alpine</li>
@@ -1602,14 +1602,14 @@
 <p class="admonition-title">PyPy for SCONE</p>
 <p><a href="../pypyscone/"><strong>PyPySCONE's speed</strong></a> is close to PyPy ("just in time Python") and in almost all SpeedCenter benchmarks is <strong>PyPy</strong> inside an enclave faster than native Python.</p>
 </div>
-<h2 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">&para;</a></h2>
+<h2 id="workflow">Workflow</h2>
 <p>SCONE supports the typical Docker workflow to create Docker images that contain the Python engine as well as the Python program. SCONE supports the encryption of the Python programs to ensure both the confidentiality as well as the integrity of the programs. A typical workflow might look like this:</p>
 <p><img alt="SCONE Python Workflow" src="../img/python-workflow.svg#fullwidth" /></p>
 <p>We at scontain.com maintain the SCONE-Python image and push this to hub.docker.com. This image can be used by authorized application developers to add encrypted Python programs and encrypted libraries. The SCONE runtime of the Python engine needs to get access to the encryption key to be able to decrypt transparently the Python scripts for the Python engine. To do so, the application developer defines a security policy that ensures that only the Python engine that executes the application of the application provider gets access to this encryption key.</p>
 <p>When the Python engine starts completely inside of a SGX enclave. The SCONE runtime transparently attests the Python engine as well as the <strong>filesystem</strong>: Only if both the Python engine has the expected MrEnclave as well as the filesystem state is exactly as expected, the SCONE runtime gets the encryption key from the SCONE CAS (Configuration and Attestation Service). The application developer therefore adds the expected MrEnclave and the initial filesystem state in form of a security policy to SCONE CAS.</p>
-<h2 id="complex-workflows">Complex Workflows<a class="headerlink" href="#complex-workflows" title="Permanent link">&para;</a></h2>
+<h2 id="complex-workflows">Complex Workflows</h2>
 <p>SCONE supports more complex workflows in which the user can also specify encrypted volumes for input as well as output data. We explain a more complex example in the context of our <a href="../blender/">blender use case</a>.</p>
-<h2 id="image">Image<a class="headerlink" href="#image" title="Permanent link">&para;</a></h2>
+<h2 id="image">Image</h2>
 <div class="admonition hint">
 <p class="admonition-title">Getting access to Python Images</p>
 <p>You need access to a private docker hub repository <strong>sconecuratedimages/apps</strong> to be able to evaluate our Python images. <a href="mailto:info@scontain.com?Subject=Access%20to%20the%20SCONE%20Python%20community%20edition&amp;Body=Hi%20there%2c%0dmy%20Docker%20Hub%20ID%20is%20...%20and%20I'm%20working%20on%20...%20at%20company%20...%20and%20would%20like%20to%20get%20access%20to%20the%20SCONE%20Python%20community%20edition.%0dBest%20regards%2c%20...">Send us</a>
@@ -1620,7 +1620,7 @@ your docker hub ID to get access to this repository.</p>
 <div class="highlight"><pre><span></span>docker pull sconecuratedimages/apps:python-2-alpine3.6
 </pre></div>
 
-<h2 id="python-interpreter">Python Interpreter<a class="headerlink" href="#python-interpreter" title="Permanent link">&para;</a></h2>
+<h2 id="python-interpreter">Python Interpreter</h2>
 <p>To run the Python interpreter inside an enclave in interactive mode, first start the container:</p>
 <div class="highlight"><pre><span></span>docker run --rm -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/apps:python-2-alpine3.6 sh
 </pre></div>
@@ -1670,7 +1670,7 @@ Of Memory) killer, terminated your program. Try to reduce memory size by reducin
 environment variable <strong>SCONE_HEAP</strong> appropriately.</p>
 </div>
 <p>The meaning of <strong>protected</strong> versus <strong>unprotected</strong> library is explained in the <a href="faq/#what-are-protected-dynamic-libraries">faq</a>.</p>
-<h2 id="running-an-application">Running an application<a class="headerlink" href="#running-an-application" title="Permanent link">&para;</a></h2>
+<h2 id="running-an-application">Running an application</h2>
 <p>Say, you have a Python application called <em>myapp.py</em> in your current directory.
 To execute this with Pyhton 2.7 inside an enclave, you need to set some environment variables. </p>
 <ul>
@@ -1703,7 +1703,7 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 ...
 </pre></div>
 
-<h2 id="numpy">NumPy<a class="headerlink" href="#numpy" title="Permanent link">&para;</a></h2>
+<h2 id="numpy">NumPy</h2>
 <p>Let's see how we can install some extra packages that your python program might need. Let us focus on <strong>NumPy</strong> first, a very popular package for scientific computing. Note that the following steps you would typically perform as part of a <a href="../SCONE_Dockerfile/">Dockerfile</a>.</p>
 <p>First, we start the SCONE Python  image:</p>
 <div class="highlight"><pre><span></span>docker run -it --rm sconecuratedimages/apps:python-2-alpine3.6 sh
@@ -1777,7 +1777,7 @@ array<span class="o">([[</span> <span class="m">0</span>,  <span class="m">1</sp
 &gt;&gt;&gt; 
 </pre></div>
 
-<h2 id="cairo">Cairo<a class="headerlink" href="#cairo" title="Permanent link">&para;</a></h2>
+<h2 id="cairo">Cairo</h2>
 <p>Let's look at another popular library: the <strong>cairo</strong> graphics library. <strong>cairo</strong>  is written in C and has 
 Python bindings provided by package <strong>pycairo</strong>. In this case, we need to install the C-library first:</p>
 <p>In Alpine Linux - which is the basis of the SCONE Python image - we can install cairo as follows:</p>
@@ -1845,7 +1845,7 @@ Successfully installed pycairo-1.15.4
 </pre></div>
 
 <p>This generates a file <strong>example.png</strong> in the working directory.</p>
-<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<h2 id="example">Example</h2>
 <p>Let's look at another example:</p>
 <ul>
 <li>
@@ -1858,9 +1858,9 @@ Successfully installed pycairo-1.15.4
 <p>We use the Scholar's mate example from <a href="https://pypi.python.org/pypi/python-chess">https://pypi.python.org/pypi/python-chess</a></p>
 </li>
 </ul>
-<h2 id="limitation">Limitation<a class="headerlink" href="#limitation" title="Permanent link">&para;</a></h2>
+<h2 id="limitation">Limitation</h2>
 <p>We do not yet support fork, i.e., you spawn new processes from within your Python programs. We are currently working on removing this limitation of SCONE. Until then, we expect you to have an external spawner.</p>
-<h2 id="screencast">Screencast<a class="headerlink" href="#screencast" title="Permanent link">&para;</a></h2>
+<h2 id="screencast">Screencast</h2>
 <script id="asciicast-285917" src="https://asciinema.org/a/285917.js" async></script>
 
 <div class="footnote">

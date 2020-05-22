@@ -1545,11 +1545,11 @@
               
                 
                 
-                <h1 id="scone-sgx-toolchain">SCONE SGX Toolchain<a class="headerlink" href="#scone-sgx-toolchain" title="Permanent link">&para;</a></h1>
+                <h1 id="scone-sgx-toolchain">SCONE SGX Toolchain</h1>
 <p>SCONE comes with compiler support for popular languages: C, C++, GO, Rust as well as Fortran.
 The objective of these (cross-)compilers are to compile applications - generally without source code changes - such that they can run inside of SGX enclaves.</p>
 <p>To simplify the use of these (cross-)compilers, SCONE maintains curated container image that includes these cross-compilers.</p>
-<h2 id="compiler-variants">Compiler variants<a class="headerlink" href="#compiler-variants" title="Permanent link">&para;</a></h2>
+<h2 id="compiler-variants">Compiler variants</h2>
 <p>Depending on if you want to generate a <em>dynamically-linked</em> or a <em>statically-linked</em> binary, you
 can use a standard compiler (dynamic) or you need to use a cross compiler (static). The compiler can run on any system, i.e., does not require SGX to run.</p>
 <div class="admonition tip">
@@ -1560,7 +1560,7 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <p class="admonition-title">Loading Shared Libraries after startup</p>
 <p>SCONE supports the loading of dynamic libraries after a program has already started inside of an enclave. This feature is required by modern languages like Java and Python. Enabling general loading of dynamic library introduces the risk that one could load malicious code inside of an enclave. Hence, we switch this feature off by default. For debugging programs, you can enable this feature via an environment variable (<em>export SCONE_ALLOW_DLOPEN=2).</em> For production enclaves, you will need to protect the integrity of the shared libraries with the help of the <a href="../SCONE_Fileshield/">SCONE file shield</a>.</p>
 </div>
-<h3 id="dynamically-linked-binaries">Dynamically-Linked Binaries<a class="headerlink" href="#dynamically-linked-binaries" title="Permanent link">&para;</a></h3>
+<h3 id="dynamically-linked-binaries">Dynamically-Linked Binaries</h3>
 <p>The easiest to get started is to compile your programs such that</p>
 <ul>
 <li>
@@ -1579,7 +1579,7 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <p><img alt="Dynamic Compilation" src="../img/dynamiccompilation.png" /></p>
 <p>When a program is started, SCONE uses its own dynamic link loader to replace libc by a SCONE libc. The SCONE dynamic linker will load the program inside a new SGX enclave and SCONE libc will enable programs to run inside the SGX enclaves, e.g., execute system calls and protect them from attacks via shields like the <a href="../SCONE_Fileshield/">file system shield</a>.</p>
 <p>To simplify the compiling of your programs for scone, we make available a docker image <em>sconecuratedimages/muslgcc</em> which includes <em>gcc</em> and <em>g++</em> support. The options will by default be set as shown above. You need, however, to make sure that your Makefiles will not overwrite these options.</p>
-<h3 id="statically-linked-binaries">Statically-Linked Binaries<a class="headerlink" href="#statically-linked-binaries" title="Permanent link">&para;</a></h3>
+<h3 id="statically-linked-binaries">Statically-Linked Binaries</h3>
 <p>For statically linked binaries, we make available a (private) docker image <em>sconecuratedimages/crosscompilers</em> which can produce statically linked binaries. In the statically linked binaries, we replace the interface to the operating system (i.e., libc) by a variant that enables programs to run inside Intel SGX enclaves.</p>
 <p><img alt="Static Compilation" src="../img/staticcompilation.jpg" /></p>
 <p>Note that a statically linked binaries might look like a dynamically-linked binary. For example, if you look at a statically-linked program <em>web-srv-go</em>, you will still see dynamic dependencies:</p>
@@ -1591,7 +1591,7 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 </pre></div>
 
 <p>The reason for that is that the statically linked binary that runs inside of an enclave is wrapped in a dynamically linked <em>loader</em> program. The loader program creates the enclave, moves the program code inside the enclave and starts threads that will enter the enclave. The code that is moved inside the enclave is, however, statically linked.</p>
-<h2 id="using-the-cross-compiler-container">Using the cross compiler container<a class="headerlink" href="#using-the-cross-compiler-container" title="Permanent link">&para;</a></h2>
+<h2 id="using-the-cross-compiler-container">Using the cross compiler container</h2>
 <p>How to use the compiler:</p>
 <ul>
 <li>
@@ -1602,7 +1602,7 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 </li>
 </ul>
 <p>For an example how to use the crosscompilers, see how to compile a programs written in <a href="../GO/">GO</a>.</p>
-<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<h2 id="example">Example</h2>
 <p><strong>Note</strong>  on some systems you will need to run <em>docker</em> with root permissions, i.e., in this case you should prefix a </p>
 <div class="highlight"><pre><span></span>&gt; docker ...
 </pre></div>
@@ -1628,7 +1628,7 @@ in file <em>myapp.c</em> in your current directory (<em>$PWD</em>). You can comp
 
 <p>To run this inside of SGX enclaves with SCONE, you need access to the SCONE runtime systems. For more details, see our <em>hello world</em> in Section <a href="../SCONE_TUTORIAL/">SCONE Tutorial</a>. This is not very convenient and hence, we provide a) a simpler version with the help of <a href="../SCONE_Dockerfile/">Dockerfiles</a>. </p>
 <p>In most cases, you might just set to use one of our crosscompilers in your <em>configure</em> script or <em>Makefile</em>. A simple way is to use the Docker image <em>sconecuratedimages/crosscompilers</em> as a base image and then clone your code inside the container and set one or more of our compilers (<em>scone-gcc, scone-g++, scone-gccgo, scone-gfortran, and scone-rustc</em>) to be used in your build. For Rust, we support also our variant of <em>cargo</em> which is <em>scone-cargo</em>.</p>
-<h2 id="debugger-support">Debugger support<a class="headerlink" href="#debugger-support" title="Permanent link">&para;</a></h2>
+<h2 id="debugger-support">Debugger support</h2>
 <p>We also support <em>gdb</em> to debug applications running inside of enclaves. To get started, we recommend that you first ensure that your program runs natively linked against musl. Most programs will do - after all, the Alpine Linux distribution is completely based on musl. The debugger is available in image <em>sconecuratedimages/crosscompilers</em> as <em>scone-gdb</em>.</p>
 <p>For example on how to use the debugger, see how to debug a program written in  <a href="../GO/">GO</a>. Also, we support an IDE to debug a program running in an enclave
 in debug mode. We describe how to integrate with <a href="../eclipse/">Eclipse</a>. </p>

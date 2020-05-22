@@ -1484,7 +1484,7 @@
               
                 
                 
-                <h1 id="scone-host-installation-guide-deprecated">SCONE: Host Installation Guide  (Deprecated)<a class="headerlink" href="#scone-host-installation-guide-deprecated" title="Permanent link">&para;</a></h1>
+                <h1 id="scone-host-installation-guide-deprecated">SCONE: Host Installation Guide  (Deprecated)</h1>
 <div class="admonition warning">
 <p class="admonition-title">Do not use <code>scone host</code> CLI</p>
 <p>We will soon remove the host installation functionality.
@@ -1534,7 +1534,7 @@ No matter where <em>scone</em> is running, it requires that <em>ssh</em> be prop
 </li>
 </ul>
 <p><em>The **scone CLI*</em> uses <em>ssh</em> to log into remote hosts. We assume that <em>ssh</em> is setup in such a way that you do not need passwords to log into these hosts.  Please read section <a href="../ssh/">ssh setup</a> to learn how to ensure this.</p>
-<h2 id="installation-of-a-single-host">Installation of a single host<a class="headerlink" href="#installation-of-a-single-host" title="Permanent link">&para;</a></h2>
+<h2 id="installation-of-a-single-host">Installation of a single host</h2>
 <p>After you set up the <a href="../SCONE_CLI/">scone CLI</a> and your passwordless ssh works, you can install the scone related software on a new host, say, <em>alice</em> as follows:</p>
 <div class="highlight"><pre><span></span>$ scone host install --name alice
 </pre></div>
@@ -1544,7 +1544,7 @@ No matter where <em>scone</em> is running, it requires that <em>ssh</em> be prop
 </pre></div>
 
 <p>This command will issue an error unless the newest versions of the patched Docker engine and the patched SGX driver is installed.</p>
-<h2 id="installation-of-a-swarm">Installation of a swarm<a class="headerlink" href="#installation-of-a-swarm" title="Permanent link">&para;</a></h2>
+<h2 id="installation-of-a-swarm">Installation of a swarm</h2>
 <p>For a set of hosts to form a (Docker) swarm, you need to decide which hosts should be managers and which should be just members of the swarm. Say, you decided that <em>alice</em> and <em>bob</em> should be managers but <em>caroline</em> a non-manager, execute the following:</p>
 <div class="highlight"><pre><span></span>$ scone host install --name alice --as-manager
 $ scone host install --name bob --as-manager --join alice
@@ -1552,22 +1552,22 @@ $ scone host install --name caroline  --join alice
 </pre></div>
 
 <p>Note that the hosts must be able to communicate with each other (i.e., not partitioned through firewalls). Docker recommends/expects  that they will be in the same local area network.</p>
-<h4 id="checking-your-installation">Checking your Installation<a class="headerlink" href="#checking-your-installation" title="Permanent link">&para;</a></h4>
+<h4 id="checking-your-installation">Checking your Installation</h4>
 <p>To test the installation, one can run a simple hello-world container:</p>
 <div class="highlight"><pre><span></span>&gt; sudo docker run hello-world
 </pre></div>
 
-<h2 id="background-information">Background Information<a class="headerlink" href="#background-information" title="Permanent link">&para;</a></h2>
-<h3 id="patched-docker-engine-moby">Patched Docker Engine (Moby)<a class="headerlink" href="#patched-docker-engine-moby" title="Permanent link">&para;</a></h3>
+<h2 id="background-information">Background Information</h2>
+<h3 id="patched-docker-engine-moby">Patched Docker Engine (Moby)</h3>
 <p>For an container to be able to use SGX, it has to have access to a device (/dev/isgx). This device permits the container to talk to the SGX driver. This driver is needed, in particular, to create SGX enclaves. </p>
 <p>Some docker commands (like <em>docker run</em>) support an option --device (i.e., <em>--device /dev/isgx</em>) which allows us to give a container access to the SGX device. We need to point out that some docker commands (like <em>docker build</em>) do, however, not yet support the device option. Therefore, we maintain and install a slightly patched docker engine (i.e., a variant of moby): this engine ensures that each container has access to the SGX device (/dev/isgx).  With the help of this patched engine, we can use Dockerfiles to generate container images (see this <a href="../SCONE_Dockerfile/">Tutorial</a>).</p>
 <p>Right now we provide a patched version of the currently active branch of Moby (a.k.a., the Docker engine): 17.05.0-ce, build 89658be (November 11, 2017).</p>
-<h3 id="patched-sgx-driver">Patched SGX Driver<a class="headerlink" href="#patched-sgx-driver" title="Permanent link">&para;</a></h3>
+<h3 id="patched-sgx-driver">Patched SGX Driver</h3>
 <p>We also maintain a patched version of the SGX driver. This version adds some additional monitoring like the number of <em>available</em> and <em>free</em> EPC (Extended Page Cache) pages.</p>
 <p>Right now, we provide a patched version of the latest Intel SGX driver (November 11, 2017).</p>
-<h3 id="note">Note<a class="headerlink" href="#note" title="Permanent link">&para;</a></h3>
+<h3 id="note">Note</h3>
 <p>We have been updating SCONE such that SCONE does not need access to <strong>/dev/isgx</strong> during cross-compilation - which could, for example, be executed during <em>docker build</em>. Hence, we will soon switch to an unpatched Docker engine and SGX driver.</p>
-<h3 id="screencast">Screencast<a class="headerlink" href="#screencast" title="Permanent link">&para;</a></h3>
+<h3 id="screencast">Screencast</h3>
 <p>This screencast shows the installation of three machines SGX-capable hosts. In this screencast, we show the installation on machines that run older versions of Ubuntu (sgx2 = 14.04, sgx3 = 14.04 with custom kernel, and sgx4 = 16.04). In this case, we will see some warnings since <em>scone host</em> depends on <em>systemd</em> to start the swarm. In case <em>systemd</em> is not available, <em>scone host</em> will still be able to install the patched SGX driver and the patched Docker engine.</p>
 <p>Another issue that one sometimes faces is that an older SGX drivers is already installed but cannot be offloaded and replaced by the patched driver by <em>scone host</em>. The reason for that is that typically that some process is still using the <em>/dev/isgx</em> device. This needs to be manually fixed by stopping the process or by rebooting the machine. Alternatively, one can use the existing SGX driver. However, the monitoring of the used EPC pages will not be provided in this case.</p>
 <p><a href="https://asciinema.org/a/CixThoNCAciq132ZAwSZ8kZ22"><img alt="asciicast" src="https://asciinema.org/a/CixThoNCAciq132ZAwSZ8kZ22.png" /></a></p>

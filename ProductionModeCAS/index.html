@@ -1621,7 +1621,7 @@
               
                 
                 
-                <h1 id="outline">Outline<a class="headerlink" href="#outline" title="Permanent link">&para;</a></h1>
+                <h1 id="outline">Outline</h1>
 <p>We describe the following aspects of CAS:</p>
 <ul>
 <li>CAS Production Version</li>
@@ -1632,10 +1632,10 @@
 <li>Palaemon Files</li>
 <li>Service Certificates</li>
 </ul>
-<h2 id="cas-production-version">CAS Production Version<a class="headerlink" href="#cas-production-version" title="Permanent link">&para;</a></h2>
+<h2 id="cas-production-version">CAS Production Version</h2>
 <p>The SCONE CAS (Configuration and Attestation Service) - a.k.a. Palaemon - manages secrets and hence, must be protected by running inside of a production enclave and encrypting its database which is stored in the filesystem. Encrypting files is transparent to applications running in the context of a CAS: CAS attests the application and then passes its filesystem keys to the application. Actually, it passes the keys to the SCONE runtime of the application and the runtime transparently encrypts files on writes and decrypts files on reads.</p>
 <p>CAS can run in the context of a <em>parent</em> CAS to manage the filesystem keys of the <em>child</em> CAS. <strong>This is the preferred way to run CAS</strong>. However, there always exists a CAS that does not have a parent CAS: we call this a <strong>root CAS</strong>. We describe the principles of operating a root CAS below.</p>
-<h3 id="root-cas">Root CAS<a class="headerlink" href="#root-cas" title="Permanent link">&para;</a></h3>
+<h3 id="root-cas">Root CAS</h3>
 <p>Scontain.com operates its own <strong>root CAS</strong>. Customers might, however, want to operate their own <strong>rootCAS</strong>. This root CAS runs inside an enclave and uses an encrypted filesystem.</p>
 <p>Starting up a root CAS is different from a <em>child</em> CAS:
  A root CAS uses the SGX sealing key (mrenclave-based) to encrypt its database. This can be enabled by setting <code>sealed</code> to <code>true</code> in the CAS config file, in the database section. If this option is enabled during the first start of CAS, it will</p>
@@ -1648,7 +1648,7 @@
 <p>Note that the creation is done inside of the enclave, i.e., only the encrypted DB and volume.fspf is visible outside of the enclave. During subsequent runs, CAS will detect that the volume/database already exist, and will simply initialize the FS shield using already existing volume.fspf.</p>
 <p><strong>Limitations:</strong>
 The <strong>root CAS</strong> does no have rollback protection: Intel has stopped supporting monotonic counters which are implemented by the Intel Management Engine (ME) when using Linux.  We plan to add rollback protection in a later version of CAS using an alternative mechanism.</p>
-<h3 id="cas-configuration-protection">CAS Configuration Protection<a class="headerlink" href="#cas-configuration-protection" title="Permanent link">&para;</a></h3>
+<h3 id="cas-configuration-protection">CAS Configuration Protection</h3>
 <p>As we mentioned above, the CAS configuration file will need to set <code>sealed</code> to <code>true</code>. An attacker could try to attack the initial configuration of CAS. Hence, the CAS configuration file needs to be protected too, as it contains security relevant configuration options. For example, it contains hashes of trusted SCONE quoting enclaves. One possibility would be to hardcode the config into CAS itself, however this is not sufficiently flexible since modifications of a config requires CAS recompilation.</p>
 <p>We use a different approach: we tie the fs tag with the mrenclave by adding the tag into enclave_parms structure. This can be done by setting <code>SCONE_FSPF_TAG</code> during enclave signing to provide fspf tag that shall be added to enclave_parms, e.g.</p>
 <div class="highlight"><pre><span></span>$ <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span>84cae7af24a94f52f5de5dd36c1843dc scone-signer sign /myapp
@@ -1665,9 +1665,9 @@ The <strong>root CAS</strong> does no have rollback protection: Intel has stoppe
 - read-only file system
 - no args/env
 - no secrets in the initial fs state</p>
-<h2 id="cas-attestation">CAS Attestation<a class="headerlink" href="#cas-attestation" title="Permanent link">&para;</a></h2>
+<h2 id="cas-attestation">CAS Attestation</h2>
 <p>To establish trust into a root CAS, the client needs to perform a remote attestation of the root CAS. CAS provides a REST endpoint (<code>/v1/attest</code>) to request its quote, which can then be validated by a remote party. The quote will contain a hash of the CAS's certificate chain (in the report data), allowing the client to verify whether the hash of the certificates presented by CAS matches the hash in the report data, and use these certificates for future communication with CAS without the need for re-attestation.</p>
-<h3 id="cas-attestation-api">CAS Attestation API<a class="headerlink" href="#cas-attestation-api" title="Permanent link">&para;</a></h3>
+<h3 id="cas-attestation-api">CAS Attestation API</h3>
 <p>The following types of attestation information are provided by CAS:</p>
 <ul>
 <li><code>IAS verification report</code> (<code>IASReport</code>) - verification report provided by the Intel Attestation Service (IAS)</li>
@@ -1678,7 +1678,7 @@ for example:</p>
 <div class="highlight"><pre><span></span>GET /v1/attest
 </pre></div>
 
-<h3 id="query-parameters">Query parameters<a class="headerlink" href="#query-parameters" title="Permanent link">&para;</a></h3>
+<h3 id="query-parameters">Query parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1710,7 +1710,7 @@ for example:</p>
 </tr>
 </tbody>
 </table>
-<h3 id="response">Response<a class="headerlink" href="#response" title="Permanent link">&para;</a></h3>
+<h3 id="response">Response</h3>
 <p>Succesfull calls will be responded with a JSON map with the following fields:</p>
 <table>
 <thead>
@@ -1730,7 +1730,7 @@ for example:</p>
 </tr>
 </tbody>
 </table>
-<h3 id="proof-data">Proof Data<a class="headerlink" href="#proof-data" title="Permanent link">&para;</a></h3>
+<h3 id="proof-data">Proof Data</h3>
 <p><code>proof_data</code> is a JSON map.</p>
 <p>The returned proof data depends on the requested attestation method.
 Accordingly, "IASReport", and "EPID" proof data might be returned.
@@ -1779,7 +1779,7 @@ See the example below.</p>
 <p><code>spid</code> and <code>linkable</code> merely reflect the provided query parameters of the request.
 For verification, <code>quote</code> has to be sent to Intel's IAS service.
 IAS has to be queried with the specified <code>spid</code> and <code>linkable</code> settings to obtain verification reports successfully.</p>
-<h3 id="additional-data">Additional Data<a class="headerlink" href="#additional-data" title="Permanent link">&para;</a></h3>
+<h3 id="additional-data">Additional Data</h3>
 <p>The <code>additional_data</code> value of the response's JSON contains additional data that is integrity protected and sent along with the attestation proof.
 This data is typically used to, but not limited to, transmit identification information and replay protection that is cryptographically bound to the attestation proof.</p>
 <p>The <code>additional_data</code> values is a JSON map with the following fields:</p>
@@ -1807,13 +1807,13 @@ This data is typically used to, but not limited to, transmit identification info
 </table>
 <p>To protect the <code>additional_data</code>'s integrity it is hashed and its hash value is embedded in the <code>proof</code> field in an attestation method specific manner (see the Proof Data section below).
 The hash is created by hashing <code>additional_data</code>'s unprettified JSON representation with SHA512 yielding a 64-byte long hash value.</p>
-<h3 id="response-status-codes">Response Status Codes<a class="headerlink" href="#response-status-codes" title="Permanent link">&para;</a></h3>
+<h3 id="response-status-codes">Response Status Codes</h3>
 <ul>
 <li>200 ok - no error</li>
 <li>400 bad request  - invalid argument</li>
 <li>500 - internal server error</li>
 </ul>
-<h3 id="example-cas-attestation-with-iasreport-method">Example: CAS Attestation with IASReport method<a class="headerlink" href="#example-cas-attestation-with-iasreport-method" title="Permanent link">&para;</a></h3>
+<h3 id="example-cas-attestation-with-iasreport-method">Example: CAS Attestation with IASReport method</h3>
 <p><em>Request</em></p>
 <div class="highlight"><pre><span></span>GET /v1/attest?type=IASReport&amp;nonce=12121212121212121212121212121211 HTTP/1.1
 Host: cas:8081
@@ -1845,7 +1845,7 @@ Accept: */*
 <span class="p">}</span>
 </pre></div>
 
-<h3 id="example-cas-attestation-with-epid-method">Example: CAS Attestation with EPID method<a class="headerlink" href="#example-cas-attestation-with-epid-method" title="Permanent link">&para;</a></h3>
+<h3 id="example-cas-attestation-with-epid-method">Example: CAS Attestation with EPID method</h3>
 <p><em>Request</em></p>
 <div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/v1/attest?type=EPID&amp;nonce=12121212121212121212121212121211&amp;spid=12121212121212121212121212121211&amp;linkable=false</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">localhost:8081</span>
@@ -1874,7 +1874,7 @@ Accept: */*
 <span class="p">}</span>
 </pre></div>
 
-<h3 id="scone-cli-extension">scone CLI extension<a class="headerlink" href="#scone-cli-extension" title="Permanent link">&para;</a></h3>
+<h3 id="scone-cli-extension">scone CLI extension</h3>
 <p>We provide a new cas subcommand in scone-cli to simplify attestation and key provisioning.</p>
 <div class="highlight"><pre><span></span>scone cas attest
 Attest a CAS instance
@@ -1901,18 +1901,18 @@ OPTIONS:
 <div class="highlight"><pre><span></span>$ scone cas attest -m ad9c03d643d740435a2b1841266ed3a928c42a797c21809fe2332054021af40f -a cas:8081 -G -C
 </pre></div>
 
-<h2 id="policy-access-control">Policy Access Control<a class="headerlink" href="#policy-access-control" title="Permanent link">&para;</a></h2>
+<h2 id="policy-access-control">Policy Access Control</h2>
 <p>By default, access to a security policy is granted to the client that creates the policy. The creator is identified by a certificate which the client provides when it sets up the TLS connection to Palaemon. For any operation that Palaemon executes, it will first perform access control with the help of the provided client certificate. If the operation is not explicitly permitted, the operation will fail.</p>
 <p>A policy can be created by any client ‒ as long as the name of the policy is unique.  A policy can define <strong>Access Control Lists</strong> (ACLs) in section <code>access_control</code> - lists of certificates allowed to perform a particular operation. For each operation for which no ACL is defined, some default lists is defined (see below).</p>
 <p>For any operation that Palaemon executes, it will first perform access control, i.e., it checks that the provided client certificate is permitted to perform the operation. Note that TLS checks that the client knows the private key of the client certificate.</p>
-<h3 id="predefined-names">Predefined Names<a class="headerlink" href="#predefined-names" title="Permanent link">&para;</a></h3>
+<h3 id="predefined-names">Predefined Names</h3>
 <p>Palaemon also defines a constant for the client certificate  creator, i.e., <code>CREATOR</code> of the policy, i.e., this represents the public key of the client that created the policy. We also define constants</p>
 <ul>
 <li><code>ANY</code>: To permit access by anybody, define a list with a single member <code>ANY</code></li>
 <li><code>NONE</code>: To emphasize that nobody has access, you can define a ACL with a single member <code>NONE</code>.</li>
 </ul>
 <p>Note that <code>ANY</code> and <code>NONE</code> can only be part of a list with a single entry. <code>CREATOR</code> can be part of lists with arbitrarily many public keys.</p>
-<h2 id="palaemon-operations-on-sessions">PALAEMON Operations on sessions<a class="headerlink" href="#palaemon-operations-on-sessions" title="Permanent link">&para;</a></h2>
+<h2 id="palaemon-operations-on-sessions">PALAEMON Operations on sessions</h2>
 <p>For any RUD operation, as well for reading the policy certificate, the policy can define an ACL:</p>
 <ul>
 <li><code>read</code>: permit to read the policy - without the secrets. By default this set to <code>CREATOR</code>.</li>
@@ -1921,7 +1921,7 @@ OPTIONS:
 <li><code>delete</code>: permit to delete the policy. By default this set to <code>CREATOR</code>.</li>
 </ul>
 <p>In other words, to perform any of these operations, a client has to provide a certificate that matches a certificate in the specified ACL. TLS will ensure that the client knows the private key to the given public key.</p>
-<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<h3 id="example">Example</h3>
 <p>To prohibit any read access of a policy, i.e., even by the creator, define a <code>NONE</code> policy:</p>
 <div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
@@ -1935,7 +1935,7 @@ OPTIONS:
 </pre></div>
 
 <p><strong>Notes:</strong> Alternatives to specifying certificates are i) public keys, ii) hashes of certificates, or iii) names of certificates. We decided to support certificates instead of public keys or hashes of certificates since they provide some more information and can be verified if they are revoked or expired.</p>
-<h3 id="example-access-control">Example: Access Control<a class="headerlink" href="#example-access-control" title="Permanent link">&para;</a></h3>
+<h3 id="example-access-control">Example: Access Control</h3>
 <p>A certificate  has to be encoded in PEM format like this:</p>
 <div class="highlight"><pre><span></span>  -----BEGIN CERTIFICATE-----
       MIIGGzCCBAOgAwIBAgIJALrB28lSsN6VMA0GCSqGSIb3DQEBCwUAMGYxCzAJBgNV
@@ -1975,7 +1975,7 @@ a <code>read</code> ACL. This can be defined as part of the policy as follows:</
       <span class="no">-----END CERTIFICATE-----</span>
 </pre></div>
 
-<h3 id="default-acl">Default ACL<a class="headerlink" href="#default-acl" title="Permanent link">&para;</a></h3>
+<h3 id="default-acl">Default ACL</h3>
 <p>When a policy is created, each ACL is set to a default value that can be overwritten by the policy. The default ACLs are defined as follows:</p>
 <div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
@@ -1989,7 +1989,7 @@ a <code>read</code> ACL. This can be defined as part of the policy as follows:</
 </pre></div>
 
 <p>This means that by default, the creator can read the policy (without the secrets), can read the policy certificate and  can update the policy, but it cannot delete the policy not read the secrets.</p>
-<h3 id="example-policy-readable-by-all-clients">Example: Policy Readable by all Clients<a class="headerlink" href="#example-policy-readable-by-all-clients" title="Permanent link">&para;</a></h3>
+<h3 id="example-policy-readable-by-all-clients">Example: Policy Readable by all Clients</h3>
 <p>To ensure that all clients can read the policy, a policy can be defined as follows:</p>
 <div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
@@ -1997,7 +1997,7 @@ a <code>read</code> ACL. This can be defined as part of the policy as follows:</
 </pre></div>
 
 <p>Note that the creator can change and delete the policy.</p>
-<h3 id="example-immutable-policy">Example: Immutable Policy<a class="headerlink" href="#example-immutable-policy" title="Permanent link">&para;</a></h3>
+<h3 id="example-immutable-policy">Example: Immutable Policy</h3>
 <p>To ensure that the above policy cannot be modified, we prevent that it can be deleted and that it can be updated:</p>
 <div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
@@ -2011,7 +2011,7 @@ a <code>read</code> ACL. This can be defined as part of the policy as follows:</
 </pre></div>
 
 <p>Note that in this case not even the creator can update the policy - nor can the creator  delete the policy. Note that by preventing that the policy can be deleted, it cannot be replaced by a new policy with the same name - which could be equivalent with updating the policy.</p>
-<h2 id="automatic-volume-creation">Automatic Volume Creation<a class="headerlink" href="#automatic-volume-creation" title="Permanent link">&para;</a></h2>
+<h2 id="automatic-volume-creation">Automatic Volume Creation</h2>
 <p>Palaemon can create an empty volume automatically during the first use of this volume. A random key is generated by Palaemon. As soon as the volume is created, Palaemon will track the tag and the key. In other words, the volume is guaranteed to be initialized only once. Palaemon creates an initialized volume only if neither a filesystem key nor a filesystem tag is specified for this volume.</p>
 <p>In this way, we can ensure that the key for the file system is only visible inside of Palaemon and the application(s) that get access to this volume, i.e., no system administrator will ever seen that key during the creation of the volume.</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
@@ -2020,7 +2020,7 @@ a <code>read</code> ACL. This can be defined as part of the policy as follows:</
 </pre></div>
 
 <p>One could, for example, initialize a volume with one service that pulls the initial content from a trusted repository or that explicitly initializes all files in this volume.</p>
-<h2 id="palaemon-files">PALAEMON Files<a class="headerlink" href="#palaemon-files" title="Permanent link">&para;</a></h2>
+<h2 id="palaemon-files">PALAEMON Files</h2>
 <p>We can inject the service certificate and the private key of a service into its container as follows. Right now these files must contain PALAEMON variables that refer to secrets and these variables  are replaced by the values of the secrets.</p>
 <div class="highlight"><pre><span></span><span class="nt">images</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">server_image</span>
@@ -2049,7 +2049,7 @@ a <code>read</code> ACL. This can be defined as part of the policy as follows:</
         <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4096</span>
 </pre></div>
 
-<h2 id="service-certificates">Service Certificates<a class="headerlink" href="#service-certificates" title="Permanent link">&para;</a></h2>
+<h2 id="service-certificates">Service Certificates</h2>
 <p>PALAEMON can create certificates for services in the context of a security policy. These certificates are signed by the <strong>session certificate</strong>. The <strong>session certificate</strong> is specific to a given security policy an is itself is signed by the <strong>Palaemon instance certificate</strong>.</p>
 <p>A service can access these certificates either via palaemon files (see above),
 or via environment variables:</p>
@@ -2077,7 +2077,7 @@ or via environment variables:</p>
     <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4096</span>
 </pre></div>
 
-<h3 id="certificate-chain">Certificate Chain<a class="headerlink" href="#certificate-chain" title="Permanent link">&para;</a></h3>
+<h3 id="certificate-chain">Certificate Chain</h3>
 <p>Certificate chain of a service consists of the following certificates:
  - subject: CN = cas
    issuer: CN = cas

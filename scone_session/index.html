@@ -1627,9 +1627,9 @@
               
                 
                 
-                <h1 id="scone-session">scone session<a class="headerlink" href="#scone-session" title="Permanent link">&para;</a></h1>
+                <h1 id="scone-session">scone session</h1>
 <p>A <strong>session</strong> is a unique namespace that is used for the management of keys associated with the execution of an application. <strong>scone session</strong> manages keys and their access rights in the context of scone-based applications.</p>
-<h2 id="motivation">Motivation<a class="headerlink" href="#motivation" title="Permanent link">&para;</a></h2>
+<h2 id="motivation">Motivation</h2>
 <p>The management of keys is one of the important problems to be addressed when building secure cloud applications. Here are some typical questions that need to be addressed:</p>
 <ul>
 <li>
@@ -1666,29 +1666,29 @@ address the following question:</p>
 <ul>
 <li>how can we achieve all this without the need to re-engineer our applications?</li>
 </ul>
-<h2 id="approach">Approach<a class="headerlink" href="#approach" title="Permanent link">&para;</a></h2>
+<h2 id="approach">Approach</h2>
 <p><strong>scone session</strong> helps you to address the above questions. Before we describe the details of the <strong>scone session</strong> command line interface, we motivate its design from the threat model that we must address.</p>
-<h3 id="problem-no-trusted-party-to-manage-access-rights">Problem: No trusted party to manage access rights<a class="headerlink" href="#problem-no-trusted-party-to-manage-access-rights" title="Permanent link">&para;</a></h3>
+<h3 id="problem-no-trusted-party-to-manage-access-rights">Problem: No trusted party to manage access rights</h3>
 <p>Traditionally, most systems have the concept of an administrator that can manage the access rights to resources. For example, a root user in an operating system or a database can determine which resources a user can access.</p>
 <p>In SCONE, we do not want to require an administrator that controls the access to secrets. Instead, we would like to empower each user such that this user can control access to her resources without any administrator being able to overwrite the access control policy of the user. However, a user can decide to share resources with others. For example, a user could share access to the key of an encrypted volume with other users.</p>
-<h3 id="approach-session-concept">Approach: Session Concept<a class="headerlink" href="#approach-session-concept" title="Permanent link">&para;</a></h3>
+<h3 id="approach-session-concept">Approach: Session Concept</h3>
 <p>Our objective is to provide key management without introducing the need to have a trusted party that is responsible to administrate access rights. The main idea is that each user can create a session (an alternative name would be a <em>namespace</em>) in which the user has complete control over access rights to the keys created within this session.</p>
 <p><img alt="SCONE CLI" src="../img/SCONE-session.png" /></p>
-<h3 id="problem-no-trusted-input-and-output">Problem: No Trusted Input and Output<a class="headerlink" href="#problem-no-trusted-input-and-output" title="Permanent link">&para;</a></h3>
+<h3 id="problem-no-trusted-input-and-output">Problem: No Trusted Input and Output</h3>
 <p>One of the issues that we face in the context of secure trusted computing is that we can neither trust the cloud computers and in many cases, not even our development machines. In some cases, the cloud machines might even be more secure than our development machines. Hence, we need to address the following problem:</p>
 <p><strong>Problem: Any key that is received via an input device or output via an output device cannot be considered to be confidential anymore (- unless the key itself is encrypted)</strong></p>
-<h4 id="approach-keys-are-always-encrypted">Approach: Keys are always encrypted<a class="headerlink" href="#approach-keys-are-always-encrypted" title="Permanent link">&para;</a></h4>
+<h4 id="approach-keys-are-always-encrypted">Approach: Keys are always encrypted</h4>
 <p>To address this problem, we need to ensure that keys are never input or output as plain text. To achieve this, we support generation of keys and management of keys that never require keys to be transferred as plain text.</p>
-<h3 id="problem-authorization">Problem: Authorization<a class="headerlink" href="#problem-authorization" title="Permanent link">&para;</a></h3>
+<h3 id="problem-authorization">Problem: Authorization</h3>
 <p>If there is no trusted input and output, how can we know that certain requests / commands were indeed issued by a specific user? For example, a command is issued by a user <strong>O</strong> to give user <strong>U</strong> access to a key <strong>K</strong> that <strong>O</strong> has created. How do we ensure that it is indeed the intention of <strong>O</strong> to give <strong>U</strong> access to <strong>K</strong>? After all, the input for issuing this command my be inserted by <strong>U</strong> or some other interested party.</p>
-<h4 id="approach-multi-factor-authentication-and-authorization">Approach: Multi-factor authentication and authorization<a class="headerlink" href="#approach-multi-factor-authentication-and-authorization" title="Permanent link">&para;</a></h4>
+<h4 id="approach-multi-factor-authentication-and-authorization">Approach: Multi-factor authentication and authorization</h4>
 <p>While we do not trust that the input is confidential and under the control of the user, we assume that we have a reasonably secure way to authenticate the user and to ask for an authorization from the user. For the authentication and authorization, we can specify multiple  devices that perform the multi-factor authentication and authorization.</p>
 <p>The authentication and authorization will be performed as a combination of face ID, finger print ID, and PIN codes running on one or more devices.</p>
 <p><img alt="SCONE CLI" src="../img/authorizationAndauthenticate.png" /></p>
-<h2 id="command-line-interface-scone-session">Command line interface: scone session<a class="headerlink" href="#command-line-interface-scone-session" title="Permanent link">&para;</a></h2>
-<h3 id="scone-session-create">scone session create<a class="headerlink" href="#scone-session-create" title="Permanent link">&para;</a></h3>
+<h2 id="command-line-interface-scone-session">Command line interface: scone session</h2>
+<h3 id="scone-session-create">scone session create</h3>
 <p><strong>scone session create</strong> starts a new session and <em>activates</em> this session, i.e., makes this the default session. Outputs the name of the session on success.</p>
-<h4 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h4>
+<h4 id="options">Options</h4>
 <table>
 <thead>
 <tr>
@@ -1767,23 +1767,23 @@ address the following question:</p>
 </tr>
 </tbody>
 </table>
-<h4 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h4>
+<h4 id="caveats">Caveats</h4>
 <p><strong>scone session create</strong> creates credentials to identify this session and to be able to modify the session. The session credentials are stored in file <em>$HOME/.scone-session/TENANT/NAME/SESSIONID.cred</em>: this file is encrypted with the seal key of <strong>scone session</strong>. <strong>If this file is corrupted or deleted, access to the session keys is not possible anymore</strong>. Hence, this file should be backed up. In case the scone CLI runs inside of a container, this file should be mapped into a volume.</p>
 <p>Since this file is encrypted with the seal key of <strong>scone session</strong>, <strong>if the CPU that created this file fails or the CPU microcode is updated, this file cannot be accessed anymore</strong>. Hence, the owner of the session should share the access rights on multiple machines. We support this with the help of <strong>scone session share</strong> and <strong>scone session join</strong>. Alternative: only support <strong>scone session join</strong> and authorize via approval only. This would help with software upgrade too. Authorize new client via session join.</p>
 <p>Session information is also stored in a CAS. You can copy the session information from one CAS to another CAS with the help of <strong>scone session checkpoint</strong> and <strong>scone session restore</strong>. Moreover, you can use these two commands to move a session from one CAS to another CAS. </p>
 <p>To be able to support updated scone clients, you must enable that a session permits additional clients with different MRENCLAVEs. Also, to support updated CAS. We support this via <strong>scone session join</strong> to permit new clients to get existing session information. To support new CAS, a user has to perform a checkpoint and restore operation. </p>
-<h4 id="example">Example:<a class="headerlink" href="#example" title="Permanent link">&para;</a></h4>
+<h4 id="example">Example:</h4>
 <div class="highlight"><pre><span></span>scone session create --tenant myself --name www <span class="se">\</span>
 --approve ap.com/myself --fingerprint  <span class="m">43</span>:51:43:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8 <span class="se">\</span>
 --approve ap2.com/myboss --fingerprint  <span class="m">55</span>:45:a1:b5:fc:8b:b7:0a:3a:a9:b1:0f:66:73:a8 <span class="se">\</span>
 </pre></div>
 
-<h3 id="scone-session-key">scone session key<a class="headerlink" href="#scone-session-key" title="Permanent link">&para;</a></h3>
+<h3 id="scone-session-key">scone session key</h3>
 <p>Creates a key or a certificate and makes it available at a given key name.</p>
 <div class="highlight"><pre><span></span>scone session key --name KEYNAME <span class="o">[</span>--replace<span class="o">]</span> —-type TYPE <span class="o">[</span>--access  <span class="o">[</span>session<span class="o">]</span>:MRENCLAVE<span class="o">]]</span>
 </pre></div>
 
-<h4 id="options_1">Options<a class="headerlink" href="#options_1" title="Permanent link">&para;</a></h4>
+<h4 id="options_1">Options</h4>
 <table>
 <thead>
 <tr>
@@ -1802,7 +1802,7 @@ address the following question:</p>
 </tr>
 </tbody>
 </table>
-<h3 id="scone-session-share-key-keyname-gentoken-session-sessionid">scone session share --key KEYNAME  --gentoken --session SESSIONID<a class="headerlink" href="#scone-session-share-key-keyname-gentoken-session-sessionid" title="Permanent link">&para;</a></h3>
+<h3 id="scone-session-share-key-keyname-gentoken-session-sessionid">scone session share --key KEYNAME  --gentoken --session SESSIONID</h3>
 <p>Use cases:</p>
 <p>1) We share the public key and the private key of an image with a client</p>
 <div class="highlight"><pre><span></span>scone session share --key image/NAME/fspf-key --pubkey signer  --gentoken --duration <span class="m">366</span>
@@ -1817,31 +1817,31 @@ address the following question:</p>
 </pre></div>
 
 <p>Prints a token that can be used to access all keys to be able to run this stack </p>
-<h3 id="scone-session-join-session-session-id-token-token">scone session join --session SESSION-ID --token TOKEN<a class="headerlink" href="#scone-session-join-session-session-id-token-token" title="Permanent link">&para;</a></h3>
+<h3 id="scone-session-join-session-session-id-token-token">scone session join --session SESSION-ID --token TOKEN</h3>
 <p>Use case:</p>
 <p>Replace the current session by another session:</p>
 <div class="highlight"><pre><span></span>scone session join --token TOKEN
 </pre></div>
 
 <p>We effectively join a already existing session ID with a new client.</p>
-<h3 id="scone-session-import-token-token">scone session import --token TOKEN<a class="headerlink" href="#scone-session-import-token-token" title="Permanent link">&para;</a></h3>
+<h3 id="scone-session-import-token-token">scone session import --token TOKEN</h3>
 <div class="highlight"><pre><span></span>scone session import --token TOKEN <span class="o">[</span>--replace<span class="o">]</span>
 </pre></div>
 
 <p>Import all keys related to the TOKEN. If <strong>--replace</strong> is given, keys are updated in case they already exist. Otherwise, an error message is issued.</p>
-<h3 id="scone-session-checkpoint">scone session checkpoint<a class="headerlink" href="#scone-session-checkpoint" title="Permanent link">&para;</a></h3>
+<h3 id="scone-session-checkpoint">scone session checkpoint</h3>
 <p>Copies the current state of a session from the CAS and stores it encrypted on the local file system.</p>
 <div class="highlight"><pre><span></span>scone session checkpoint
 </pre></div>
 
-<h3 id="scone-session-restore-session-sessionid-cas-url">scone session restore --session SESSIONID --CAS URL<a class="headerlink" href="#scone-session-restore-session-sessionid-cas-url" title="Permanent link">&para;</a></h3>
+<h3 id="scone-session-restore-session-sessionid-cas-url">scone session restore --session SESSIONID --CAS URL</h3>
 <p>Take the checkpoint of session SESSIONID and stores it to CAS referred to via URL.</p>
 <p>If the session already exists, this will result in a failure.</p>
-<h3 id="scone-session-remove-force">scone session remove --force<a class="headerlink" href="#scone-session-remove-force" title="Permanent link">&para;</a></h3>
+<h3 id="scone-session-remove-force">scone session remove --force</h3>
 <p>Removes a current session from the CAS.</p>
-<h3 id="scone-session-activate-session-sessionid">scone session activate --session SESSIONID<a class="headerlink" href="#scone-session-activate-session-sessionid" title="Permanent link">&para;</a></h3>
+<h3 id="scone-session-activate-session-sessionid">scone session activate --session SESSIONID</h3>
 <p>Switches session to another session with ID SESSIONID</p>
-<h2 id="example-sconedocs-website">Example: Sconedocs website<a class="headerlink" href="#example-sconedocs-website" title="Permanent link">&para;</a></h2>
+<h2 id="example-sconedocs-website">Example: Sconedocs website</h2>
 <p>Root ...</p>
 <p>We need to specify the path, the key and the tag of the file system protection file:</p>
 <div class="highlight"><pre><span></span>image: aptsigner
@@ -1851,12 +1851,12 @@ fspf_tag: 5930bffbd9ea2f1317e6872b032334db
 </pre></div>
 
 <p>We get this information from the CAS for the current session. Key directory is <strong>/image/aptsigner/fspf_path</strong>, ...</p>
-<h2 id="example-signing-apt-packages">Example: Signing APT packages<a class="headerlink" href="#example-signing-apt-packages" title="Permanent link">&para;</a></h2>
+<h2 id="example-signing-apt-packages">Example: Signing APT packages</h2>
 <p>Our objective is to sign Debian/Ubuntu packages without ever having the private key be visible in the clear. In particular, we do not want be able ourselves to change our minds and make the keys visible to us or others.</p>
 <p><strong>Approach:</strong> We package the software in a container image that contains all code required to sign packages. To do so, we have two volumes:</p>
 <p>1) <strong>packages</strong>: contains the package to be signed</p>
 <p>2) <strong>keyring</strong>:</p>
-<h2 id="sharing-keys">Sharing Keys<a class="headerlink" href="#sharing-keys" title="Permanent link">&para;</a></h2>
+<h2 id="sharing-keys">Sharing Keys</h2>
 <p>Access to keys:</p>
 <ul>
 <li>

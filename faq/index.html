@@ -2183,55 +2183,55 @@
               
                 
                 
-                <h1 id="frequently-asked-questions">Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permanent link">&para;</a></h1>
-<h2 id="attestation">Attestation<a class="headerlink" href="#attestation" title="Permanent link">&para;</a></h2>
-<h3 id="how-can-i-verify-the-authenticity-and-integrity-of-my-running-running-in-enclave-if-i-access-it-remotely">How can I verify the authenticity and integrity of my running running in enclave, if I access it remotely<a class="headerlink" href="#how-can-i-verify-the-authenticity-and-integrity-of-my-running-running-in-enclave-if-i-access-it-remotely" title="Permanent link">&para;</a></h3>
+                <h1 id="frequently-asked-questions">Frequently Asked Questions</h1>
+<h2 id="attestation">Attestation</h2>
+<h3 id="how-can-i-verify-the-authenticity-and-integrity-of-my-running-running-in-enclave-if-i-access-it-remotely">How can I verify the authenticity and integrity of my running running in enclave, if I access it remotely</h3>
 <p>One approach is to store the encrypted certificate in an encrypted file region and SCONE CAS gives the service access to the file key only after a successful attestation. If the service can authenticate itself with the correct certificate, this means that it passed the attestation.</p>
-<h3 id="how-do-i-bind-an-interpreter-python-javascript-java-with-its-scriptsprograms-in-a-secure-container">How do I bind an interpreter (Python, JavaScript, Java) with its scripts/programs in a secure container?<a class="headerlink" href="#how-do-i-bind-an-interpreter-python-javascript-java-with-its-scriptsprograms-in-a-secure-container" title="Permanent link">&para;</a></h3>
+<h3 id="how-do-i-bind-an-interpreter-python-javascript-java-with-its-scriptsprograms-in-a-secure-container">How do I bind an interpreter (Python, JavaScript, Java) with its scripts/programs in a secure container?</h3>
 <p>The problem is that the scripts/programs are not measured during the attestation of the enclave, i.e., it is not included in <strong>MrEnclave</strong>.
 This code must be protected with the SCONE file shield, i.e., this must be encrypted and/or authenticated. The current state of the file system is checked during attestation and
 this ensures the <strong>integrity</strong> of the code (i.e., no modification), the <strong>freshness</strong> (i.e., no old
 version is used), and the <strong>confidentiality</strong> (i.e., an adversary cannot see the code - in case the
 code is stored an encrypted file region).</p>
 <p>In a future version of SCONE, we will by default enable an option in which all files must be encrypted/authenticated, i.e., any access to an unprotected file will fail.</p>
-<h3 id="how-can-one-restrict-the-initial-script-that-the-protected-interpreter-executes">How can one restrict the initial script that the protected interpreter executes?<a class="headerlink" href="#how-can-one-restrict-the-initial-script-that-the-protected-interpreter-executes" title="Permanent link">&para;</a></h3>
+<h3 id="how-can-one-restrict-the-initial-script-that-the-protected-interpreter-executes">How can one restrict the initial script that the protected interpreter executes?</h3>
 <p>The arguments of the code executed inside of an enclave must be passed via SCONE CAS. In other words, the initial script is protected by CAS, i.e., by passing the arguments to Python only
 after attestation via a secure channel directly into the enclave.</p>
 <p>In a future version of SCONE, we will by default enable an option in which all files must be encrypted/authenticated, i.e., any access to an unprotected file will fail.  This means that
 only code that is already include in an encrypted / authenticated file region can be executed.  </p>
-<h3 id="how-can-i-pass-secrets-to-my-enclave">How can I pass secrets to my enclave?<a class="headerlink" href="#how-can-i-pass-secrets-to-my-enclave" title="Permanent link">&para;</a></h3>
+<h3 id="how-can-i-pass-secrets-to-my-enclave">How can I pass secrets to my enclave?</h3>
 <p>You could pass these secrets as environment variables via CAS or you can store these in encrypted files. SCONE will pass the environment variables and the file encryption key only after a successful attestation to the application via TLS.</p>
-<h2 id="simulation-mode">Simulation Mode<a class="headerlink" href="#simulation-mode" title="Permanent link">&para;</a></h2>
-<h3 id="program-crashesstops-in-simulation-mode">Program crashes/stops in simulation mode<a class="headerlink" href="#program-crashesstops-in-simulation-mode" title="Permanent link">&para;</a></h3>
+<h2 id="simulation-mode">Simulation Mode</h2>
+<h3 id="program-crashesstops-in-simulation-mode">Program crashes/stops in simulation mode</h3>
 <p>Simulation mode assumes a modern CPU with instructions like AESNI
 and SSE and AVX extensions. If they are not available, your
 program will exit with an error message.</p>
-<h3 id="has-my-cpu-sufficient-features-for-simulation-mode">Has my CPU sufficient features for simulation mode?<a class="headerlink" href="#has-my-cpu-sufficient-features-for-simulation-mode" title="Permanent link">&para;</a></h3>
+<h3 id="has-my-cpu-sufficient-features-for-simulation-mode">Has my CPU sufficient features for simulation mode?</h3>
 <p>Just run the following program to check if your CPU has sufficient
 features for simulation mode:</p>
 <div class="highlight"><pre><span></span>docker run --rm sconecuratedimages/apps:check_cpuid
 </pre></div>
 
-<h3 id="attestation-of-programs-in-simulation-mode">Attestation of programs in simulation mode<a class="headerlink" href="#attestation-of-programs-in-simulation-mode" title="Permanent link">&para;</a></h3>
+<h3 id="attestation-of-programs-in-simulation-mode">Attestation of programs in simulation mode</h3>
 <p>While we permit to run applications in simulation mode, i.e., to run on machines without
 an SGX-capable CPU, we do not support the attestation of programs in simulation mode.
 In case you want to use attestation, you need to run on an SGX-capable machine.</p>
-<h2 id="memory-related-issues">Memory related issues<a class="headerlink" href="#memory-related-issues" title="Permanent link">&para;</a></h2>
-<h3 id="my-processenclave-is-getting-killed-without-any-error-message">My process/enclave is getting killed without any error message<a class="headerlink" href="#my-processenclave-is-getting-killed-without-any-error-message" title="Permanent link">&para;</a></h3>
+<h2 id="memory-related-issues">Memory related issues</h2>
+<h3 id="my-processenclave-is-getting-killed-without-any-error-message">My process/enclave is getting killed without any error message</h3>
 <p><em>Context</em>: For SGX version 1, we have to preallocate all memory an enclave can use during its startup. This means that the enclave might request so much memory that the Linux Out-Of-Memory-Killer might kill the process in which this enclave runs. Ensure that you have enough free main memory such that your enclave can start.</p>
-<h3 id="my-machine-has-lots-of-main-memory-but-still-processes-are-getting-killed">My machine has lots of main memory but still processes are getting killed<a class="headerlink" href="#my-machine-has-lots-of-main-memory-but-still-processes-are-getting-killed" title="Permanent link">&para;</a></h3>
+<h3 id="my-machine-has-lots-of-main-memory-but-still-processes-are-getting-killed">My machine has lots of main memory but still processes are getting killed</h3>
 <p>Try to figure out - using tools like top - which processes are using up your memory. Sometimes, you might have too many active docker containers running: check this with <code>docker ps -a</code>. Try to run docker containers  with <code>docker run --rm</code> to enforce automatic cleanup after a container exits.</p>
-<h3 id="my-program-does-not-start-up">My program does not start up<a class="headerlink" href="#my-program-does-not-start-up" title="Permanent link">&para;</a></h3>
+<h3 id="my-program-does-not-start-up">My program does not start up</h3>
 <p><em>Context</em>: For SGX version 1, we have to preallocate all memory an enclave can use during its startup. We cannot estimate how much memory your application needs. Hence, for SGX version 1, we provide environment variables 
 <a href="SCONE_ENV/#memory-related-environment-variables">SCONE_HEAP</a> and <a href="SCONE_ENV/#memory-related-environment-variables">SCONE_STACK</a>.</p>
 <p>For Java and GO programs, set <code>SCONE_HEAP</code> to at least <em>1G</em>. The default heap size is 64MB.</p>
 <p>The default stack size is 64KBytes. This is too little for some applications like Python and MariaDB. A good value for applications that use lots of stack seem to be 4MBytes, i.e., set <code>export  SCONE_STACK=4M</code>.</p>
-<h3 id="my-program-has-a-very-large-virt-memory-footprint">My program has a very large VIRT memory footprint<a class="headerlink" href="#my-program-has-a-very-large-virt-memory-footprint" title="Permanent link">&para;</a></h3>
+<h3 id="my-program-has-a-very-large-virt-memory-footprint">My program has a very large VIRT memory footprint</h3>
 <p>SCONE reserves 64GB of the <strong>virtual address space</strong> for each enclave using the SGX driver.
 Hence, when monitoring a process, e.g., with <strong>top</strong>, <strong>VIRT</strong> is reported as at least <strong>64g</strong>. Note that
 the important measure is the physical memory used:  <strong>top</strong> reports this in column <strong>RES</strong> (given in KiB)).</p>
-<h2 id="crash-failures">Crash Failures<a class="headerlink" href="#crash-failures" title="Permanent link">&para;</a></h2>
-<h3 id="my-program-crashes-gets-killed">My program crashes / gets killed<a class="headerlink" href="#my-program-crashes-gets-killed" title="Permanent link">&para;</a></h3>
+<h2 id="crash-failures">Crash Failures</h2>
+<h3 id="my-program-crashes-gets-killed">My program crashes / gets killed</h3>
 <ul>
 <li>
 <p>SGX version 1: check that your program has a sufficiently large heap by setting environment variable <code>SCONE_HEAP</code> (<a href="#memory-related-issues">see above</a>)</p>
@@ -2246,59 +2246,59 @@ the important measure is the physical memory used:  <strong>top</strong> reports
 <p>Run your program with <a href="GO/#debugging"><strong>scone-gdb</strong></a> to determine where your program crashes</p>
 </li>
 </ul>
-<h2 id="running-inside-of-enclaves">Running inside of enclaves<a class="headerlink" href="#running-inside-of-enclaves" title="Permanent link">&para;</a></h2>
-<h3 id="how-do-i-know-that-i-run-inside-of-an-enclave">How do I know that I run inside of an enclave?<a class="headerlink" href="#how-do-i-know-that-i-run-inside-of-an-enclave" title="Permanent link">&para;</a></h3>
+<h2 id="running-inside-of-enclaves">Running inside of enclaves</h2>
+<h3 id="how-do-i-know-that-i-run-inside-of-an-enclave">How do I know that I run inside of an enclave?</h3>
 <ul>
 <li>Set environment variable <a href="SCONE_ENV/#debug"><code>SCONE_VERSION=1</code></a>: you will see in what <a href="SCONE_ENV/#run-mode">mode</a> your program is running.</li>
 </ul>
-<h3 id="how-can-i-experimentally-show-that-i-run-inside-of-an-enclave">How can I experimentally show that I run inside of an enclave?<a class="headerlink" href="#how-can-i-experimentally-show-that-i-run-inside-of-an-enclave" title="Permanent link">&para;</a></h3>
+<h3 id="how-can-i-experimentally-show-that-i-run-inside-of-an-enclave">How can I experimentally show that I run inside of an enclave?</h3>
 <p>Please check out our <a href="memory_dump">memory dump tutorial</a> on this.</p>
-<h3 id="how-can-i-enforceverify-that-a-serviceprogram-runs-inside-of-an-enclave">How can I enforce/verify that a service/program runs inside of an enclave?<a class="headerlink" href="#how-can-i-enforceverify-that-a-serviceprogram-runs-inside-of-an-enclave" title="Permanent link">&para;</a></h3>
+<h3 id="how-can-i-enforceverify-that-a-serviceprogram-runs-inside-of-an-enclave">How can I enforce/verify that a service/program runs inside of an enclave?</h3>
 <p>You need to attest that your program runs inside of an enclave. SCONE supports transparent attestation with the help of <a href="../print-arg-env/">CAS</a>.</p>
 <p>On the application level, one often does not want to perform an explicit attestation but an implicit attestation with the help of TLS to reduce/eliminate the amount of reengineering that is needed. The idea is that a service can only provide the correct TLS certificate if it runs inside an enclave. To do so,
  one would give the enclave an encrypted TLS private key in the file system (can be generate by Scone CAS if this is requested) and the enclave gets only access to the encryption key after a successful attestation. The decryption of the TLS private key is done transparently by SCONE.</p>
-<h3 id="does-scone-support-enclaves-in-production-mode">Does SCONE support enclaves in production mode?<a class="headerlink" href="#does-scone-support-enclaves-in-production-mode" title="Permanent link">&para;</a></h3>
+<h3 id="does-scone-support-enclaves-in-production-mode">Does SCONE support enclaves in production mode?</h3>
 <p>Note that by default SCONE runs in debug or pre-release mode. For production enclaves, you still need to get an enclave signer key from Intel. This will change when Intel makes <strong>flexible launch control</strong> available.</p>
-<h2 id="shielding">Shielding<a class="headerlink" href="#shielding" title="Permanent link">&para;</a></h2>
-<h3 id="does-scone-ensure-the-security-of-incoming-and-outgoing-tcp-connections-tofrom-a-service-running-in-an-enclave">Does SCONE ensure the security of incoming and outgoing TCP connections to/from a service running in an enclave?<a class="headerlink" href="#does-scone-ensure-the-security-of-incoming-and-outgoing-tcp-connections-tofrom-a-service-running-in-an-enclave" title="Permanent link">&para;</a></h3>
+<h2 id="shielding">Shielding</h2>
+<h3 id="does-scone-ensure-the-security-of-incoming-and-outgoing-tcp-connections-tofrom-a-service-running-in-an-enclave">Does SCONE ensure the security of incoming and outgoing TCP connections to/from a service running in an enclave?</h3>
 <p>Please use TLS in your service. If your service does not support TLS out of the box,
 use our TCP shield.</p>
-<h3 id="how-do-i-encrypt-stdinstdoutstderr">How do I encrypt stdin/stdout/stderr?<a class="headerlink" href="#how-do-i-encrypt-stdinstdoutstderr" title="Permanent link">&para;</a></h3>
+<h3 id="how-do-i-encrypt-stdinstdoutstderr">How do I encrypt stdin/stdout/stderr?</h3>
 <p>Send us an email on how to use the terminal shield</p>
-<h3 id="how-do-i-encrypt-pipes">How do I encrypt pipes?<a class="headerlink" href="#how-do-i-encrypt-pipes" title="Permanent link">&para;</a></h3>
+<h3 id="how-do-i-encrypt-pipes">How do I encrypt pipes?</h3>
 <p>Send us an email regarding the encryption of pipes.</p>
-<h3 id="how-do-i-encrypt-tcp-connections">How do I encrypt TCP connections?<a class="headerlink" href="#how-do-i-encrypt-tcp-connections" title="Permanent link">&para;</a></h3>
+<h3 id="how-do-i-encrypt-tcp-connections">How do I encrypt TCP connections?</h3>
 <p>Context: Services like <em>memcached</em> do not support TLS out of the box. Send us an email on how to use the TCP shield.</p>
-<h3 id="how-do-i-transparently-encryptdecrypt-files">How do I transparently encrypt/decrypt files?<a class="headerlink" href="#how-do-i-transparently-encryptdecrypt-files" title="Permanent link">&para;</a></h3>
+<h3 id="how-do-i-transparently-encryptdecrypt-files">How do I transparently encrypt/decrypt files?</h3>
 <p>Enable the file shield.</p>
-<h3 id="are-all-files-in-a-container-encrypted">Are all files in a container encrypted?<a class="headerlink" href="#are-all-files-in-a-container-encrypted" title="Permanent link">&para;</a></h3>
+<h3 id="are-all-files-in-a-container-encrypted">Are all files in a container encrypted?</h3>
 <p>No, only those in an encrypted file region.</p>
-<h3 id="what-do-i-need-to-do-to-protect-the-files-my-service-needs-eg-https-encryption-key-and-certificate">What do I need to do to protect the files my service needs, e.g. HTTPS encryption key and certificate<a class="headerlink" href="#what-do-i-need-to-do-to-protect-the-files-my-service-needs-eg-https-encryption-key-and-certificate" title="Permanent link">&para;</a></h3>
+<h3 id="what-do-i-need-to-do-to-protect-the-files-my-service-needs-eg-https-encryption-key-and-certificate">What do I need to do to protect the files my service needs, e.g. HTTPS encryption key and certificate</h3>
 <p>You need to encrypt them when you build you container image.</p>
-<h2 id="dynamic-libraries">Dynamic Libraries<a class="headerlink" href="#dynamic-libraries" title="Permanent link">&para;</a></h2>
-<h3 id="what-are-protected-dynamic-libraries">What are protected dynamic libraries?<a class="headerlink" href="#what-are-protected-dynamic-libraries" title="Permanent link">&para;</a></h3>
+<h2 id="dynamic-libraries">Dynamic Libraries</h2>
+<h3 id="what-are-protected-dynamic-libraries">What are protected dynamic libraries?</h3>
 <p>The dynamic libraries loaded during start up of program are included in the hash of the enclave, i.e., any modification of any of these libraries will change <strong>MrEnclave</strong>. In that sense, the dynamic libraries are  <strong>integrity protected</strong> since any modifications will result in a failed attestation.</p>
 <p>One can determine the dynamic libraries which are loaded during startup with command <strong>ldd</strong> for native binaries. Note that depending on how the binary is build (static linking, dynamic linking, for Alpine Linux or for Ubuntu), <strong>ldd</strong> might only print the dynamic libraries used to start the enclave.</p>
 <p>To enable the loading of <strong>protected dynamic libraries</strong>, i.e., encrypted or authenticated shared libraries, set environment variable <a href="SCONE_ENV/#dynamic-library-support"><code>SCONE_ALLOW_DLOPEN=1</code></a> in your session policy.
 If you want to disallow this, do not define <code>SCONE_ALLOW_DLOPEN</code>.</p>
-<h3 id="what-are-unprotected-dynamic-libraries">What are unprotected dynamic libraries?<a class="headerlink" href="#what-are-unprotected-dynamic-libraries" title="Permanent link">&para;</a></h3>
+<h3 id="what-are-unprotected-dynamic-libraries">What are unprotected dynamic libraries?</h3>
 <p>An <strong>unprotected shared library</strong>, i.e., a shared library that is neither encrypted nor authenticated by the filesystem shield). It is loaded after the program has started by the application with
 a call to function <code>dlopen</code> (or similar). These libraries are not <strong>integrity protected</strong> by
 MrEnclave since they are loaded after <strong>MrEnclave</strong> was computed. To ensure the integrity of
 these shared library they have to be located in an authenticated or an encrypted file region.</p>
 <p>To enable the loading of <strong>unprotected</strong> dynamic libraries after startup, set environment variable <code>SCONE_ALLOW_DLOPEN=2</code>. This will also enable loading libraries during startup.
 <strong>Never use <code>SCONE_ALLOW_DLOPEN=2</code> in production mode</strong>.</p>
-<h2 id="encrypted-code-and-libraries">Encrypted Code and Libraries<a class="headerlink" href="#encrypted-code-and-libraries" title="Permanent link">&para;</a></h2>
+<h2 id="encrypted-code-and-libraries">Encrypted Code and Libraries</h2>
 <p>One can encrypt code by pushing your main code in a shared library that is stored in an
 encrypted file region. In this way, you can protect the integrity as well as the confidentiality
 of your code.</p>
-<h2 id="library-path">Library Path<a class="headerlink" href="#library-path" title="Permanent link">&para;</a></h2>
+<h2 id="library-path">Library Path</h2>
 <p>If you experience undefined symbols like <code>__cxa_init_primary_exception</code>, ensure that your library path (<code>LD_LIBRARY_PATH</code>) is set such that if finds the SCONE libraries. For example, inside our SCONE crosscompiler container, you might set</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/opt/scone/cross-compiler/x86_64-linux-musl/lib/
 </pre></div>
 
-<h2 id="resource-usage">Resource Usage<a class="headerlink" href="#resource-usage" title="Permanent link">&para;</a></h2>
-<h3 id="cpu-utilization-number-of-threads-is-higher-than-in-native-mode">CPU utilization / number of threads is higher than in native mode<a class="headerlink" href="#cpu-utilization-number-of-threads-is-higher-than-in-native-mode" title="Permanent link">&para;</a></h3>
+<h2 id="resource-usage">Resource Usage</h2>
+<h3 id="cpu-utilization-number-of-threads-is-higher-than-in-native-mode">CPU utilization / number of threads is higher than in native mode</h3>
 <p>By default, we use multiple threads to serve inside the enclave and to serve system calls outside the enclave.
 If theses threads have no work to do, they go to sleep.</p>
 <p>You can reduce the number of threads / CPU utilization by specifying a SCONE <a href="SCONE_ENV/#format-of-scone-configuration-file">configuration file</a> which uses less threads. For example, you could use one thread inside the enclave and one outside the enclave with this configuration file:</p>
@@ -2309,24 +2309,24 @@ If theses threads have no work to do, they go to sleep.</p>
 <span class="s">EOF</span>
 </pre></div>
 
-<h3 id="the-cpu-utilization-is-still-higher-than-in-native-mode">The CPU utilization is still higher than in native mode<a class="headerlink" href="#the-cpu-utilization-is-still-higher-than-in-native-mode" title="Permanent link">&para;</a></h3>
+<h3 id="the-cpu-utilization-is-still-higher-than-in-native-mode">The CPU utilization is still higher than in native mode</h3>
 <p>In our experience, then newest version of SCONE needs less than 1-2% CPU utilization when a service is idling.</p>
 <p>If the CPU utilization of a service is higher than the native version during idle periods, you could try to tune the <a href="SCONE_ENV/#format-of-scone-configuration-file">the backoff behavior of the queues</a> by setting parameters <code>L</code> and <code>P</code> appropriately. Note that the standard values should in most cases do not need any tuning.</p>
-<h3 id="the-memory-usage-is-higher-than-in-native-mode">The memory usage is higher than in native mode<a class="headerlink" href="#the-memory-usage-is-higher-than-in-native-mode" title="Permanent link">&para;</a></h3>
+<h3 id="the-memory-usage-is-higher-than-in-native-mode">The memory usage is higher than in native mode</h3>
 <p>The issue is that SGX v1 enclaves must allocate all memory at startup since enclaves are fixed (- this will change with SGXv2). You can reduce memory consumption by setting <a href="SCONE_ENV/#memory-related-environment-variables">SCONE_HEAP and SCONE_STACK</a>. In SGX v2 we will allocate memory on demand, i.e., we will be more memory efficient.</p>
 <p>Note that in SGX v2, we will be able to dynamically adjust the size of the heap and the stack sizes automatically, i.e.,
 one does not need to allocate all memory in the beginning. This will also reduce the startup times.</p>
-<h3 id="high-startup-times">High startup times<a class="headerlink" href="#high-startup-times" title="Permanent link">&para;</a></h3>
+<h3 id="high-startup-times">High startup times</h3>
 <p>Since in SGX v1 one needs to allocate all memory at the start of an enclave, startup times can be very large. In SGX v2, we will be able to dynamically scale the size of an enclave during runtime. Since we will allocate less memory during startup time, this will reduce the startup times.</p>
-<h2 id="side-channel-protection">Side-Channel Protection<a class="headerlink" href="#side-channel-protection" title="Permanent link">&para;</a></h2>
+<h2 id="side-channel-protection">Side-Channel Protection</h2>
 <p>The newest microcode of new Intel CPUs protects against L1TF side channels when hyperthreading is disabled. Please ensure that your CPU microcode is up-to-date: You can follow the following instruction to  <a href="microcode">update the microcode of your CPU</a>.</p>
-<h2 id="unimplemented-functions">Unimplemented Functions<a class="headerlink" href="#unimplemented-functions" title="Permanent link">&para;</a></h2>
-<h3 id="some-function-returns-enosys">Some function returns ENOSYS<a class="headerlink" href="#some-function-returns-enosys" title="Permanent link">&para;</a></h3>
+<h2 id="unimplemented-functions">Unimplemented Functions</h2>
+<h3 id="some-function-returns-enosys">Some function returns ENOSYS</h3>
 <p>Sometimes it is difficult to diagnose why a function fails. In most cases, the issue is that we do not yet support <strong>fork</strong>. </p>
 <p>You can check which functions might not be supported by running your application
 with environment variable <code>SCONE_LOG=7</code>.</p>
-<h2 id="driver-issues">Driver Issues<a class="headerlink" href="#driver-issues" title="Permanent link">&para;</a></h2>
-<h3 id="no-access-to-sgx-device">No Access to SGX device<a class="headerlink" href="#no-access-to-sgx-device" title="Permanent link">&para;</a></h3>
+<h2 id="driver-issues">Driver Issues</h2>
+<h3 id="no-access-to-sgx-device">No Access to SGX device</h3>
 <p>Ensure that you <a href="sgxinstall/#check-if-the-sgx-driver-is-installed">installed the Intel SGX driver</a>  on your machine and that the SGX driver <a href="sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">is accessible in your container</a>.</p>
                 
                   

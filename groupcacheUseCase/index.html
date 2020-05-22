@@ -1543,7 +1543,7 @@
               
                 
                 
-                <h1 id="groupcache-example">groupcache Example<a class="headerlink" href="#groupcache-example" title="Permanent link">&para;</a></h1>
+                <h1 id="groupcache-example">groupcache Example</h1>
 <p><strong><a href="https://github.com/golang/groupcache">groupcache</a></strong> is a memcached-like library written in GO:
 it implements a peer-to-peer caching service.
 We use <strong>groupcache</strong> to show how to build a little more complex GO program with SCONE.</p>
@@ -1555,7 +1555,7 @@ second, please read how to build <a href="../multistagebuild/">container images 
 <p class="admonition-title">Note</p>
 <p>You might want to read how to <a href="../GO/">compile GO programs</a> with SCONE first.</p>
 </div>
-<h2 id="building-groupcache-without-shielding">Building <strong>groupcache</strong> - without shielding<a class="headerlink" href="#building-groupcache-without-shielding" title="Permanent link">&para;</a></h2>
+<h2 id="building-groupcache-without-shielding">Building <strong>groupcache</strong> - without shielding</h2>
 <p>First, start a crosscompiler container. Give it access to the <strong>sgx device</strong> if your host has 
 this device - otherwise, just drop argument <strong>--device=/dev/isgx</strong>:</p>
 <div class="highlight"><pre><span></span>docker run --device<span class="o">=</span>/dev/isgx -it  sconecuratedimages/crosscompilers
@@ -1572,7 +1572,7 @@ apk add go git curl
 
 <p>Note that flag <strong>-compiler gccgo</strong> is required to ensure that the scone-gccgo is used to compile <strong>groupcache</strong>.</p>
 <p><strong>That's it!</strong>  </p>
-<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<h3 id="example">Example</h3>
 <p>OK, we should show how to use group cache. We show this for a simple application from <a href="https://gist.github.com/fiorix/816117cfc7573319b72d">fiorix</a>:</p>
 <div class="highlight"><pre><span></span>    cat &gt; groupcache.go <span class="s">&lt;&lt; EOF</span>
 <span class="s">    // Simple groupcache example: https://github.com/golang/groupcache</span>
@@ -1651,7 +1651,7 @@ curl localhost:8080/color?name<span class="o">=</span>red
 <span class="c1">#FF0000</span>
 </pre></div>
 
-<h2 id="shielding">Shielding<a class="headerlink" href="#shielding" title="Permanent link">&para;</a></h2>
+<h2 id="shielding">Shielding</h2>
 <p>While the above code runs inside of an enclave, there are multiple security issues if that code would run in an untrusted environment:</p>
 <ul>
 <li>
@@ -1670,11 +1670,11 @@ curl localhost:8080/color?name<span class="o">=</span>red
 <p>How can we be sure if the code runs indeed in an enclave? After all, SCONE supports simulation mode.</p>
 </li>
 </ul>
-<h3 id="alternative-manual-modifications">Alternative: Manual Modifications<a class="headerlink" href="#alternative-manual-modifications" title="Permanent link">&para;</a></h3>
+<h3 id="alternative-manual-modifications">Alternative: Manual Modifications</h3>
 <p>One could manually modify the program to use <em>https</em> instead of <em>http</em>, one could encrypt the output with AES. However, this would require that we have to change <strong>groupcache</strong> not only to encrypt all output but also to manage the key for encrypting the output. </p>
 <p>The private key of the certificate is typically stored in an unencrypted file and protected via the access control of the file system. Since we do not trust the operating system, we would need to encrypt the private key in the file system.</p>
 <p>We would need to attest the <strong>groupcache</strong> and after successful attestation pass the encryption keys and the arguments to  <strong>groupcache</strong> via a secure channel.</p>
-<h3 id="alternative-scone-shielding">Alternative: SCONE shielding<a class="headerlink" href="#alternative-scone-shielding" title="Permanent link">&para;</a></h3>
+<h3 id="alternative-scone-shielding">Alternative: SCONE shielding</h3>
 <p>Many programs would require such or similar changes as <strong>groupcache</strong>. Hence, SCONE provides a way to shield programs without the need to modify these programs.</p>
 <p>This main advantages of that approach is that  </p>
 <ul>

@@ -1655,7 +1655,7 @@
               
                 
                 
-                <h1 id="confidential-computing-with-scone">Confidential Computing with SCONE<a class="headerlink" href="#confidential-computing-with-scone" title="Permanent link">&para;</a></h1>
+                <h1 id="confidential-computing-with-scone">Confidential Computing with SCONE</h1>
 <p>This tutorial shows how to build and deploy containerized CC App (Confidential Compute App) with the help of SCONE. We show how to run this CC App in a <strong>Kubernetes</strong> cluster.</p>
 <p>This is a deep-dive to introduce some of the concepts of SCONE using a hands-on example. <strong>Note that the CC App we build is not yet sufficiently secure</strong>: e.g., the Python code of the base image can be manipulated. We will show in the second part of this tutorial how to run this securely and  how to simplify some of the steps.</p>
 <p>The tutorial is organized as follows:</p>
@@ -1684,7 +1684,7 @@
 <li>how to provide access control to <code>Hello-World!</code>, i.e., only authorized clients can access the service, and</li>
 <li>how to run <code>Hello-World!</code> in release mode</li>
 </ul>
-<h2 id="script">Script<a class="headerlink" href="#script" title="Permanent link">&para;</a></h2>
+<h2 id="script">Script</h2>
 <p>An executable version of this tutorial can be cloned as follows:</p>
 <div class="highlight"><pre><span></span>git clone https://github.com/scontain/hello-world-scone-on-kubernetes.git
 </pre></div>
@@ -1700,14 +1700,14 @@
 </pre></div>
 
 <p>in <code>run_hello_world.sh</code> to point to a container repo that you are permitted to push to.</p>
-<h2 id="before-you-begin">Before you begin<a class="headerlink" href="#before-you-begin" title="Permanent link">&para;</a></h2>
-<h3 id="a-kubernetes-cluster-and-a-separate-namespace">A Kubernetes cluster and a separate namespace<a class="headerlink" href="#a-kubernetes-cluster-and-a-separate-namespace" title="Permanent link">&para;</a></h3>
+<h2 id="before-you-begin">Before you begin</h2>
+<h3 id="a-kubernetes-cluster-and-a-separate-namespace">A Kubernetes cluster and a separate namespace</h3>
 <p>This tutorial assumes that you have access to a Kubernetes cluster (through <code>kubectl</code>), and that you are deploying everything to a separate namespace, called <code>hello-scone</code>. Namespaces are a good way to separate resources, not to mention how it makes the clean-up process a lot easier at the end:</p>
 <div class="highlight"><pre><span></span>kubectl create namespace hello-scone
 </pre></div>
 
 <p>Don't forget to specify it by adding <code>-n hello-scone</code> to your <code>kubectl</code> commands.</p>
-<h3 id="set-yourself-a-workspace">Set yourself a workspace<a class="headerlink" href="#set-yourself-a-workspace" title="Permanent link">&para;</a></h3>
+<h3 id="set-yourself-a-workspace">Set yourself a workspace</h3>
 <p>A lot of files are created through this tutorial, and they have to be somewhere. Choose whatever directory you want to run the commands below, but it might be a good idea to create a temporary one:</p>
 <div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="k">$(</span>mktemp -d<span class="k">)</span>
 </pre></div>
@@ -1715,7 +1715,7 @@
 <p>We use the following base image:</p>
 <p>export BASE_IMAGE=sconecuratedimages/apps:python-3.7.3-alpine3.10</p>
 <p>Have fun!</p>
-<h3 id="set-a-configuration-and-attestation-service-cas">Set a Configuration and Attestation Service (CAS)<a class="headerlink" href="#set-a-configuration-and-attestation-service-cas" title="Permanent link">&para;</a></h3>
+<h3 id="set-a-configuration-and-attestation-service-cas">Set a Configuration and Attestation Service (CAS)</h3>
 <p>When remote attestation enters the scene, you will need a CAS to provide attestation, configuration and secrets. Export now the address of your CAS. If you don't have your own CAS, use our public one at scone-cas.cf:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf
 </pre></div>
@@ -1728,7 +1728,7 @@
 <span class="k">fi</span>
 </pre></div>
 
-<h2 id="hello-world">Hello World!<a class="headerlink" href="#hello-world" title="Permanent link">&para;</a></h2>
+<h2 id="hello-world">Hello World!</h2>
 <p>Let's start by writing a simple Python webserver: it only returns the message <code>Hello World!</code> and the value of the environment variable <code>GREETING</code>.</p>
 <div class="highlight"><pre><span></span>mkdir -p app
 cat &gt; app/server.py <span class="s">&lt;&lt; EOF</span>
@@ -1834,7 +1834,7 @@ docker build --pull . -t <span class="nv">$IMAGE</span> <span class="o">&amp;&am
 Hello World! Environment GREETING is: howdy!
 </pre></div>
 
-<h2 id="run-with-remote-attestation">Run with remote attestation<a class="headerlink" href="#run-with-remote-attestation" title="Permanent link">&para;</a></h2>
+<h2 id="run-with-remote-attestation">Run with remote attestation</h2>
 <p>SCONE provides a remote attestation feature, so you make sure your application is running unmodified. It's also possible to have secrets and configuration delivered directly to the attested enclave!</p>
 <p>The remote attestation is provided by two components: LAS (local attestation service, runs on the cluster) and CAS (a trusted service that runs elsewhere. We provide a public one in scone-cas.cf).</p>
 <p>You can deploy LAS to your cluster with the help of a DaemonSet, deploying one LAS instance per cluster node. As your application has to contact the LAS container running in the same host, we use the default Docker interface (172.17.0.1) as our LAS address.</p>
@@ -1971,7 +1971,7 @@ Hello World! Environment GREETING is: howdy!
 Hello World! Environment GREETING is: hello from SCONE!!!
 </pre></div>
 
-<h2 id="tls-with-certificates-auto-generated-by-cas">TLS with certificates auto-generated by CAS<a class="headerlink" href="#tls-with-certificates-auto-generated-by-cas" title="Permanent link">&para;</a></h2>
+<h2 id="tls-with-certificates-auto-generated-by-cas">TLS with certificates auto-generated by CAS</h2>
 <p>The CAS service can also generate secrets and certificates automatically. Combined with access policies, it means that such auto-generated secrets and certificates will be seen only by certain applications. No human (e.g. a system operator) will ever see them: they only exist inside of SGX enclaves.</p>
 <p>To showcase such feature, let's use the same application as last example. But now, we serve the traffic over TLS, and we let CAS generate the server certificates.</p>
 <p>Start by rewriting our application to serve with TLS:</p>
@@ -2121,9 +2121,9 @@ Hello World!
 <span class="nv">$GREETING</span> is: hello from SCONE with TLS and auto-generated certs!!!
 </pre></div>
 
-<h2 id="encrypt-your-source-code">Encrypt your source code<a class="headerlink" href="#encrypt-your-source-code" title="Permanent link">&para;</a></h2>
+<h2 id="encrypt-your-source-code">Encrypt your source code</h2>
 <p>Moving further, you can run the exact same application, but now the server source code will be encrypted using SCONE's <a href="https://sconedocs.github.io/SCONE_Fileshield/">file protection</a> feature, and only the Python interpreter that you register will be able to read them (after being attested by CAS).</p>
-<h3 id="encrypt-the-source-code-and-filesystem">Encrypt the source code and filesystem<a class="headerlink" href="#encrypt-the-source-code-and-filesystem" title="Permanent link">&para;</a></h3>
+<h3 id="encrypt-the-source-code-and-filesystem">Encrypt the source code and filesystem</h3>
 <p>Let's encrypt the source code using SCONE's Fileshield. Run a SCONE CLI container with access to the files:</p>
 <div class="highlight"><pre><span></span>docker run -it --rm --device /dev/isgx -v <span class="nv">$PWD</span>:/tutorial <span class="nv">$BASE_IMAGE</span> sh
 </pre></div>
@@ -2148,7 +2148,7 @@ $�ʇ<span class="o">(</span>E@��
                    �C��J���+81�8�
 </pre></div>
 
-<h3 id="build-the-new-image">Build the new image<a class="headerlink" href="#build-the-new-image" title="Permanent link">&para;</a></h3>
+<h3 id="build-the-new-image">Build the new image</h3>
 <p>You can now exit the container. Let's build the server image with our files, now encrypted:</p>
 <div class="highlight"><pre><span></span>cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
 <span class="s">FROM $BASE_IMAGE</span>
@@ -2163,7 +2163,7 @@ $�ʇ<span class="o">(</span>E@��
 docker build --pull . -t <span class="nv">$IMAGE3</span> <span class="o">&amp;&amp;</span> docker push <span class="nv">$IMAGE3</span>
 </pre></div>
 
-<h3 id="run-in-kubernetes">Run in Kubernetes<a class="headerlink" href="#run-in-kubernetes" title="Permanent link">&para;</a></h3>
+<h3 id="run-in-kubernetes">Run in Kubernetes</h3>
 <p>Time to deploy our server to Kubernetes. Let's setup the attestation first, so we make sure that only our application (identified by its <code>MRENCLAVE</code>) will have access to the secrets to read the encrypted filesystem, as well as our secret greeting.</p>
 <p>Extract the <code>MRENCLAVE</code>:</p>
 <div class="highlight"><pre><span></span><span class="nv">MRENCLAVE</span><span class="o">=</span><span class="k">$(</span>docker run -i --rm --device /dev/isgx -e <span class="s2">&quot;SCONE_HASH=1&quot;</span> <span class="nv">$IMAGE3</span><span class="k">)</span>
@@ -2277,7 +2277,7 @@ Hello World!
 <span class="nv">$GREETING</span> is: hello from SCONE with encrypted <span class="nb">source</span> code and auto-generated certs!!!
 </pre></div>
 
-<h3 id="clean-up">Clean up<a class="headerlink" href="#clean-up" title="Permanent link">&para;</a></h3>
+<h3 id="clean-up">Clean up</h3>
 <p>To clean up all the resources created in this tutorial, simply delete the namespace:</p>
 <div class="highlight"><pre><span></span>kubectl delete namespace hello-scone
 </pre></div>
