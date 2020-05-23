@@ -1558,9 +1558,11 @@
                 
                 
                 <h1 id="kubeapps">KubeApps</h1>
-<p>You can use <a href="https://kubeapps.com/">KubeApps</a> to deploy and manage your applications: This
-is a dashboard for <a href="../helm/">helm</a>.  While probably most applications will be be deployed via the CLI or an API,
-the dashboard is a convenient way to inspect the running applications and to test new applications.</p>
+<p>You can use <a href="https://kubeapps.com/">KubeApps</a> to deploy and manage your confidential applications.
+<span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
+deploy and manage SCONE-based confidential applications.">KubeApps</span> is a dashboard for <a href="../helm/">helm</a>.  While probably most applications will be be deployed via the 
+<code>helm</code> <span data-tooltip="A Command Line Interface (CLI) is a textual interface to a computer. It is useful for scripting (i.e., automation) and typically, used for system and service administration.">CLI</span>,
+using a dashboard is a convenient way to inspect the running applications and to test new applications.</p>
 <h2 id="deploy-and-manage">Deploy and Manage</h2>
 <p>We provide a catalog with <code>sconeapps</code>, i.e., curated, confidential applications that can
 be installed with the help of <a href="../helm/">helm</a> or via point and click using KubeApps.</p>
@@ -1594,7 +1596,8 @@ to access this "repo".</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GH_TOKEN</span><span class="o">=</span>...
 </pre></div>
 
-<p>Use it to add this repository to start KubeApps:</p>
+<p>Use it to add this repository to start <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
+deploy and manage SCONE-based confidential applications.">KubeApps</span>:</p>
 <div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$GH_TOKEN</span><span class="s2">&quot;</span><span class="nv">x</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
   <span class="nb">echo</span> <span class="s2">&quot;You need to set you github token: https://github.com/settings/tokens/new&quot;</span>
 <span class="k">else</span>
@@ -1620,7 +1623,8 @@ helm install -f kubeapps_values.yml kubeapps --namespace kubeapps bitnami/kubeap
 kubectl create clusterrolebinding kubeapps-operator --clusterrole<span class="o">=</span>cluster-admin --serviceaccount<span class="o">=</span>default:kubeapps-operator
 </pre></div>
 
-<p>To log into the KubeApps dashboard, you need to determine the API Token:</p>
+<p>To log into the <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
+deploy and manage SCONE-based confidential applications.">KubeApps</span> dashboard, you need to determine the API Token:</p>
 <div class="highlight"><pre><span></span><span class="nv">APITOKEN</span><span class="o">=</span><span class="k">$(</span>kubectl get -n default secret <span class="k">$(</span>kubectl get -n default serviceaccount kubeapps-operator -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.secrets[].name}&#39;</span><span class="k">)</span> -o go-template<span class="o">=</span><span class="s1">&#39;{{.data.token | base64decode}}&#39;</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span><span class="k">)</span>
 <span class="nb">echo</span> <span class="nv">$APITOKEN</span>
 </pre></div>
