@@ -384,8 +384,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#before-you-begin" title="Before you begin" class="md-nav__link">
-    Before you begin
+  <a href="#setup" title="Setup" class="md-nav__link">
+    Setup
   </a>
   
     <nav class="md-nav">
@@ -1567,8 +1567,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#before-you-begin" title="Before you begin" class="md-nav__link">
-    Before you begin
+  <a href="#setup" title="Setup" class="md-nav__link">
+    Setup
   </a>
   
     <nav class="md-nav">
@@ -1685,7 +1685,7 @@
 <p>The tutorial is organized as follows:</p>
 <ul>
 <li>
-<p><a href="#before-you-begin">Before you begin</a> describes the initial setup required to run this example.</p>
+<p><a href="#setup">Setup</a> describes the initial setup required to run this example.</p>
 </li>
 <li>
 <p><a href="#hello-world">Hello World!</a>  shows how to build a Python <code>Hello-World!</code> and run this in an enclave in a Kubernetes cluster. This enclaved service does not yet know any secrets.</p>
@@ -1713,18 +1713,24 @@
 <div class="highlight"><pre><span></span>git clone https://github.com/scontain/hello-world-scone-on-kubernetes.git
 </pre></div>
 
-<p>You can run this demo by executing even if you do not yet have access to the <a href="../community_version/">community version</a>:</p>
+<p>The code has some more error handling than given in this page. Also, some aspects of the code are not discussed in this tutorial.</p>
+<p>Unless you set variable, <code>IMAGENAME</code>, it will eventually fail with an error message since it will not be able to push a certain image. The reason is that you will not be able to execute an encrypted image of another <em>session</em>.</p>
+<p>You need to define environment variable <code>IMAGENAME</code></p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGENAME</span><span class="o">=</span>...
+</pre></div>
+
+<p>such that it points to an image name that you are permitted to push.</p>
+<p>By default this will be set to</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGENAME</span><span class="o">=</span>sconecuratedimages/kubernetes:hello-k8s-scone0.3
+</pre></div>
+
+<p>You can run this demo by executing even if you do not yet have access to the <a href="../community_version/">community edition</a>:</p>
 <div class="highlight"><pre><span></span><span class="nb">cd</span> hello-world-scone-on-kubernetes
 ./run_hello_world.sh
 </pre></div>
 
-<p>The code has some more error handling and also some more details not discussed in this tutorial. Still, it will eventually fail with an error message since it will not be able to push a certain image (<code>IMAGE3</code>): you will not be able to execute an encrypted image of another <em>session</em>.</p>
-<p>You need to change definition:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE3</span><span class="o">=</span>sconecuratedimages/kubernetes:hello-k8s-scone0.3
-</pre></div>
-
-<p>in <code>run_hello_world.sh</code> to point to a container repo that you are permitted to push to.</p>
-<h2 id="before-you-begin">Before you begin</h2>
+<p>There will be some error messages if you do not have access to the community edition but they should all be tolerated.</p>
+<h2 id="setup">Setup</h2>
 <h3 id="a-kubernetes-cluster-and-a-separate-namespace">A Kubernetes cluster and a separate namespace</h3>
 <p>This tutorial assumes that you have access to a Kubernetes cluster (through <code>kubectl</code>), and that you are deploying everything to a separate namespace, called <code>hello-scone</code>. Namespaces are a good way to separate resources, not to mention how it makes the clean-up process a lot easier at the end:</p>
 <div class="highlight"><pre><span></span>kubectl create namespace hello-scone
