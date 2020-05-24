@@ -13,7 +13,7 @@
         <meta name="description" content="Scone Documentation - Secure Containers">
       
       
-        <link rel="canonical" href="https://sconedocs.github.io/SCONE_VOLUME/">
+        <link rel="canonical" href="https://sconedocs.github.io/config/">
       
       
         <meta name="author" content="Christof Fetzer">
@@ -42,7 +42,7 @@
     
     
       
-        <title>scone volume - SCONE Confidential Computing</title>
+        <title>NOTE - SCONE Confidential Computing</title>
       
     
     
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#scone-volume" tabindex="1" class="md-skip">
+      <a href="../#note" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -115,7 +115,7 @@
                 SCONE Confidential Computing
               </span>
               <span class="md-header-nav__topic">
-                scone volume
+                NOTE
               </span>
             
           
@@ -566,6 +566,42 @@
   <li class="md-nav__item">
     <a href="../cas_blender_example/" title="Posting Sessions" class="md-nav__link">
       Posting Sessions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_cli-intro/" title="CLI" class="md-nav__link">
+      CLI
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_cli/" title="CLI Details" class="md-nav__link">
+      CLI Details
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_session_lang_0_2/" title="Policy Language 0.2" class="md-nav__link">
+      Policy Language 0.2
     </a>
   </li>
 
@@ -1444,63 +1480,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#scone-volume-commands" title="scone volume commands" class="md-nav__link">
-    scone volume commands
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#scone-volume-install-options" title="scone volume install [OPTIONS]" class="md-nav__link">
-    scone volume install [OPTIONS]
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scone-volume-create" title="scone volume create" class="md-nav__link">
-    scone volume create
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scone-volume-check" title="scone volume check" class="md-nav__link">
-    scone volume check
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#scone-volume-delete" title="scone volume delete" class="md-nav__link">
-    scone volume delete
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#example" title="Example" class="md-nav__link">
-    Example
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1512,234 +1491,8 @@
               
                 
                 
-                <h1 id="scone-volume">scone volume</h1>
-<p><strong>scone volume</strong> provides functionality to create <strong>volumes</strong> that are available on all nodes of a swarm. This is handy in case you want to be able to schedule a service on any node of a swarm and still be able to give it access to  volumes.</p>
-<p>The underlying technology of <strong>scone volume</strong> is <em>infinit</em> - a software created by a Docker Inc subsidiary. Please read the <em>infinit</em> documentation to understand the infinit concepts of <em>user</em>, <em>network</em>, and <em>silo</em>.</p>
-<p><strong>NOTE: infinit is labeled as alpha software: use this only for development or testing</strong>. </p>
-<p>The performance of <strong>infinit</strong> needs to be improved. Hence, for production, one would most likely install a more mature distributed file system on the swarm nodes.</p>
-<p>The remote swarm is specified via command line option <strong>--manager MANAGER</strong>. Alternatively, one can export an environment variable <strong>SCONE_MANAGER</strong> - which defines the default swarm to be used by <strong>scone swarm</strong>, in case option <strong>--manager</strong> is not given.</p>
-<h2 id="scone-volume-commands">scone volume commands</h2>
-<table>
-<thead>
-<tr>
-<th>scone volume</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>install</strong></td>
-<td>install infinit on all nodes of a swarm.</td>
-</tr>
-<tr>
-<td><strong>create</strong></td>
-<td>create new volume and install infinit storage platform if required</td>
-</tr>
-<tr>
-<td><strong>check</strong></td>
-<td>check that all volumes are available on all hosts</td>
-</tr>
-<tr>
-<td><strong>delete</strong></td>
-<td>delete a volume</td>
-</tr>
-</tbody>
-</table>
-<h3 id="scone-volume-install-options">scone volume install [OPTIONS]</h3>
-<p><strong>scone volume install</strong> ensures that infinit is installed on all nodes of a swarm.</p>
-<table>
-<thead>
-<tr>
-<th>Options</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>--manager MANAGER</td>
-<td>manager of swarm (required)</td>
-</tr>
-<tr>
-<td>--as user</td>
-<td>run as user (default random id)</td>
-</tr>
-<tr>
-<td>--network name</td>
-<td>name of network to use/create (default scone-network)</td>
-</tr>
-<tr>
-<td>--silo name</td>
-<td>name of silo to use/create (default scone-silo)</td>
-</tr>
-<tr>
-<td>--capacity sz</td>
-<td>size of silo in GB (default 10)</td>
-</tr>
-<tr>
-<td>--help</td>
-<td>show this help message</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Notes:</strong>
-If you do not specify a default <strong>user</strong> via option <strong>--user USER</strong>, a random default user is created. </p>
-<p>If you do not specify a network name via option <strong>--network name</strong>, the default network name is set to <strong>scone-network</strong>. </p>
-<p>You can specify a silo name via potion <strong>--silo name</strong>. The default silo name is <strong>"scone-silo"</strong>. </p>
-<p>The capacity of the silo (in GB) is given via  <strong>--capacity name</strong>. The default capacity is 10GB.</p>
-<p>**Examples: **</p>
-<p>To install infinit with a storage capacity of 15 GB on each node, execute the following:</p>
-<div class="highlight"><pre><span></span>$ scone volume  install --verbose --manager alice  --capacity <span class="m">15</span>
-</pre></div>
-
-<p>If you want to keep explicit control over user and network names, execute the following:</p>
-<div class="highlight"><pre><span></span>$ scone volume  install --verbose --manager alice  --as scone --capacity <span class="m">5</span> --silo  my-silo --network scone-networkg
-</pre></div>
-
-<p>If you want to see the user and network names for a given swarm, execute:</p>
-<div class="highlight"><pre><span></span>$ scone volume install --manager alice --help
-</pre></div>
-
-<h3 id="scone-volume-create">scone volume create</h3>
-<p><strong>scone volume create</strong> creates a new infinit volume for a given user (option <strong>--as USER</strong>) 
-and with a given volume name (via option <strong>--name VOLUME</strong>). If required, it (re-)installs the infinit storage platform. If you are sure that the infinit is already properly installed, pass the <strong>--fast</strong> option to avoid checks and reinstallation of infinit.</p>
-<p>This volume will be available on all hosts of a swarm at location:
-   <strong>/mnt/infinit/USER/VOLUME</strong></p>
-<table>
-<thead>
-<tr>
-<th>Options</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>--manager HOST</td>
-<td>manager of swarm (required)</td>
-</tr>
-<tr>
-<td>--name volume</td>
-<td>name of volume to create (required)</td>
-</tr>
-<tr>
-<td>--help</td>
-<td>show this help message</td>
-</tr>
-<tr>
-<td>--as user</td>
-<td>run as user (default )</td>
-</tr>
-<tr>
-<td>--network name</td>
-<td>name of network to use/create (default )</td>
-</tr>
-<tr>
-<td>--silo name</td>
-<td>name of silo to use/create (default )</td>
-</tr>
-<tr>
-<td>--capacity sz</td>
-<td>size of silo in GB (default )</td>
-</tr>
-<tr>
-<td>--fast</td>
-<td>create volume without reinstalling all software (default=false)</td>
-</tr>
-<tr>
-<td>--verbose</td>
-<td>print location of created volume</td>
-</tr>
-</tbody>
-</table>
-<p>**Example: **</p>
-<p>In case you already installed infinit on your swarm and you just want to create a new volume,
-execute the following:</p>
-<div class="highlight"><pre><span></span>$ scone volume  create --verbose --fast --name new-volume --verbose
-</pre></div>
-
-<p>In case you do not know if infinit is already installed when you create a volume and
-your want to keep control over the names used by infinit, execute the following:</p>
-<div class="highlight"><pre><span></span>$ scone volume  create --verbose --manager alice  --as scone --name  my-volume --capacity <span class="m">5</span> --silo  my-silo --network scone-network  --export config
-</pre></div>
-
-<h2 id="scone-volume-check">scone volume check</h2>
-<p>Checks if all created volumes are available on all swarm nodes.</p>
-<p><strong>Note: the current implementation of **scone volume check</strong> uses the metadata stored in the container/environment in which <strong>scone volume check</strong> executes. In case you created some volumes in a different container, the checks will complain.**  Will plan to fix this issue in a future version of <strong>scone volume check</strong>.</p>
-<table>
-<thead>
-<tr>
-<th>Options</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>--manager HOST</td>
-<td>manager of swarm (required)</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Example:</strong> </p>
-<div class="highlight"><pre><span></span>$ scone volume  check --verbose --manager alice
-</pre></div>
-
-<h2 id="scone-volume-delete">scone volume delete</h2>
-<p><strong>scone volume delete</strong> deletes a volume. This removes the volume from all nodes of a swarm.</p>
-<table>
-<thead>
-<tr>
-<th>Options</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>--manager HOST</td>
-<td>manager of swarm (required)</td>
-</tr>
-<tr>
-<td>--name volume</td>
-<td>name of volume to be deleted (required)</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span>$ scone volume  delete --verbose --manager alice --volume new-volume
-</pre></div>
-
-<h2 id="example">Example</h2>
-<p>To install <em>infinit</em> on all nodes of a swarm managed by node <em>faye</em> and reserve a capacity of 15GB per node, execute the following:</p>
-<div class="highlight"><pre><span></span>$ scone volume  install --verbose --manager faye  --capacity <span class="m">15</span> 
-</pre></div>
-
-<p>To create a volume named <strong>test_scone_volume</strong> for some arbitrary infinit user <strong>test_scone_user</strong>, 
-execute the following:</p>
-<div class="highlight"><pre><span></span>$ scone volume create --verbose --manager faye --as test_scone_user --name  test_scone_volume 
-</pre></div>
-
-<p>Note that the infinit user <strong>test_scone_user</strong> is automatically created if it does not yet exists.</p>
-<p>After completion of this command, you will have access to the newly created volume at location <strong>/mnt/infinit/test_scone_user/test_scone_volume</strong> on all nodes of the swarm.</p>
-<p>You can give a service access to this volume with the help of its stack file.
-Say, the service needs to access this mapped at <strong>/mnt/vol</strong>  as follows:</p>
-<div class="highlight"><pre><span></span>myservice:
-   volumes:
-        - /mnt/infinit/test_scone_user/test_scone_volume:/mnt/vol
-</pre></div>
-
-<p>Note that <strong>scone volume create</strong> will check that <strong>infinit</strong> is properly installed and will reinstall parts that
-are missing. If you are sure that infinit is properly installed, you can add option <strong>--fast</strong> to omit the checks that <strong>infinit</strong> is properly installed.</p>
-<p>To create a volume <strong>test_scone2_volume</strong> on a swarm managed by <strong>faye</strong> when you know that <strong>infinit</strong> is installed, just executed</p>
-<div class="highlight"><pre><span></span>$ scone volume  create --verbose --fast --manager faye --as test_scone_user  --name  test_scone2_volume 
-</pre></div>
-
-<p>To check that the volumes on the swarm are properly installed, execute command <strong>check</strong>:</p>
-<div class="highlight"><pre><span></span>$ scone volume  check --verbose --manager faye 
-</pre></div>
-
-<p>To delete a volume, we provide command <strong>delete</strong>. For example, to delete volume <strong>test_scone2_volume</strong>, execute:</p>
-<div class="highlight"><pre><span></span>$ scone volume delete --verbose --manager faye  --as test_scone_user --name  test_scone2_volume
-</pre></div>
-
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, 2020. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
+                <h1 id="note">NOTE</h1>
+<p>Sorry, this is not yet part of the online documentation.</p>
                 
                   
                 

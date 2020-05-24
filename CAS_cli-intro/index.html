@@ -13,7 +13,7 @@
         <meta name="description" content="Scone Documentation - Secure Containers">
       
       
-        <link rel="canonical" href="https://sconedocs.github.io/CAS/">
+        <link rel="canonical" href="https://sconedocs.github.io/CAS_cli-intro/">
       
       
         <meta name="author" content="Christof Fetzer">
@@ -42,7 +42,7 @@
     
     
       
-        <title>SOMETHING WENT WRONG - SCONE Confidential Computing</title>
+        <title>CLI - SCONE Confidential Computing</title>
       
     
     
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#something-went-wrong" tabindex="1" class="md-skip">
+      <a href="../#scone-cli" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -115,7 +115,7 @@
                 SCONE Confidential Computing
               </span>
               <span class="md-header-nav__topic">
-                SOMETHING WENT WRONG
+                CLI
               </span>
             
           
@@ -495,10 +495,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" checked>
     
     <label class="md-nav__link" for="nav-4">
       Configuration & Attestation
@@ -566,6 +568,101 @@
   <li class="md-nav__item">
     <a href="../cas_blender_example/" title="Posting Sessions" class="md-nav__link">
       Posting Sessions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        CLI
+      </label>
+    
+    <a href="./" title="CLI" class="md-nav__link md-nav__link--active">
+      CLI
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cli-state" title="CLI State" class="md-nav__link">
+    CLI State
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-identity" title="User Identity" class="md-nav__link">
+    User Identity
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cas-trust-management" title="CAS Trust Management" class="md-nav__link">
+    CAS Trust Management
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#session-handling" title="Session Handling" class="md-nav__link">
+    Session Handling
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_cli/" title="CLI Details" class="md-nav__link">
+      CLI Details
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_session_lang_0_2/" title="Policy Language 0.2" class="md-nav__link">
+      Policy Language 0.2
     </a>
   </li>
 
@@ -1444,6 +1541,43 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cli-state" title="CLI State" class="md-nav__link">
+    CLI State
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-identity" title="User Identity" class="md-nav__link">
+    User Identity
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cas-trust-management" title="CAS Trust Management" class="md-nav__link">
+    CAS Trust Management
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#session-handling" title="Session Handling" class="md-nav__link">
+    Session Handling
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1455,8 +1589,89 @@
               
                 
                 
-                <h1 id="something-went-wrong">SOMETHING WENT WRONG</h1>
-<p>if you can see this, something went wrong... you should see something different!</p>
+                <h1 id="scone-cli">SCONE CLI</h1>
+<p>The SCONE Command Line Interface (CLI) is the primary tool for interaction with the SCONE platform.</p>
+<h2 id="cli-state">CLI State</h2>
+<p>The SCONE CLI is stateful, which means that important state, such as attestation information and identity keys, are preserved between invocations.
+This state is stored in a configuration file (default location: <code>~/.cas/config.json</code>).
+Alternative locations can be used by setting the <code>SCONE_CLI_CONFIG</code> environment variable.
+The config file contains security-sensitive data and has to be protected by the user.
+Failure to do so will allow an attacker to impersonate the user.</p>
+<h2 id="user-identity">User Identity</h2>
+<p>Communication with CAS is encrypted and authenticated to prevent eavesdropping and impersonation attacks.
+Users have to present an X.509 certificate to authenticate themselves.
+These certificates are also used to authorize session operations, such as reading or updating (see the documentation of the Session Description Language).
+For simplicity, the SCONE CLI generates a user certificate and private key on its own and stores it in the configuration file.</p>
+<p><code>scone self show</code> shows the user's certificate in PEM format, as well as a SHA256 hash of it, both of which can be used in the access control list of sessions.</p>
+<h2 id="cas-trust-management">CAS Trust Management</h2>
+<p>SCONE CAS is the central point of knowledge and trust in the SCONE platform.
+It generates and stores secrets, and establishes trust into service enclaves by attesting and provisioning them.
+This role and the data involved is highly security-sensitive.
+Therefore, trust has to be established into CAS itself before it can be used.
+Without this, an adversary could impersonate as CAS and collect all of your application's secrets.</p>
+<p><code>scone cas attest</code> is the central command to build trust into / attest a remote CAS.
+Most importantly, it takes the address of CAS and the expected enclave measurement of a benign CAS enclave.
+If the attestation is successful and the contacted CAS has the expected enclave measurement (its software is trusted), the CLI will store all information necessary to communicate securely with the CAS in the config file.</p>
+<p>Example attestation process:</p>
+<div class="highlight"><pre><span></span>scone cas attest cas.example.com 0a7f2f03e98a63656868a7083aa110210d244740fa73fa455130a1f926398e9e
+</pre></div>
+
+<p>Note that <code>0a7f2f03e98a63656868a7083aa110210d244740fa73fa455130a1f926398e9e</code> MUST be replaced with the proper enclave measurement. Additional command line switches allow relaxing the security policy, e.g. by allowing CAS to run on a machine with hyperthreading enabled (<code>-C</code>) or running on older, less secure SGX hardware (<code>-G</code>). Use <code>scone cas attest --help</code> for a full list of options.</p>
+<p>The first attested CAS will be used as the default CAS when performing CAS-related operations, such as creating sessions. Multiple CASes may be attested at the same time, though. <code>scone cas list</code> gives an overview and <code>scone cas set-default</code> allows switching to another default CAS.</p>
+<h2 id="session-handling">Session Handling</h2>
+<p>In SCONE, individual (microservice) applications security policies are described in sessions.
+Sessions are stored in session files - YAML-encoded descriptions of the session.
+The <code>scone session</code> commands provide verification and processing for sessions.</p>
+<p>A very simple (empty) session file (e.g. stored in <code>sessions/my-example-session.001.yml</code>) could look like this:</p>
+<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="s">&quot;my-example-session&quot;</span>
+<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.2&quot;</span>
+<span class="nt">predecessor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">~</span>
+</pre></div>
+
+<p>The Session Description Language documentation provides details about the syntax and content of session files.</p>
+<p>To check whether the provided file is a valid session description, one can use:</p>
+<div class="highlight"><pre><span></span>scone cas session check <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
+</pre></div>
+
+<p>The command will return a non-zero exit code when encountering a validation error.</p>
+<p>Once the user finalized the sesson and validation passes, the session may be uploaded to a CAS, by using:</p>
+<div class="highlight"><pre><span></span>scone cas session create <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
+</pre></div>
+
+<p>This will use the default CAS. To use a specific CAS instead:</p>
+<div class="highlight"><pre><span></span>scone cas session create --cas cas.example2.com <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
+</pre></div>
+
+<p>(Note that either way, the used CAS must have been attested through <code>scone cas attest</code> previously, or the command will fail.)</p>
+<p>As the complexity of sessions grows, variable substitution can be used to automate uploading of session templates (file <code>sessions/my-example-session.002.yml</code>):</p>
+<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="s">&quot;my-example-session&quot;</span>
+<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.2&quot;</span>
+
+<span class="nt">services</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">webservice</span>
+    <span class="nt">command</span><span class="p">:</span> <span class="s">&quot;./nginx&quot;</span>
+    <span class="nt">mrenclaves</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;$NGINX_MRENCLAVE&quot;</span><span class="p p-Indicator">]</span>
+</pre></div>
+
+<p>Note that we use a variable, <code>$NGINX_MRENCLAVE</code>, as the enclave measurement for a service.
+Variables can be used anywhere in the session file, except for the <code>version</code>.</p>
+<p>Since the session (identified by its name) was already created earlier, <code>scone session create</code> cannot be used a second time.
+Instead, the session needs to be updated:</p>
+<div class="highlight"><pre><span></span>scone cas session update -e <span class="s2">&quot;NGINX_MRENCLAVE=3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac&quot;</span> <span class="s2">&quot;sessions/my-example-session.002.yml&quot;</span>
+</pre></div>
+
+<p>When updating a session, the CLI will first retrieve the currently active session from the CAS, and fill in its hash as a <code>predecessor</code> of the updated session.
+This ensures a coherent, linear and verifiable session history.</p>
+<p>The <code>-e</code> switch causes variable <code>$NGINX_MRENCLAVE</code> to be replaced with the value <code>3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac</code>.
+If a variable is present in the session file but not on the command line, an error is returned, and the session is not uploaded to CAS.
+Variables can be used with all <code>cas session</code> commands. Using <code>scone session update --help</code>, more advanced options can be shown.</p>
+<p>In some scenarios, it may be necessary to verify whether a session active on a CAS adheres a given policy.
+This can be done by using the <code>verify</code> CLI command:</p>
+<div class="highlight"><pre><span></span>scone cas session verify -e <span class="s2">&quot;NGINX_MRENCLAVE=3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac&quot;</span> <span class="s2">&quot;sessions/my-example-session.002.yml&quot;</span>
+</pre></div>
+
+<p>The command will fetch the active session from CAS (this requires the <code>READ</code> permission), and check whether it matches the given session file after variable substitution.
+A non-zero exit code implies a mismatch.</p>
                 
                   
                 
@@ -1474,6 +1689,41 @@
         
 <footer class="md-footer">
   
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../cas_blender_example/" title="Posting Sessions" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Posting Sessions
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../CAS_cli/" title="CLI Details" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                CLI Details
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">

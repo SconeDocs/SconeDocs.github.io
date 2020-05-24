@@ -589,6 +589,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#selecting-the-sgx-device" title="Selecting the SGX device" class="md-nav__link">
+    Selecting the SGX device
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#starting-and-stopping-las" title="Starting and Stopping LAS" class="md-nav__link">
     Starting and Stopping LAS
   </a>
@@ -619,6 +626,42 @@
   <li class="md-nav__item">
     <a href="../cas_blender_example/" title="Posting Sessions" class="md-nav__link">
       Posting Sessions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_cli-intro/" title="CLI" class="md-nav__link">
+      CLI
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_cli/" title="CLI Details" class="md-nav__link">
+      CLI Details
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_session_lang_0_2/" title="Policy Language 0.2" class="md-nav__link">
+      Policy Language 0.2
     </a>
   </li>
 
@@ -1509,6 +1552,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#selecting-the-sgx-device" title="Selecting the SGX device" class="md-nav__link">
+    Selecting the SGX device
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#starting-and-stopping-las" title="Starting and Stopping LAS" class="md-nav__link">
     Starting and Stopping LAS
   </a>
@@ -1539,6 +1589,7 @@
                 
                 <h1 id="las-for-development">LAS for Development</h1>
 <p>We explain how to start a Local Attestation Service (LAS) instance for development. LAS is need to perform a local attestation (i.e., this creates a <strong>quote</strong> that can be verified by CAS). Note that this LAS runs inside a debug enclave, i.e., <strong>do not use this LAS instance in production</strong>. For setting up a production mode LAS, send us an email.</p>
+<p>For running LAS in a Kubernetes Cluster, please set up <a href="../helm_las/">LAS with helm</a>.</p>
 <h2 id="pulling-las-image">Pulling LAS Image</h2>
 <p>To start LAS, you first pull LAS to your local registry. To do so, please set the environment variable
 <code>LAS</code> to the image repository that we given you access to. The standard LAS image name is defined as follows:</p>
@@ -1551,6 +1602,24 @@
 
 <p>If this fails, ensure that you are logged into docker (via <code>docker login</code>) and that we
 granted you access to that image.</p>
+<h3 id="selecting-the-sgx-device">Selecting the SGX device</h3>
+<p>Depending on the platform, the SGX device is named <code>/dev/isgx</code> or <code>/dev/sgx</code>. To write generic
+software, you could define some function to select the correct device:</p>
+<div class="highlight"><pre><span></span><span class="k">function</span> set_sgx_device <span class="o">{</span>
+    <span class="nb">export</span> <span class="nv">DEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/sgx&quot;</span>
+
+    <span class="k">if</span> <span class="o">[[</span> ! -c <span class="s2">&quot;</span><span class="nv">$DEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+        <span class="nb">export</span> <span class="nv">DEVICE_O</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$DEVICE</span><span class="s2">&quot;</span>
+        <span class="nb">export</span> <span class="nv">DEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/isgx&quot;</span>
+        <span class="k">if</span> <span class="o">[[</span> ! -c <span class="s2">&quot;</span><span class="nv">$DEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+            <span class="nb">echo</span> <span class="s2">&quot;Neither </span><span class="nv">$DEVICE_O</span><span class="s2"> nor </span><span class="nv">$DEVICE</span><span class="s2"> exists&quot;</span>
+            <span class="nb">exit</span> <span class="m">1</span>
+        <span class="k">fi</span>
+    <span class="k">fi</span>
+<span class="o">}</span>
+set_sgx_device
+</pre></div>
+
 <h3 id="starting-and-stopping-las">Starting and Stopping LAS</h3>
 <p>The easiest way to start LAS is to use a simple Docker compose file. Please create a separate directory for that:</p>
 <div class="highlight"><pre><span></span>mkdir -p LAS
@@ -1558,13 +1627,14 @@ granted you access to that image.</p>
 </pre></div>
 
 <p>Create the following compose file:</p>
-<div class="highlight"><pre><span></span>cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
+<div class="highlight"><pre><span></span>set_sgx_device
+cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">version: &#39;3.2&#39;</span>
 <span class="s">services:</span>
 <span class="s">    las:</span>
 <span class="s">        image: sconecuratedimages/services:las</span>
 <span class="s">        devices:</span>
-<span class="s">         - &quot;/dev/isgx&quot;</span>
+<span class="s">         - &quot;$DEVICE&quot;</span>
 <span class="s">        ports:</span>
 <span class="s">          - target: 18766</span>
 <span class="s">            published: 18766</span>

@@ -13,7 +13,7 @@
         <meta name="description" content="Scone Documentation - Secure Containers">
       
       
-        <link rel="canonical" href="https://sconedocs.github.io/CASConfiguration/">
+        <link rel="canonical" href="https://sconedocs.github.io/cas-api/">
       
       
         <meta name="author" content="Christof Fetzer">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Configuration - SCONE Confidential Computing</title>
+        <title>NOTE - SCONE Confidential Computing</title>
       
     
     
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#configuration" tabindex="1" class="md-skip">
+      <a href="../#note" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -115,7 +115,7 @@
                 SCONE Confidential Computing
               </span>
               <span class="md-header-nav__topic">
-                Configuration
+                NOTE
               </span>
             
           
@@ -566,6 +566,42 @@
   <li class="md-nav__item">
     <a href="../cas_blender_example/" title="Posting Sessions" class="md-nav__link">
       Posting Sessions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_cli-intro/" title="CLI" class="md-nav__link">
+      CLI
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_cli/" title="CLI Details" class="md-nav__link">
+      CLI Details
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../CAS_session_lang_0_2/" title="Policy Language 0.2" class="md-nav__link">
+      Policy Language 0.2
     </a>
   </li>
 
@@ -1444,110 +1480,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#database" title="Database" class="md-nav__link">
-    Database
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#interfaces" title="Interfaces" class="md-nav__link">
-    Interfaces
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ias-client" title="IAS Client" class="md-nav__link">
-    IAS Client
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attestation" title="Attestation" class="md-nav__link">
-    Attestation
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#policy" title="Policy" class="md-nav__link">
-    Policy
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#trusting-imperfect-platforms" title="Trusting Imperfect Platforms" class="md-nav__link">
-    Trusting Imperfect Platforms
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#outdated-platforms" title="Outdated Platforms" class="md-nav__link">
-    Outdated Platforms
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#imperfect-configured-platforms" title="Imperfect Configured Platforms" class="md-nav__link">
-    Imperfect Configured Platforms
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scone-quoting-enclave-configuration" title="SCONE Quoting Enclave Configuration" class="md-nav__link">
-    SCONE Quoting Enclave Configuration
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tls-identity" title="TLS Identity" class="md-nav__link">
-    TLS Identity
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#private-keys" title="Private Keys" class="md-nav__link">
-    Private Keys
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -1559,196 +1491,8 @@
               
                 
                 
-                <h1 id="configuration">Configuration</h1>
-<p>CAS's configuration is read from a <a href="https://en.wikipedia.org/wiki/TOML">TOML</a>-formatted file.</p>
-<p>CAS, as most services, needs to be told how to behave with a configuration.
-This configuration is under the control of the CAS owner.
-Thus, CAS users are protected from malicious intend of the owner.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Any <a href="../ProductionModeCAS/"><strong>root CAS</strong></a> has its initial configuration being part of its MrEnclave.
-This configuration is encrytped during the first startup with the secret seal key of CAS. In other words, attesting a root CAS includes attesting
-that the CAS was initialized with the expected configuration file.</p>
-</div>
-<h2 id="database">Database</h2>
-<p>CAS stores its data in a SQLite database.
-The location of which is determined in by the <code>path</code> option of the configuration in the <code>database</code> section:</p>
-<div class="highlight"><pre><span></span>[database]
-path = &quot;/etc/cas/database.sqlite&quot;
-</pre></div>
-
-<p>Relative paths are interpreted relative to the configuration file's location.</p>
-<div class="highlight"><pre><span></span>[database]
-path = &quot;database.sqlite&quot;
-</pre></div>
-
-<p>The special <code>:memory:</code> option can be used to use a transient in-memory database that will be removed once the CAS process terminates.</p>
-<div class="highlight"><pre><span></span>[database]
-path = &quot;:memory:&quot;
-</pre></div>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>During attestation we need to attest a <strong>root CAS</strong> which is guaranteed to have an encrypted database, runs in a production enclave and checks its
-configuration file during attestation.</p>
-</div>
-<h2 id="interfaces">Interfaces</h2>
-<p>At the moment, CAS offers two interfaces:</p>
-<ul>
-<li>a client API with which clients can upload, upgrade and query sessions, and </li>
-<li>an enclave interface with which enclaves communicate with CAS.</li>
-</ul>
-<p>These configuration options will determine on which network interfaces and ports CAS will listen for incoming connection.
-Interfaces are defined with values satisfying <a href="https://doc.rust-lang.org/std/net/enum.SocketAddr.html#impl-FromStr"><code>std::net::SocketAddr</code>'s <code>FromStr</code> implementation</a>.</p>
-<p>The client API is configured via the <code>api_listen</code> option while the enclave interface is configured through the <code>enclave_listen</code> option:</p>
-<div class="highlight"><pre><span></span>[api]
-enclave_listen = &quot;0.0.0.0:18765&quot;
-api_listen = &quot;0.0.0.0:8080&quot;
-</pre></div>
-
-<p>Note, a configuration with an IP address of <code>0.0.0.0</code> will make the CAS listen on any available network interface.</p>
-<h2 id="ias-client">IAS Client</h2>
-<p>The IAS client enables CAS to verify enclave EPID quotes using <a href="https://api.portal.trustedservices.intel.com/EPID-attestation">Intel SGX Attestation Service</a>.</p>
-<p>Its configuration consists of the Service Provider ID (SPID), linkability setting and the TLS identity used to authenticated to the IAS service.
-<code>spid</code> has to be a 32 character or 16 byte long hex string.
-<code>linkable_quotes</code> is either <code>true</code> or <code>false</code>.
-<code>api_url</code> is the url endpoint at which the client will query Intel's attestation service.
-This option is optional and will point to <code>https://test-as.sgx.trustedservices.intel.com:443/attestation/sgx/v3</code> by default.
-You have to adapt this setting if you use an IAS production identity.
-The TLS identity is configured through the <code>ias.identity</code> option.
-Refer to the section about TLS identities for details on how to specify it.</p>
-<div class="highlight"><pre><span></span>[ias]
-spid = &quot;2EC5BE64E242BCC9E4670D49E5C7091E&quot;
-linkable_quotes = true
-api_url = &quot;https://test-as.sgx.trustedservices.intel.com:443/attestation/sgx/v3&quot;
-
-[ias.identity]
-cert = &quot;ias_client.pem&quot;
-key = &quot;ias_client.key&quot;
-</pre></div>
-
-<p><strong>Security:</strong></p>
-<ul>
-<li>The confidentiality of the IAS client configuration, in particular of the private key, is of concern for the CAS owner/operator. Anybody obtaining the private key can impersonate as the CAS owner/operator to Intel's service.</li>
-<li>CAS users do not have to trust this configuration. Intel's service signs responses.</li>
-</ul>
-<h2 id="attestation">Attestation</h2>
-<p>There are a couple of attestation related configuration options defined in the <code>attestation</code> dictionary.</p>
-<p><strong>Security: These options are security sensitive as they define how trust is established into enclaves.
-As these are configured via a file in the file system which is not authenticated by default the trusted computing base
-of the CAS users is at the mercy of the CAS owner/operator which himself is at the mercy of the platform provider!</strong></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>These options are <em>security sensitive</em> as they define how trust is established into enclaves. As these are configured via the config file in the file system, the config file must be part of the attestation.</p>
-</div>
-<h3 id="policy">Policy</h3>
-<p>The attestation policy determines by which method enclave are attested.
-You can choose from <code>without</code>, <code>intel</code>, and <code>scone</code>.</p>
-<table>
-<thead>
-<tr>
-<th>Policy</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Without</td>
-<td>Connecting enclaves are not attested, thus any connection is trusted.</td>
-</tr>
-<tr>
-<td>Intel</td>
-<td>Connecting enclaves are attested using Intel's attestation scheme.</td>
-</tr>
-<tr>
-<td>Scone</td>
-<td>Connecting enclaves are attested using SCONE's optimized attestation scheme decreasing attestation latency.</td>
-</tr>
-</tbody>
-</table>
-<p><code>Scone</code> attestation policy is recommended.</p>
-<div class="highlight"><pre><span></span>attestation.policy = &quot;scone&quot;
-</pre></div>
-
-<h3 id="trusting-imperfect-platforms">Trusting Imperfect Platforms</h3>
-<p>By default only enclaves running on perfectly trustworthy platforms will be trusted by CAS.
-However, maintaining a platform perfectly trustworthy 24/7 is a high burden or might not be desired due to the involved performance penalty.
-Thus, CAS can be configured to trust platforms with minor imperfections enabling a user defined trade-off.</p>
-<p>This options are only regarded if the attestation policy is either <code>scone</code> or <code>intel</code>.</p>
-<h4 id="outdated-platforms">Outdated Platforms</h4>
-<p>An update has been released for at least one component of the platforms trust stack which is not installed.
-The platform has not been identified as compromised and thus is not revoked, but depending on the nature
-of the update the platform's trust state might be at risk.</p>
-<p><em>Note that, due to slow or discontinued support from its manufacturer and/or Intel some platforms might be only be updatable with considerable delay or even impossible to update to the most recent state.</em></p>
-<p>Eventually, this is a trade off between security and availability of the system.</p>
-<p>Setting <code>attestation.trust_group_out_of_date</code> to <code>true</code> will trust the affected platforms, while setting it to <code>false</code> will do the contrary</p>
-<div class="highlight"><pre><span></span>attestation.trust_group_out_of_date = true
-</pre></div>
-
-<h4 id="imperfect-configured-platforms">Imperfect Configured Platforms</h4>
-<p>Platforms with enabled Hyper-Threading allow certain types of side-channel attacks to be mounted against enclaves.
-This can be prevented by turning of Hyper-Threading in the BIOS which might introduce performance penalities.</p>
-<p>CAS can be configured to trust platforms with Hyper-Threading by setting <code>attestation.trust_configuration_needed</code> to <code>true</code>.</p>
-<div class="highlight"><pre><span></span>attestation.trust_configuration_needed = false
-</pre></div>
-
-<h3 id="scone-quoting-enclave-configuration">SCONE Quoting Enclave Configuration</h3>
-<p>SCONE's attestation scheme is built around a separate quoting enclave into which trust has to be established.</p>
-<p>This trust can either be established using Intel's attestation scheme or manually.</p>
-<p>To establish trust using Intel's attestation scheme the expected SCONE quoting enclaves' measurement value has to be specified.
-CAS will use its IAS credentials to establish the necessary trust.</p>
-<div class="highlight"><pre><span></span># List of trusted MRENCLAVE hashes for SCONE attestation.
-# When CAS receives a SCONE quote signed with an unknown public key it will use
-# Intel&#39;s attestation mechanism to attest the SCONE QE learning its MRENCLAVE
-# hash. Only enclaves with hash contained in this list will be trusted.
-# The list has to contain string with the hex-encoded hash values. The values
-# shall be 32 bytes in size.
-# If this list is empty SCONE attestation will only accept quotes from
-# whitelisted public keys.
-scone_qe_mrenclave_whitelist = [
-    # quoting enclave built with sdk v2.5 (debug mode) w/o HT
-    &quot;C2CA1D8166C45EB6063764413CDFFA8D9BBAB44CE6CDA6837000D703368F338B&quot;
-]
-</pre></div>
-
-<p>Alternatively, individual SCONE Quoting Enclaves can be configured to be trustworthy.</p>
-<div class="highlight"><pre><span></span>[attestation]
-# List of trusted public keys for SCONE attestation.
-# SCONE quotes signed with one of this public keys are always trusted by CAS.
-# The list has to contain string with the hex-encoded public keys. The keys
-# shall be 32 bytes in size.
-scone_qe_pubkey_whitelist = [
-    &quot;E37F149AE30896E314A2859874C5A9C7803FB3187B99F5D08E526B1C0396507C&quot;
-]
-</pre></div>
-
-<p>Both the quoting enclave's platform-independent measurement value, as well as, its platform-specific public key can be found in LAS' log output:</p>
-<div class="highlight"><pre><span></span><span class="o">[</span><span class="m">10000</span>:INFO@21.06.2019/20:39:15<span class="o">]</span> APP: Creating LAS target information message.
-<span class="o">[</span><span class="m">10000</span>:INFO@21.06.2019/20:39:16<span class="o">]</span> STARTER: SCONE QE has MRENCLAVE C2CA1D8166C45EB6063764413CDFFA8D9BBAB44CE6CDA6837000D703368F338B
-<span class="o">[</span><span class="m">10000</span>:INFO@21.06.2019/20:39:16<span class="o">]</span> STARTER: SCONE QE has public key E37F149AE30896E314A2859874C5A9C7803FB3187B99F5D08E526B1C0396507C
-<span class="o">[</span><span class="m">10000</span>:INFO@21.06.2019/20:39:16<span class="o">]</span> STARTER: LAS is listening on <span class="m">0</span>.0.0.0:18766
-</pre></div>
-
-<h2 id="tls-identity">TLS Identity</h2>
-<p>A TLS identity consists of a certificate and the associated private key.</p>
-<p>Certificate and private key have to be provided as file system paths where CAS can open and read the certificate resp. private key.
-CAS will ensure that certificate and private key belong together.</p>
-<div class="highlight"><pre><span></span>cert = &quot;certificate.pem&quot;
-key = &quot;private_key.pem&quot;
-</pre></div>
-
-<p>While this is easy to set up and modify, this has <strong>major disadvantages</strong> like:</p>
-<ul>
-<li>this certificate is disconnected from the CAS certificate chain, and </li>
-<li>the key is not protected at all.</li>
-</ul>
-<p>The <a href="../ProductionModeCAS/">production CAS</a> generates the TLS certificate/key on-the-fly, signing it by CAS (instance) CA certificate, and storing it in the <code>palaemon.db</code>. The <code>palaemon.db</code> is protected as we show above.</p>
-<h3 id="private-keys">Private Keys</h3>
-<p>We support RSA and PKCS8 encoded private keys.
-By default, <code>openssl</code> will encode elliptic curve keys in the incompatible format specified in <a href="http://www.secg.org/">SEC 1: Elliptic Curve Cryptography</a>.
-You can use the <code>openssl</code> cli to convert these keys into <a href="https://tools.ietf.org/html/rfc5208">PKCS8</a>:</p>
-<div class="highlight"><pre><span></span>openssl pkcs8 -in pkey.pem -topk8 --nocrypt -out pkey.pkcs8.pem
-</pre></div>
+                <h1 id="note">NOTE</h1>
+<p>Sorry, this is not yet part of the online documentation.</p>
                 
                   
                 
