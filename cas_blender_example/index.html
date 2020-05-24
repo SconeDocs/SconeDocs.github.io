@@ -530,8 +530,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../cas_intro/" title="Introduction" class="md-nav__link">
-      Introduction
+    <a href="../cas_intro/" title="Concepts" class="md-nav__link">
+      Concepts
     </a>
   </li>
 
@@ -542,7 +542,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../CASIntro/" title="Starting CAS" class="md-nav__link">
+    <a href="../CAS_for_development/" title="Starting CAS" class="md-nav__link">
       Starting CAS
     </a>
   </li>
@@ -1526,8 +1526,10 @@
                 
                 
                 <h1 id="posting-a-session">Posting a Session</h1>
-<p>We show how to interact with CAS s with the help of <code>curl</code> - this might be helpful during development since it simplifies scripting. Alternatively, we provide a <code>scone</code> command line interface that can be executed inside of an enclave itself.</p>
-<p>We assume that you already started a <a href="../CASIntro/">CAS instance</a> and a <a href="../LASIntro/">LAS instance</a> on your local host. Alternatively, you can use our public CAS instance at <strong>scone-cas.cf</strong>. Hence, we set the address of CAS as follows:</p>
+<p>We show how to interact with CAS s with the help of <code>curl</code> - this might be helpful during development since it simplifies quick tests.</p>
+<p>We provide a <code>scone</code> command line interface that can be executed inside of an enclave itself.
+It can perform an attestation of CAS as well as creating and verifying policies. Hence, we recommend to use the <code>scone</code> <span data-tooltip="A Command Line Interface (CLI) is a textual interface to a computer. It is useful for scripting (i.e., automation) and typically, used for system and service administration.">CLI</span>.  </p>
+<p>We assume that you already started a <a href="../CAS_for_development/">CAS instance</a> and a <a href="../LASIntro/">LAS instance</a> on your local host. Alternatively, you can use our public CAS instance at <strong>scone-cas.cf</strong>. Hence, we set the address of CAS as follows:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
 </pre></div>
 
@@ -1540,7 +1542,11 @@
 <p>Let's create a client certificate without a password. Note that you would typically add a password!</p>
 <div class="highlight"><pre><span></span>    mkdir -p conf
     <span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-        openssl req -new -newkey rsa:4096 -days <span class="m">365</span> -nodes -x509 -subj <span class="s2">&quot;/C=EU/ST=CAS/L=CLIENT/O=Internet/CN=scontain.com&quot;</span> -out conf/client.crt -keyout conf/client-key.key
+      openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key <span class="se">\</span>
+      -days <span class="m">31</span> -nodes -sha256 <span class="se">\</span>
+      -subj <span class="s2">&quot;/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com&quot;</span> <span class="se">\</span>
+      -reqexts SAN -extensions SAN <span class="se">\</span>
+      -config &lt;<span class="o">(</span>cat /etc/ssl/openssl.cnf &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;[SAN]\nsubjectAltName=DNS:www.scontain.com&#39;</span><span class="o">))</span>
     <span class="k">fi</span>
 </pre></div>
 

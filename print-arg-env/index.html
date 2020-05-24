@@ -530,8 +530,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../cas_intro/" title="Introduction" class="md-nav__link">
-      Introduction
+    <a href="../cas_intro/" title="Concepts" class="md-nav__link">
+      Concepts
     </a>
   </li>
 
@@ -542,7 +542,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../CASIntro/" title="Starting CAS" class="md-nav__link">
+    <a href="../CAS_for_development/" title="Starting CAS" class="md-nav__link">
       Starting CAS
     </a>
   </li>
@@ -1574,7 +1574,7 @@
 <h2 id="prerequisites">Prerequisites</h2>
 <p>We assume that you already</p>
 <ul>
-<li><a href="../CASIntro/">started a CAS instance</a> on the local host, as well as</li>
+<li><a href="../CAS_for_development/">started a CAS instance</a> on the local host, as well as</li>
 <li><a href="../LASIntro/">started a LAS instance</a> on the local host,</li>
 </ul>
 <p>We also assume that this example is executed in the context of Ubuntu. For other Linux variants, you might need to use a different cross-compiler image. Alternatively, you could execute this example in the crosscompiler container but you need to ensure that the container can establish https connections to CAS and LAS.</p>
@@ -1654,7 +1654,7 @@ need to run the program in the context of CAS.**</p>
  If it is set, we will contact <code>SCONE_CAS_ADDR</code>. If <code>SCONE_CAS_ADDR</code> is not set, we contact by default 
  host „cas“. The SCONE runtime will also contact <code>SCONE_LAS_ADDR</code> for local attestation. If <code>SCONE_LAS_ADDR</code> is not set, we contact by default host „las“.</p>
 </div>
-<p>We assume that you already started a <a href="../CASIntro/">CAS</a> in the background via <code>docker-compose up -d cas</code>
+<p>We assume that you already started a <a href="../CAS_for_development/">CAS</a> in the background via <code>docker-compose up -d cas</code>
 on the local machine:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
 </pre></div>
@@ -1690,7 +1690,11 @@ on the local machine:</p>
 <p>Let's make sure that we have a client certificate to identify this client:</p>
 <div class="highlight"><pre><span></span>    mkdir -p conf
     <span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-        openssl req -new -newkey rsa:4096 -days <span class="m">365</span> -nodes -x509 -subj <span class="s2">&quot;/C=EU/ST=CAS/L=CLIENT/O=Internet/CN=scontain.com&quot;</span> -out conf/client.crt -keyout conf/client-key.key
+      openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key <span class="se">\</span>
+      -days <span class="m">31</span> -nodes -sha256 <span class="se">\</span>
+      -subj <span class="s2">&quot;/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com&quot;</span> <span class="se">\</span>
+      -reqexts SAN -extensions SAN <span class="se">\</span>
+      -config &lt;<span class="o">(</span>cat /etc/ssl/openssl.cnf &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;[SAN]\nsubjectAltName=DNS:www.scontain.com&#39;</span><span class="o">))</span>
     <span class="k">fi</span>
 </pre></div>
 
