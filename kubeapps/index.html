@@ -326,8 +326,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../helm/" title="Helm" class="md-nav__link">
-      Helm
+    <a href="../helm/" title="Deploying Helm" class="md-nav__link">
+      Deploying Helm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../helm_sgxdevplugin/" title="Kubernetes SGX Plugin" class="md-nav__link">
+      Kubernetes SGX Plugin
     </a>
   </li>
 
@@ -437,6 +449,18 @@
   <li class="md-nav__item">
     <a href="../helm_las/" title="LAS Deploy & Platforms" class="md-nav__link">
       LAS Deploy & Platforms
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../helm_mariadb/" title="MariaDB Deploy & Attest" class="md-nav__link">
+      MariaDB Deploy & Attest
     </a>
   </li>
 
@@ -1618,9 +1642,10 @@
                 
                 
                 <h1 id="kubeapps">KubeApps</h1>
-<p>You can use <a href="https://kubeapps.com/">KubeApps</a> to deploy and manage your confidential applications.
-<span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
-deploy and manage SCONE-based confidential applications.">KubeApps</span> is a dashboard for <a href="../helm/">helm</a>.  While probably most applications will be be deployed via the <a href="../helm/">helm</a> <span data-tooltip="A Command Line Interface (CLI) is a textual interface to a computer. It is useful for scripting (i.e., automation) and typically, used for system and service administration.">CLI</span>,
+<p><a href="https://kubeapps.com/">KubeApps</a> is a dashboard for <a href="../helm/">helm</a>.
+You can use <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
+deploy and manage SCONE-based confidential applications.">KubeApps</span>   to deploy and manage your confidential applications.
+While we expect that most confidential applications will be deployed via the <a href="../helm/">helm</a> <span data-tooltip="A Command Line Interface (CLI) is a textual interface to a computer. It is useful for scripting (i.e., automation) and typically, used for system and service administration.">CLI</span>,
 using a dashboard is a convenient way to inspect the running applications and to test new applications.</p>
 <h2 id="deploy-and-manage">Deploy and Manage</h2>
 <p>We provide a catalog with <code>sconeapps</code>, i.e., curated, confidential applications that can
@@ -1629,7 +1654,7 @@ be installed with the help of <a href="../helm/">helm</a> or via point and click
 <p><center>
 <img alt="SCONE Workflow" src="../img/KubeAppsCatalog.png#fullwidth" title="Deploy Sconeapps with KubeApps" />
 </center></p>
-<p>You can select an application that you want to start and deploy it as follows.</p>
+<p>You can select an application that you want to start and deploy it as described below.</p>
 <h2 id="deploy-a-sconeapp">Deploy a sconeapp</h2>
 <p>When deploying an application, you can customize its configuration values. For example, for
 LAS, i.e., the SCONE's local attestation service, you will be able to configure the 
@@ -1649,15 +1674,14 @@ application for inspection.</p>
 <img alt="SCONE Workflow" src="../img/KubeAppsLAS.png#fullwidth" title="Dashboard shows all running applications" />
 </center></p>
 <h2 id="deploying-kubeapps">Deploying Kubeapps</h2>
-<p><code>sconeapps</code> is a private Helm repository, we need to grant you access and you need a GitHub token that has permission
-to access this "repo".</p>
+<p><code>sconeapps</code> is a private Helm repository. Hence, we need to grant you access and you need a GitHub token  to access the <code>sconeapps</code> repo.</p>
 <p>Define an environment variable that contains this token:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GH_TOKEN</span><span class="o">=</span>...
 </pre></div>
 
-<p>Use it to add this repository to start <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
-deploy and manage SCONE-based confidential applications.">KubeApps</span>:</p>
-<div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$GH_TOKEN</span><span class="s2">&quot;</span><span class="nv">x</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+<p>Use the token to give <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
+deploy and manage SCONE-based confidential applications.">KubeApps</span> access to the <code>sconeapps</code> repository:</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$GH_TOKEN</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
   <span class="nb">echo</span> <span class="s2">&quot;You need to set you github token: https://github.com/settings/tokens/new&quot;</span>
 <span class="k">else</span>
   cat &gt; kubeapps_values.yml <span class="s">&lt;&lt;EOF</span>
@@ -1677,7 +1701,7 @@ helm install -f kubeapps_values.yml kubeapps --namespace kubeapps bitnami/kubeap
 </pre></div>
 
 <h2 id="access-control">Access Control</h2>
-<p>For production, you should define a Role-based Access Control. For testing, you might want to create a service account:</p>
+<p>For production mode, you should define a Role-based Access Control. For testing, you might want to create a simple service account:</p>
 <div class="highlight"><pre><span></span>kubectl create serviceaccount kubeapps-operator
 kubectl create clusterrolebinding kubeapps-operator --clusterrole<span class="o">=</span>cluster-admin --serviceaccount<span class="o">=</span>default:kubeapps-operator
 </pre></div>
@@ -1708,7 +1732,7 @@ deploy and manage SCONE-based confidential applications.">KubeApps</span> dashbo
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../helm/" title="Helm" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../helm_sgxdevplugin/" title="Kubernetes SGX Plugin" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1717,7 +1741,7 @@ deploy and manage SCONE-based confidential applications.">KubeApps</span> dashbo
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Helm
+                Kubernetes SGX Plugin
               </span>
             </div>
           </a>

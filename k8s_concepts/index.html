@@ -364,8 +364,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../helm/" title="Helm" class="md-nav__link">
-      Helm
+    <a href="../helm/" title="Deploying Helm" class="md-nav__link">
+      Deploying Helm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../helm_sgxdevplugin/" title="Kubernetes SGX Plugin" class="md-nav__link">
+      Kubernetes SGX Plugin
     </a>
   </li>
 
@@ -402,6 +414,18 @@
   <li class="md-nav__item">
     <a href="../helm_las/" title="LAS Deploy & Platforms" class="md-nav__link">
       LAS Deploy & Platforms
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../helm_mariadb/" title="MariaDB Deploy & Attest" class="md-nav__link">
+      MariaDB Deploy & Attest
     </a>
   </li>
 
@@ -1548,13 +1572,13 @@
                 
                 
                 <h1 id="kubernetes-and-scone-basics">Kubernetes and SCONE Basics</h1>
-<p>In this section, we describe how you can build confidential compute applications with the help of
-<span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> that run on top of a <span data-tooltip="In computer science,  a system and or a software is called vanilla when there is no need to  customize it for a certain use case.">vanilla</span> <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> cluster. This means that you do not need to modify <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> in any way.  </p>
+<p>In this section, we describe how one can build confidential applications with the help of
+<span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span>. These applications can be deployed to a <span data-tooltip="In computer science,  a system and or a software is called vanilla when there is no need to  customize it for a certain use case.">vanilla</span> <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> cluster. This means that one does not need to modify <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> in any way. We maintain a <a href="../helm_sgxdevplugin/">SGX plugin</a> to simplify the scheduling of confidential applications.</p>
 <p>We assume that you are already familiar with
-basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-Computing-Concepts">confidential computing concepts</a> and continue with a in-depth <a href="../hello_world_kubernetes/">hello world tutorial</a>.</p>
-<p>Over time, we will add more information explaining how to reduce the complexity of building, deploying and operating  confidential applications on top of Kubernetes.</p>
+basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-Computing-Concepts">confidential computing concepts</a> and continue with an in-depth <a href="../hello_world_kubernetes/">hello world tutorial</a>.</p>
+<p>Over time, we will add more information explaining how to reduce the complexity of building, deploying and operating  confidential applications deployed to Kubernetes.</p>
 <h2 id="scone-confidential-computing-concepts"><span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> Confidential Computing Concepts</h2>
 <p><center>
 <img alt="SCONE CAS" src="../svg/concepts.svg" title="SCONE @(CC) Concepts: service, enclaved service, container, containerized @(CC) App" />
@@ -1562,16 +1586,16 @@ basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-
 <p>When developing a <span data-tooltip="Confidential computing is an approach to secure data in use. With SCONE CC, one can protect data, code, and secrets in use as well as in transit and at rest.">CC</span> application, we need to consider the following concepts:</p>
 <ul>
 <li>
-<p><strong>(native) service</strong>: In Kubernetes, a service is the concept of exposing an application as a network service at one or more network ports. The network ports are actually served by one or more processes - in the context of confidential computing, all of these processes would need to be protected. To refer to service that is not protected by <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span>, we use the term <strong>native service</strong>.</p>
+<p><strong>(native) service</strong>: In Kubernetes, a service is the concept of exposing an application as a network service at one or more network ports. The network ports are actually served by one or more processes - in the context of confidential computing, all of these processes would need to be protected. To refer to a service that is not protected by <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span>, we use the term <em>native service</em>.</p>
 </li>
 <li>
-<p><strong>enclaved service</strong>:  <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> permits to run each process of a service inside of an <span data-tooltip="A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">SGX enclave</span>.  Hence, we call these <em>enclaved services</em>. All other services, we call <em>native services</em>. If such an <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span> is in <span data-tooltip="In SGX we distinguish between debug, pre-release and release mode. In release mode, the enclave will be launched in production mode, i.e., any access - including debug access - will be prevented. Moreover, the code is compiled with optimizations switched on and without debug symbols.">release mode</span>, its memory cannot be read by any other process nor by the operating system or the hypervisor or any user.</p>
+<p><strong>enclaved service</strong>:  <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> permits to run each process of a service inside of an <span data-tooltip="A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">SGX enclave</span>.  Hence, we call these <em>enclaved services</em>. We call all other services <em>native services</em>. If such an <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span> is in <span data-tooltip="In SGX we distinguish between debug, pre-release and release mode. In release mode, the enclave will be launched in production mode, i.e., any access - including debug access - will be prevented. Moreover, the code is compiled with optimizations switched on and without debug symbols.">release mode</span>, its memory cannot be read by any other process nor by the operating system or the hypervisor or any user.</p>
 </li>
 <li>
-<p><strong>container</strong>:  a container is a way to deploy services. In most cases, this will be a Docker container. Note that a container can be entered by users and the users can inspect all files in the container as well as the memory of the processes - unless the processes run in <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span>s in <span data-tooltip="In SGX we distinguish between debug, pre-release and release mode. In release mode, the enclave will be launched in production mode, i.e., any access - including debug access - will be prevented. Moreover, the code is compiled with optimizations switched on and without debug symbols.">release mode</span>.</p>
+<p><strong>container</strong>:  a container is a mechanism to deploy services. In most cases, this will be a Docker container. Note that a container can be entered by users and the users can inspect all files in the container as well as the memory of the processes - unless the processes run in <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span>s in <span data-tooltip="In SGX we distinguish between debug, pre-release and release mode. In release mode, the enclave will be launched in production mode, i.e., any access - including debug access - will be prevented. Moreover, the code is compiled with optimizations switched on and without debug symbols.">release mode</span>.</p>
 </li>
 <li>
-<p><strong>containerized CC App</strong>:  an application consisting of enclaved service. The enclaved services cannot be inspected by users. However, the file system can still be inspected unless we encrypt the file system.</p>
+<p><strong>containerized CC App</strong>:  an application consisting of enclaved services. The enclaved services cannot be inspected by users. However, the file system can still be inspected unless we encrypt the file system. <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> can encrypt files in a way that is transparent to an enclaved service.</p>
 </li>
 </ul>
 <p><center>
@@ -1579,7 +1603,7 @@ basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-
 </center></p>
 <ul>
 <li>
-<p><strong>(transparently) encrypted volume</strong>: an enclaved service can get access to transparently encrypted volumes. To Kubernetes, these look like standard volumes. However, users that log into a container will only see encrypted files. An authorized enclaved service the files look like plain files because <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> transparently decrypts/encrypts the files inside of the enclave.</p>
+<p><strong>(transparently) encrypted volume</strong>: an enclaved service can get access to transparently encrypted volumes. To Kubernetes, these look like standard volumes. However, users that log into a container will only see encrypted files. To an authorized enclaved service, the files look like plain files because <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> transparently decrypts/encrypts the files inside of the enclave.</p>
 </li>
 <li>
 <p><strong>pod</strong>: a pod is a Kubernetes concept. It is the minimal deployable unit consisting of one or more containers executed on the same node. A pod can consist of enclaved as well as native services.</p>
@@ -1588,7 +1612,7 @@ basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-
 <p><strong><span data-tooltip="Confidential computing is an approach to secure data in use. With SCONE CC, one can protect data, code, and secrets in use as well as in transit and at rest.">CC</span> pod</strong> is a <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> concept. It is a pod that contains only enclaved services and all volumes are encrypted. Also, all communication between enclaved services is encrypted.</p>
 </li>
 <li>
-<p><strong>IP address</strong>:  a pod has an IP address. The network communication can be inspected unless it is encrypted. We explain below how <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> helps to provide enclaved services with certificates such that secure channels can be established between enclaved services as well as between containerized <span data-tooltip="Confidential computing is an approach to secure data in use. With SCONE CC, one can protect data, code, and secrets in use as well as in transit and at rest.">CC</span> Apps.</p>
+<p><strong>IP address</strong>:  a pod has an IP address. The network communication can be inspected unless it is encrypted. We explain below, how <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> helps to provide enclaved services with certificates such that secure channels can be established between enclaved services as well as between containerized <span data-tooltip="Confidential computing is an approach to secure data in use. With SCONE CC, one can protect data, code, and secrets in use as well as in transit and at rest.">CC</span> Apps.</p>
 </li>
 </ul>
 <p><center>
@@ -1599,15 +1623,15 @@ basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-
 <p><strong>TLS</strong>: <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> can enforce that all enclaved services of a containerized <span data-tooltip="Confidential computing is an approach to secure data in use. With SCONE CC, one can protect data, code, and secrets in use as well as in transit and at rest.">CC</span> App communicate with each other via TLS. This is the case for both enclaved services running in the same pod as well as enclaved services across pods.</p>
 </li>
 <li>
-<p><strong>server certs</strong>: <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> can generate server certificates for services. These certificates are generated by an <strong>enclaved service</strong> (SCONE CAS) and can  directly be <strong>injected</strong> into the filesystem of an enclaved service: they are only visible to the enclaved service, i.e., they do not exist outside the enclave.</p>
+<p><strong>server certs</strong>: <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> can generate server certificates for services. These certificates are generated by an <strong>enclaved service</strong> (SCONE CAS) and can be <strong>injected</strong> into the filesystem of an enclaved service: they are only visible to the enclaved service, i.e., they do not exist outside its enclave.</p>
 </li>
 <li>
-<p><strong>client certs</strong>: <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> can also generate client certificates. SCONE CAS can provides a containerized <span data-tooltip="Confidential computing is an approach to secure data in use. With SCONE CC, one can protect data, code, and secrets in use as well as in transit and at rest.">CC</span> app with policy-controlled CA (as part of the SCONE CAS). In this way, one can enforce access control to services: only services with the appropriate client certificate are permitted to access a service.</p>
+<p><strong>client certs</strong>: <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> can also generate client certificates. SCONE CAS can provide a containerized <span data-tooltip="Confidential computing is an approach to secure data in use. With SCONE CC, one can protect data, code, and secrets in use as well as in transit and at rest.">CC</span> app with policy-controlled CA (as part of the SCONE CAS). In this way, one can enforce access control to services: only services with the appropriate client certificate are permitted to access a service.</p>
 </li>
 <li>
 <p><strong>CA certs</strong>: <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> can inject the CA certificates for the clients as well as the services. In this way, one can perform a <strong><span data-tooltip="Process of two components proving to each other the integrity and authenticity of their software
 and/or hardware components.
-This can include multiple aspects like that neither their code nor their filesystem was modified.">mutual attestation</span></strong> via TLS: only if both communication partners run inside of enclaves, were properly initialized, have encrypted volumes that were not tempered with and run an untempered code, will be able to establish a TLS connection.</p>
+This can include multiple aspects like that neither their code nor their filesystem was modified.">mutual attestation</span></strong> via TLS: only if both communication partners run inside of @(enclaves), were properly initialized, have encrypted volumes that were not tempered with and run an untempered code, they will be able to establish a TLS connection.</p>
 </li>
 </ul>
                 
@@ -1646,13 +1670,13 @@ This can include multiple aspects like that neither their code nor their filesys
           </a>
         
         
-          <a href="../helm/" title="Helm" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../helm/" title="Deploying Helm" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Helm
+                Deploying Helm
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

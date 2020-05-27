@@ -326,8 +326,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../helm/" title="Helm" class="md-nav__link">
-      Helm
+    <a href="../helm/" title="Deploying Helm" class="md-nav__link">
+      Deploying Helm
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../helm_sgxdevplugin/" title="Kubernetes SGX Plugin" class="md-nav__link">
+      Kubernetes SGX Plugin
     </a>
   </li>
 
@@ -391,6 +403,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#credentials" title="Credentials" class="md-nav__link">
+    Credentials
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configuration-options" title="Configuration Options" class="md-nav__link">
     Configuration Options
   </a>
@@ -423,6 +442,18 @@
   <li class="md-nav__item">
     <a href="../helm_las/" title="LAS Deploy & Platforms" class="md-nav__link">
       LAS Deploy & Platforms
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../helm_mariadb/" title="MariaDB Deploy & Attest" class="md-nav__link">
+      MariaDB Deploy & Attest
     </a>
   </li>
 
@@ -1559,6 +1590,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#credentials" title="Credentials" class="md-nav__link">
+    Credentials
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configuration-options" title="Configuration Options" class="md-nav__link">
     Configuration Options
   </a>
@@ -1608,6 +1646,17 @@ can just execute:</p>
 <p>This starts  <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> in the default <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> namespace. As an alternative,
 you can deploy <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> with <a href="../kubeapps/">KubeApps</a>.</p>
+<h2 id="credentials">Credentials</h2>
+<p>You might need additional credentials to pull the <code>cas</code> image. In this case, please generate
+an <a href="https://docs.docker.com/docker-hub/access-tokens/">access token</a> and store it an environment
+variable, for example,</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">DOCKER_HUB_ACCESS_TOKEN</span><span class="o">=</span>....
+</pre></div>
+
+<p>You can now deploy <code>cas</code> as follows:</p>
+<div class="highlight"><pre><span></span>helm install cas sconeapps/cas  --set imagePullSecrets<span class="o">[</span><span class="m">0</span><span class="o">]</span>.name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$DOCKER_HUB_ACCESS_TOKEN</span><span class="s2">&quot;</span>
+</pre></div>
+
 <h2 id="configuration-options">Configuration Options</h2>
 <p>You can learn about the configuration options by executing:</p>
 <div class="highlight"><pre><span></span>helm install cas sconeapps/cas --dry-run

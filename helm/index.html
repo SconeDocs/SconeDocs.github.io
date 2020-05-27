@@ -42,7 +42,7 @@
     
     
       
-        <title>Helm - SCONE Confidential Computing</title>
+        <title>Deploying Helm - SCONE Confidential Computing</title>
       
     
     
@@ -115,7 +115,7 @@
                 SCONE Confidential Computing
               </span>
               <span class="md-header-nav__topic">
-                Helm
+                Deploying Helm
               </span>
             
           
@@ -335,11 +335,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Helm
+        Deploying Helm
       </label>
     
-    <a href="./" title="Helm" class="md-nav__link md-nav__link--active">
-      Helm
+    <a href="./" title="Deploying Helm" class="md-nav__link md-nav__link--active">
+      Deploying Helm
     </a>
     
       
@@ -403,6 +403,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../helm_sgxdevplugin/" title="Kubernetes SGX Plugin" class="md-nav__link">
+      Kubernetes SGX Plugin
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../kubeapps/" title="KubeApps" class="md-nav__link">
       KubeApps
     </a>
@@ -429,6 +441,18 @@
   <li class="md-nav__item">
     <a href="../helm_las/" title="LAS Deploy & Platforms" class="md-nav__link">
       LAS Deploy & Platforms
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../helm_mariadb/" title="MariaDB Deploy & Attest" class="md-nav__link">
+      MariaDB Deploy & Attest
     </a>
   </li>
 
@@ -1603,32 +1627,29 @@
                 
                 <h1 id="helm-and-confidential-applications">Helm and Confidential Applications</h1>
 <p><a href="https://helm.sh">Helm</a> is the package manager for <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span>. You can install SCONE-based confidential applications
-with the help of Helm. Note that we do not need to trust Helm nor the <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> cluster:
-SCONE can protect the <span data-tooltip="In the context of information security the term confidentiality means that information is only made available to authorized entities. In the context of SCONE this means that information (data, code, secrets, and policies) are encrypted and the encryption key is only accessible to authorized entities. Authorization is defined in a SCONE CAS policy and access to this policy is also defined in the policy itself.">confidentiality</span> and the <span data-tooltip="In the context of information security the term integrity means that one ensures the accuracy and completeness of information. Integrity implies freshness, i.e., that one reads the last data that was stored. While the freshness of SGX enclaves are ensured by hardware and in transit it is ensured by TLS, the freshness of data at rest is explicitly enforced by SCONE.">integrity</span> of applications even if Helm or <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> would
-be compromised. The objective is of course that one can outsource the management of the cluster and its operations
-to an external entity and still keep in control of one's applications and data.</p>
-<p>Trust is established  with an confidential applications via attestation. In the case of SCONE, this can actually
-be delegated to TLS.  How exactly this is achieved, we will explain in a later section.</p>
+https://kubernetes.io/">Kubernetes</span>. It is our favorite way to deploy SCONE-based confidential applications to Kubernetes. Note that we do not need to trust <span data-tooltip="Is a very popular package manager for Kubernetes.">Helm</span> nor <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span>: <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> &amp; <span data-tooltip="Software Guard eXtension (SGX) is a CPU extension by Intel that permits to create enclaves, i.e.,
+a protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range.">SGX</span> can protect the <span data-tooltip="In the context of information security the term confidentiality means that information is only made available to authorized entities. In the context of SCONE this means that information (data, code, secrets, and policies) are encrypted and the encryption key is only accessible to authorized entities. Authorization is defined in a SCONE CAS policy and access to this policy is also defined in the policy itself.">confidentiality</span> and the <span data-tooltip="In the context of information security the term integrity means that one ensures the accuracy and completeness of information. Integrity implies freshness, i.e., that one reads the last data that was stored. While the freshness of SGX enclaves are ensured by hardware and in transit it is ensured by TLS, the freshness of data at rest is explicitly enforced by SCONE.">integrity</span> of applications - even if Helm or <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> would be compromised.</p>
+<p>Our objective is that one can securely outsource the management of <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> and services, like a database service, to external entity and still keep in control of one's applications and data.</p>
+<p>One establishes trust with a confidential application via <span data-tooltip="Attestation executed remotely, i.e., the component which does the validation and the component which is validated are executed on different machines. In Intel SGX, the report received during local attestation is signed with the quoting enclave's private key making the integrity of the quote - the signed report - remotely verifiable.">remote attestation</span>. In the case of SCONE, each enclaved service is associated with a policy. Attestation ensures that the enclaved service conforms to this policy. The attestation is in most cases delegated to TLS. In this way, one can implement mutual attestation of enclaved services without the need to modify applications.</p>
 <h2 id="prerequisites">Prerequisites</h2>
-<p>The following prerequisites are required for using Helm to install confidential applications:</p>
+<p>The following prerequisites are required for being able to Helm to install confidential applications:</p>
 <ul>
 <li>A <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> cluster,</li>
-<li>some of the nodes have Intel SGX and an Intel SGX driver installed,</li>
-<li>Helm 3 client, and</li>
+<li>at least one of the nodes has an Intel SGX CPU and an Intel SGX driver installed,</li>
+<li>a <a href="https://helm.sh">Helm 3 client</a> , and</li>
 <li>access to our git repository <a href="https://github.com/scontain/sconeapp">https://github.com/scontain/sconeapp</a></li>
 </ul>
-<p>If you need help installing large clusters, just drop us an <a href="mailto:info@scontain.com?Subject=K8s%20Installation&amp;Body=Hi%20SCONE%20Team%2c">email</a>.</p>
+<p>If you need help installing Kubernetes clusters for confidential applications, just drop us an <a href="mailto:info@scontain.com?Subject=K8s%20Installation&amp;Body=Hi%20SCONE%20Team%2c">email</a>.</p>
 <h2 id="sconeapps-curated-confidential-applications">sconeapps: Curated Confidential Applications</h2>
-<p>We support a variety of applications executing inside of SGX enclaves. These applications can be installed in various ways. One of the convenient ways
-to install the applications is with the help of Helm. We support this right now only for commercial customers, i.e., for the following steps
-you need to get access to the SCONE standard edition. Send us an <a href="mailto:info@scontain.com?Subject=K8s%20Installation&amp;Body=Hi%20SCONE%20Team%2c">email</a> to get access.</p>
-<p><code>sconeapps</code> is a private Helm repository, we need to grant you access and you need a GitHub token with "repo" permissions.
-<a href="https://github.com/settings/tokens/new">Click here to issue a GitHub token</a>. </p>
-<p>Use it to add this repository to Helm:</p>
+<p>We support a large variety of confidential applications. One of the most convenient ways
+to deploy confidential applications to Kubernetes is to use <span data-tooltip="Is a very popular package manager for Kubernetes.">Helm</span>. We support this right now  for commercial customers only: For the following steps
+you need to get access to the SCONE standard edition (<a href="mailto:info@scontain.com?Subject=K8s%20Installation&amp;Body=Hi%20SCONE%20Team%2c">email us</a>).</p>
+<p><code>sconeapps</code> is a private Helm repository for which  we need to grant you access. After you got access, you need to generate a GitHub token ( <a href="https://github.com/settings/tokens/new">Click here to issue a GitHub token</a>). </p>
+<p>Use your token to add the <code>sconeapps</code> repository to Helm:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GH_TOKEN</span><span class="o">=</span>...
 helm repo add sconeapps https://<span class="si">${</span><span class="nv">GH_TOKEN</span><span class="si">}</span>@raw.githubusercontent.com/scontain/sconeapps/master/
 helm repo update
@@ -1640,32 +1661,38 @@ helm repo update
 </pre></div>
 
 <p>Installing one chart:</p>
-<div class="highlight"><pre><span></span>helm install my-database sconeapps/database
+<div class="highlight"><pre><span></span>helm install my-database sconeapps/mariadb-scone
 </pre></div>
 
 <p>This repository contains the following charts:</p>
 <ul>
 <li>
-<p><code>cas</code>: deploy SCONE Configuration and Attestation Service (CAS) to <span data-tooltip="An open source container orchestration platform. More information at
+<p><a href="./">cas</a>: deploy the <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> Configuration and Attestation Service (CAS) to <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span>.</p>
 </li>
 <li>
-<p><code>database</code>: Umbrella chart to deploy to deploy a scalable, confidential database consisting of MariaDB SCONE and MaxScale SCONE and HAProxy;</p>
+<p><code>database</code>: Umbrella chart to deploy a scalable, confidential database consisting of MariaDB <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> and MaxScale <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> and HAProxy;</p>
 </li>
 <li>
-<p><code>las</code>: Deploy SCONE Local Attestation Service (LAS) on all <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> node;</p>
+<p><a href="../helm_las/">las</a>: Deploy the <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> Local Attestation Service (LAS) to all <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> nodes;</p>
 </li>
 <li>
-<p><code>mariadb</code>: Deploy MariaDB SCONE, i.e., MariaDB running inside of SGX enclaves;</p>
+<p><a href="../helm_mariadb/">mariadb-scone</a>: Deploy MariaDB <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span>, i.e., MariaDB running inside of SGX enclaves, to Kubernetes;</p>
 </li>
 <li>
-<p><code>maxscale</code>: Deploy MaxScale SCONE, i.e., Maxscale running inside of SGX enclaves and (optionally) an HAProxy as Ingress;</p>
+<p><code>maxscale</code>: Deploy MaxScale <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span>, i.e., Maxscale running inside of SGX enclaves and optionally, an HAProxy as Ingress;</p>
+</li>
+<li>
+<p><a href="../helm_sgxdevplugin/">sgxdevplug</a>: Deploy our SGX Kubernetes plugin to Kubernetes; this is required by all other helm charts;</p>
+</li>
+<li>
+<p><a href="../helm_teemon/"><code>TEEMon</code></a>: Deploy <a href="../teemon/">TEEMon</a>, our monitoring framework for confidential applications. It collects and visualizes performance metrics including SGX Metrics;</p>
 </li>
 </ul>
-<p>We have a quite a large number of applications running inside of enclaves. Just let us know what application you need and we add a way to deploy with the help of Helm.</p>
+<p>We support a large number of applications running inside of @(SGX enclaves). Just let us know what applications you need and we will add helm charts for these applications first.</p>
 <h3 id="example">Example</h3>
-<p>The <code>database</code> chart will deploy <code>mariadb</code> and <code>maxscale</code> charts together. The example below will deploy 6 instances of MariaDB SCONE: each one will act as a different shard, and also be attested by the provided CAS. MaxScale will generate a <code>maxscale.cnf</code> using the in-cluster DNS entries for each MariaDB instance. The last line enables an HAProxy Ingress exposing the MaxScale replicas to the external world.</p>
+<p>The <code>database</code> chart will deploy <code>mariadb</code> and <code>maxscale</code> charts together. The example below will deploy 6 instances of MariaDB <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span>: each one will act as a different shard, and also be attested by the provided CAS. MaxScale will generate a <code>maxscale.cnf</code> using the in-cluster DNS entries for each MariaDB instance. The last line enables an HAProxy Ingress exposing the MaxScale replicas to the external world.</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf
 helm install my-database sconeapps/database <span class="se">\</span>
    --set global.mariadb.replicaCount<span class="o">=</span><span class="m">6</span> <span class="se">\ </span>
@@ -1712,13 +1739,13 @@ helm install my-database sconeapps/database <span class="se">\</span>
           </a>
         
         
-          <a href="../kubeapps/" title="KubeApps" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../helm_sgxdevplugin/" title="Kubernetes SGX Plugin" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                KubeApps
+                Kubernetes SGX Plugin
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
