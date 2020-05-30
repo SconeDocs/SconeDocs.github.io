@@ -13,7 +13,7 @@
         <meta name="description" content="Scone Documentation - Secure Containers">
       
       
-        <link rel="canonical" href="https://sconedocs.github.io/helm_mariadb/">
+        <link rel="canonical" href="https://sconedocs.github.io/k8s_dashboard/">
       
       
         <meta name="author" content="Christof Fetzer">
@@ -42,7 +42,7 @@
     
     
       
-        <title>MariaDB Deploy & Attest - SCONE Confidential Computing</title>
+        <title>Kubernetes Dashboard - SCONE Confidential Computing</title>
       
     
     
@@ -89,7 +89,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="../#deploying-and-attesting-a-confidential-mariadb" tabindex="1" class="md-skip">
+      <a href="../#kubernetes-dashboard" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -115,7 +115,7 @@
                 SCONE Confidential Computing
               </span>
               <span class="md-header-nav__topic">
-                MariaDB Deploy & Attest
+                Kubernetes Dashboard
               </span>
             
           
@@ -360,11 +360,56 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../k8s_dashboard/" title="Kubernetes Dashboard" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Kubernetes Dashboard
+      </label>
+    
+    <a href="./" title="Kubernetes Dashboard" class="md-nav__link md-nav__link--active">
       Kubernetes Dashboard
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" title="Installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#application-monitoring" title="Application Monitoring" class="md-nav__link">
+    Application Monitoring
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -396,70 +441,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        MariaDB Deploy & Attest
-      </label>
-    
-    <a href="./" title="MariaDB Deploy & Attest" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../helm_mariadb/" title="MariaDB Deploy & Attest" class="md-nav__link">
       MariaDB Deploy & Attest
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" title="Prerequisites" class="md-nav__link">
-    Prerequisites
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-a-policy" title="Creating a Policy" class="md-nav__link">
-    Creating a Policy
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deploying-mariadb" title="Deploying MariaDB" class="md-nav__link">
-    Deploying MariaDB
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attestation" title="Attestation" class="md-nav__link">
-    Attestation
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -1581,29 +1567,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" title="Prerequisites" class="md-nav__link">
-    Prerequisites
+  <a href="#installation" title="Installation" class="md-nav__link">
+    Installation
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-a-policy" title="Creating a Policy" class="md-nav__link">
-    Creating a Policy
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deploying-mariadb" title="Deploying MariaDB" class="md-nav__link">
-    Deploying MariaDB
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attestation" title="Attestation" class="md-nav__link">
-    Attestation
+  <a href="#application-monitoring" title="Application Monitoring" class="md-nav__link">
+    Application Monitoring
   </a>
   
 </li>
@@ -1625,92 +1597,27 @@
               
                 
                 
-                <h1 id="deploying-and-attesting-a-confidential-mariadb">Deploying and Attesting a Confidential <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span></h1>
-<p>We explain how to deploy a confidential <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> running inside of an <span data-tooltip="A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">SGX enclave</span> with the
-help of <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> and <a href="../helm/">helm</a>. We support two deployment architectures for Confidential <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>:</p>
-<ul>
-<li>a scalable deployment supporting horizontal scaling with the help of MaxScale and HaProxy, and</li>
-<li>a simple, single-master deployment</li>
-</ul>
-<p>In this section, we describe the single-master <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> deployment. This setup provides
-the following security properties:</p>
-<ul>
-<li><strong>runtime encryption</strong>: <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> runs inside inside of an <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span>  and hence, the <span data-tooltip="In the context of information security the term integrity means that one ensures the accuracy and completeness of information. Integrity implies freshness, i.e., that one reads the last data that was stored. While the freshness of SGX enclaves are ensured by hardware and in transit it is ensured by TLS, the freshness of data at rest is explicitly enforced by SCONE.">integrity</span> and <span data-tooltip="In the context of information security the term confidentiality means that information is only made available to authorized entities. In the context of SCONE this means that information (data, code, secrets, and policies) are encrypted and the encryption key is only accessible to authorized entities. Authorization is defined in a SCONE CAS policy and access to this policy is also defined in the policy itself.">confidentiality</span> of the data and the code is protected during processing.</li>
-<li><strong>encryption at rest</strong>: All files - including all databases - are encrypted using <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>'s built-in encryption mechanism, i.e., all data written to disk is encrypted before leaving the <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span> and all data read from disk is decrypted after entering the <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span>.</li>
-<li><strong>encryption in transit</strong>: All data in transit is encrypted with the help of TLS. Data transmitted via the network is encrypted before leaving <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>'s <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span> and data received is decrypted after entering the <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span>.</li>
-<li><strong>secrets management</strong>: <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>'s encryption keys and the TLS certificate are provided to MariaDB using a security policy. <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> enforces this policy, i.e., it ensures that only <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> running inside of an enclave will be able to access these keys.</li>
-<li><strong>protection against insider attacks</strong>: <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>'s are generated inside of an enclave by <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span>, i.e., the keys cannot be seen or retrieved by any human.</li>
-<li><strong>authorized platforms only</strong>: you can limit the execution of <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> to the nodes of your Kubernetes cluster, i.e., an adversary cannot, for example, start <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> on another computer using a stolen copy of your encrypted databases and trying to attack <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> after it retrieved the secrets: <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> will not provide the secrets to this <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> instance,</li>
-<li><strong>authorized clients only</strong>: we can limit access to  <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> to certain clients like, for example, a <span data-tooltip="A tokenizer replaces a sensitive data item with a non-sensitive token, that has no exploitable meaning. This token can be translated to the original data item by authorized clients.">tokenizer</span> only. This access limitation is based on TLS client certificates. We can enforce that, for example, a tokenizer has to run inside of an enclave to get access to <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>. Note that while the tokenizer protects individual data items inside the database, it limits the expressiveness of queries. The combination of a tokenizer with a confidential <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> permits better trade-offs to ensure excellent security and expressiveness.</li>
-</ul>
-<h2 id="prerequisites">Prerequisites</h2>
-<p>The following prerequisites are required for using Helm to install confidential applications:</p>
-<ul>
-<li>A <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> cluster and you deployed <a href="../helm/">helm</a> and the <a href="../helm_sgxdevplugin/">Kubernetes SGX plugin</a>,</li>
-<li>we granted you access to <span data-tooltip="sconeapps is a repo with helm charts to install SCONE-based confidential applications like LAS, CAS and MariaDB.">sconeapps</span> and SCONE CLI container images,</li>
-<li>we granted you access to a <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> image and the <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> policy templates, and</li>
-<li>you deployed <a href="../helm_cas/#deploying-scone-cas">SCONE CAS</a> and <a href="../helm_las/#deploying-scone-las_1">SCONE LAS</a>.</li>
-</ul>
-<h2 id="creating-a-policy">Creating a Policy</h2>
-<p>To run a confidential <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>, one needs to create a policy for running <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>. To do so,
-we first need to  <a href="../helm_cas/#attesting-scone-cas">attest CAS</a>, i.e., we determine that
-<span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> runs inside an <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span> and was not modified. We define two
-environment variables, <code>$SCONE_CAS_ADDR</code>and  <code>$CAS_MRENCLAVE</code>, for attesting CAS
-(<a href="../helm_cas/#attesting-scone-cas">see details</a>). We can then attest CAS with the
-SCONE CLI running on a trusted computer - or, inside of an enclave:</p>
-<div class="highlight"><pre><span></span>scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> <span class="nv">$CAS_MRENCLAVE</span>
+                <h1 id="kubernetes-dashboard">Kubernetes Dashboard</h1>
+<p>You can use the default Kubernetes dashboard to monitor your confidential
+applications. For a more application-orient view, you can use <a href="../kubeapps/">Kubeapps</a> and
+for a performance-oriented view, you can use <a href="../teemon/">TEEMon</a>.</p>
+<h2 id="installation">Installation</h2>
+<p>Install the dashboard with <code>kubectl</code>:</p>
+<div class="highlight"><pre><span></span>kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.1/aio/deploy/recommended.yaml
 </pre></div>
 
-<p>If the attestation is successful, the SCONE CLI stores the certificate
-of the attested <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> in a sealed file on your local computer. Whenever
-the CLI connects to this SCONE CAS again, it will ensure with TLS that it talks to the same
-CAS.</p>
-<p>Next, we need to create a security policy, a.k.a., <a href="../CAS_session_lang_0_2/">session</a>,
-for <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> and a second policy for the <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> clients.
-We provide some default session templates that can be customized to your needs.</p>
-<p>Each session has a unique name. We generate unique session names for the database
-which we store in <span data-tooltip="An environment variable is a variable defined in the context of a shell. Environment variables can change the behavior of processes. In the context of SCONE, one can define environment variables that change the behavior of the SCONE runtime - which is linked with processes running inside of enclaves.">environment variable</span> <code>$DBSESSION</code>.  For the <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> client, we store a unique session name in  <span data-tooltip="An environment variable is a variable defined in the context of a shell. Environment variables can change the behavior of processes. In the context of SCONE, one can define environment variables that change the behavior of the SCONE runtime - which is linked with processes running inside of enclaves.">environment variable</span> <code>DBCLIENT</code>.</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">DBSESSION</span><span class="o">=</span><span class="s2">&quot;MariaDBSession-</span><span class="nv">$RANDOM</span><span class="s2">-</span><span class="nv">$RANDOM</span><span class="s2">-</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
-<span class="nb">export</span> <span class="nv">DBCLIENT</span><span class="o">=</span><span class="s2">&quot;MariaDBClientSession-</span><span class="nv">$RANDOM</span><span class="s2">-</span><span class="nv">$RANDOM</span><span class="s2">-</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
+<p>Start the <code>kubectl</code> proxy:</p>
+<div class="highlight"><pre><span></span>kubectl proxy
 </pre></div>
 
-<p>We limit the execution of our database to the nodes of our Kubernetes cluster (see <a href="helm_las.md/#determining-the-platform-ids">platforms</a>
-):</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PLATFORMS</span><span class="o">=</span><span class="k">$(</span>get_platform_ids<span class="k">)</span>
-</pre></div>
-
-<p>We can now create two sessions - with templates that we provide:</p>
-<ul>
-<li>one for the database, and</li>
-<li>one for the clients that are permitted to connect to this <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> instance:</li>
-</ul>
-<div class="highlight"><pre><span></span>scone session create --name<span class="o">=</span><span class="nv">$DBCLIENT</span>  --use-env scone-templates/mariadb/dbclient.yml
-scone session create --name<span class="o">=</span><span class="nv">$DBSESSION</span> --use-env scone-templates/mariadb/dbsession.yml
-</pre></div>
-
-<p>The <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> session template will give session <code>$DBCLIENT</code> access to the <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> CA certificate - which is created as part of <code>$DBSESSION</code>- to ensure that the MariDB clients can authenticate this MariaDB instance.</p>
-<h2 id="deploying-mariadb">Deploying <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span></h2>
-<p>The <code>sconeapps/mariadb</code> chart will deploy <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> in an <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span>,
-We set the session in which we want to run this MariaDB as follows.</p>
-<div class="highlight"><pre><span></span>helm install cas sconeapps/mariadb --set scone.attestation.config_id<span class="o">=</span><span class="nv">$DBSESSION</span>
-</pre></div>
-
-<p>This starts  <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> inside of an enclave in the default <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> namespace. Its security policy <code>$DBSESSION</code> creates client certificates, exports these to the client policy <code>$DBCLIENT</code> and the client policy <code>$DBCLIENT</code> imports these client certificates. This gives the clients the right to connect to this MariaDB instance.</p>
-<h2 id="attestation">Attestation</h2>
-<p>The attestation of MariaDB is performed implicitly whenever an <strong>authorized</strong> MariaDB client connects to MariaDB (i.e, a client that has a valid client certificate issued by <code>$DBSESSION</code>):</p>
-<ul>
-<li>
-<p>MariaDB  instance only receives its certificate and secrets from <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> if it satisfies the conditions in its policy <code>$DBSESSIONS</code></p>
-</li>
-<li>
-<p>a MariaDB client gets <strong>authorized</strong>, i.e., receives a MariaDB client certificate, if it satisfies the condition stated in its policy <code>$DBCLIENT</code>. It also receives the CA certificate of  MaraDB's certificate: This CA certificate only signs certificates if the service - in this case MariaDB - satisfies all its security properties.</p>
-</li>
-<li>
-<p>when an authorized MariaDB client connects to <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>, <span data-tooltip="Transport Layer Security (TLS) is a security protocol to provide private, authenticated and reliable communication between two entities.">TLS</span> will ensure that both the client as well as the MariaDB instance satisfy their respective security policies.</p>
-</li>
-</ul>
+<p>The dashboard can now be viewed at:</p>
+<p><a href="http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/">http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/</a></p>
+<h2 id="application-monitoring">Application Monitoring</h2>
+<p>In the Kubernetes dashboard you can monitor various workload characteristics and identify issues in the workload. Like in this case, some services did not start:</p>
+<p><center>
+<img alt="Kubernetes Dashboard" src="../img/k8s_dashboard.png#fullwidth" title="Kubernetes Dashboard" />
+</center></p>
+<p>By clicking on the failed services, you could see that in this case the issue was a credential issue.</p>
                 
                   
                 
@@ -1732,7 +1639,7 @@ https://kubernetes.io/">Kubernetes</span> namespace. Its security policy <code>$
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../helm_las/" title="LAS Deploy & Platforms" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../kubeapps/" title="Kubeapps" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1741,19 +1648,19 @@ https://kubernetes.io/">Kubernetes</span> namespace. Its security policy <code>$
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                LAS Deploy & Platforms
+                Kubeapps
               </span>
             </div>
           </a>
         
         
-          <a href="../hello_world_kubernetes/" title="Hello World Kubernetes" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../helm_cas/" title="CAS Deploy & Attest" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Hello World Kubernetes
+                CAS Deploy & Attest
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
