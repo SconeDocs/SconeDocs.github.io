@@ -1630,8 +1630,11 @@
 how to attest it to ensure that it was properly deployed.</p>
 <div class="admonition info">
 <p class="admonition-title">Prerequisites</p>
-<p>A <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> cluster and the <a href="../helm/">helm setup</a> was already performed.</p>
+<ul>
+<li>A <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> cluster and the <a href="../helm/">helm setup</a> was already performed.</li>
+<li>The <a href="../helm_sgxdevplugin/">SGX Plugin</a> is already installed.</li>
+</ul>
 </div>
 <h2 id="deploying-scone-cas">Deploying <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span></h2>
 <p>The <code>sconeapps/cas</code> chart will deploy <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span>. If we do not need to
@@ -1661,6 +1664,24 @@ variable, for example,</p>
 
 <p>One option to set is the <code>image</code> to be deployed. If you want to run in <span data-tooltip="In SGX we distinguish between debug, pre-release and release mode. In release mode, the enclave will be launched in production mode, i.e., any access - including debug access - will be prevented. Moreover, the code is compiled with optimizations switched on and without debug symbols.">release mode</span>, you need to specify a different image by first defining environment variable <code>SCONE_CAS_IMAGE</code> appropriately. You can do this as follows:</p>
 <div class="highlight"><pre><span></span>helm install cas sconeapps/cas --set <span class="nv">image</span><span class="o">=</span><span class="nv">$SCONE_CAS_IMAGE</span>
+</pre></div>
+
+<p>By default, this helm chart uses the <a href="../helm_sgxdevplugin/">SGX Plugin</a>. Hence, it sets the resource limits of <code>cas</code> as follows:</p>
+<div class="highlight"><pre><span></span>resources:
+  limits:
+    sgx.k8s.io/sgx: 1
+</pre></div>
+
+<p>In case you do not want to use the SGX plugin, you can remove the resource limit and 
+explicitly mount the local SGX device into your container by setting:</p>
+<div class="highlight"><pre><span></span>extraVolumes:
+  - name: dev-isgx
+    hostPath:
+      path: /dev/isgx
+
+extraVolumeMounts:
+  - name: dev-isgx
+    path: /dev/isgx
 </pre></div>
 
 <p>You can check the status of this <strong>release</strong>, i.e., the instance that you just deployed, by
