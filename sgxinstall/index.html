@@ -929,6 +929,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#driver-extensions" title="Driver Extensions" class="md-nav__link">
+    Driver Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check-if-the-sgx-driver-is-installed" title="Check if the SGX driver is installed" class="md-nav__link">
     Check if the SGX driver is installed
   </a>
@@ -973,18 +980,6 @@
   <li class="md-nav__item">
     <a href="../microcode/" title="Updating CPU microcode" class="md-nav__link">
       Updating CPU microcode
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
     </a>
   </li>
 
@@ -1567,6 +1562,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#driver-extensions" title="Driver Extensions" class="md-nav__link">
+    Driver Extensions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#check-if-the-sgx-driver-is-installed" title="Check if the SGX driver is installed" class="md-nav__link">
     Check if the SGX driver is installed
   </a>
@@ -1601,37 +1603,79 @@
 <p>To install the SGX 2.0 driver on Linux distributions, follow the <a href="https://github.com/intel/linux-sgx-driver">official description</a>.
 Alternatively, on a modern Ubuntu system on which you have sudo access,
 you could execute the following:</p>
-<div class="highlight"><pre><span></span>curl -fssl https://raw.githubusercontent.com/SconeDocs/SH/master/install_sgx_driver.sh <span class="p">|</span> bash
+<div class="highlight"><pre><span></span>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/install_sgx_driver.sh <span class="p">|</span> bash -s - install
 </pre></div>
 
+<h2 id="driver-extensions">Driver Extensions</h2>
+<p>We maintain several extensions of the Intel SGX driver. The public extensions add the following features:</p>
+<ul>
+<li>
+<p><strong>metrics</strong>:  adds variables to monitor SGX performance metrics. This is, for example, being used by our <a href="../teemon/">TEEMon</a> performance monitoring framework.</p>
+</li>
+<li>
+<p><strong>page0</strong>:  permits an enclave to start at address 0 to protect against certain attacks.</p>
+</li>
+</ul>
+<p>You can install both extensions as follows:</p>
+<div class="highlight"><pre><span></span>curl -fssl https://raw.githubusercontent.com/scontain/SH/master/sgx_driver.sh <span class="se">\</span>
+ <span class="p">|</span> bash -s install -p metrics -p page0
+</pre></div>
+
+<p>The script supports the following commands:</p>
+<div class="highlight"><pre><span></span><span class="nb">help</span>    prints all commands and all options
+
+install installs the current Intel out of branch driver <span class="k">if</span> no SGX driver is installed
+        -p metrics      installs the metrics extension
+        -p page0        installs the page0 extension
+
+force   same as install but it will replace any SGX driver that is already installed
+</pre></div>
+
+<p>Here are some common examples on how to use this installer:</p>
+<div class="highlight"><pre><span></span><span class="c1"># install metrics and page0 extension if no SGX driver is yet installed</span>
+ ... <span class="p">|</span> bash -s  install -p metrics -p page0
+
+<span class="c1"># install SGX driver with metrics extension; replaces any existing SGX driver</span>
+ ... <span class="p">|</span> bash -s  force -p metrics
+</pre></div>
+
+<p>We are working on adding a <code>--dcap</code> option such that you can install the <code>dcap</code> driver instead.</p>
 <h2 id="check-if-the-sgx-driver-is-installed">Check if the SGX driver is installed</h2>
 <p>Note that in systems in which the CPU supports SGX but the BIOS disables SGX, the driver might
-successfully install and load but using the SGX driver fails. 
-Check on the host as well as inside your containers that the SGX device <em>/dev/isgx</em> is visible:</p>
-<div class="highlight"><pre><span></span>ls /dev/isgx &gt;/dev/null <span class="m">2</span>&gt;1  <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;SGX Driver installed&quot;</span> <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;SGX Driver NOT installed&quot;</span>
+successfully install and load but using the SGX driver fails.
+Check on the host as well as inside your containers that the SGX device is visible.</p>
+<p>Depending if you have DCAP or a non-DCAP driver installed, you need to use a different
+SGX device. We can try to determine this with a little bash function:</p>
+<div class="highlight"><pre><span></span><span class="k">function</span> determine_sgx_device <span class="o">{</span>
+    <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/sgx&quot;</span>
+    <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;-v /dev/sgx/:/dev/sgx&quot;</span>
+    <span class="k">if</span> <span class="o">[[</span> ! -e <span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+        <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/isgx&quot;</span>
+        <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;--device=/dev/isgx&quot;</span>
+        <span class="k">if</span> <span class="o">[[</span> ! -c <span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+            <span class="nb">echo</span> <span class="s2">&quot;Warning: No SGX device found! Will run in SIM mode.&quot;</span> &gt; /dev/stderr
+            <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+            <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="k">fi</span>
+    <span class="k">fi</span>
+<span class="o">}</span>
+</pre></div>
+
+<p>We can now determine if an SGX driver is installed:</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+<span class="nb">echo</span> <span class="nv">$SGXDEVICE</span>
 </pre></div>
 
 <h2 id="checking-availability-of-sgx-device-inside-of-containers">Checking availability of SGX device inside of containers</h2>
-<p>Docker does not automatically map the SGX device inside of containers.
-We provide, however, a patched Docker engine and a patched SGX driver that together permit to automatically map the sgx device inside of containers.</p>
-<p>You can run the checks to see if the SGX device gets mapped automatically into a container, i.e., if you run the patched docker engine.</p>
-<div class="highlight"><pre><span></span><span class="c1"># preferred alternative: required for swarms to work: SGX device is available in all containers by default</span>
-docker run --rm sconecuratedimages/checksgx <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;SGX device is not automatically mapped inside of container&quot;</span>
-</pre></div>
-
-<p>If the SGX device is not automatically mapped into the container, you can try to map the device as follows into the container:</p>
+<p>The SGX device is not automatically mapped into a container: you can to map the device as follows into the container:</p>
 <div class="highlight"><pre><span></span><span class="c1"># alternative: use --device option without --privileged flag</span>
-docker run --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/checksgx <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;--device=/dev/isgx: failed to map SGX device inside of container&quot;</span>
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> --rm sconecuratedimages/checksgx <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;failed to open  SGX device </span><span class="nv">$SGXDEVICE</span><span class="s2"> inside of container&quot;</span>
 </pre></div>
 
-<p>In the unlikely case that the device is not mapped in the container, you can try to see if
+<p>In case that the device is not mapped in the container, you can try to see if
 the container must be privileged or if we might need to remap the device ids:</p>
-<div class="highlight"><pre><span></span><span class="c1"># last alternative: use --device option with --privileged flag</span>
-sudo docker run -v /dev/isgx:/dev/isgx --privileged  --rm sconecuratedimages/checksgx <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;SGX device NOT available inside of container&quot;</span>
+<div class="highlight"><pre><span></span>docker run <span class="nv">$MOUNT_SGXDEVICE</span> --privileged --rm sconecuratedimages/checksgx <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;failed to open  SGX device </span><span class="nv">$SGXDEVICE</span><span class="s2"> inside of container&quot;</span>
 </pre></div>
-
-<p>Use the first alternative that works in your installation to give containers access to the SGX device.</p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, 2020. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
                 

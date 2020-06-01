@@ -936,18 +936,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1631,8 +1619,9 @@ and watch the outputs.</p>
 &gt; <span class="nb">export</span> <span class="nv">IMAGE_NAME</span><span class="o">=</span><span class="s2">&quot;sconecuratedimages/helloworld&quot;</span>
 </pre></div>
 
-<p>We generate container and compile hello world inside of this container with the help of our standard SCONE cross compiler:</p>
-<div class="highlight"><pre><span></span>&gt; <span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker run -d -it --device<span class="o">=</span>/dev/isgx  -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/mnt sconecuratedimages/crosscompilers bash -c <span class="s2">&quot;</span>
+<p>We generate container and compile hello world inside of this container with the help of our standard SCONE cross compiler. We determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>.</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+<span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker run -d -it <span class="nv">$MOUNT_SGXDEVICE</span>  -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/mnt sconecuratedimages/crosscompilers bash -c <span class="s2">&quot;</span>
 <span class="s2">set -e</span>
 <span class="s2">printf &#39;Q 1\ne 0 0 0\ns 1 0 0\n&#39; &gt; /etc/sgx-musl.conf</span>
 <span class="s2">sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world</span>
@@ -1641,25 +1630,24 @@ and watch the outputs.</p>
 
 <p>Note that above will fail if you do not have access to the SGX device <em>/dev/isgx</em>.</p>
 <p>Turn the container into an image:</p>
-<div class="highlight"><pre><span></span>&gt; <span class="nv">IMAGE_ID</span><span class="o">=</span><span class="k">$(</span>docker commit -p -c <span class="s1">&#39;CMD sgx_hello_world&#39;</span> <span class="nv">$CONTAINER_ID</span> <span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span><span class="k">)</span>
+<div class="highlight"><pre><span></span><span class="nv">IMAGE_ID</span><span class="o">=</span><span class="k">$(</span>docker commit -p -c <span class="s1">&#39;CMD sgx_hello_world&#39;</span> <span class="nv">$CONTAINER_ID</span> <span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span><span class="k">)</span>
 </pre></div>
 
 <p>You can run this image by executing:</p>
-<div class="highlight"><pre><span></span>&gt; sudo docker run --device<span class="o">=</span>/dev/isgx <span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
+<div class="highlight"><pre><span></span>sudo docker run <span class="nv">$MOUNT_SGXDEVICE</span> <span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
 </pre></div>
 
 <p>You can push this image to Docker. However, ensure that you first login to docker:</p>
-<div class="highlight"><pre><span></span>&gt; sudo docker login
+<div class="highlight"><pre><span></span>sudo docker login
 </pre></div>
 
 <p>before you push the image to docker hub:</p>
-<div class="highlight"><pre><span></span>&gt; sudo docker push <span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
+<div class="highlight"><pre><span></span>sudo docker push <span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
 </pre></div>
 
 <p>Note: this will fail in case you do not have the permission to push to this repository. </p>
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/xM4VAixy6QqsjstCtpW88KIHg"><img alt="asciicast" src="https://asciinema.org/a/xM4VAixy6QqsjstCtpW88KIHg.png" /></a></p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, 2020. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
                 
                   
                 

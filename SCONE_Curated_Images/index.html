@@ -936,18 +936,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1627,32 +1615,20 @@ this image from Docker hub (you need to be granted access rights for that):</p>
 <div class="highlight"><pre><span></span>docker pull sconecuratedimages/helloworld
 </pre></div>
 
-<p>If you installed the <a href="../iexec_install/">patched Docker engine</a>, run the <strong>helloworld</strong> program inside of an enclave via</p>
-<div class="highlight"><pre><span></span>&gt; docker run sconecuratedimages/helloworld
-Hello World
-</pre></div>
-
-<p>This command will fail in case you have the standard Docker engine installed:</p>
-<div class="highlight"><pre><span></span>docker run sconecuratedimages/helloworld
-</pre></div>
-
-<div class="highlight"><pre><span></span>error opening sgx device: No such file or directory
-</pre></div>
-
-<p>You can run on the standard Docker engine - if you have the SGX driver installed:</p>
-<div class="highlight"><pre><span></span>&gt; docker run --device<span class="o">=</span>/dev/isgx sconecuratedimages/helloworld
+<p>You can run on the standard Docker engine - if you have the SGX driver installed. We determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>.</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+&gt; docker run <span class="nv">$MOUNT_SGXDEVICE</span> sconecuratedimages/helloworld
 Hello World
 </pre></div>
 
 <p>If you do not have the SGX driver installed, you get an error message:</p>
-<div class="highlight"><pre><span></span>&gt; docker run --device<span class="o">=</span>/dev/isgx sconecuratedimages/helloworld
+<div class="highlight"><pre><span></span>&gt; docker run <span class="nv">$MOUNT_SGXDEVICE</span> sconecuratedimages/helloworld
 docker: Error response from daemon: linux runtime spec devices: error gathering device information <span class="k">while</span> adding custom device <span class="s2">&quot;/dev/isgx&quot;</span>: no such file or directory.
 </pre></div>
 
 <p>In this case, <a href="../sgxinstall/">install the SGX driver</a>. This installation will fail in case you disabled SGX in the BIOS or your CPU is not SGX-enabled.</p>
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/Y4RQGCkwCmxF1KqLLUp78FoQm"><img alt="asciicast" src="https://asciinema.org/a/Y4RQGCkwCmxF1KqLLUp78FoQm.png" /></a></p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, 2020. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
 <div class="footnote">
 <hr />
 <ol>

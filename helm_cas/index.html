@@ -997,18 +997,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1718,8 +1706,9 @@ We set the environment variable <code>IMAGE</code> to the name of the <span data
 </pre></div>
 
 <p>and it will store the certificate of the <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span>. This certificate can be used later to  verify that we connect to the attested <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span>.</p>
-<p>For attesting a <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> in production mode, you  should use hardware mode (set <code>DEVICE</code> to your SGX device, i.e., <code>/dev/sgx</code> or <code>/dev/isgx</code>):</p>
-<div class="highlight"><pre><span></span>docker run --device<span class="o">=</span><span class="nv">$DEVICE</span> -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW  -it --rm <span class="nv">$CLI_IMAGE</span> scone cas attest host.docker.internal <span class="nv">$CAS_MRENCLAVE</span>
+<p>For attesting a <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> in production mode, you  should use hardware mode. We determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>.</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW  -it --rm <span class="nv">$CLI_IMAGE</span> scone cas attest host.docker.internal <span class="nv">$CAS_MRENCLAVE</span>
 </pre></div>
 
 <p>You can also try to attest with a wrong <code>CAS_MRENCLAVE</code> (e.g. by incrementing by 1):</p>

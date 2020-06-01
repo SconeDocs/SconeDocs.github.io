@@ -936,18 +936,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1641,14 +1629,16 @@
                 
                 <h1 id="c-program-language-support">C++ Program Language Support</h1>
 <p>SCONE supports native compilation of C++ programs when combined with dynamic linking as well as cross-compilation.  Cross-compilation is required  to support, in particular, statically linked binaries.</p>
-<p>This page focuses on the SCONE C++ cross compiler <strong>scone g++</strong> (a.k.a. <strong>scone-g++</strong>). This cross compiler is based on g++ and hence, the command line options are the same as those of g++.</p>
+<p>This page focuses on the SCONE C++ cross compiler <strong>scone g++</strong> (a.k.a. <strong>scone-g++</strong>). This cross compiler is based on g++ and hence, the command line options are the same as those of g++. Determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a></p>
 <h2 id="image">Image</h2>
-<p>Ensure that you have the newest SCONE cross compiler image:</p>
+<p>Ensure that you have the newest SCONE cross compiler image and determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>:</p>
 <div class="highlight"><pre><span></span>docker pull sconecuratedimages/crosscompilers
-docker run --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/crosscompilers
+determine_sgx_device
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it sconecuratedimages/crosscompilers
 </pre></div>
 
-<p>Please drop argument <em>--device=/dev/isgx</em> in case you do not have an SGX driver installed.</p>
+<p>In case you do not have an SGX driver installed, no device will be mounted and
+applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <h2 id="help">Help</h2>
 <p>If you need some help, just execute in the container:</p>
 <div class="highlight"><pre><span></span>$ scone g++ --help

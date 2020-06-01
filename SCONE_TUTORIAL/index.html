@@ -936,18 +936,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1748,9 +1736,9 @@ Hello World
 <p>Note that the generated executable, i.e., <em>sim_hello_world</em>, will only run on Linux.</p>
 <h2 id="statically-linked-hello-world">Statically-Linked Hello World</h2>
 <p>The default cross compiler variant that runs <em>hello world</em> inside of an enclave is <em>scone gcc</em> and you can find this in container <em>sconecuratedimages/crosscompilers</em>.
-This variant requires access to the SGX device. 
-In Linux, the SGX device is made available as <em>/dev/isgx</em> and we can give the cross compiler inside of an container access via option <em>--device=/dev/isgx</em>:</p>
-<div class="highlight"><pre><span></span>&gt; docker run --rm --device<span class="o">=</span>/dev/isgx -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers scone-gcc hello_world.c  -o sgx_hello_world
+This variant requires access to the SGX device.
+We determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>.</p>
+<div class="highlight"><pre><span></span>&gt; docker run --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers scone-gcc hello_world.c  -o sgx_hello_world
 </pre></div>
 
 <p>This generates a statically linked binary. However, as we mentioned above, the binary looks like a dynamically
@@ -1876,7 +1864,7 @@ HelloWorld
 
 <h2 id="run-strace">Run STRACE</h2>
 <p>Lets see how we can trace the program. Say, you have compile the program as shown above. After that you enter a cross compiler container and strace hello world as follows:</p>
-<div class="highlight"><pre><span></span>&gt; docker run --cap-add SYS_PTRACE -it --rm --device<span class="o">=</span>/dev/isgx -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world &gt; strace.log
+<div class="highlight"><pre><span></span>&gt; docker run --cap-add SYS_PTRACE -it --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world &gt; strace.log
 Hello World
 head strace.log
 execve<span class="o">(</span><span class="s2">&quot;/usr/src/myapp/sgx_hello_world&quot;</span>, <span class="o">[</span><span class="s2">&quot;/usr/src/myapp/sgx_hello_world&quot;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">10</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
@@ -1893,7 +1881,6 @@ access<span class="o">(</span><span class="s2">&quot;/etc/ld.so.nohwcap&quot;</s
 
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ"><img alt="asciicast" src="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ.png" /></a></p>
-<p>&copy; <a href="http://www.scontain.com">scontain.com</a>, January 2020. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
 <div class="footnote">
 <hr />
 <ol>

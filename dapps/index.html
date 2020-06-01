@@ -1079,18 +1079,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1984,7 +1972,7 @@ by executing</p>
 <div class="highlight"><pre><span></span>./build-image.sh
 </pre></div>
 
-<p>We can execute this image on a SGX-capable host. This host has to have the SCONE local attestation service and Docker installed. We describe in the <a href="../iexec_install/">installation section</a> on how to install these prerequisites.</p>
+<p>We can execute this image on a SGX-capable host. This host has to have the SCONE local attestation service and Docker installed. We describe in the <a href="../sgxinstall/">installation section</a> on how to install these prerequisites.</p>
 <p>In what follows, we assume that the name of the host is stored in environment variable <strong>host</strong>.</p>
 <h3 id="setup">SETUP</h3>
 <p>To execute the trusted copy DApp, we need to create some files to copy.
@@ -2023,8 +2011,11 @@ since <strong>docker run</strong> does not pull/update the image.</p>
 <div class="highlight"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/iexecsgx:copy_demo
 </pre></div>
 
-<p>Ensure that you are executing a bash shell (execute <code>bash</code>). Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
-<div class="highlight"><pre><span></span><span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/iexecsgx:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push filepush.co/upload<span class="k">)</span>
+<p>Ensure that you are executing a bash shell (execute <code>bash</code>).
+We determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>.
+Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+<span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t <span class="nv">$MOUNT_SGXDEVICE</span>  --rm sconecuratedimages/iexecsgx:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push filepush.co/upload<span class="k">)</span>
 </pre></div>
 
 <p>Let's look at the output:</p>

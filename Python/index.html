@@ -936,18 +936,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1742,7 +1730,7 @@ your docker hub ID to get access to this repository.</p>
 
 <h2 id="python-interpreter">Python Interpreter</h2>
 <p>To run the Python interpreter inside an enclave in interactive mode, first start the container:</p>
-<div class="highlight"><pre><span></span>docker run --rm -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/apps:python-2-alpine3.6 sh
+<div class="highlight"><pre><span></span>docker run --rm -it <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/apps:python-2-alpine3.6 sh
 </pre></div>
 
 <p>The execute python inside of the container:</p>
@@ -1812,7 +1800,7 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 <p>Python does not always deal gracefully with out of memory situations: often, it terminates with some misleading error message if Python runs out of heap or stack memory. Please try to give python sufficient stack and heap size if this happens. We recommend to start with a large heap, like, <strong>SCONE_HEAP=256M</strong> to ensure that Python has sufficient heap. If your program runs without any problem with a large heap, you can try to reduce the heap size to speedup program startup times.**</p>
 </div>
 <p>Note that you can set the environment variable of a process - in our case python - running inside a container with docker option <strong>-e</strong>:</p>
-<div class="highlight"><pre><span></span>docker run --rm -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/apps:python-2-alpine3.6 python myapp.py
+<div class="highlight"><pre><span></span>docker run --rm  <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/apps:python-2-alpine3.6 python myapp.py
 </pre></div>
 
 <p>Will produce an output like</p>
@@ -1825,8 +1813,9 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 
 <h2 id="numpy">NumPy</h2>
 <p>Let's see how we can install some extra packages that your python program might need. Let us focus on <strong>NumPy</strong> first, a very popular package for scientific computing. Note that the following steps you would typically perform as part of a <a href="../SCONE_Dockerfile/">Dockerfile</a>.</p>
-<p>First, we start the SCONE Python  image:</p>
-<div class="highlight"><pre><span></span>docker run -it --rm sconecuratedimages/apps:python-2-alpine3.6 sh
+<p>First, we determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a> and start the SCONE Python  image:</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+docker run  <span class="nv">$MOUNT_SGXDEVICE</span> -it --rm sconecuratedimages/apps:python-2-alpine3.6 sh
 </pre></div>
 
 <p>This is a minimal image and you need to add some packages to be able to

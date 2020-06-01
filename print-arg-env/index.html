@@ -1003,18 +1003,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1691,8 +1679,9 @@ ENV1=!
 ...
 </pre></div>
 
-<p>Let's cross-compile this program to run inside of enclaves as follows:</p>
-<div class="highlight"><pre><span></span>docker run --device<span class="o">=</span>/dev/isgx -it --privileged -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/work sconecuratedimages/crosscompilers:ubuntu16.04 scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env
+<p>Let's cross-compile this program to run inside of enclaves as follows. We determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>.</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/work sconecuratedimages/crosscompilers scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env
 </pre></div>
 
 <p>We can now determine <code>MRENCLAVE</code> as follows:</p>

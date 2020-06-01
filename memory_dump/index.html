@@ -990,18 +990,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1631,9 +1619,10 @@ By default, binaries are not encrypted.  Hence, <strong>do not store any secrets
 SCONE can protect these secrets by permitting to encrypt shared libraries.</p>
 <h2 id="example">Example</h2>
 <p>We use the SCONE crosscompiler image and start an container with access to the
-SGX device:</p>
-<div class="highlight"><pre><span></span>docker pull sconecuratedimages/crosscompilers
-docker run --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/crosscompilers
+SGX device.We determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>.</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+docker pull sconecuratedimages/crosscompilers
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>Let's create some program that stores a secret (<strong>MYBIGS</strong>) in a local variable <em>secret</em>:</p>

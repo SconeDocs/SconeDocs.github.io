@@ -1072,18 +1072,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1949,7 +1937,7 @@ docker build --pull . -t <span class="nv">$IMAGE</span> <span class="o">&amp;&am
 
 <blockquote>
 <p><strong>NOTE</strong>: SGX applications need access to the Intel SGX driver, a char device located at <code>/dev/isgx</code> (in the host). If you are in a cluster context, it means that you need such device mounted into the container, and that's the reasoning behind the addition of the volume <code>dev-isgx</code> to the Kubernetes manifest. If you don't have access, or if you are not sure whether the underlying infrastructure has SGX installed, you can run in simulated mode, by adding <code>SCONE_MODE=sim</code> to the environment. This will emulate an enclave for you by encripting the main memory (Intel SGX security guarantees do not apply here).</p>
-<p><strong>NOTE</strong>: You need special privileges to access a host device. Kubernetes does not allow a fine-grained access to such devices (like a Docker --device option does), so you need to run your container in privileged mode (i.e. your container has access to ALL host devices). This is defined in the container spec, as a <code>securityContext</code> policy (<code>privileged: true</code>).</p>
+<p><strong>NOTE</strong>: You need special privileges to access a host device. Kubernetes does not allow a fine-grained access to such devices (like a Docker --device option does), so you need to run your container in privileged mode (i.e. your container has access to ALL host devices). This is defined in the container spec, as a <code>securityContext</code> policy (<code>privileged: true</code>). You can avoid this by using our Kubernetes <a href="../helm_sgxdevplugin/">SGX plugin</a>.</p>
 </blockquote>
 <p>Now that everything is deployed, you can access your Python app running on your cluster. Forward your local <code>8080</code> port to the service port:</p>
 <div class="highlight"><pre><span></span>kubectl port-forward svc/hello-world <span class="m">8080</span>:8080 -n hello-scone

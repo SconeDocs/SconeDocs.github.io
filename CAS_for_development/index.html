@@ -613,8 +613,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#selecting-the-sgx-device" title="Selecting the SGX device" class="md-nav__link">
-    Selecting the SGX device
+  <a href="#determining-the-sgx-device" title="Determining the SGX device" class="md-nav__link">
+    Determining the SGX device
   </a>
   
 </li>
@@ -986,18 +986,6 @@
   <li class="md-nav__item">
     <a href="../microcode/" title="Updating CPU microcode" class="md-nav__link">
       Updating CPU microcode
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
     </a>
   </li>
 
@@ -1588,8 +1576,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#selecting-the-sgx-device" title="Selecting the SGX device" class="md-nav__link">
-    Selecting the SGX device
+  <a href="#determining-the-sgx-device" title="Determining the SGX device" class="md-nav__link">
+    Determining the SGX device
   </a>
   
 </li>
@@ -1642,24 +1630,10 @@ i.e., <strong>do not use this instance for production</strong>.</p>
 </pre></div>
 
 <p>If this fails, ensure that you are logged into docker (via <code>docker login</code>) and that you set environment variable <code>CAS</code> properly.</p>
-<h3 id="selecting-the-sgx-device">Selecting the SGX device</h3>
+<h3 id="determining-the-sgx-device">Determining the SGX device</h3>
 <p>Depending on the platform, the SGX device is named <code>/dev/isgx</code> or <code>/dev/sgx</code>. To write generic
-software, you could define some function to select the correct device:</p>
-<div class="highlight"><pre><span></span><span class="k">function</span> set_sgx_device <span class="o">{</span>
-    <span class="nb">export</span> <span class="nv">DEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/sgx&quot;</span>
-
-    <span class="k">if</span> <span class="o">[[</span> ! -c <span class="s2">&quot;</span><span class="nv">$DEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-        <span class="nb">export</span> <span class="nv">DEVICE_O</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$DEVICE</span><span class="s2">&quot;</span>
-        <span class="nb">export</span> <span class="nv">DEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/isgx&quot;</span>
-        <span class="k">if</span> <span class="o">[[</span> ! -c <span class="s2">&quot;</span><span class="nv">$DEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-            <span class="nb">echo</span> <span class="s2">&quot;Neither </span><span class="nv">$DEVICE_O</span><span class="s2"> nor </span><span class="nv">$DEVICE</span><span class="s2"> exists&quot;</span>
-            <span class="nb">exit</span> <span class="m">1</span>
-        <span class="k">fi</span>
-    <span class="k">fi</span>
-<span class="o">}</span>
-set_sgx_device
-</pre></div>
-
+software, you could use the bash function <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>.
+It sets environment variable <code>SGXDEVICE</code> to the device that needs to be mounted.</p>
 <h3 id="starting-and-stopping-cas">Starting and Stopping CAS</h3>
 <p>The easiest way to start CAS is to use a simple Docker compose file. To do so,
 create a new directory for the Docker compose file:</p>
@@ -1668,7 +1642,7 @@ create a new directory for the Docker compose file:</p>
 </pre></div>
 
 <p>Create a compose file that exposes the ports of CAS to the host:</p>
-<div class="highlight"><pre><span></span>set_sgx_device
+<div class="highlight"><pre><span></span>determine_sgx_device
 cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">version: &#39;3.2&#39;</span>
 <span class="s">services:</span>
@@ -1678,8 +1652,8 @@ cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">         - SCONE_LOG=7</span>
 <span class="s">         - SCONE_MODE=HW</span>
 <span class="s">        image: $CAS</span>
-<span class="s">        devices:</span>
-<span class="s">          - &quot;$DEVICE&quot;</span>
+<span class="s">        volumes:</span>
+<span class="s">          - &quot;$SGXDEVICE:$SGXDEVICE&quot;</span>
 <span class="s">        ports:</span>
 <span class="s">          - target: 8081</span>
 <span class="s">            published: 8081</span>

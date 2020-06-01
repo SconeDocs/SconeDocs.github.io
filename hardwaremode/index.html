@@ -983,18 +983,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1600,17 +1588,18 @@
                 <h1 id="running-hello-world-inside-of-an-enclave">Running "Hello World" inside of  an enclave</h1>
 <p><a href="../firstcontainer/">So far</a>, we showed how to run a <strong>hello world</strong> program using <em>simulation mode</em>. Let's
 show how to run this program in <strong>hardware mode</strong>, i.e., the <strong>hello world</strong> program runs inside an Intel SGX enclave.
-Actually, the only change is to <strong>give the container access to the SGX device</strong> via option <em>--device=/dev/isgx</em>.</p>
+Actually, the only change is to <strong>give the container access to the SGX device</strong> by adding <code>$MOUNT_SGXDEVICE</code>.</p>
 <p><img alt="SCONE Hardware Mode" src="../img/containermode.svg#micro" /></p>
 <h2 id="detailed-description">Detailed Description</h2>
 <p>We first need to start a container which includes the SCONE crosscompiler and
-give the container access to the Intel SGX driver:</p>
-<div class="highlight"><pre><span></span>docker run --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/crosscompilers
+give the container access to the Intel SGX driver. We determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a>:</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <div class="admonition warning">
 <p class="admonition-title">The docker engine and the Intel SGX driver must be installed.</p>
-<p>Read about how to <a href="../dockerinstall/">install a docker engine</a> and to <a href="../sgxinstall/">install the Intel SGX driver</a>. 
+<p>Read about how to <a href="../dockerinstall/">install a docker engine</a> and to <a href="../sgxinstall/">install the Intel SGX driver</a>.
 In some installations, you might have to replace "docker" by "sudo docker".
 To be able to use hardware mode, programs need access to the SGX device.
 If your hosts have already a Intel SGX driver installed, you are all set.
@@ -1668,11 +1657,11 @@ Hello World
 <p>The output shows that SCONE is running in <strong>hardware mode</strong>: <em>export SCONE_MODE=hw</em></p>
 <h2 id="background-info">Background Info</h2>
 <p>For ease of use, we create all Docker images such that applications run inside of enclaves if enclaves are available (<a href="SCONE_ENV/#run-mode"><strong>AUTO</strong> mode</a>). If SGX is not available, they run in simulation mode, i.e., outside of an enclave but all SCONE software is running. To disable simulation mode, you can set environment variable <strong>SCONE_MODE=HW</strong>:</p>
-<div class="highlight"><pre><span></span>docker run --device=/dev/isgx -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>docker run <span class="nv">$MOUNT_SGXDEVICE</span> -e <span class="s2">&quot;SCONE_MODE=HW&quot;</span> -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>If you would start your container in hardware mode but forget to give it access to the sgx device, i.e.,</p>
-<div class="highlight"><pre><span></span>docker run -e &quot;SCONE_MODE=HW&quot; -it sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>docker run -e <span class="s2">&quot;SCONE_MODE=HW&quot;</span> -it sconecuratedimages/crosscompilers
 </pre></div>
 
 <p>compilation of the <em>helloworld</em> will succeed  but running the <em>helloworld</em> program will fail:</p>

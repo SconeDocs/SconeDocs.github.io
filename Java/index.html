@@ -936,18 +936,6 @@
 
 
   <li class="md-nav__item">
-    <a href="../iexec_install/" title="Patched driver & engine" class="md-nav__link">
-      Patched driver & engine
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="../windows10/" title="Windows 10" class="md-nav__link">
       Windows 10
     </a>
@@ -1617,11 +1605,18 @@ this image cached:</p>
 <div class="highlight"><pre><span></span>docker pull sconecuratedimages/apps:8-jdk-alpine
 </pre></div>
 
-<p>In case the pull fails, ask us for access to evalutate SCONE.</p>
-<p>Now, run the image. On some hosts, JVM needs <code>--privileged</code> access:
-<div class="highlight"><pre><span></span>docker run --privileged --device<span class="o">=</span>/dev/isgx -it sconecuratedimages/apps:8-jdk-alpine
-</pre></div></p>
-<p>Please drop argument <em>--device=/dev/isgx</em> in case you do not have an SGX driver installed.</p>
+<p>We also provide images:</p>
+<ul>
+<li><code>sconecuratedimages/apps:11-jdk-alpine</code></li>
+<li><code>sconecuratedimages/apps:15-jdk-alpine</code></li>
+</ul>
+<p>Determine which SGX device to mount with function  <a href="../sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">determine_sgx_device</a> and run image:</p>
+<div class="highlight"><pre><span></span>determine_sgx_device
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it sconecuratedimages/apps:8-jdk-alpine
+</pre></div>
+
+<p>In case you do not have an SGX driver installed, no device will be mounted and
+applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <h2 id="example">Example</h2>
 <p>Let us start with a simple hello world example:</p>
 <div class="highlight"><pre><span></span>cat &gt; HelloWorld.java <span class="s">&lt;&lt; EOF</span>
