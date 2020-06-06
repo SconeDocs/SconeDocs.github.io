@@ -933,11 +933,24 @@
     Driver Extensions
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-which-sgx-driver-and-extensions-are-installed" title="Check which SGX driver and extensions are installed" class="md-nav__link">
+    Check which SGX driver and extensions are installed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#check-if-the-sgx-driver-is-installed" title="Check if the SGX driver is installed" class="md-nav__link">
-    Check if the SGX driver is installed
+  <a href="#determine-sgx-device" title="Determine SGX Device" class="md-nav__link">
+    Determine SGX Device
   </a>
   
 </li>
@@ -1566,11 +1579,24 @@
     Driver Extensions
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-which-sgx-driver-and-extensions-are-installed" title="Check which SGX driver and extensions are installed" class="md-nav__link">
+    Check which SGX driver and extensions are installed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#check-if-the-sgx-driver-is-installed" title="Check if the SGX driver is installed" class="md-nav__link">
-    Check if the SGX driver is installed
+  <a href="#determine-sgx-device" title="Determine SGX Device" class="md-nav__link">
+    Determine SGX Device
   </a>
   
 </li>
@@ -1615,6 +1641,9 @@ you could execute the following:</p>
 <li>
 <p><strong>page0</strong>:  permits an enclave to start at address 0 to protect against certain attacks.</p>
 </li>
+<li>
+<p><strong>version</strong>: permits to check what driver version and what extensions are installed.</p>
+</li>
 </ul>
 <p>You can install both extensions as follows:</p>
 <div class="highlight"><pre><span></span>curl -fssl https://raw.githubusercontent.com/scontain/SH/master/sgx_driver.sh <span class="se">\</span>
@@ -1625,25 +1654,43 @@ you could execute the following:</p>
 <div class="highlight"><pre><span></span><span class="nb">help</span>    prints all commands and all options
 
 install installs the current Intel out of branch driver <span class="k">if</span> no SGX driver is installed
-        -p metrics      installs the metrics extension
-        -p page0        installs the page0 extension
+        -d, --dcap      install Intel DCAP driver instead of Intel OOT driver
 
-force   same as install but it will replace any SGX driver that is already installed
+        -p metrics      installs the metrics extension
+        -p page0        installs the page0 extension <span class="o">(</span>already part of DCAP<span class="o">)</span>
+        -p version      install version extension - required <span class="k">for</span> <span class="nb">command</span> check to work
+
+        --force         replace existing SGX driver <span class="k">if</span> already installed
+        --latest        installs the latest upstream driver <span class="o">(</span>not recommended<span class="o">)</span>
+
+check   checks <span class="k">if</span> a certain driver is installed
+        -p metrics       check the status of <span class="s1">&#39;metrics&#39;</span> extension
+        -p page0         check the status of <span class="s1">&#39;page0&#39;</span> extension
+
+        In <span class="k">case</span> of absence or outdated driver, or absence or outdated extension, check
+        will <span class="k">return</span> error.
 </pre></div>
 
 <p>Here are some common examples on how to use this installer:</p>
-<div class="highlight"><pre><span></span><span class="c1"># install metrics and page0 extension if no SGX driver is yet installed</span>
- ... <span class="p">|</span> bash -s  install -p metrics -p page0
+<div class="highlight"><pre><span></span><span class="c1"># installs OOT SGX driver with metrics, page0, and version extension if no SGX driver is yet installed</span>
+ ... <span class="p">|</span> bash -s  install -p metrics -p page0 -p version
 
 <span class="c1"># install SGX driver with metrics extension; replaces any existing SGX driver</span>
- ... <span class="p">|</span> bash -s  force -p metrics
+ ... <span class="p">|</span> bash -s  install --force -p metrics
+
+<span class="c1"># install DCAP SGX driver with metrics extension; replaces any existing SGX driver</span>
+ ... <span class="p">|</span> bash -s  install --dcap --force -p metrics -p version 
 </pre></div>
 
-<p>We are working on adding a <code>--dcap</code> option such that you can install the <code>dcap</code> driver instead.</p>
-<h2 id="check-if-the-sgx-driver-is-installed">Check if the SGX driver is installed</h2>
-<p>Note that in systems in which the CPU supports SGX but the BIOS disables SGX, the driver might
-successfully install and load but using the SGX driver fails.
+<h3 id="check-which-sgx-driver-and-extensions-are-installed">Check which SGX driver and extensions are installed</h3>
+<p>The <code>check</code>command tests if an up-to-date SGX driver and some required extension are installed. To check if an SGX driver and the metrics extension are installed and if they are up-to-date, just execute:</p>
+<div class="highlight"><pre><span></span>... <span class="p">|</span> bash -s - check -p metrics
+</pre></div>
+
+<p>Note that on some platforms that support SGX but the disables SGX in the BIOS,
+the driver might be successfully installed and even load but using the SGX driver fails.
 Check on the host as well as inside your containers that the SGX device is visible.</p>
+<h2 id="determine-sgx-device">Determine SGX Device</h2>
 <p>Depending if you have DCAP or a non-DCAP driver installed, you need to use a different
 SGX device. We can try to determine this with a little bash function:</p>
 <div class="highlight"><pre><span></span><span class="k">function</span> determine_sgx_device <span class="o">{</span>
