@@ -425,6 +425,20 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#background" title="Background" class="md-nav__link">
+    Background
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" title="Architecture" class="md-nav__link">
+    Architecture
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#creating-a-mariadb-security-policy" title="Creating a MariaDB Security Policy" class="md-nav__link">
     Creating a MariaDB Security Policy
   </a>
@@ -1586,6 +1600,20 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#background" title="Background" class="md-nav__link">
+    Background
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" title="Architecture" class="md-nav__link">
+    Architecture
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#creating-a-mariadb-security-policy" title="Creating a MariaDB Security Policy" class="md-nav__link">
     Creating a MariaDB Security Policy
   </a>
@@ -1628,8 +1656,14 @@
 help of <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span> and <a href="../helm/">helm</a>. We support two deployment architectures for Confidential <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>:</p>
 <ul>
 <li>a scalable deployment supporting horizontal scaling with the help of MaxScale and HaProxy, and</li>
-<li>a simple, single-master deployment</li>
+<li>a simple, single-master deployment.</li>
 </ul>
+<h2 id="background">Background</h2>
+<p>Privacy regulations define the scope of Personally Identifiable Information (PII), i.e., what is and what is not PII. For example, the date of birth is always considered PII but unique online identifiers might not included in all privacy regulations yet. Each legislation might decide independently on what is considered PII and surely, the definition of PII will change over time.</p>
+<p>For companies with customers from various geographic regions, conformance with all privacy regulations is a challenge. Non-compliance comes with a variety of risks. Hence, missing to protect some PII and data in general can imply high costs.</p>
+<p>One approach is to encrypt only those fields or parts of a field of a database that contain PII. One popular way to do so is to use <a href="https://en.wikipedia.org/wiki/Tokenization_(data_security)">tokenization</a> of these fields. As we explained above, it is not always clear which fields need to be tokenized and this might change over time. Moreover, some fields like <em>customer support notes</em> might  contain PII - even if there is a policy against storing such information in the notes.</p>
+<p>Our approach is as follows. We recommend to encrypt everything all the time, i.e., at rest, on the wire and during runtime. In many cases, this is the best answer for safeguarding against all possible risks. We show how to limit access to the database to authorized clients only and can even prevent operators to log into the database. In this way, one cannot only reduce the scope of security assessments but one can use it as a safety net for other mechanisms like <a href="https://en.wikipedia.org/wiki/Data_masking#Nulling_out_or_deletion">masking</a> and  <a href="https://en.wikipedia.org/wiki/Tokenization_(data_security)">tokenization</a>. Our scalable setup already supports  <a href="https://mariadb.com/kb/en/mariadb-maxscale-22-masking/">maxscale's data masking</a> out of the box.</p>
+<h2 id="architecture">Architecture</h2>
 <p>In this section, we describe the single-master <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> deployment. This setup provides
 the following security properties:</p>
 <ul>
@@ -1640,6 +1674,7 @@ the following security properties:</p>
 <li><strong>protection against insider attacks</strong>: <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>'s are generated inside of an enclave by <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span>, i.e., the keys cannot be seen or retrieved by any human.</li>
 <li><strong>authorized platforms only</strong>: you can limit the execution of <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> to the nodes of your Kubernetes cluster, i.e., an adversary cannot, for example, start <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> on another computer using a stolen copy of your encrypted databases and trying to attack <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> after it retrieved the secrets: <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> will not provide the secrets to this <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> instance,</li>
 <li><strong>authorized clients only</strong>: we can limit access to  <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> to certain clients like, for example, a <span data-tooltip="A tokenizer replaces a sensitive data item with a non-sensitive token, that has no exploitable meaning. This token can be translated to the original data item by authorized clients.">tokenizer</span> only. This access limitation is based on TLS client certificates. We can enforce that, for example, a tokenizer has to run inside of an enclave to get access to <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span>. Note that while the tokenizer protects individual data items inside the database, it limits the expressiveness of queries. The combination of a tokenizer with a confidential <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> permits better trade-offs to ensure excellent security and expressiveness.</li>
+<li><strong>data masking</strong>: one can use <a href="https://mariadb.com/kb/en/mariadb-maxscale-22-masking/">maxscale's data masking</a> to limit the visibility of Personally Identifiable Information.</li>
 </ul>
 <div class="admonition info">
 <p class="admonition-title">Prerequisites</p>
