@@ -1416,13 +1416,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#notes" title="Notes" class="md-nav__link">
-    Notes
-  </a>
-  
-</li>
-      
       
       
       
@@ -1707,13 +1700,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#notes" title="Notes" class="md-nav__link">
-    Notes
-  </a>
-  
-</li>
-      
       
       
       
@@ -1732,19 +1718,20 @@
                 
                 
                 <h1 id="scone-file-protection">SCONE File Protection</h1>
-<p>SCONE supports the transparent encryption and/or authentication of files. By <strong>transparent</strong>, we mean that there are no application code changes needed to support this. We support two ways to use the SCONE file protection:</p>
+<p>This section describes the low-level SCONE file encryption interface to encrypt the root filesystem of an image. In many cases, one might want to use a <a href="../CAS_session_lang_0_2/#volumes">SCONE volume</a> instead:</p>
 <ul>
-<li>a <strong>low-level interface</strong> intended to be used at the developer site. We assume that the developer machine is sufficiently trust worthy. This is made available via command <strong>scone fspf</strong> and described in this document.</li>
-<li>a <strong>high-level interface</strong> simplifies the use of the file protection and it does and in particular, takes care of key management. (<em>The high-level interface is not yet available</em>).</li>
+<li>a SCONE volume is typically mapped on a Kubernetes volume with access modes ReadWriteOnce or ReadOnlyMany</li>
+<li>a SCONE volume is automatically encrypted, i.e., no need to perform the <code>fspf</code> operations described in this section</li>
+<li>a SCONE volume - as a Kubernetes volume - exists only once and SCONE CAS tracks its confidentiality and integrity including freshness.</li>
 </ul>
 <h2 id="concepts">Concepts</h2>
-<p>The underlying idea of SCONE file protection is that a user specifies that each file is <strong>either</strong>: </p>
+<p>SCONE supports the transparent encryption and/or authentication of files of the root file system of a container / image. By <strong>transparent</strong>, we mean that there are no application code changes needed to support this. The underlying idea of SCONE file protection is that a user specifies that each file is <strong>either</strong>:</p>
 <ul>
 <li>
 <p><strong>authenticated</strong>, i.e., SCONE checks that the content was not modified by some unauthorized entity,</p>
 </li>
 <li>
-<p><strong>encrypted</strong>, i.e., the confidentiality is protected by encryption. Encrypted files are always authenticated, or </p>
+<p><strong>encrypted</strong>, i.e., the confidentiality is protected by encryption. Encrypted files are always authenticated, or</p>
 </li>
 <li>
 <p><strong>not-protected</strong>, i.e. SCONE reads and write  the files without any extra protection mechanisms. For example, you might use <em>not-protected</em> if your application already encrypts its files or if you need direct access to devices.</p>
@@ -2027,37 +2014,35 @@ please have a look at the following screencast.</p>
 <script id="asciicast-285843" src="https://asciinema.org/a/285843.js" async></script>
 
 <p>Below is the script that is executed in the screencast:</p>
-<div class="highlight"><pre><span></span>&gt; docker run -it -v <span class="nv">$PWD</span>:/mnt sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span>docker run -it -v <span class="nv">$PWD</span>:/mnt sconecuratedimages/crosscompilers
 
-$ mkdir -p /example
-$ mkdir -p /mnt/authenticated/
-$ mkdir -p /mnt/encrypted/
-$ <span class="nb">cd</span> /example
-$ mkdir -p .original
+mkdir -p /example
+mkdir -p /mnt/authenticated/
+mkdir -p /mnt/encrypted/
+<span class="nb">cd</span> /example
+mkdir -p .original
 
-$ scone fspf create fspf.pb
-$ scone fspf create authenticated.pb
-$ scone fspf create encrypted.pb
+scone fspf create fspf.pb
 
 <span class="c1"># add protection regions</span>
-$ scone fspf addr fspf.pb / -e --ephemeral
-$ scone fspf addr authenticated.pb /mnt/authenticated -a --kernel /mnt/authenticated
-$ scone fspf addr encrypted.pb /mnt/encrypted -e --kernel /mnt/encrypted
+scone fspf addr fspf.pb / -e --ephemeral
+scone fspf addr fspf.pb /mnt/authenticated -a --kernel /mnt/authenticated
+scone fspf addr fspf.pb /mnt/encrypted -e --kernel /mnt/encrypted
 
 <span class="c1"># add files</span>
 
 <span class="c1"># enclave program should expect the files (directories) found by the client in ./original in /mnt/authenticated</span>
-$ scone fspf addf authenticated.pb /mnt/authenticated ./original
+scone fspf addf fspf.pb /mnt/authenticated ./original
 
 <span class="c1"># enclave program should expect the files (directories) found by the client in ./original in encrypted form in /mnt/encrypted</span>
 <span class="c1"># the client will write the encrypted files to ./mnt/encrypted</span>
-$ scone fspf addf encrypted.pb /mnt/encrypted ./original ./mnt/encrypted
-<span class="nv">encrypted_key</span><span class="o">=</span><span class="sb">`</span>scone fspf encrypt encrypted.pb <span class="p">|</span> awk <span class="s1">&#39;{print $11}&#39;</span><span class="sb">`</span>
+scone fspf addf fspf.pb /mnt/encrypted ./original ./mnt/encrypted
+<span class="nv">KEYTAG</span><span class="o">=</span><span class="sb">`</span>scone fspf encrypt fspf.pb<span class="sb">`</span>
+<span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$KEYTAG</span> <span class="p">|</span> awk <span class="s1">&#39;{print $11}&#39;</span><span class="sb">`</span>
+<span class="nb">export</span> <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$KEYTAG</span> <span class="p">|</span> awk <span class="s1">&#39;{print $9}&#39;</span><span class="sb">`</span>
 
-$ <span class="nb">echo</span> <span class="s2">&quot;encrypted.pb key: </span><span class="si">${</span><span class="nv">encrypted_key</span><span class="si">}</span><span class="s2">&quot;</span>
-$ scone fspf addfspf fspf.pb authenticated.pb
-$ scone fspf addfspf fspf.pb encrypted.pb <span class="si">${</span><span class="nv">encrypted_key</span><span class="si">}</span>
-$ cat &gt; example.c <span class="s">&lt;&lt; EOF</span>
+<span class="nb">echo</span> <span class="s2">&quot;SCONE_FSPF_KEY=</span><span class="si">${</span><span class="nv">SCONE_FSPF_KEY</span><span class="si">}</span><span class="s2"> ; SCONE_FSPF_TAG=</span><span class="si">${</span><span class="nv">SCONE_FSPF_TAG</span><span class="si">}</span><span class="s2">&quot;</span>
+cat &gt; example.c <span class="s">&lt;&lt; EOF</span>
 <span class="s">#include &lt;stdio.h&gt;</span>
 
 <span class="s">int main() {</span>
@@ -2071,8 +2056,8 @@ $ cat &gt; example.c <span class="s">&lt;&lt; EOF</span>
 <span class="s">}</span>
 <span class="s">EOF</span>
 
-$ scone gcc example.c -o sgxex
-$ cat &gt; /etc/sgx-musl.conf <span class="s">&lt;&lt; EOF</span>
+scone gcc example.c -o sgxex
+cat &gt; /etc/sgx-musl.conf <span class="s">&lt;&lt; EOF</span>
 <span class="s">Q 4</span>
 <span class="s">e -1 0 0</span>
 <span class="s">s -1 0 0</span>
@@ -2083,10 +2068,10 @@ $ cat &gt; /etc/sgx-musl.conf <span class="s">&lt;&lt; EOF</span>
 <span class="s">e -1 3 0</span>
 <span class="s">s -1 3 0</span>
 <span class="s">EOF</span>
-$ <span class="nv">SCONE_FSPF</span><span class="o">=</span>fspf.pb ./sgxex
-$ cat /mnt/authenticated/hello
-$ cat /mnt/encrypted/hello 
-$ cat &gt; cat.c <span class="s">&lt;&lt; EOF</span>
+<span class="nv">SCONE_FSPF</span><span class="o">=</span>fspf.pb ./sgxex
+cat /mnt/authenticated/hello
+cat /mnt/encrypted/hello
+cat &gt; cat.c <span class="s">&lt;&lt; EOF</span>
 <span class="s">#include &lt;stdio.h&gt;</span>
 
 <span class="s">int main() {</span>
@@ -2103,14 +2088,11 @@ $ cat &gt; cat.c <span class="s">&lt;&lt; EOF</span>
 <span class="s">}</span>
 <span class="s">EOF</span>
 
-$ scone gcc cat.c -o native_cat
-$ ./native_cat
-$ scone gcc cat.c -o sgxcat
-$ <span class="nv">SCONE_FSPF</span><span class="o">=</span>fspf.pb ./sgxcat
+scone gcc cat.c -o native_cat
+./native_cat
+scone gcc cat.c -o sgxcat
+<span class="nv">SCONE_FSPF</span><span class="o">=</span>fspf.pb ./sgxcat
 </pre></div>
-
-<h2 id="notes">Notes</h2>
-<p>The SCONE File Protection documentation is not yet completed and more information will be provided soon.</p>
                 
                   
                 
