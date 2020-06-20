@@ -1677,7 +1677,8 @@
 <p>To install the SGX 2.0 driver on Linux distributions, follow the <a href="https://github.com/intel/linux-sgx-driver">official description</a>.
 Alternatively, on a modern Ubuntu system on which you have sudo access,
 you could execute the following:</p>
-<div class="highlight"><pre><span></span>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/install_sgx_driver.sh <span class="p">|</span> bash -s - install
+<div class="highlight"><pre><span></span>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/install_sgx_driver.sh <span class="se">\</span>
+<span class="p">|</span> bash -s - install --auto --dkms -p metrics -p page0 -p version
 </pre></div>
 
 <h2 id="driver-extensions">Driver Extensions</h2>
@@ -1693,9 +1694,9 @@ you could execute the following:</p>
 <p><strong>version</strong>: permits to check what driver version and what extensions are installed.</p>
 </li>
 </ul>
-<p>You can install both extensions as follows:</p>
+<p>You can install only one extension, for example, the <code>version</code> extension as follows:</p>
 <div class="highlight"><pre><span></span>curl -fssl https://raw.githubusercontent.com/scontain/SH/master/install_sgx_driver.sh <span class="se">\</span>
- <span class="p">|</span> bash -s - install -p metrics -p page0
+ <span class="p">|</span> bash -s - install --auto --dkms -p version
 </pre></div>
 
 <p>Alternatively, you can download the script as follows:</p>
@@ -1703,18 +1704,27 @@ you could execute the following:</p>
 chmod u+x install_sgx_driver.sh
 </pre></div>
 
-<p>The script supports the following commands:</p>
-<div class="highlight"><pre><span></span>install installs the current Intel out of branch driver <span class="k">if</span> no SGX driver is installed
-        -d, --dcap      install Intel DCAP driver instead of Intel OOT driver
+<p>The script supports the <code>install</code> commands:</p>
+<div class="highlight"><pre><span></span>install the current Intel out of branch driver <span class="k">if</span> no SGX driver is installed
+  -d, --dcap           installs the DCAP driver instead
 
-        -p metrics      installs the metrics extension
-        -p page0        installs the page0 extension <span class="o">(</span>already part of DCAP<span class="o">)</span>
-        -p version      install version extension - required <span class="k">for</span> <span class="nb">command</span> check to work
+  -a, --auto           <span class="k">select</span> the driver according to the machine capabilities <span class="o">(</span>DCAP or OOT<span class="o">)</span>
 
-        --force         replace existing SGX driver <span class="k">if</span> already installed
-        --latest        installs the latest upstream driver <span class="o">(</span>not recommended<span class="o">)</span>
+  -p, --patch<span class="o">=[</span>PATCH<span class="o">]</span>  apply patches to the SGX driver. The valid values <span class="k">for</span> PATCH
+                       are: <span class="s1">&#39;version&#39;</span>, <span class="s1">&#39;metrics&#39;</span>, <span class="s1">&#39;page0&#39;</span>.
+      -p version       installs the version patch <span class="o">(</span>recommended<span class="o">)</span>
+      -p metrics       installs the metrics patch
+      -p page0         installs the page0 patch <span class="o">(</span>not available <span class="k">for</span> DCAP<span class="o">)</span>
 
-check   checks <span class="k">if</span> a certain driver is installed
+  -k, --dkms           installs the driver with DKMS <span class="o">(</span>default <span class="k">for</span> DCAP<span class="o">)</span>
+
+  -l, --latest         installs the latest upstream driver <span class="o">(</span>not recommended<span class="o">)</span>
+
+  -f, --force          replaces existing SGX driver, <span class="k">if</span> installed
+</pre></div>
+
+<p>and the <code>check</code> command:</p>
+<div class="highlight"><pre><span></span>check   checks <span class="k">if</span> a certain driver is installed
         -p metrics       check the status of <span class="s1">&#39;metrics&#39;</span> extension
         -p page0         check the status of <span class="s1">&#39;page0&#39;</span> extension
 
@@ -1722,11 +1732,16 @@ check   checks <span class="k">if</span> a certain driver is installed
         will <span class="k">return</span> error.
 </pre></div>
 
-<p>Here are some common examples on how to use this installer:</p>
+<p>Here are some common examples on how to use this installer. Our recommended way to
+install the driver is as follows:</p>
 <div class="highlight"><pre><span></span><span class="c1"># installs OOT SGX driver with metrics, page0, and version extension if no SGX driver is yet installed</span>
- ./install_sgx_driver.sh install -p metrics -p page0 -p version
+ ./install_sgx_driver.sh install --auto --dkms -p metrics -p page0 -p version
+</pre></div>
 
-<span class="c1"># install SGX driver with metrics extension; replaces any existing SGX driver</span>
+<p>This installs the correct driver for the host, ensures that the driver is automatically updated
+when the kernel is updated and adds all extensions that are required for monitoring and security.</p>
+<p>If you need to replace an existing service, add the option <code>--force</code>:</p>
+<div class="highlight"><pre><span></span><span class="c1"># install SGX driver with metrics extension; replaces any existing SGX driver</span>
  ./install_sgx_driver.sh install --force -p metrics
 
 <span class="c1"># install DCAP SGX driver with metrics extension; replaces any existing SGX driver</span>
@@ -1735,7 +1750,30 @@ check   checks <span class="k">if</span> a certain driver is installed
 
 <p>Option <code>--help</code> prints all commands and all options.</p>
 <h3 id="check-which-sgx-driver-and-extensions-are-installed">Check which SGX driver and extensions are installed</h3>
-<p>The <code>check</code>command tests if an up-to-date SGX driver and some required extension are installed. To check if an SGX driver and the metrics extension are installed and if they are up-to-date, just execute:</p>
+<p>The <code>check</code>command tests if an up-to-date SGX driver and some required extension are installed. Typically, you would execute as follows:</p>
+<div class="highlight"><pre><span></span>./install_sgx_driver.sh check
+</pre></div>
+
+<p>The output will look as follows:</p>
+<div class="highlight"><pre><span></span>Getting SGX Driver information:
+
+OOT driver detected.
+Version: 2.6.0
+
+Detected patches: version metrics page0 
+
+Use DKMS: Yes
+
+Driver commit: 602374c738ca58f83a1c17574d08e5d5e6341953
+Driver status: Up to date
+
+Patch &#39;metrics&#39; version: 2 (Up to date)
+Patch &#39;page0&#39; version  : 1 (Up to date)
+
+OK
+</pre></div>
+
+<p>To check if an SGX driver and the metrics extension are installed and if they are up-to-date, just execute:</p>
 <div class="highlight"><pre><span></span> ./install_sgx_driver.sh check -p metrics
 </pre></div>
 
