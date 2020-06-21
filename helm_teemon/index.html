@@ -42,7 +42,7 @@
     
     
       
-        <title>Deploying TEEMon - SCONE Confidential Computing</title>
+        <title>TEEMon Deployment - SCONE Confidential Computing</title>
       
     
     
@@ -115,7 +115,7 @@
                 SCONE Confidential Computing
               </span>
               <span class="md-header-nav__topic">
-                Deploying TEEMon
+                TEEMon Deployment
               </span>
             
           
@@ -291,10 +291,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
     
     <label class="md-nav__link" for="nav-2">
       Kubernetes SCONE CC
@@ -399,6 +401,63 @@
     <a href="../helm_mariadb/" title="MariaDB Deploy & Attest" class="md-nav__link">
       MariaDB Deploy & Attest
     </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        TEEMon Deployment
+      </label>
+    
+    <a href="./" title="TEEMon Deployment" class="md-nav__link md-nav__link--active">
+      TEEMon Deployment
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deployment" title="Deployment" class="md-nav__link">
+    Deployment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboard" title="Dashboard" class="md-nav__link">
+    Dashboard
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -1552,6 +1611,29 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deployment" title="Deployment" class="md-nav__link">
+    Deployment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboard" title="Dashboard" class="md-nav__link">
+    Dashboard
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1564,19 +1646,54 @@
                 
                 
                 <h1 id="deploying-teemon">Deploying TEEMon</h1>
-<p><a href="../teemon/">TEEMon</a> is our monitoring infrastructure for Kubernetes clusters.</p>
+<p><a href="../teemon/">TEEMon</a> is our monitoring infrastructure for Kubernetes clusters. TEEMon provides fine-grained performance metrics during runtime, including SGX metrics like free EPC pages and pages evicted to main memory. It is integrated with several open-source tools:  Prometheus, Grafana and Node Exporter. We also added a special exporter for SGX-related metrics.</p>
 <div class="admonition info">
 <p class="admonition-title">Prerequisites</p>
 <ul>
 <li>A <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> cluster and you deployed <a href="../helm/">helm</a> and the <a href="../helm_sgxdevplugin/">Kubernetes SGX plugin</a></li>
-<li>We granted you access to <span data-tooltip="sconeapps is a repo with helm charts to install SCONE-based confidential applications like LAS, CAS and MariaDB.">sconeapps</span> and SCONE CLI container images</li>
+<li>We granted you access to <span data-tooltip="sconeapps is a repo with helm charts to install SCONE-based confidential applications like LAS, CAS and MariaDB.">sconeapps</span> and <code>TEEMon</code> container images</li>
 <li>You have installed the <a href="../sgxinstall/">metrics SGX driver extension</a></li>
 </ul>
 </div>
+<h2 id="deployment">Deployment</h2>
+<p>The monitoring framework runs in native mode. Hence, we delegate the secret management of TEEMon to Kubernetes. 
+Grafana requires an admin password. Hence, we need to set an admin username and password as a Kubernetes secret named <code>teemon</code>.  We set <code>MY_PASSWORD</code> to a new random password first and then create a new secret:</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">MY_PASSWORD</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">32</span><span class="k">)</span>
+kubectl create secret generic teemon --from-literal<span class="o">=</span><span class="nv">username</span><span class="o">=</span>admin --from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MY_PASSWORD</span><span class="s2">&quot;</span>
+</pre></div>
+
+<p>The <code>sconeapps/teemon</code> chart will deploy <a href="../teemon/">TEEMon</a>. In most cases, just execute:</p>
+<div class="highlight"><pre><span></span>helm install teemon sconeapps/teemon
+</pre></div>
+
+<p>The configuration parameters learn about with the help of <a href="../kubeapps/">KubeApps</a>.</p>
+<p>You can now connect to the <a href="../teemon/">TEEMon</a> dashboard as follows:</p>
+<div class="highlight"><pre><span></span>kubectl port-forward  svc/teemon-grafana <span class="m">8099</span>:80
+</pre></div>
+
+<p>The <a href="../teemon/">TEEMon</a> dashboard can now be viewed at:</p>
+<p><a href="http://localhost:8099/">http://localhost:8099/</a></p>
+<h2 id="dashboard">Dashboard</h2>
+<p><a href="../teemon/">TEEMon</a> provides out of the box three dashboards:</p>
 <ul>
-<li>This description will be available soon -</li>
+<li>an <strong>SGX dashboard</strong> to  show resource metrics related to Intel SGX:</li>
 </ul>
+<p><center>
+<img alt="SCONE Workflow" src="../img/SGX_dashboard.png#fullwidth" title="Dashboard shows SGX-related metrics" />
+</center></p>
+<ul>
+<li>an <strong>Docker dashboard</strong> to show the metrics related to containers:</li>
+</ul>
+<p><center>
+<img alt="SCONE Workflow" src="../img/docker_dashboard.png#fullwidth" title="Dashboard displays metrics related to containers" />
+</center></p>
+<ul>
+<li>an <strong>infrastructure dashboard</strong> to  display resource metrics of the different nodes of a Kubernetes cluster:</li>
+</ul>
+<p><center>
+<img alt="SCONE Workflow" src="../img/infrastructure_dashboard.png#fullwidth" title="Dashboard displays node related statistics" />
+</center></p>
                 
                   
                 
@@ -1594,6 +1711,41 @@ https://kubernetes.io/">Kubernetes</span> cluster and you deployed <a href="../h
         
 <footer class="md-footer">
   
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../helm_mariadb/" title="MariaDB Deploy & Attest" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                MariaDB Deploy & Attest
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../helm_vscode/" title="Visual Studio Code" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Visual Studio Code
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
