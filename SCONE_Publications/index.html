@@ -1694,6 +1694,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#specfuzz-bringing-spectre-type-vulnerabilities-to-the-surface" title="SpecFuzz: Bringing Spectre-type vulnerabilities to the surface" class="md-nav__link">
+    SpecFuzz: Bringing Spectre-type vulnerabilities to the surface
+  </a>
+  
+</li>
+      
       
       
       
@@ -1852,6 +1859,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#specfuzz-bringing-spectre-type-vulnerabilities-to-the-surface" title="SpecFuzz: Bringing Spectre-type vulnerabilities to the surface" class="md-nav__link">
+    SpecFuzz: Bringing Spectre-type vulnerabilities to the surface
+  </a>
+  
+</li>
+      
       
       
       
@@ -1870,6 +1884,30 @@
                 
                 
                 <h1 id="scone-related-publications">SCONE Related Publications</h1>
+<p>Enclosed is a list of publications related to SCONE. Note that the original paper about SCONE is our OSDI 2016 paper. During the last years, SCONE has evolved quite a bit and continues to evolve. In particular, some of the limitations of the original implementation has long been addressed.</p>
+<p>Since one can find some wrong or at least out-of-date info about SCONE, here is a short summary of features:</p>
+<ul>
+<li>
+<p>SCONE supports <strong>security policies</strong> and <strong>transparent attestation</strong>. The security policy permit to generate secrets and certificates. The policy part was published in DSN2020. We will continue to extend the policy to support more application domains.</p>
+</li>
+<li>
+<p><strong>native application support</strong>: while we still recommend the recompilation of existing applications, SCONE supports to <strong>sconify</strong> native applications, i.e., we can extend existing binaries to automatically run inside of enclaves.</p>
+</li>
+<li>
+<p><strong>libc</strong>: we support binaries that use <strong>musl</strong> libc (Alpine Linux) and <strong>glibc</strong> (most other Linux distributions). We support Alpine Linux, Ubuntu, and RHEL/Centos. We will add other Linux distributions in future. Just drop us a note if you need a different distribution.</p>
+</li>
+<li>
+<p>SCONE supports <strong>containers</strong> and in particular, <strong>Kubernetes</strong> (which we prefer for deployment). However, <strong>sconified</strong> applications and service also run inside of <strong>VMs</strong> as well as on <strong>baremetal</strong>.</p>
+</li>
+<li>
+<p>SCONE supports <strong>static linking</strong> as well as <strong>dynamic linking</strong>. Shared libraries can also be loaded after the application has started. The shared libraries have to be protected with the SCONE filesystem shields.</p>
+</li>
+<li>
+<p>SCONE supports <strong>fork</strong>. However, <strong>fork</strong> is inherently slow in enclaves (since Intel SGX does not support efficient copy-on-write memory) and hence, we typically try to avoid using fork
+as much as possible by 1) running applications in the foreground, 2) using threads instead of processes, or 3) using the distributed version of an application instead of multiprocessing version.</p>
+</li>
+</ul>
+<p>We have been working on side-channel protection. Our Usenix ATC2018 and Usenix Security 2020 papers describe parts of our effort. We continue to work on extending SCONE to have a practical way to address sidechannels of very sensitive application domains like eHealth.</p>
 <h2 id="scone-secure-linux-containers-with-intel-sgx-usenix-osdi-2016">SCONE: Secure Linux Containers with Intel SGX, USENIX, OSDI 2016</h2>
 <p>This paper describes how we support unmodified applications inside of enclaves. The focus is on our asynchronous system
  call interface.</p>
@@ -2220,6 +2258,22 @@ We describe SCONE, a secure container mechanism for Docker that uses the SGX tru
 </li>
 <li>
 <p><strong>Conference</strong>: ACM/IFIP Middleware 2020</p>
+</li>
+</ul>
+<h2 id="specfuzz-bringing-spectre-type-vulnerabilities-to-the-surface">SpecFuzz: Bringing Spectre-type vulnerabilities to the surface</h2>
+<ul>
+<li>
+<p><strong>Authors</strong>: Oleksii Oleksenko, Bohdan Trach, Mark Silberstein, Christof Fetzer</p>
+</li>
+<li>
+<p><strong>Abstract</strong>: SpecFuzz is the first tool that enables dynamic testing for speculative execution vulnerabilities (e.g., Spectre). The key is a novel concept of speculation exposure: The program is instrumented to simulate speculative execution in software by forcefully executing the code paths that could be triggered due to mispredictions, thereby making the speculative memory accesses visible to integrity checkers (e.g., AddressSanitizer). Combined with the conventional fuzzing techniques, speculation exposure enables more precise identification of potential vulnerabilities compared to state-of-the-art static analyzers.</p>
+<p>Our prototype for detecting Spectre V1 vulnerabilities successfully identifies all known variations of Spectre V1 and decreases the mitigation overheads across the evaluated applications, reducing the amount of instrumented branches by up to 77% given a sufficient test coverage.</p>
+</li>
+<li>
+<p><strong>Media</strong>: <a href="https://www.usenix.org/conference/usenixsecurity20/presentation/oleksenko">html</a>, <a href="https://www.usenix.org/system/files/sec20-oleksenko.pdf">paper</a>, <a href="https://www.usenix.org/system/files/sec20_slides_oleksenko.pdf">slides</a>, <a href="https://2459d6dc103cb5933875-c0245c5c937c5dedcca3f1764ecc9b2f.ssl.cf2.rackcdn.com/sec20/videos/0813/s6_microarchitectural_attacks/6_sec20fall-paper84-presentation-video-final.mp4">video</a></p>
+</li>
+<li>
+<p><strong>Conference</strong>: Usenix Security 2020</p>
 </li>
 </ul>
                 
