@@ -1892,7 +1892,7 @@ Python program to write all pages to <em>stdout</em>: </p>
 
 <span class="s">for line in maps_file.readlines():  # for each mapped region</span>
 <span class="s">    w=line.rsplit(None, 1)[-1] # last word</span>
-<span class="s">    if w != &quot;/dev/isgx&quot; and  w != &quot;[vvar]&quot; and w != &quot;[vdso]&quot; and w != &quot;[vsyscall]&quot;:</span>
+<span class="s">    if  w != &quot;[vvar]&quot; and w != &quot;[vdso]&quot; and w != &quot;[vsyscall]&quot; and w != &quot;/dev/isgx&quot; and w != &quot;/dev/sgx&quot;:</span>
 <span class="s">        m = re.match(r&#39;([0-9A-Fa-f]+)-([0-9A-Fa-f]+) ([-r])&#39;, line)</span>
 <span class="s">        r += 1</span>
 <span class="s">        p = 0</span>
@@ -1915,6 +1915,11 @@ Python program to write all pages to <em>stdout</em>: </p>
 <span class="s">EOF</span>
 </pre></div>
 
+<div class="admonition note">
+<p class="admonition-title">Enclaves in debug mode do not protect your secrets</p>
+<p>If your enclave is in debug mode, one can access all secrets of the enclave. 
+This scanner conveniently skips the enclave memory region using condition <code>and w != "/dev/isgx" and ...</code>. Drop this condition and you should also find the secret. Run your program in <strong>production mode</strong> to ensure that one cannot access the secrets.</p>
+</div>
 <p>Run this program and grep for the prefix of our secret:</p>
 <div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
 </pre></div>
