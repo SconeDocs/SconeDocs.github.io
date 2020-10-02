@@ -1882,16 +1882,16 @@ The <code>scone session</code> commands provide verification and processing for 
 
 <p>The Session Description Language documentation provides details about the syntax and content of session files.</p>
 <p>To check whether the provided file is a valid session description, one can use:</p>
-<div class="highlight"><pre><span></span>scone cas session check <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
+<div class="highlight"><pre><span></span>scone session check <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
 </pre></div>
 
 <p>The command will return a non-zero exit code when encountering a validation error.</p>
 <p>Once the user finalized the sesson and validation passes, the session may be uploaded to a CAS, by using:</p>
-<div class="highlight"><pre><span></span>scone cas session create <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
+<div class="highlight"><pre><span></span>scone session create <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
 </pre></div>
 
 <p>This will use the default CAS. To use a specific CAS instead:</p>
-<div class="highlight"><pre><span></span>scone cas session create --cas cas.example2.com <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
+<div class="highlight"><pre><span></span>scone session create --cas cas.example2.com <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
 </pre></div>
 
 <p>(Note that either way, the used CAS must have been attested through <code>scone cas attest</code> previously, or the command will fail.)</p>
@@ -1909,7 +1909,7 @@ The <code>scone session</code> commands provide verification and processing for 
 Variables can be used anywhere in the session file, except for the <code>version</code>.</p>
 <p>Since the session (identified by its name) was already created earlier, <code>scone session create</code> cannot be used a second time.
 Instead, the session needs to be updated:</p>
-<div class="highlight"><pre><span></span>scone cas session update -e <span class="s2">&quot;NGINX_MRENCLAVE=3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac&quot;</span> <span class="s2">&quot;sessions/my-example-session.002.yml&quot;</span>
+<div class="highlight"><pre><span></span>scone session update -e <span class="s2">&quot;NGINX_MRENCLAVE=3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac&quot;</span> <span class="s2">&quot;sessions/my-example-session.002.yml&quot;</span>
 </pre></div>
 
 <p>When updating a session, the CLI will first retrieve the currently active session from the CAS, and fill in its hash as a <code>predecessor</code> of the updated session.
@@ -1919,7 +1919,7 @@ If a variable is present in the session file but not on the command line, an err
 Variables can be used with all <code>cas session</code> commands. Using <code>scone session update --help</code>, more advanced options can be shown.</p>
 <p>In some scenarios, it may be necessary to verify whether a session active on a CAS adheres a given policy.
 This can be done by using the <code>verify</code> CLI command:</p>
-<div class="highlight"><pre><span></span>scone cas session verify -e <span class="s2">&quot;NGINX_MRENCLAVE=3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac&quot;</span> <span class="s2">&quot;sessions/my-example-session.002.yml&quot;</span>
+<div class="highlight"><pre><span></span>scone session verify -e <span class="s2">&quot;NGINX_MRENCLAVE=3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac&quot;</span> <span class="s2">&quot;sessions/my-example-session.002.yml&quot;</span>
 </pre></div>
 
 <p>The command will fetch the active session from CAS (this requires the <code>READ</code> permission), and check whether it matches the given session file after variable substitution.
