@@ -1902,7 +1902,6 @@ We can then attest CAS with the SCONE CLI running on a trusted computer.
 Alternatively, you can attest with the CLI running inside of an enclave.</p>
 <div class="highlight"><pre><span></span>scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> <span class="nv">$CAS_MRENCLAVE</span>
 </pre></div>
-
 <p>If the attestation is successful, the SCONE CLI stores the certificate
 of the attested <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> in a sealed file on your local computer. Whenever
 the CLI connects to this SCONE CAS again, it will ensure with TLS that it talks to the same
@@ -1915,12 +1914,10 @@ which we store in <span data-tooltip="An environment variable is a variable defi
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">DBSESSION</span><span class="o">=</span><span class="s2">&quot;MariaDBSession-</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
 <span class="nb">export</span> <span class="nv">DBCLIENT</span><span class="o">=</span><span class="s2">&quot;MariaDBClientSession-</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
 </pre></div>
-
 <p>We limit the execution of our database to the nodes of our Kubernetes cluster (see <a href="helm_las.md/#determining-the-platform-ids">platforms</a>
 ):</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PLATFORMS</span><span class="o">=</span><span class="k">$(</span>get_platform_ids<span class="k">)</span>
 </pre></div>
-
 <p>We can now create two sessions - with templates that we provide:</p>
 <ul>
 <li>one for the database, and</li>
@@ -1929,14 +1926,12 @@ which we store in <span data-tooltip="An environment variable is a variable defi
 <div class="highlight"><pre><span></span>scone session create --name<span class="o">=</span><span class="nv">$DBCLIENT</span>  --use-env scone-templates/mariadb/dbclient.yml
 scone session create --name<span class="o">=</span><span class="nv">$DBSESSION</span> --use-env scone-templates/mariadb/dbsession.yml
 </pre></div>
-
 <p>The <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> session template will give session <code>$DBCLIENT</code> access to the <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> CA certificate - which is created as part of <code>$DBSESSION</code>- to ensure that the MariDB clients can authenticate this MariaDB instance.</p>
 <h2 id="deploying-mariadb">Deploying <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span></h2>
 <p>The <code>sconeapps/mariadb</code> chart will deploy <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> in an <span data-tooltip="This is an alias for *SGX enclave*. A protected area inside the address space of a program such that only the code inside this enclave can access the data and code stored in this address range. All pages belonging to an enclave are encrypted by the CPU and only the CPU knows the encryption key. These pages can reside in the main memory or the EPC.">enclave</span>,
 We set the session in which we want to run this MariaDB as follows.</p>
 <div class="highlight"><pre><span></span>helm install mariadb sconeapps/mariadb --set scone.attestation.config_id<span class="o">=</span><span class="nv">$DBSESSION</span>
 </pre></div>
-
 <p>This starts  <span data-tooltip="MariaDB is an open source, relational database. MariaDB is a fork of MySQL. This community effort is led by some of the original developers of MySQL.">MariaDB</span> inside of an enclave in the default <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> namespace. Its security policy <code>$DBSESSION</code> creates client certificates, exports these to the client policy <code>$DBCLIENT</code> and the client policy <code>$DBCLIENT</code> imports these client certificates. This gives the clients the right to connect to this MariaDB instance.</p>
 <h2 id="attestation">Attestation</h2>

@@ -1867,7 +1867,6 @@ If the attestation is successful and the contacted CAS has the expected enclave 
 <p>Example attestation process:</p>
 <div class="highlight"><pre><span></span>scone cas attest cas.example.com 0a7f2f03e98a63656868a7083aa110210d244740fa73fa455130a1f926398e9e
 </pre></div>
-
 <p>Note that <code>0a7f2f03e98a63656868a7083aa110210d244740fa73fa455130a1f926398e9e</code> MUST be replaced with the proper enclave measurement. Additional command line switches allow relaxing the security policy, e.g. by allowing CAS to run on a machine with hyperthreading enabled (<code>-C</code>) or running on older, less secure SGX hardware (<code>-G</code>). Use <code>scone cas attest --help</code> for a full list of options.</p>
 <p>The first attested CAS will be used as the default CAS when performing CAS-related operations, such as creating sessions. Multiple CASes may be attested at the same time, though. <code>scone cas list</code> gives an overview and <code>scone cas set-default</code> allows switching to another default CAS.</p>
 <h2 id="session-handling">Session Handling</h2>
@@ -1879,21 +1878,17 @@ The <code>scone session</code> commands provide verification and processing for 
 <span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.2&quot;</span>
 <span class="nt">predecessor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">~</span>
 </pre></div>
-
 <p>The Session Description Language documentation provides details about the syntax and content of session files.</p>
 <p>To check whether the provided file is a valid session description, one can use:</p>
 <div class="highlight"><pre><span></span>scone session check <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
 </pre></div>
-
 <p>The command will return a non-zero exit code when encountering a validation error.</p>
 <p>Once the user finalized the sesson and validation passes, the session may be uploaded to a CAS, by using:</p>
 <div class="highlight"><pre><span></span>scone session create <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
 </pre></div>
-
 <p>This will use the default CAS. To use a specific CAS instead:</p>
 <div class="highlight"><pre><span></span>scone session create --cas cas.example2.com <span class="s2">&quot;sessions/my-example-session.001.yml&quot;</span>
 </pre></div>
-
 <p>(Note that either way, the used CAS must have been attested through <code>scone cas attest</code> previously, or the command will fail.)</p>
 <p>As the complexity of sessions grows, variable substitution can be used to automate uploading of session templates (file <code>sessions/my-example-session.002.yml</code>):</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="s">&quot;my-example-session&quot;</span>
@@ -1904,14 +1899,12 @@ The <code>scone session</code> commands provide verification and processing for 
     <span class="nt">command</span><span class="p">:</span> <span class="s">&quot;./nginx&quot;</span>
     <span class="nt">mrenclaves</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;$NGINX_MRENCLAVE&quot;</span><span class="p p-Indicator">]</span>
 </pre></div>
-
 <p>Note that we use a variable, <code>$NGINX_MRENCLAVE</code>, as the enclave measurement for a service.
 Variables can be used anywhere in the session file, except for the <code>version</code>.</p>
 <p>Since the session (identified by its name) was already created earlier, <code>scone session create</code> cannot be used a second time.
 Instead, the session needs to be updated:</p>
 <div class="highlight"><pre><span></span>scone session update -e <span class="s2">&quot;NGINX_MRENCLAVE=3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac&quot;</span> <span class="s2">&quot;sessions/my-example-session.002.yml&quot;</span>
 </pre></div>
-
 <p>When updating a session, the CLI will first retrieve the currently active session from the CAS, and fill in its hash as a <code>predecessor</code> of the updated session.
 This ensures a coherent, linear and verifiable session history.</p>
 <p>The <code>-e</code> switch causes variable <code>$NGINX_MRENCLAVE</code> to be replaced with the value <code>3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac</code>.
@@ -1921,7 +1914,6 @@ Variables can be used with all <code>cas session</code> commands. Using <code>sc
 This can be done by using the <code>verify</code> CLI command:</p>
 <div class="highlight"><pre><span></span>scone session verify -e <span class="s2">&quot;NGINX_MRENCLAVE=3be304015fb399cf88d76a8f58f04e16997010dab573cb1a91eb6257c2a452ac&quot;</span> <span class="s2">&quot;sessions/my-example-session.002.yml&quot;</span>
 </pre></div>
-
 <p>The command will fetch the active session from CAS (this requires the <code>READ</code> permission), and check whether it matches the given session file after variable substitution.
 A non-zero exit code implies a mismatch.</p>
                 

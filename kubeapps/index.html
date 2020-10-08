@@ -1946,7 +1946,6 @@ individual applications:</p>
 <p>Define an environment variable that contains this token:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GH_TOKEN</span><span class="o">=</span>...
 </pre></div>
-
 <p>Use the token to give <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
 deploy and manage SCONE-based confidential applications.">Kubeapps</span> access to the <code>sconeapps</code> repository:</p>
 <div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$GH_TOKEN</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
@@ -1962,19 +1961,16 @@ deploy and manage SCONE-based confidential applications.">Kubeapps</span> access
 <span class="s">EOF</span>
 <span class="k">fi</span>
 </pre></div>
-
 <p>You can now start Kubeapps with the help of helm as follows:</p>
 <div class="highlight"><pre><span></span>kubectl create namespace  kubeapps <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;Does namespace &#39;kubeapps&#39; already exists?&quot;</span>
 helm install -f kubeapps_values.yml kubeapps --namespace kubeapps bitnami/kubeapps --set <span class="nv">useHelm3</span><span class="o">=</span><span class="nb">true</span>
 </pre></div>
-
 <h2 id="port-forwarding">Port Forwarding</h2>
 <p>To display the dashboard on your browser, you need to forward the kubeapp port to your
 local machine. Say, you want to present this on <code>localhost:8080</code>, then you can forward the
 kubeapp port as follows:</p>
 <div class="highlight"><pre><span></span>kubectl port-forward -n kubeapps services/kubeapps <span class="m">8090</span>:80
 </pre></div>
-
 <p>The Kubeapps dashboard can now be viewed at:</p>
 <p><a href="http://localhost:8090/">http://localhost:8090/</a></p>
 <h2 id="access-control">Access Control</h2>
@@ -1982,7 +1978,6 @@ kubeapp port as follows:</p>
 <div class="highlight"><pre><span></span>kubectl create serviceaccount kubeapps-operator
 kubectl create clusterrolebinding kubeapps-operator --clusterrole<span class="o">=</span>cluster-admin --serviceaccount<span class="o">=</span>default:kubeapps-operator
 </pre></div>
-
 <p>To log into the <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
 deploy and manage SCONE-based confidential applications.">Kubeapps</span> dashboard, you need to determine the API Token:</p>
 <div class="highlight"><pre><span></span><span class="nv">APITOKEN</span><span class="o">=</span><span class="k">$(</span>kubectl get -n default secret <span class="k">$(</span>kubectl get -n default serviceaccount kubeapps-operator -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.secrets[].name}&#39;</span><span class="k">)</span> -o go-template<span class="o">=</span><span class="s1">&#39;{{.data.token | base64decode}}&#39;</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span><span class="k">)</span>

@@ -1860,7 +1860,6 @@ you could execute the following:</p>
 <div class="highlight"><pre><span></span>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/install_sgx_driver.sh <span class="se">\</span>
 <span class="p">|</span> bash -s - install --auto --dkms -p metrics -p page0 -p version
 </pre></div>
-
 <p>The advantage of this installation option is that:</p>
 <ul>
 <li><code>auto</code> selects the right SGX driver for your CPU</li>
@@ -1884,12 +1883,10 @@ you could execute the following:</p>
 <div class="highlight"><pre><span></span>curl -fssl https://raw.githubusercontent.com/scontain/SH/master/install_sgx_driver.sh <span class="se">\</span>
  <span class="p">|</span> bash -s - install --auto --dkms -p version
 </pre></div>
-
 <p>Alternatively, you can download the script as follows:</p>
 <div class="highlight"><pre><span></span>curl -fssl https://raw.githubusercontent.com/scontain/SH/master/install_sgx_driver.sh --output install_sgx_driver.sh
 chmod u+x install_sgx_driver.sh
 </pre></div>
-
 <p>The script supports the <code>install</code> commands:</p>
 <div class="highlight"><pre><span></span>install the current Intel out of branch driver <span class="k">if</span> no SGX driver is installed
   -d, --dcap           installs the DCAP driver instead
@@ -1908,7 +1905,6 @@ chmod u+x install_sgx_driver.sh
 
   -f, --force          replaces existing SGX driver, <span class="k">if</span> installed
 </pre></div>
-
 <p>and the <code>check</code> command:</p>
 <div class="highlight"><pre><span></span>check   checks <span class="k">if</span> a certain driver is installed
         -p metrics       check the status of <span class="s1">&#39;metrics&#39;</span> extension
@@ -1917,13 +1913,11 @@ chmod u+x install_sgx_driver.sh
         In <span class="k">case</span> of absence or outdated driver, or absence or outdated extension, check
         will <span class="k">return</span> error.
 </pre></div>
-
 <p>Here are some common examples on how to use this installer. Our recommended way to
 install the driver is as follows:</p>
 <div class="highlight"><pre><span></span><span class="c1"># installs OOT SGX driver with metrics, page0, and version extension if no SGX driver is yet installed</span>
  ./install_sgx_driver.sh install --auto --dkms -p metrics -p page0 -p version
 </pre></div>
-
 <p>This installs the correct driver for the host, ensures that the driver is automatically updated
 when the kernel is updated and adds all extensions that are required for monitoring and security.</p>
 <p>If you need to replace an existing service, add the option <code>--force</code>:</p>
@@ -1933,13 +1927,11 @@ when the kernel is updated and adds all extensions that are required for monitor
 <span class="c1"># install DCAP SGX driver with metrics extension; replaces any existing SGX driver</span>
  ./install_sgx_driver.sh install --dcap --force -p metrics -p version 
 </pre></div>
-
 <p>Option <code>--help</code> prints all commands and all options.</p>
 <h3 id="check-which-sgx-driver-and-extensions-are-installed">Check which SGX driver and extensions are installed</h3>
 <p>The <code>check</code>command tests if an up-to-date SGX driver and some required extension are installed. Typically, you would execute as follows:</p>
 <div class="highlight"><pre><span></span>./install_sgx_driver.sh check
 </pre></div>
-
 <p>The output will look as follows:</p>
 <div class="highlight"><pre><span></span>Getting SGX Driver information:
 
@@ -1958,16 +1950,13 @@ Patch &#39;page0&#39; version  : 1 (Up to date)
 
 OK
 </pre></div>
-
 <p>To check if an SGX driver and the metrics extension are installed and if they are up-to-date, just execute:</p>
 <div class="highlight"><pre><span></span> ./install_sgx_driver.sh check -p metrics
 </pre></div>
-
 <p>If no SGX driver is installed the output would look like this</p>
 <div class="highlight"><pre><span></span>FAIL: No SGX driver detected!
 ERROR: installation of SGX driver failed (script=install_sgx_driver.sh, Line: 1, 1166)
 </pre></div>
-
 <p>When an OOT driver without version patch is installed:</p>
 <div class="highlight"><pre><span></span>Getting SGX Driver information:
 OOT driver detected.
@@ -1975,11 +1964,9 @@ Version: 2.6.0
 FAIL: Unable to detect &#39;version&#39; patch! This patch is required for running this command.
 To install the driver with &#39;version&#39; patch, run: ./install_sgx_driver.sh install -p version --force
 </pre></div>
-
 <p>When executing</p>
 <div class="highlight"><pre><span></span>./install_sgx_driver.sh check
 </pre></div>
-
 <p>the output for an OOT outdated driver without patches would look like this:</p>
 <div class="highlight"><pre><span></span>Getting SGX Driver information:
 OOT driver detected.
@@ -1989,12 +1976,10 @@ Driver commit: 95eaa6f6693cd86c35e10a22b4f8e483373c987c
 Driver status: Outdated - 1 new commit(s) available            
 WARNING: Update is needed!
 </pre></div>
-
 <p>One can also check that certain extensions are installed. For example, one might
 want to verify that the <code>metrics</code> and the <code>page0</code> extensions are installed:</p>
 <div class="highlight"><pre><span></span>./install_sgx_driver.sh check -p metrics -p page0
 </pre></div>
-
 <p>The output might look like this:</p>
 <div class="highlight"><pre><span></span>Getting SGX Driver information:
 OOT driver detected.
@@ -2006,7 +1991,6 @@ Patch &#39;metrics&#39; not found!
 Patch &#39;page0&#39; not found!
 WARNING: Update is needed!
 </pre></div>
-
 <p>Note that on some platforms that support SGX but the disables SGX in the BIOS,
 the driver might be successfully installed and even load but using the SGX driver fails.
 Check on the host as well as inside your containers that the SGX device is visible.</p>
@@ -2027,7 +2011,6 @@ SGX device. We can try to determine this with a little bash function:</p>
     <span class="k">fi</span>
 <span class="o">}</span>
 </pre></div>
-
 <div class="admonition warning">
 <p class="admonition-title">Storing <code>determine_sgx_device</code> in a separate file</p>
 <p>Note that if define and execute <code>determine_sgx_device</code> in a separate file, say, <code>dsd.sh</code>, the environment variables
@@ -2037,13 +2020,11 @@ SGX device. We can try to determine this with a little bash function:</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
 <span class="nb">echo</span> <span class="nv">$SGXDEVICE</span>
 </pre></div>
-
 <h2 id="checking-availability-of-sgx-device-inside-of-containers">Checking availability of SGX device inside of containers</h2>
 <p>The SGX device is not automatically mapped into a container: you can to map the device as follows into the container:</p>
 <div class="highlight"><pre><span></span><span class="c1"># alternative: use --device option without --privileged flag</span>
 docker run <span class="nv">$MOUNT_SGXDEVICE</span> --rm sconecuratedimages/checksgx <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;failed to open  SGX device </span><span class="nv">$SGXDEVICE</span><span class="s2"> inside of container&quot;</span>
 </pre></div>
-
 <p>In case that the device is not mapped in the container, you can try to see if
 the container must be privileged or if we might need to remap the device ids:</p>
 <div class="highlight"><pre><span></span>docker run <span class="nv">$MOUNT_SGXDEVICE</span> --privileged --rm sconecuratedimages/checksgx <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;failed to open  SGX device </span><span class="nv">$SGXDEVICE</span><span class="s2"> inside of container&quot;</span>

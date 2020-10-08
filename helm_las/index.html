@@ -1840,23 +1840,19 @@ https://kubernetes.io/">Kubernetes</span> cluster and the <a href="../helm/">hel
 <p>The <code>sconeapps/las</code> chart will deploy <span data-tooltip="The SCONE Local Attestation Service (LAS) is a per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.">SCONE LAS</span>:</p>
 <div class="highlight"><pre><span></span>helm install las sconeapps/las
 </pre></div>
-
 <p>This starts  <span data-tooltip="The SCONE Local Attestation Service (LAS) is a per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.">SCONE LAS</span> in the default <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> namespace and the application is called <code>las</code>. As an alternative, you can deploy <span data-tooltip="The SCONE Local Attestation Service (LAS) is a per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.">SCONE LAS</span> with <a href="../kubeapps/">Kubeapps</a>.</p>
 <h2 id="configuration-options">Configuration Options</h2>
 <p>You can learn about the configuration options by executing:</p>
 <div class="highlight"><pre><span></span>helm install las sconeapps/las --dry-run
 </pre></div>
-
 <p>One option to set is the <code>image</code> to be deployed. If you want to run in <span data-tooltip="In SGX we distinguish between debug, pre-release and release mode. In release mode, the enclave will be launched in production mode, i.e., any access - including debug access - will be prevented. Moreover, the code is compiled with optimizations switched on and without debug symbols.">release mode</span>, you need to specify a different <span data-tooltip="The SCONE Local Attestation Service (LAS) is a per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.">SCONE LAS</span> image by first defining environment variable <code>SCONE_LAS_IMAGE</code> appropriately. You can do this as follows:</p>
 <div class="highlight"><pre><span></span>helm install las sconeapps/las --set <span class="nv">image</span><span class="o">=</span><span class="nv">$SCONE_LAS_IMAGE</span>
 </pre></div>
-
 <p>You can check the status of this <strong>release</strong>, i.e., the instance that you just deployed, by
 executing:</p>
 <div class="highlight"><pre><span></span>helm status las
 </pre></div>
-
 <h2 id="determining-the-platform-ids">Determining the Platform IDs</h2>
 <p>SCONE policies can limit the execution of an enclaved services to <a href="../CAS_session_lang_0_2/#platform-based-attestation">certain platforms</a>, i.e., to certain computers. For example, you might need to ensure that your data can only be processed in a certain datacenter. Each platform is identified by a unique public key: This is the public key of its local attestation service.</p>
 <p>When a <code>las</code> instance is restarted on the same platform, it will get the same public key. The public key might, however,  change after a microcode update or an update of the <code>las</code> code base. In these cases, you will have to update the list of permitted platforms in your policies.</p>
@@ -1882,15 +1878,12 @@ bash function that queries the public keys of all <code>las</code> instances:</p
 <span class="o">)</span>
 <span class="o">}</span>
 </pre></div>
-
 <p>In case you do not execute <code>las</code> in the default Kubernets namespace, set environment variable <code>NAMESPACE</code>. If you do not name your service <code>las</code>, set environment variable <code>INSTANCE</code> accordingly. Then just execute:</p>
 <div class="highlight"><pre><span></span>get_platform_ids
 </pre></div>
-
 <p>The output might look like this:</p>
 <div class="highlight"><pre><span></span><span class="nt">platforms</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="nv">126C8098408FEB2002F5EB8B9E6C2AE26197E3617875633C5BD4EB4454278C34</span><span class="p p-Indicator">,</span>  <span class="nv">BCA7B05F55BCA38EA7A0BDEBDC402942BE77BEC7F0D3F37C72F6C1898047B312</span><span class="p p-Indicator">]</span>
 </pre></div>
-
 <p>You can copy and paste this to your policy to ensure that your application(s) can only run in a certain Kubernetes cluster.</p>
 <p>If you do not even trust your Kubernetes cluster to correctly determine the public keys of the LAS instances, let us know and we can suggest more secure alternatives.</p>
                 

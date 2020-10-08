@@ -2151,7 +2151,6 @@ images:
         - name: encrypted-output-files
           path: /encryptedOutputs
 </pre></div>
-
 <p>Note that in most cases you can start from a generic session template and you do not need to worry about the syntax and all the details of session descriptions.
 The session templates of trusted DApps look very similar to the session template above.
 The three differences are that</p>
@@ -2165,7 +2164,6 @@ The three differences are that</p>
 <div class="highlight"><pre><span></span>git clone https://github.com/scontain/copy_dapp.git
 <span class="nb">cd</span> copy_dapp
 </pre></div>
-
 <p>The source code of the trusted copy DApp is file <a href="https://github.com/scontain/copy_dapp/blob/master/copy_files.c"><em>copy_files.c</em></a>.</p>
 <p>We build this program with the help of the standard
 <strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile below). For convenience,
@@ -2185,7 +2183,6 @@ we provide an Alpine image (i.e., sconecuratedimages/muslgcc) that has <strong>g
 
 <span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&quot;/application.sh&quot;</span><span class="p">]</span>
 </pre></div>
-
 <p>To run the application inside of an enclave, we need the SCONE
 runtime environment. This runtime is part of image <strong>iexechub/sgx-scone:runtime</strong>.
 Moreover, this image contains a script <strong>/application.sh</strong> that pulls
@@ -2199,7 +2196,6 @@ is built by the script <code>build-image.sh</code>. This script also determines
 by executing</p>
 <div class="highlight"><pre><span></span>./build-image.sh
 </pre></div>
-
 <p>We can execute this image on a SGX-capable host. This host has to have the SCONE local attestation service and Docker installed. We describe in the <a href="../sgxinstall/">installation section</a> on how to install these prerequisites.</p>
 <p>In what follows, we assume that the name of the host is stored in environment variable <strong>host</strong>.</p>
 <h3 id="setup">SETUP</h3>
@@ -2215,21 +2211,17 @@ mkdir -p KEYS INPUTS OUTPUTS ZIP
 <span class="nb">echo</span> <span class="s2">&quot;Hello together&quot;</span> &gt; INPUTS/f2.txt
 cp ../copy_dapp.yml KEYS/
 </pre></div>
-
 <h3 id="step-1">Step 1</h3>
 <p>We encrypt these files and push the zipped up files for now to <strong>filepush.co</strong>.</p>
 <p>Let's execute the first step of encrypting the files and pushing these to the transfer service:</p>
 <div class="highlight"><pre><span></span><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs sconecuratedimages/iexecsgx:scone.cli encryptedpush --application sconecuratedimages/iexecsgx:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
 </pre></div>
-
 <p>Let's look at the output:</p>
 <div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="nv">$CMD</span>
 </pre></div>
-
 <p>should result in an output like:</p>
 <div class="highlight"><pre><span></span> <span class="s2">&quot;cmdline&quot;</span>: --sessionID <span class="m">180713033312847980809017601</span>/application --secretManagementService <span class="m">87</span>.190.236.136 --url https://filepush.co/XPHT/scone-upload.zip
 </pre></div>
-
 <p>You can look in your browser at the URL to see the uploaded files!</p>
 <h3 id="step-2">Step 2</h3>
 <p>Before running this application on the iExec platform, we might
@@ -2238,38 +2230,30 @@ want to test it on some SGX-capable host.</p>
 since <strong>docker run</strong> does not pull/update the image.</p>
 <div class="highlight"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/iexecsgx:copy_demo
 </pre></div>
-
 <p>Ensure that you are executing a bash shell (execute <code>bash</code>).
 We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 Now, execute the command on <strong>host</strong> and we ask it to be pushed to <em>filepush.co</em>:</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
 <span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t <span class="nv">$MOUNT_SGXDEVICE</span>  --rm sconecuratedimages/iexecsgx:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span> --push filepush.co/upload<span class="k">)</span>
 </pre></div>
-
 <p>Let's look at the output:</p>
 <div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="nv">$URL</span>
 </pre></div>
-
 <p>this results in an output like:</p>
 <div class="highlight"><pre><span></span>https://filepush.co/qSMf/scone-upload.zip
 </pre></div>
-
 <p>You can now download this (if running a <strong>bash</strong> shell) </p>
 <div class="highlight"><pre><span></span>curl --output ZIP/encryptedOutputFiles.zip <span class="si">${</span><span class="nv">URL</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>
 </pre></div>
-
 <h3 id="step-3">Step 3</h3>
 <div class="highlight"><pre><span></span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/ZIP:/encryptedOutputs  -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs sconecuratedimages/iexecsgx:scone.cli decrypt
 </pre></div>
-
 <p>We can now look at the files in OUTPUTS directory:</p>
 <div class="highlight"><pre><span></span>cat OUTPUTS/f1.txt
 </pre></div>
-
 <p>results in  <code>Hello world</code> and</p>
 <div class="highlight"><pre><span></span>cat OUTPUTS/f2.txt
 </pre></div>
-
 <p>results in  <code>Hello together</code>.</p>
                 
                   

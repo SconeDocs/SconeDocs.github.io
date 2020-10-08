@@ -1832,7 +1832,6 @@
 this image cached:</p>
 <div class="highlight"><pre><span></span>docker pull sconecuratedimages/apps:8-jdk-alpine
 </pre></div>
-
 <p>We also provide images:</p>
 <ul>
 <li><code>sconecuratedimages/apps:11-jdk-alpine</code></li>
@@ -1842,7 +1841,6 @@ this image cached:</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
 docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it sconecuratedimages/apps:8-jdk-alpine
 </pre></div>
-
 <p>In case you do not have an SGX driver installed, no device will be mounted and
 applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <h2 id="example">Example</h2>
@@ -1857,26 +1855,21 @@ applications will run in <span data-tooltip="The application does not run inside
 <span class="s">}</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>We can compile as follows:</p>
 <div class="highlight"><pre><span></span>javac HelloWorld.java
 </pre></div>
-
 <p>and run inside of an enclave as follows:</p>
 <div class="highlight"><pre><span></span>java HelloWorld
 </pre></div>
-
 <p>This might produce some warnings (since we disable access to the <code>proc filesystem</code>):</p>
 <div class="highlight"><pre><span></span>/ # java HelloWorld
 Picked up JAVA_TOOL_OPTIONS: -Xmx256m
 OpenJDK 64-Bit Server VM warning: Can&#39;t detect initial thread stack location - find_vma failed
 Hello World
 </pre></div>
-
 <p>We can run Java with some additional log messages to see what accesses are blocked:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span> java HelloWorld
 </pre></div>
-
 <p>which results in the following output</p>
 <div class="highlight"><pre><span></span>export SCONE_QUEUES=4
 export SCONE_SLOTS=256
@@ -1922,10 +1915,10 @@ OpenJDK 64-Bit Server VM warning: Can&#39;t detect initial thread stack location
 [SCONE|WARN] src/mman/anon.c:128:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
 Hello World
 </pre></div>
-
 <p>This correctly prints <em>Hello World</em> despite some few warnings that the heap is exhausted.</p>
 <h2 id="screencast">Screencast</h2>
-<p><script id="asciicast-285888" src="https://asciinema.org/a/285888.js" async></script></p>
+<script id="asciicast-285888" src="https://asciinema.org/a/285888.js" async></script>
+
 <h2 id="environment-variables">Environment variables</h2>
 <p>SGXv1 cannot dynamically increase the memory of an enclave. Hence, we have to determine the maximum heap (and stack) size at program start: you can increase the heap by setting environment variable <strong>SCONE_HEAP</strong>, e.g., <strong>SCONE_HEAP=8G</strong>.
 In case you run out of memory inside the enclave, increase the heap size. In case your program gets <strong>killed</strong> by the OS, you might have selected a too large heap that is not supported by your VM, container or your host.</p>
@@ -1933,7 +1926,6 @@ In case you run out of memory inside the enclave, increase the heap size. In cas
 <p>You can increase the heap to ensure that JVM does not run out of heap memory:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>12G java HelloWorld
 </pre></div>
-
 <p>will result in the following output:</p>
 <div class="highlight"><pre><span></span>Picked up JAVA_TOOL_OPTIONS: -Xmx256m
 [SCONE|WARN] src/scone-shielding/proc_fs.c:324:_proc_fs_open(): open: /proc/self/mountinfo is not supported
@@ -1941,7 +1933,6 @@ In case you run out of memory inside the enclave, increase the heap size. In cas
 OpenJDK 64-Bit Server VM warning: Can&#39;t detect initial thread stack location - find_vma failed
 Hello World
 </pre></div>
-
 <h1 id="example-zookeeper">Example: Zookeeper</h1>
 <p>The above image runs Zookeeper without any modification. Our Zookeeper image is available here: <strong>sconecuratedimages/apps:zookeeper-alpine</strong>.</p>
 <p>Zookeeper inside of an enclave runs  <a href="https://github.com/phunt/zk-smoketest">zk-smoketest</a> without any issues.</p>

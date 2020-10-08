@@ -1888,7 +1888,6 @@
 create a random namespace for this example:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NS</span><span class="o">=</span><span class="s2">&quot;NS-</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
 </pre></div>
-
 <h2 id="policy-extension">Policy Extension</h2>
 <p>We sconify the same image as in the <a href="../sconify_image/">previous section</a>, i.e., <code>native_flask_restapi_image</code>. This image requires the generation of a TLS certificate and a private key. To do so, we define a secret section for the generated policy that we store in a local file:</p>
 <div class="highlight"><pre><span></span>mkdir -p policy
@@ -1910,7 +1909,6 @@ cat &gt; policy/secrets.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">        - api</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>We also define the location in which the sconified application can read the certificate and the private key:</p>
 <div class="highlight"><pre><span></span>cat &gt; policy/injected_files.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">     injection_files:</span>
@@ -1920,17 +1918,14 @@ cat &gt; policy/secrets.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">          content: &quot;\$\$SCONE::flask.key\$\$&quot;</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <h2 id="creating-sconified-image">Creating Sconified Image</h2>
 <p>To attest the CAS and uploaded a policy, we need access to the SGX device. Hence, we first determine the SGX device (<a href="../sgxinstall/#determine-sgx-device">see</a>):</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
 mkdir -p cas
 </pre></div>
-
 <p>We use a public CAS service (<code>--cas=4-2-1.scone-cas.cf</code>) that is running in debug mode and hence, we set <code>--cas_debug</code> to ensure that attestation of CAS passes despite the CAS being in debug mode. The clients key used in the attestation are stored in the local directory cas. </p>
 <div class="highlight"><pre><span></span><span class="nv">SESSION</span><span class="o">=</span><span class="k">$(</span>docker run -it --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/policy:/policy&quot;</span> -v <span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">/cas:/root/.cas&quot;</span>  -v /var/run/docker.sock:/var/run/docker.sock sconecuratedimages/sconecli:sconify_image --name<span class="o">=</span>flask --from<span class="o">=</span>native_flask_restapi_image --to<span class="o">=</span>new_image --cas<span class="o">=</span><span class="m">4</span>-2-1.scone-cas.cf  --cas_debug --binary<span class="o">=</span>/usr/bin/python3 --dir<span class="o">=</span>/home --dir<span class="o">=</span>/usr/local/lib --dir<span class="o">=</span>/app --dir<span class="o">=</span>/usr/lib/python3.7 --dir<span class="o">=</span>/lib  --plain<span class="o">=</span>/usr/lib/libpython3.7m.so.1.0 --secrets<span class="o">=</span>/policy/secrets.yml --injectedfiles<span class="o">=</span>/policy/injected_files.yml --create_namespace --namespace<span class="o">=</span><span class="nv">$NS</span><span class="k">)</span>  
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">For production, you need to drop <code>--cas_debug</code> and to sign the binary</p>
 </div>

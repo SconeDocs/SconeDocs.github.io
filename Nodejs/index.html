@@ -1845,22 +1845,18 @@
 <p>We provide a Node 10.14 image (and other versions) that run inside of an enclave:</p>
 <div class="highlight"><pre><span></span>docker pull sconecuratedimages/apps:node-10.14-alpine
 </pre></div>
-
 <h2 id="example">Example</h2>
 <p>Let's look at a little <em>hello world</em> program. First, we need to start a <strong>node</strong> container.  We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
 docker run -it <span class="nv">$MOUNT_SGXDEVICE</span> -p3000:3000 sconecuratedimages/apps:node-10.14-alpine sh
 </pre></div>
-
 <p>In case you have no sgx driver installed, <strong>the programs will then run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span></strong>, i.e., the SCONE software runs but in native mode and not inside an enclave.</p>
 <p>Inside of the container, we first add <strong>npm</strong>:</p>
 <div class="highlight"><pre><span></span>apk add --no-cache nodejs-npm
 </pre></div>
-
 <p>Ensure we can run even in a resource-constrainted VM by setting the maximum heap size to a reasonable value of 1GB:</p>
 <div class="highlight"><pre><span></span>export SCONE_HEAP=1G
 </pre></div>
-
 <p>We create a new application <strong>myapp</strong>:</p>
 <div class="highlight"><pre><span></span>mkdir myapp
 <span class="nb">cd</span> myapp
@@ -1878,11 +1874,9 @@ cat &gt; package.json <span class="s">&lt;&lt; EOF</span>
 <span class="s">}</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>We install <strong>express</strong> with the help of <strong>npm</strong>:</p>
 <div class="highlight"><pre><span></span>npm install express --save
 </pre></div>
-
 <p>Let's store the <strong>hello world</strong> code:</p>
 <div class="highlight"><pre><span></span>cat &gt; app.js <span class="s">&lt;&lt; EOF</span>
 <span class="s">var express = require(&#39;express&#39;);</span>
@@ -1895,12 +1889,10 @@ cat &gt; package.json <span class="s">&lt;&lt; EOF</span>
 <span class="s">});</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>We can run this application inside of an enclave with <strong>node</strong>. We can also enable some debug
 messages by setting environment variable <strong>SCONE_VERSION=1</strong> to print that we run inside of an enclave:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> node app.js
 </pre></div>
-
 <p>This results in an output like this:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
@@ -1924,22 +1916,18 @@ Configure options: --enable-shared --enable-debug --prefix<span class="o">=</spa
 Enclave hash: 28cf4f0953ba54af02b9d042fa2ec88a832d749ae4e5395cabd50369e72a5dcb
 Example app listening on port <span class="m">3000</span>!
 </pre></div>
-
 <p>You can now try to send a request to <strong>myapp</strong> from another shell in the container.
 Assuming that you did not start a new container in meantime, execute in another
 shell of your host:</p>
 <div class="highlight"><pre><span></span>docker <span class="nb">exec</span> -it <span class="k">$(</span>docker ps -l -q<span class="k">)</span> sh
 </pre></div>
-
 <p>Inside of the container, first install <strong>curl</strong> and then query <strong>myapp</strong>:</p>
 <div class="highlight"><pre><span></span>apk add --no-cache curl
 curl localhost:3000/
 </pre></div>
-
 <p>This results in an output like this:</p>
 <div class="highlight"><pre><span></span>Hello World!/ <span class="c1">#</span>
 </pre></div>
-
 <p>Potential error messages:</p>
 <div class="admonition error">
 <p class="admonition-title">Could not create enclave: Error opening SGX device</p>
@@ -1996,23 +1984,18 @@ RUN apk add --no-cache nodejs-npm <span class="se">\</span>
 
 CMD <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> node /myapp/app.js
 </pre></div>
-
 <p>Now create an image <strong>myapp</strong> as follows:</p>
 <div class="highlight"><pre><span></span>docker build -t myapp .
 </pre></div>
-
 <p>You can run a container of this image as a daemon as follows:</p>
 <div class="highlight"><pre><span></span>docker run -d -p <span class="m">3000</span>:3000 myapp
 </pre></div>
-
 <p>You can now query <strong>myapp</strong> as follows:</p>
 <div class="highlight"><pre><span></span>curl localhost:3000
 </pre></div>
-
 <p>This results in an output like this:</p>
 <div class="highlight"><pre><span></span>Hello World!
 </pre></div>
-
 <h2 id="attestation-and-secret-provisioning">Attestation and Secret Provisioning</h2>
 <p>We describe how to attest a node application and to provision secrets to the node app
 <a href="../node-example/">here</a>.</p>
