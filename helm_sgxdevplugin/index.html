@@ -397,6 +397,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#checking-status-of-sgx-devices" title="Checking Status of SGX devices" class="md-nav__link">
+    Checking Status of SGX devices
+  </a>
+  
+</li>
+      
       
       
       
@@ -1822,6 +1829,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#checking-status-of-sgx-devices" title="Checking Status of SGX devices" class="md-nav__link">
+    Checking Status of SGX devices
+  </a>
+  
+</li>
+      
       
       
       
@@ -1883,7 +1897,22 @@ You can just execute:</p>
 <div class="highlight"><pre><span></span>helm install sgxdevplugin sconeapps/sgxdevplugin
 </pre></div>
 <p>This starts the Kubernetes SGX plugin in the default <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> namespace.</p>
+https://kubernetes.io/">Kubernetes</span> namespace. This will limit the number
+of SGX devices per node to 20 (default). If you want to run more enclaves per node, please increase the
+the value.  </p>
+<p>To increase the maximum allocatable SGX devices per node, please increase the value of <code>maxSGXPods</code>. 
+You can set this value by executing:</p>
+<div class="highlight"><pre><span></span>helm install sgxdevplugin sconeapps/sgxdevplugin  --set <span class="nv">maxSGXPods</span><span class="o">=</span><span class="m">100</span>
+</pre></div>
+<p>If the plugin is already executing, you can change the value as follows:</p>
+<div class="highlight"><pre><span></span>helm upgrade  sgxdevplugin sconeapps/sgxdevplugin --set <span class="nv">maxSGXPods</span><span class="o">=</span><span class="m">100</span>
+</pre></div>
+<h2 id="checking-status-of-sgx-devices">Checking Status of SGX devices</h2>
+<p>You can check the number of allocatable SGX devices on all nodes of your Kubernetes cluster as follows:</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NODES</span><span class="o">=</span><span class="sb">`</span>kubectl get node --output<span class="o">=</span>name<span class="sb">`</span>
+<span class="k">for</span> N in <span class="nv">$NODES</span><span class="p">;</span> <span class="k">do</span>  <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$N</span><span class="s2">:&quot;</span> <span class="p">;</span> kubectl get <span class="nv">$N</span> -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.allocatable}&#39;</span> <span class="p">;</span> <span class="nb">echo</span> <span class="p">;</span>  <span class="k">done</span>
+</pre></div>
+<p>If the number of SGX devices is too small, increase the number of allocatable SGX devices as explained above.</p>
                 
                   
                 
