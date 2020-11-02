@@ -1866,9 +1866,9 @@
 <h2 id="vault-image">Vault Image</h2>
 <p>We maintain a container image <strong>sconecuratedimages/apps:scone-vault-latest</strong>  which</p>
 <ul>
-<li>contains the latest version of Vault (0.8.1),</li>
+<li>contains the latest version of Vault (1.5.3),</li>
 <li>runs inside of an SGX enclaves (default is a pre-release enclave),</li>
-<li>on top of Alpine 3.6</li>
+<li>on top of Alpine Linux</li>
 </ul>
 <p>This protects against dumping of the main memory (- when run in release mode).</p>
 <h2 id="demo">Demo</h2>
@@ -1882,7 +1882,7 @@ you need to ensure to have a docker compose file with content as follows:</p>
 <span class="s">version: &#39;3.2&#39;</span>
 <span class="s">services:</span>
 <span class="s">    vault:</span>
-<span class="s">        image: sconecuratedimages/apps:scone-vault-latest</span>
+<span class="s">        image: sconecuratedimages/apps:vault-1.5.3-alpine-scone5</span>
 <span class="s">        command: sh -c &quot;cd build_dir &amp;&amp; ./start_vault.sh&quot;</span>
 <span class="s">        environment:</span>
 <span class="s">         - VAULT_DEV_ROOT_TOKEN_ID=RootToken</span>
@@ -1891,7 +1891,7 @@ you need to ensure to have a docker compose file with content as follows:</p>
 <span class="s">        cap_add:</span>
 <span class="s">         - IPC_LOCK</span>
 <span class="s">    scone-vault-nginx:</span>
-<span class="s">        image: sconecuratedimages/apps:nginx-1.13.8-alpine</span>
+<span class="s">        image: sconecuratedimages/apps:nginx-1.14.2-alpine-scone5</span>
 <span class="s">        environment:</span>
 <span class="s">         - URL=&quot;http://vault:8200&quot;</span>
 <span class="s">         - INDEX=nginx</span>
@@ -1927,7 +1927,7 @@ you need to ensure to have a docker compose file with content as follows:</p>
 <div class="highlight"><pre><span></span>./bench.sh
 </pre></div>
 <h2 id="integration-with-scone-cas">Integration with SCONE CAS</h2>
-<p>For added security, we recommend the following to run Vault in a <strong>release enclave</strong> to prevent attackers from dumping the content of the Vault enclave and to integrate the execution of Vault with SCONE CAS such that:</p>
+<p>For added security, we recommend the following to run Vault in a <strong>release enclave</strong> to prevent attackers from dumping the content of the Vault enclave and to integrate the execution of Vault with SCONE CAS such that</p>
 <ul>
 <li>
 <p>the command line arguments and environment variables are passed to Vault in an encrypted fashion</p>
