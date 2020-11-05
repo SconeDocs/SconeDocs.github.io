@@ -2178,9 +2178,11 @@ helm repo update
 
 kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>index.docker.io/v1/ --docker-username<span class="o">=</span><span class="nv">$DOCKER_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$DOCKER_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$DOCKER_HUB_EMAIL</span>
 </pre></div>
-<p>Start LAS and CAS service:</p>
-<div class="highlight"><pre><span></span>helm install las sconeapps/las --set service.hostPort<span class="o">=</span><span class="nb">true</span>
-helm install cas sconeapps/cas
+<p>Start LAS:</p>
+<div class="highlight"><pre><span></span>helm install las sconeapps/las  --set <span class="nv">image</span><span class="o">=</span>sconecuratedimages/kubernetes:las-scone4.2.1 --set service.hostPort<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+<p>If you use a local cas, you can start this cas service as follows:</p>
+<div class="highlight"><pre><span></span>helm install cas sconeapps/cas --set <span class="nv">image</span><span class="o">=</span>sconecuratedimages/services:cas-scone4.2.1
 </pre></div>
 <p>Install the SGX device plugin for Kubernetes:</p>
 <div class="highlight"><pre><span></span>helm install sgxdevplugin sconeapps/sgxdevplugin
@@ -2198,7 +2200,8 @@ docker push <span class="nv">$IMAGE</span>
    --set scone.cas<span class="o">=</span><span class="nv">$SCONE_CAS_ADDR</span> <span class="se">\</span>
    --set scone.flask_session<span class="o">=</span><span class="nv">$FLASK_SESSION</span>/flask_restapi <span class="se">\</span>
    --set scone.redis_session<span class="o">=</span><span class="nv">$REDIS_SESSION</span>/redis <span class="se">\</span>
-   --set service.type<span class="o">=</span>LoadBalancer
+   --set service.type<span class="o">=</span>NodePort <span class="se">\</span>
+   --set redis.image<span class="o">=</span>sconecuratedimages/apps:redis-6-alpine-scone4.2.1
 </pre></div>
 <p><strong>NOTE</strong>: Setting <code>service.type=LoadBalancer</code> will allow the application to get traffic from the internet (through a managed LoadBalancer).</p>
 <h3 id="test-the-application">Test the application</h3>
