@@ -1801,6 +1801,78 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-20" type="checkbox" id="nav-20">
+    
+    <label class="md-nav__link" for="nav-20">
+      Operational Aspects
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-20">
+        Operational Aspects
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../operations/" title="Issues" class="md-nav__link">
+      Issues
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mitigation/" title="Attack mitigation" class="md-nav__link">
+      Attack mitigation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sadvisories/" title="Security advisories" class="md-nav__link">
+      Security advisories
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../software_updates/" title="Software updates" class="md-nav__link">
+      Software updates
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
   <li class="md-nav__item">
     <a href="../SCONE_Publications/" title="Publications" class="md-nav__link">
       Publications
@@ -1973,6 +2045,7 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
     libc.so.6 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libc.so.6 <span class="o">(</span>0x00007effa3085000<span class="o">)</span>
     /lib64/ld-linux-x86-64.so.2 <span class="o">(</span>0x00007effa366c000<span class="o">)</span>
 </pre></div>
+
 <p>The reason for that is that the statically linked binary that runs inside of an enclave is wrapped in a dynamically linked <em>loader</em> program. The loader program creates the enclave, moves the program code inside the enclave and starts threads that will enter the enclave. The code that is moved inside the enclave is, however, statically linked.</p>
 <h2 id="using-the-cross-compiler-container">Using the cross compiler container</h2>
 <p>How to use the compiler:</p>
@@ -1989,21 +2062,26 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <p><strong>Note</strong>  on some systems you will need to run <em>docker</em> with root permissions, i.e., in this case you should prefix a </p>
 <div class="highlight"><pre><span></span>&gt; docker ...
 </pre></div>
+
 <p>command with <em>sudo</em>, i.e., you execute </p>
 <div class="highlight"><pre><span></span>&gt; sudo docker ...
 </pre></div>
+
 <p>One can run the above compiler inside of a container while the compiled files reside outside the container. Say, your code is
 in file <em>myapp.c</em> in your current directory (<em>$PWD</em>). You can compile this code as follows:</p>
 <div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc myapp.c
 </pre></div>
+
 <p>This call will generate a binary <em>a.out</em> in your working directory. This binary is dynamically linked against musl:</p>
 <div class="highlight"><pre><span></span>&gt; ldd a.out 
     /lib/ld-musl-x86_64.so.1 <span class="o">(</span>0x7fb0379f9000<span class="o">)</span>
     libc.musl-x86_64.so.1 <span class="o">=</span>&gt; /lib/ld-musl-x86_64.so.1 <span class="o">(</span>0x7fb0379f9000<span class="o">)</span>
 </pre></div>
+
 <p>This binary can run natively only if you have musl installed at the correct position in your development machine (and your development machine runs Linux). Alternatively, you can run the binary in a container:</p>
 <div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./a.out
 </pre></div>
+
 <p>To run this inside of SGX enclaves with SCONE, you need access to the SCONE runtime systems. For more details, see our <em>hello world</em> in Section <a href="../SCONE_TUTORIAL/">SCONE Tutorial</a>. This is not very convenient and hence, we provide a) a simpler version with the help of <a href="../SCONE_Dockerfile/">Dockerfiles</a>. </p>
 <p>In most cases, you might just set to use one of our crosscompilers in your <em>configure</em> script or <em>Makefile</em>. A simple way is to use the Docker image <em>sconecuratedimages/crosscompilers</em> as a base image and then clone your code inside the container and set one or more of our compilers (<em>scone-gcc, scone-g++, scone-gccgo, scone-gfortran, and scone-rustc</em>) to be used in your build. For Rust, we support also our variant of <em>cargo</em> which is <em>scone-cargo</em>.</p>
 <h2 id="debugger-support">Debugger support</h2>

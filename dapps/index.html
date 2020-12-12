@@ -1870,6 +1870,78 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-20" type="checkbox" id="nav-20">
+    
+    <label class="md-nav__link" for="nav-20">
+      Operational Aspects
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-20">
+        Operational Aspects
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../operations/" title="Issues" class="md-nav__link">
+      Issues
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mitigation/" title="Attack mitigation" class="md-nav__link">
+      Attack mitigation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sadvisories/" title="Security advisories" class="md-nav__link">
+      Security advisories
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../software_updates/" title="Software updates" class="md-nav__link">
+      Software updates
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
   <li class="md-nav__item">
     <a href="../SCONE_Publications/" title="Publications" class="md-nav__link">
       Publications
@@ -2215,6 +2287,7 @@ security:
     tolerate: [debug-mode, hyperthreading, outdated-tcb]
     ignore_advisories: &quot;*&quot;
 </pre></div>
+
 <p>Note that in most cases you can start from a generic session template and you do not need to worry about the syntax and all the details of session descriptions.
 The session templates of trusted DApps look very similar to the session template above.
 The three differences are that</p>
@@ -2228,6 +2301,7 @@ The three differences are that</p>
 <div class="highlight"><pre><span></span>git clone https://github.com/scontain/copy_dapp.git
 <span class="nb">cd</span> copy_dapp
 </pre></div>
+
 <p>The source code of the trusted copy DApp is file <a href="https://github.com/scontain/copy_dapp/blob/master/copy_files.c"><em>copy_files.c</em></a>.</p>
 <p>We build this program with the help of the standard
 <strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile below). For convenience,
@@ -2260,7 +2334,12 @@ is built by the script <code>build-image.sh</code>. This script also determines
 by executing</p>
 <div class="highlight"><pre><span></span>./build-image.sh
 </pre></div>
+
 <p>We can execute this image on a SGX-capable host. This host has to have the SCONE local attestation service (LAS) and Docker installed. We describe in the <a href="../sgxinstall/">installation section</a> on how to install SGX driver and how to install LAS <a href="../LASIntro/">here</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Compatibility</p>
+<p>If you are using one of our public CAS as a <code>secretManagementService</code> (it is current default behavior of our images),  please insure that your local version of LAS has at least same major version as CAS that you are accessing. Current default CAS has version <code>4.2.1</code>, so your local LAS has to be <code>4.*</code>.</p>
+</div>
 <p>In what follows, we assume that the name of the host is stored in environment variable <strong>host</strong>.</p>
 <h3 id="setup">SETUP</h3>
 <p>To execute the trusted copy DApp, we need to create some files to copy.
@@ -2275,17 +2354,21 @@ mkdir -p KEYS INPUTS OUTPUTS ZIP
 <span class="nb">echo</span> <span class="s2">&quot;Hello together&quot;</span> &gt; INPUTS/f2.txt
 cp ../copy_dapp.yml KEYS/
 </pre></div>
+
 <h3 id="step-1">Step 1</h3>
 <p>We encrypt these files and push the zipped up files for now to <strong>free.keep.sh</strong>.</p>
 <p>Let's execute the first step of encrypting the files and pushing these to the transfer service:</p>
 <div class="highlight"><pre><span></span><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs sconecuratedimages/dapps:copy_dapp_cli encryptedpush --application sconecuratedimages/dapps:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
 </pre></div>
+
 <p>Let's look at the output:</p>
 <div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="nv">$CMD</span>
 </pre></div>
+
 <p>should result in an output like:</p>
 <div class="highlight"><pre><span></span> --sessionID <span class="m">84424401249649941281869427</span>/application --secretManagementService <span class="m">150</span>.165.85.86 --url https://free.keep.sh/NKHVjALFjubbHUNs/scone-upload.zip
 </pre></div>
+
 <p>You can look in your browser at the URL to see the uploaded files!</p>
 <h3 id="step-2">Step 2</h3>
 <p>Before running this application on the iExec platform, we might
@@ -2294,30 +2377,38 @@ want to test it on some SGX-capable host.</p>
 since <strong>docker run</strong> does not pull/update the image.</p>
 <div class="highlight"><pre><span></span>ssh <span class="nv">$host</span> docker pull sconecuratedimages/dapps:copy_demo
 </pre></div>
+
 <p>Ensure that you are executing a bash shell (execute <code>bash</code>).
 We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 Now, execute the command on <strong>host</strong> and we ask it to be pushed to <strong>free.keep.sh</strong>:</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
 <span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>docker run -t --device<span class="o">=</span>/dev/isgx --rm sconecuratedimages/dapps:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>  --push free.keep.sh<span class="k">)</span>
 </pre></div>
+
 <p>Let's look at the output:</p>
 <div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="nv">$URL</span>
 </pre></div>
+
 <p>this results in an output like:</p>
 <div class="highlight"><pre><span></span>https://free.keep.sh/0JitkN1PLHDHba1X/outputs.zip
 </pre></div>
+
 <p>You can now download this (if running a <strong>bash</strong> shell) </p>
 <div class="highlight"><pre><span></span>curl -L --output ZIP/encryptedOutputFiles.zip <span class="si">${</span><span class="nv">URL</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>
 </pre></div>
+
 <h3 id="step-3">Step 3</h3>
 <div class="highlight"><pre><span></span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/ZIP:/encryptedOutputs -v <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs sconecuratedimages/dapps:copy_dapp_cli decrypt
 </pre></div>
+
 <p>We can now look at the files in OUTPUTS directory:</p>
 <div class="highlight"><pre><span></span>cat OUTPUTS/f1.txt
 </pre></div>
+
 <p>results in  <code>Hello world</code> and</p>
 <div class="highlight"><pre><span></span>cat OUTPUTS/f2.txt
 </pre></div>
+
 <p>results in  <code>Hello together</code>.</p>
 <h2 id="clis">CLIs</h2>
 <p>Now that you know how our example works, it is time to present you CLIs that we ship with our images. These CLIs have enough options that you can configure them in according to your needs.</p>

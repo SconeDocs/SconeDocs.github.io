@@ -1801,6 +1801,78 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-20" type="checkbox" id="nav-20">
+    
+    <label class="md-nav__link" for="nav-20">
+      Operational Aspects
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-20">
+        Operational Aspects
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../operations/" title="Issues" class="md-nav__link">
+      Issues
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mitigation/" title="Attack mitigation" class="md-nav__link">
+      Attack mitigation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sadvisories/" title="Security advisories" class="md-nav__link">
+      Security advisories
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../software_updates/" title="Software updates" class="md-nav__link">
+      Software updates
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
   <li class="md-nav__item">
     <a href="../SCONE_Publications/" title="Publications" class="md-nav__link">
       Publications
@@ -1958,24 +2030,29 @@
 <div class="highlight"><pre><span></span>git clone https://github.com/scontain/sconify_image.git
 cd sconify_image
 </pre></div>
+
 <h3 id="stage-one-native-image-generation">Stage One: Native Image Generation</h3>
 <p>We generate our native image with the help of a Dockerfile by executing:</p>
 <div class="highlight"><pre><span></span>./create_native_image.sh
 </pre></div>
+
 <p>You could try out this image by running</p>
 <div class="highlight"><pre><span></span>docker-compose --file native-docker-compose.yml up
 </pre></div>
+
 <p>You can now submit requests as follows:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">URL</span><span class="o">=</span>https://api:4996
  curl -k -X POST <span class="si">${</span><span class="nv">URL</span><span class="si">}</span>/patient/patient_3 -d <span class="s2">&quot;fname=Jane&amp;lname=Doe&amp;address=&#39;123 Main Street&#39;&amp;city=Richmond&amp;state=Washington&amp;ssn=123-223-2345&amp;email=nr@aaa.com&amp;dob=01/01/2010&amp;contactphone=123-234-3456&amp;drugallergies=&#39;Sulpha, Penicillin, Tree Nut&#39;&amp;preexistingconditions=&#39;diabetes, hypertension, asthma&#39;&amp;dateadmitted=01/05/2010&amp;insurancedetails=&#39;Primera Blue Cross&#39;&quot;</span> --resolve api:4996:127.0.0.1
 curl -k -X GET <span class="si">${</span><span class="nv">URL</span><span class="si">}</span>/patient/patient_3 --resolve api:4996:127.0.0.1
 </pre></div>
+
 <h2 id="stage-two-encrypted-image">Stage Two: Encrypted Image</h2>
 <p>We now transform the native image that we generated in stage one, into a new encrypted image in which the application runs inside of an SGX enclave.</p>
 <h3 id="determine-directories-that-we-need-to-encrypt">Determine directories that we need to encrypt</h3>
 <p>One can use a dynamic analyis approach to determine which directories are accessed by the application:</p>
 <div class="highlight"><pre><span></span>docker run --init --cap-add<span class="o">=</span>SYS_PTRACE -it --rm  native_flask_restapi_image  timeout  <span class="m">30</span> sh -c <span class="s2">&quot;apk add --no-cache strace ; strace python3 /app/rest_api.py&quot;</span> &gt; strace.log
 </pre></div>
+
 <p>One can see that the application access the following directories:</p>
 <ul>
 <li><code>/usr/local/lib</code></li>
@@ -2005,6 +2082,7 @@ a certificate, we require a CA (Certification Authority). Hence, we generate a C
 <span class="s">EOF</span>
 <span class="k">)</span>
 </pre></div>
+
 <p>The certificate and the private key need to be made available to the program - which expects
 these at paths <code>/tls/flask.crt</code> and <code>/tls/flask.key</code>, respectively. Hence, 
 we inject these secrets into files:</p>
@@ -2017,6 +2095,7 @@ we inject these secrets into files:</p>
 <span class="s">EOF</span>
 <span class="k">)</span>
 </pre></div>
+
 <h3 id="generate-the-encrypted-image">Generate the encrypted image</h3>
 <p>We define some environment variables to sconify the image</p>
 <ul>
@@ -2024,29 +2103,35 @@ we inject these secrets into files:</p>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NATIVE_IMAGE</span><span class="o">=</span><span class="s2">&quot;native_flask_restapi_image&quot;</span>
 </pre></div>
+
 <ul>
 <li>The name of the generated encrypted container image:</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;flask_restapi_image&quot;</span>
 </pre></div>
+
 <ul>
 <li>We use a public SCONE CAS to store the session policies</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;4-2-1.scone-cas.cf&quot;</span>
 </pre></div>
+
 <ul>
 <li>we define a random namespace for this policy:</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NAMESPACE</span><span class="o">=</span><span class="s2">&quot;my_namespace-</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
 </pre></div>
+
 <ul>
 <li>we define the binary that needs to be sconified:</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">BINARY</span><span class="o">=</span><span class="s2">&quot;/usr/bin/python3&quot;</span>
 </pre></div>
+
 <p>Now, we can create the encrypted image, instantiate policy template and upload the policy in one step:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span><span class="k">$(</span>./sconify_image --namespace<span class="o">=</span><span class="nv">$NAMESPACE</span> --name<span class="o">=</span>flask --from<span class="o">=</span><span class="nv">$NATIVE_IMAGE</span> --to<span class="o">=</span><span class="nv">$IMAGE</span> --cas<span class="o">=</span><span class="nv">$SCONE_CAS_ADDR</span> --dir<span class="o">=</span><span class="s2">&quot;/home&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;/usr/local/lib&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;/app&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;/usr/lib/python3.7&quot;</span>  --binary<span class="o">=</span><span class="nv">$BINARY</span><span class="k">)</span>
 </pre></div>
+
 <p>Environment variable SESSION will contain the name of the session, which in this case would be "$NAMESPACE-flask" because we set the name of the session to be <code>flask</code> by passing argument <code>--name=flask</code>.</p>
 <div class="admonition info">
 <p class="admonition-title">Sconification of binary</p>
@@ -2056,9 +2141,11 @@ we inject these secrets into files:</p>
 <p>We show how to run this locally by executing. We first determine the SGX device name of the local computer:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">DEVICE</span><span class="o">=</span><span class="k">$(</span>./determine_sgx_device<span class="k">)</span>
 </pre></div>
+
 <p>and then we run the encrypted image using <code>docker-compose</code>:</p>
 <div class="highlight"><pre><span></span>docker-compose up
 </pre></div>
+
 <p>We show next how to run a little more elaborated version on AKS.</p>
                 
                   

@@ -1774,6 +1774,78 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-20" type="checkbox" id="nav-20">
+    
+    <label class="md-nav__link" for="nav-20">
+      Operational Aspects
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-20">
+        Operational Aspects
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../operations/" title="Issues" class="md-nav__link">
+      Issues
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mitigation/" title="Attack mitigation" class="md-nav__link">
+      Attack mitigation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sadvisories/" title="Security advisories" class="md-nav__link">
+      Security advisories
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../software_updates/" title="Software updates" class="md-nav__link">
+      Software updates
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
   <li class="md-nav__item">
     <a href="../SCONE_Publications/" title="Publications" class="md-nav__link">
       Publications
@@ -1884,12 +1956,14 @@
 $ scone rustc --version
 rustc <span class="m">1</span>.38.0 <span class="o">(</span>625451e37 <span class="m">2019</span>-09-23<span class="o">)</span>
 </pre></div>
+
 <p>Let's try a simple hello world program.</p>
 <div class="highlight"><pre><span></span>$ mkdir ~/projects
 $ <span class="nb">cd</span> ~/projects
 $ mkdir hello_world
 $ <span class="nb">cd</span> hello_world
 </pre></div>
+
 <p>Let's try our rust program:</p>
 <div class="highlight"><pre><span></span>$ cat &gt; main.rs <span class="s">&lt;&lt; EOF</span>
 <span class="s">fn main() {</span>
@@ -1897,11 +1971,13 @@ $ <span class="nb">cd</span> hello_world
 <span class="s">}</span>
 <span class="s">EOF</span>
 </pre></div>
+
 <p>Let's compile the program for running inside of enclaves:</p>
 <div class="highlight"><pre><span></span>$ scone rustc main.rs --target<span class="o">=</span>x86_64-scone-linux-musl
 $ ls
 main  main.rs
 </pre></div>
+
 <p>Let's run main inside an enclave and print some debug information:</p>
 <div class="highlight"><pre><span></span>$ <span class="nv">SCONE_MODE</span><span class="o">=</span>HW <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./main
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
@@ -1921,19 +1997,21 @@ main  main.rs
 
 Hello, world!
 </pre></div>
-<h2 id="screencast">Screencast</h2>
-<script id="asciicast-285924" src="https://asciinema.org/a/285924.js" async></script>
 
+<h2 id="screencast">Screencast</h2>
+<p><script id="asciicast-285924" src="https://asciinema.org/a/285924.js" async></script></p>
 <h2 id="scone-cargo-and-scone-cargo"><strong>scone-cargo</strong> and <strong>scone cargo</strong>:</h2>
 <p>You can build projects with <strong>scone cargo</strong>:</p>
 <div class="highlight"><pre><span></span>$ scone cargo build --target<span class="o">=</span>x86_64-scone-linux-musl
 </pre></div>
+
 <p>Alternatively, you can use <strong>scone-cargo</strong> if, for example,  you need a command without a space.</p>
 <p><strong>scone cargo</strong>, as well as, <strong>scone rustc</strong> has access to the SCONE-compiled rust standard library and the target file. <strong>--target=x86_64-scone-linux-musl</strong> instructs it to use our target file - essentially triggering a cross-compiler build.</p>
 <p>Due to the cross-compilation, crates that depend on compiled C libraries, such as openssl or error-chain, do not work out of the box. Cargo will not use the system installed libraries because it wrongly assumes that they do not fit the target architecture. To solve this issue, one has to either provide the compiled libraries or deactivate the crate.</p>
 <p>The following is an example of how an executable with <em>openssl</em> can be compiled:</p>
 <div class="highlight"><pre><span></span>$ <span class="nv">OPENSSL_LIB_DIR</span><span class="o">=</span>/libressl-2.4.5 <span class="nv">OPENSSL_INCLUDE_DIR</span><span class="o">=</span>/libressl-2.4.5/include/ <span class="nv">OPENSSL_STATIC</span><span class="o">=</span><span class="m">1</span> <span class="nv">PKG_CONFIG_ALLOW_CROSS</span><span class="o">=</span><span class="m">1</span> scone-cargo build --target<span class="o">=</span>scone
 </pre></div>
+
 <p>In the case of error-chain, one can just deactivate its optional backtrace feature that actually requires a precompiled library.</p>
                 
                   

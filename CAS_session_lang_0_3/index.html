@@ -2120,6 +2120,78 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-20" type="checkbox" id="nav-20">
+    
+    <label class="md-nav__link" for="nav-20">
+      Operational Aspects
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-20">
+        Operational Aspects
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../operations/" title="Issues" class="md-nav__link">
+      Issues
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mitigation/" title="Attack mitigation" class="md-nav__link">
+      Attack mitigation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sadvisories/" title="Security advisories" class="md-nav__link">
+      Security advisories
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../software_updates/" title="Software updates" class="md-nav__link">
+      Software updates
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
   <li class="md-nav__item">
     <a href="../SCONE_Publications/" title="Publications" class="md-nav__link">
       Publications
@@ -2596,15 +2668,15 @@ This value is used to reference the session in multiple situations.
 For example, when a session shall be updated the hash of the predecessor session has to be provided to ensure continuity, i.e., no lost-updates.</p>
 <p>The session hash is deterministically calculated from the session description, such that any modification to the description would yield a different hash.
 Moreover, the calculation is cryptographically sound in the sense that a malicious operator can not come up with a modified session description that has the same session hash, i.e., it is <a href="https://en.wikipedia.org/wiki/Preimage_attack">Preimage-Attack</a> resistant.</p>
-<p>The exact procedure of how the session hash is obtained is an implementation detail.</p>
-<!-- TODO Have a properly defined procedure. -->
-
+<p>The exact procedure of how the session hash is obtained is an implementation detail.
+<!-- TODO Have a properly defined procedure. --></p>
 <h2 id="session-description-structure">Session Description Structure</h2>
 <p>There are a number of top-level keys in a session file.</p>
 <h3 id="version">Version</h3>
 <p>This document describes version 0.3.</p>
 <div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
 </pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Without a <code>version</code> field, version 0.1 is assumed, make sure to include the field in all session descriptions in order to use version 0.3.</p>
@@ -2619,11 +2691,13 @@ Further, we set a somewhat arbitrary restriction of a maximal length of 128 char
 In <a href="https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions">PCRE</a> the match clause matching valid session names would be <code>[A-Za-z0-9_\-.~]{1,128}</code>.</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-testing-session</span>
 </pre></div>
+
 <p>Providing a session name is <strong>mandatory</strong>.</p>
 <h3 id="predecessor-session">Predecessor Session</h3>
 <p>If a session description is an update for a previously existing session, i.e. the session's name is already in use, it has to include the previous session's hash to detect and prevent lost updates.</p>
 <div class="highlight"><pre><span></span><span class="nt">predecessor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
 </pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The value has to be 32 hex encoded bytes.</p>
@@ -2643,11 +2717,13 @@ These properties may contain secrets and would be prone to inspection and manipu
         <span class="nt">VAR_1</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">value</span>
     <span class="nt">pwd</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/</span>
 </pre></div>
+
 <h3 id="name">name</h3>
 <p>To be able to identify a service, every service has to have a <code>name</code> key.
 As the name will be part of the routeable session identification in the future, its character set and length is restricted in the same way as the session name is.</p>
 <div class="highlight"><pre><span></span>    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-test-service</span>
 </pre></div>
+
 <p>Providing a service name is <strong>mandatory</strong>.</p>
 <h3 id="command">command</h3>
 <p>The command of a service is a sequence of the program's name plus any <a href="https://en.wikipedia.org/wiki/Command-line_interface#Arguments">command-line arguments</a> that have to be provided for it to deliver the expected service.</p>
@@ -2658,12 +2734,15 @@ Although not enforced, in the future automatic scheduling will not function prop
 </div>
 <div class="highlight"><pre><span></span>    <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test --arg=value</span>
 </pre></div>
+
 <p>The command is split at whitespace characters. If spaces should be preserved for an argument, either quote the argument (with single or double quotes):</p>
 <div class="highlight"><pre><span></span>    <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mysql -e &quot;show databases;&quot;</span>
 </pre></div>
+
 <p>or use a list instead:</p>
 <div class="highlight"><pre><span></span>    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;mysql&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;-e&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;show</span><span class="nv"> </span><span class="s">databases;&quot;</span><span class="p p-Indicator">]</span>
 </pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Command arguments have to be C-String compatible, i.e., they are not allowed to contain a NULL byte.</p>
@@ -2674,6 +2753,7 @@ As we cannot trust pre-existing environment variables, only the environment spec
 <div class="highlight"><pre><span></span>    <span class="nt">environment</span><span class="p">:</span>
         <span class="nt">VAR_1</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">value</span>
 </pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
@@ -2688,6 +2768,7 @@ Changing the pwd to <code>/plaintext/</code> before the writing would lead it to
 To prevent this kind of manipulation the pwd of a SCONE service has to be specified explicitly in the session description.</p>
 <div class="highlight"><pre><span></span>    <span class="nt">pwd</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/home/user/scone/encrypted</span>
 </pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Please note that:
@@ -2701,6 +2782,7 @@ To prevent this kind of manipulation the pwd of a SCONE service has to be specif
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_service</span>
     <span class="nt">image_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_image</span>
 </pre></div>
+
 <p>Images must be specified if their volumes or secret injection files should be used by a service.</p>
 <h3 id="attestation">Attestation</h3>
 <p>Attestation is the process of verifying a remote SCONE program's integrity ensuring it has not been (maliciously) manipulated.
@@ -2715,10 +2797,12 @@ The measurement value of a SCONE program can be determined by running it either 
 <div class="highlight"><pre><span></span>$ <span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./go-webserver
 d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61
 </pre></div>
+
 <p>Any modifications to the executable, malicious or not, will void access capabilities.</p>
 <p>A service can define a list of mrenclaves that are allowed to get access to the configuration as follows:</p>
 <div class="highlight"><pre><span></span>    <span class="nt">mrenclaves</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61</span><span class="p p-Indicator">]</span>
 </pre></div>
+
 <p>For example, you can define <code>mrenclave</code>s for different permitted <code>HEAP_SIZE</code>s. Also, to permit a smooth transition to new service versions, you can first add the mrenclaves of the new version, upgrade the services, and then remove the <code>mrenclave</code>s of the old service version. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2735,6 +2819,7 @@ Thus, platform-based attestation should always be combined with the measurement-
 The SCONE QE will have a unique public key on each platform. Platforms that are allowed to get access to the configuration can be specified as follows:</p>
 <div class="highlight"><pre><span></span>  <span class="nt">platforms</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">23653F9C4F55E92625752EA1883384531F28679D3E708EDF3BD535A36AEC6B2F</span><span class="p p-Indicator">]</span>
 </pre></div>
+
 <p>Platform-based attestation requires the SCONE attestation scheme, which is used by default.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2758,6 +2843,7 @@ This is necessary for CAS to know how to <strong>generate</strong> its value or 
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ascii</span>
       <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;secret-value&quot;</span>
 </pre></div>
+
 <p>Note that explicit secret values can contain any character that can be represented in YAML.
 In particular, newline and escape sequences can be put into such a secret.
 The only exception to this rule is the NULL byte that can not be part of an ascii secret.
@@ -2772,6 +2858,7 @@ If no <code>size</code> is given, a default length of 20 will be used.</p>
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ascii</span>
       <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">12</span>
 </pre></div>
+
 <h4 id="binary-secrets">Binary Secrets</h4>
 <p><code>binary</code> secrets behave similar to <code>ascii</code> secrets except </p>
 <ul>
@@ -2787,6 +2874,7 @@ If no <code>size</code> is given, a default length of 20 will be used.</p>
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">binary</span>
       <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DEADBEEF</span>
 </pre></div>
+
 <h4 id="private-keys">Private Keys</h4>
 <p>Private keys are required when generating X.509 certificates (refer to the next section).
 Possession of a certificate's private key is necessary in order to sign other certificates or use them as e.g. TLS server or client certificates.</p>
@@ -2795,6 +2883,7 @@ Possession of a certificate's private key is necessary in order to sign other ce
     <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_tls_server_private_key</span>
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">private-key</span>
 </pre></div>
+
 <p>Generated private keys use the NIST P-256 elliptic curve.</p>
 <p>Alternatively, a PEM-encoded PKCS#8 P-256 EC private key may also be specified explicitly:</p>
 <div class="highlight"><pre><span></span><span class="nt">secrets</span><span class="p">:</span>
@@ -2805,6 +2894,7 @@ Possession of a certificate's private key is necessary in order to sign other ce
         <span class="no">...</span>
         <span class="no">-----END PRIVATE KEY-----</span>
 </pre></div>
+
 <p>Private keys are accessible in PEM-encoded PKCS#8 format.</p>
 <h4 id="certificates">Certificates</h4>
 <p>CAS is able to generate and manage X.509v3 certificates, making it easy to construct a Public Key Infrastructure (PKI).</p>
@@ -2849,6 +2939,7 @@ End-entity certificates are indicated by kind <code>x509</code>, CA certificates
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">db.example.com</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;*.api.example.com&quot;</span>
 </pre></div>
+
 <p>By default, certificates will be generated by CAS, but they can also be given an explicit PEM-encoded value instead:</p>
 <div class="highlight"><pre><span></span><span class="nt">secrets</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_server_certificate</span>
@@ -2867,6 +2958,7 @@ End-entity certificates are indicated by kind <code>x509</code>, CA certificates
       <span class="no">5h5HAiBlXklXq2lXo3srdQNJ4I8QJwWMYLIZUUw7fmWKOaireg==</span>
       <span class="no">-----END CERTIFICATE-----</span>
 </pre></div>
+
 <p>Certificates differ from other secrets in terms of access.
 Please see the <code>Secret Access</code> chapter for the details.</p>
 <div class="admonition info">
@@ -2884,6 +2976,7 @@ These placeholders are of the form <code>$$SCONE::secret_name$$</code>.</p>
     <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">service_name --private-key $$SCONE::service_private_key$$ --non-confidential-argument 1234 --non-confidential-flag</span>
     <span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
 </pre></div>
+
 <p>In the above example, the <code>command</code>'s program arguments will be presented to the service with <code>$$SCONE::service_private_key$$</code> replaced by the actual value of <code>service_private_key</code>.</p>
 <p>To inject secrets into a service's environment the session description could contain this:</p>
 <div class="highlight"><pre><span></span>    <span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
@@ -2891,6 +2984,7 @@ These placeholders are of the form <code>$$SCONE::secret_name$$</code>.</p>
       <span class="nt">FILE_ENCRYPTION_KEY</span><span class="p">:</span> <span class="s">&quot;$$SCONE::MY_SERVICES_ENCRYPTION_SECRET$$&quot;</span>
     <span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
 </pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Secrets referred to (<code>service_private_key</code> and <code>MY_SERVICES_ENCRYPTION_SECRET</code> in the above example) have to be either defined in the <code>secrets</code> section of the session description or imported from another session.</p>
@@ -2918,6 +3012,7 @@ Instead, a secret injection file allows to specify a placeholder for the passwor
 user=mysqluser
 password=$$SCONE::mysqlpass$$
 </pre></div>
+
 <p>The path to this configuration file must be specified as part of an image (see <a href="#images">Images</a>). The corresponding session would look like this:</p>
 <div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database_client</span>
@@ -2928,6 +3023,7 @@ password=$$SCONE::mysqlpass$$
     <span class="nt">injection_files</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/etc/mysql/my.cnf</span>
 </pre></div>
+
 <p>Alternatively, the file's content may be specified within the session:</p>
 <div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database_client</span>
@@ -2942,6 +3038,7 @@ password=$$SCONE::mysqlpass$$
           <span class="no">user=mysqluser</span>
           <span class="no">password=$$SCONE::mysqlpass$$</span>
 </pre></div>
+
 <p>The <code>content</code> specified in the session file can contain multiline strings.
 This way, entire configuration files can be embedded in the session description, even if no secret injection is required.
 Producing valid multiline strings in YAML can be challenging - <a href="https://yaml-multiline.info/">https://yaml-multiline.info/</a> can be of great help to find the desired syntax.</p>
@@ -2967,6 +3064,7 @@ They would define an access certificate, configure the database to only allow co
     <span class="nt">export</span><span class="p">:</span> 
       <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">database_client</span>
 </pre></div>
+
 <p>The secret owner might also specify multiple receiving sessions at once:</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">database_operator</span>
 
@@ -2983,6 +3081,7 @@ They would define an access certificate, configure the database to only allow co
       <span class="p p-Indicator">-</span> <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">database_client</span>
       <span class="p p-Indicator">-</span> <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">another_client</span>
 </pre></div>
+
 <p>Furthermore, the export might be restricted to certain instances of the importing session.
 For more details, see the concrete SCONE ID format by which other sessions can be referenced in <a href="#referencing-other-sessions">Referencing Other Sessions</a>.</p>
 <p>The database client, on the other hand, would import it and could use it in their session as if it was their own certificate:</p>
@@ -2995,6 +3094,7 @@ For more details, see the concrete SCONE ID format by which other sessions can b
       <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">database_operator</span>
       <span class="nt">secret</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">database_access_certificate</span>
 </pre></div>
+
 <p>On the importing side, the <code>kind</code> of a secret can be optionally defined to ensure imported secrets match a specific form, but this is not strictly necessary.
 When importing certificates, the associated <code>private-key</code> does not have to be imported explicitly - it will be available automatically if the exporting session exports the private key as well.</p>
 <p>In very specific cases, secrets may also be made public (exported to anyone <em>without authentication</em>) - this may be useful when, for example, defining certificate key hashes:</p>
@@ -3006,6 +3106,7 @@ When importing certificates, the associated <code>private-key</code> does not ha
     <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;4sEY84YhUKT7Q7m4qUj2pmQMxFvZK5XpDyJ3QR6mETVRDkyren&quot;</span>
     <span class="nt">export_public</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
+
 <p>This hash can be used in another session's access control policy through secret substitution (see <a href="#access-control">Access Control</a>):</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">checked_session</span>
 
@@ -3019,6 +3120,7 @@ When importing certificates, the associated <code>private-key</code> does not ha
   <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="s">&quot;$$SCONE::policy_checker_certificate_hash&quot;</span>
 </pre></div>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>By using <code>export_public: true</code>, the whole world will be able to see the secret value. Make sure this is your intention.
@@ -3036,6 +3138,7 @@ In short: ASCII and binary secret values which were generated as part of the old
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">binary</span>
       <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DEADBEEF</span>
 </pre></div>
+
 <p>Example new session:</p>
 <div class="highlight"><pre><span></span><span class="nt">secrets</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_generated_ascii_secret</span>
@@ -3044,6 +3147,7 @@ In short: ASCII and binary secret values which were generated as part of the old
     <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">foobar</span>
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">private-key</span>
 </pre></div>
+
 <p>In the given example, the value of <code>my_generated_ascii_secret</code> will be kept, as it stays an ASCII secret of the same size, whereas <code>foobar</code> will be freshly generated, since its kind changed.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3063,11 +3167,13 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
     <span class="nt">fspf_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">f843051d21afa9e52a5b54a708a8032bc49581e982696a81393b8da4a32d00b8</span>
     <span class="nt">fspf_tag</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8d8fbe332fb9c893020be791ccd3e8a8</span>
 </pre></div>
+
 <p><code>fspf_key</code> is the key used to encrypt <code>volume.fspf</code> (file system protection file for the volume) and <code>fspf_tag</code> describes the initial state of the volume. On each volume update (e.g., creation of a file in the region or update of an existing file), the SCONE runtime will send a new <code>fspf_tag</code> to CAS to ensure integrity and freshness of the volume state.</p>
 <p>If neither <code>fspf_key</code> nor <code>fspf_tag</code> are specified, a volume will be automatically initialized during the first use:</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
 </pre></div>
+
 <p>The volume will contain a single encrypted region, and a new key will be generated by CAS to encrypt <code>volume.fspf</code>. Once initialized, CAS and the runtime will work together to track the updates of the volume, similar to a regular volume. This ensures that a volume can be initialized only once. Use of automatically initialized volumes ensures that the key for the file system is only visible inside of CAS and the application(s) that get access to this volume, i.e., no system administrator will ever see the volume key.</p>
 <h3 id="volume-sharing">Volume Sharing</h3>
 <p>Volumes may be exported to other sessions, which implies authorizing the other sessions to decrypt and read existing files or encrypt and store new files:</p>
@@ -3076,6 +3182,7 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
     <span class="nt">export</span><span class="p">:</span>
       <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">another-session</span>
 </pre></div>
+
 <p>or</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
@@ -3084,6 +3191,7 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
       <span class="p p-Indicator">-</span> <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">foobar</span>
         <span class="nt">session_hash</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088</span>
 </pre></div>
+
 <p>The concrete SCONE ID format by which other sessions can be referenced is described in section <a href="#referencing-other-sessions">Referencing Other Sessions</a>.
 Note that volumes can only be exported to local sessions on the same CAS, not to sessions on a remote CAS.</p>
 <p>Similarly, volumes may be imported from another session (in which case fspf key/tag and export list must be omitted):</p>
@@ -3093,6 +3201,7 @@ Note that volumes can only be exported to local sessions on the same CAS, not to
       <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the_exporting_session</span>
       <span class="nt">volume</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
 </pre></div>
+
 <p>When exporting a volume, it is possible to restrict which kind of modifications an importing session is allowed to perform. Section <a href="#image-volumes">Image Volumes</a> demonstrates how volume access can be restricted for local services; the same is also possible for volume exports by using the <code>update_policy</code> key:</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
@@ -3102,6 +3211,7 @@ Note that volumes can only be exported to local sessions on the same CAS, not to
           <span class="nt">session_hash</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088</span>
         <span class="nt">update_policy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ephemeral</span>
 </pre></div>
+
 <p>Note that the SCONE ID (<code>session</code> and <code>session_hash</code>) needed to be moved to a new <code>to:</code> section!</p>
 <p><code>update_policy</code> can have any of the following values:</p>
 <ul>
@@ -3114,6 +3224,7 @@ Note that volumes can only be exported to local sessions on the same CAS, not to
 <div class="highlight"><pre><span></span><span class="nt">images</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_image</span>
 </pre></div>
+
 <h3 id="image-volumes">Image Volumes</h3>
 <p>Images may define access to <a href="#volumes">volumes</a>, by referencing a previously declared volume's <code>name</code> and giving it a mount point (<code>path</code>):</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
@@ -3125,6 +3236,7 @@ Note that volumes can only be exported to local sessions on the same CAS, not to
       <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
         <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/media/database</span>
 </pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The given path must already exist in the filesystem, e.g., through a mounted docker volume. The information provided as part of the session description are only used to encrypt and authenticate all of the volume's files. The CAS does not actually store the encrypted files.</p>
@@ -3140,6 +3252,7 @@ Note that volumes can only be exported to local sessions on the same CAS, not to
         <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/media/database</span>
         <span class="nt">update_policy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">no_rollback_protection</span>
 </pre></div>
+
 <p>The following values are possible as a volume <code>update_policy</code> policy:</p>
 <ul>
 <li><code>rollback_protected</code>: This is the default setting if <code>update_policy</code> is omitted. Services are allowed to alter the volume state, any rollback will be detected and lead to an error upon access. This ensures a coherent, linear history of volume changes.</li>
@@ -3164,6 +3277,7 @@ For details, please refer to section <a href="#volume-sharing">Volume Sharing</a
           <span class="no">user=mysqluser</span>
           <span class="no">password=$$SCONE::mysqlpass$$</span>
 </pre></div>
+
 <p>For details, refer to section <a href="#secret-injection-files">Secret Injection Files</a>.</p>
 <h2 id="access-control">Access Control</h2>
 <p>Any operation on a session description requires permission. If the entity requesting a certain operation is not explicitly permitted to perform said operation, the request will fail. The <code>access_policy</code> keyword allows specifying lists of entities that are allowed to perform the following operations:</p>
@@ -3190,6 +3304,7 @@ A certificate with this key shall be used when establishing a connection to CAS 
   <span class="nt">update</span><span class="p">:</span>
    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
 </pre></div>
+
 <p>Default values will be used for operations not explicitly specified in a session description.</p>
 <p>Example policy:</p>
 <div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
@@ -3234,6 +3349,7 @@ A certificate with this key shall be used when establishing a connection to CAS 
   <span class="nt">update</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">NONE</span>
 </pre></div>
+
 <p>This policy will allow read requests from the creator, a user whose TLS client certificate has a public key hash <code>3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1</code>, a user whose TLS client certificate has a public key similar to the one of the certificate specified in the session description and a user whose credential is taken from the secret named <code>remote_validation_service</code> (which may be imported from another session). No one is allowed to update the session description.</p>
 <h2 id="attestation-security">Attestation Security</h2>
 <p>The services' security directly depends on CAS' ability to verify that a service process has not been manipulated (referred to as attestation), as described in <a href="#attestation">the service attestation section</a>. CAS ships with secure defaults, and only allows hardware-attested services running on trustworthy platforms in secure production-mode enclaves.</p>
@@ -3249,6 +3365,7 @@ A certificate with this key shall be used when establishing a connection to CAS 
   <span class="nt">attestation</span><span class="p">:</span>
     <span class="nt">tolerate</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">debug-mode</span><span class="p p-Indicator">,</span> <span class="nv">hyperthreading</span><span class="p p-Indicator">]</span>
 </pre></div>
+
 <p><code>tolerate</code> is an array which can hold the following variants:</p>
 <ul>
 <li><code>debug-mode</code> enclaves allow introspection with a debugger. This disables enclave protection, all secrets can be extracted.</li>
@@ -3273,12 +3390,14 @@ A certificate with this key shall be used when establishing a connection to CAS 
     <span class="nt">tolerate</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">outdated-tcb</span><span class="p p-Indicator">]</span>
     <span class="nt">ignore_advisories</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">INTEL-SA-00161</span><span class="p p-Indicator">,</span> <span class="nv">INTEL-SA-00270</span><span class="p p-Indicator">]</span>
 </pre></div>
+
 <p>When in <code>debug-mode</code>, all advisories can be ignored by using a wildcard, simplifying the workflow in testing environments:</p>
 <div class="highlight"><pre><span></span><span class="nt">security</span><span class="p">:</span>
   <span class="nt">attestation</span><span class="p">:</span>
     <span class="nt">tolerate</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">debug-mode</span><span class="p p-Indicator">,</span> <span class="nv">outdated-tcb</span><span class="p p-Indicator">]</span>
     <span class="nt">ignore_advisories</span><span class="p">:</span> <span class="s">&quot;*&quot;</span>
 </pre></div>
+
 <p>As this silently ignores newly released platform advisories too, wildcards cannot be used in (non-debug) production mode.</p>
 <h3 id="trusted-scone-quoting-enclaves">Trusted SCONE Quoting Enclaves</h3>
 <p>By default, the system uses the SCONE attestation scheme. This scheme is built around a separate quoting enclave (QE), into which trust has to be established. This is done automatically using EPID-based attestation for a set of known trustworthy QE measurements embedded into the CAS software.</p>
@@ -3287,6 +3406,7 @@ A certificate with this key shall be used when establishing a connection to CAS 
   <span class="nt">attestation</span><span class="p">:</span>
     <span class="nt">trusted_scone_qe_pubkeys</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;E37F149AE30896E314A2859874C5A9C7803FB3187B99F5D08E526B1C0396507C&quot;</span><span class="p p-Indicator">]</span>
 </pre></div>
+
 <p>The QE public key can be found in the log output of the Local Attestation Service (LAS). Specified keys are an additional trust anchor, and do not replace the trusted built-in QE measurements. To trust the given keys exclusively, additionally enable <a href="#platform-based-attestation">platform-based attestation</a> for individual services.</p>
 <h3 id="disabling-attestation">Disabling attestation</h3>
 <p>Attestation can be completely disabled:</p>
@@ -3294,6 +3414,7 @@ A certificate with this key shall be used when establishing a connection to CAS 
   <span class="nt">attestation</span><span class="p">:</span>
     <span class="nt">mode</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">none</span>  <span class="c1"># Default mode is &#39;hardware&#39;</span>
 </pre></div>
+
 <p>This may be useful in testing environments where no hardware-based attestation is available.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -3309,15 +3430,18 @@ This is possible by using a SCONE ID. The following sections describe the format
 <div class="highlight"><pre><span></span><span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-database</span>
 <span class="nt">secret</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">db-encryption-key</span>
 </pre></div>
+
 <p>By using this simple form, you trust the session's owner, and accept that their session configuration may change over time.
 If you want to trust a specific session configuration instead, you have to additionally specify a <em>session hash</em>:</p>
 <div class="highlight"><pre><span></span><span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;session name&gt;</span>
 <span class="nt">session_hash</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;session hash-key&gt;</span>
 </pre></div>
+
 <p>e.g.:</p>
 <div class="highlight"><pre><span></span><span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-database</span>
 <span class="nt">session_hash</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">a51c14dd7029d2ef54a50a9e26efcdd37c4971b5b62cb6d244c9216f80b6eadf</span>
 </pre></div>
+
 <p>Exporting/Importing elements to/from the other session will be prevented by the CAS when the currently active session does not match the specified hash.
 Note that, in this case, your own session may cease working when importing secrets or volumes from another session whose hash has changed, requiring you to update the session.</p>
 <h3 id="sessions-on-another-cas">Sessions on another CAS</h3>
@@ -3326,11 +3450,13 @@ Note that, in this case, your own session may cease working when importing secre
 <span class="nt">cas_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;CAS key hash&gt;</span>
 <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;session name&gt;</span>
 </pre></div>
+
 <p>e.g.:</p>
 <div class="highlight"><pre><span></span><span class="nt">cas_url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cas.example.com</span>
 <span class="nt">cas_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">46YyxrywJ8PFRruWX8YLxa9q4axxYJgTbA81tv7NBcJfn43DQt</span>
 <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">company-storage</span>
 </pre></div>
+
 <p>The <code>cas_key</code> is used for authentication and ensures that exports/imports will only be performed to/from the correct CAS.
 <strong>It is of utmost importance to specify a verified, correct key.</strong>
 When a CAS was attested using the CLI, you can query its verified key by using <code>scone cas show-identification -c</code>.
@@ -3343,11 +3469,13 @@ This may be done by using the <code>cas_software_key</code> instead of a <code>c
 <span class="nt">cas_software_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;CAS key hash&gt;</span>
 <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">&lt;session name&gt;</span>
 </pre></div>
+
 <p>e.g.:</p>
 <div class="highlight"><pre><span></span><span class="nt">cas_url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">cas.example.com</span>
 <span class="nt">cas_software_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3AC5RSbL73aVVf98m2UMTN2BFsQv6eQufi5BGBxrG8awxP4ygQ</span>
 <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">company-storage</span>
 </pre></div>
+
 <p>In this case, exporting/importing elements to/from the other session will be prevented by the local CAS when the software of the remote CAS changes.
 The same limitations as specified for the usage of a <code>session_hash</code> apply here as well.
 The software key can be retrieved or specified on the CLI by using <code>scone cas show-identification -s</code> and <code>scone cas attest -s &lt;CAS software key hash&gt;</code> respectively.</p>
@@ -3358,6 +3486,7 @@ The software key can be retrieved or specified on the CLI by using <code>scone c
 <span class="nt">cas_software_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3AC5RSbL73aVVf98m2UMTN2BFsQv6eQufi5BGBxrG8awxP4ygQ</span>
 <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">company-storage</span>
 </pre></div>
+
 <p>can also be written as</p>
 <p><code>cas.example.com/cas_software_key=3AC5RSbL73aVVf98m2UMTN2BFsQv6eQufi5BGBxrG8awxP4ygQ,session=company-storage</code></p>
 <p>This may be useful when referencing the same CAS multiple times, as the CAS URL and keys can be extracted into a common variable, example:</p>
@@ -3366,6 +3495,7 @@ The software key can be retrieved or specified on the CLI by using <code>scone c
      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">$OTHER_CAS,session=B</span>
      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">$OTHER_CAS,session=C</span>
 </pre></div>
+
 <p>For replacing the variable with a concrete value, please refer to the SCONE CLI documentation.</p>
 <p>The same format can also be used when referencing sessions on the local CAS. Simply omit the host and keys (but notice the leading slash <code>/</code>):</p>
 <p><code>/session=company-storage,session_hash=a51c14dd7029d2ef54a50a9e26efcdd37c4971b5b62cb6d244c9216f80b6eadf</code></p>

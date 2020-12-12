@@ -1774,6 +1774,78 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-20" type="checkbox" id="nav-20">
+    
+    <label class="md-nav__link" for="nav-20">
+      Operational Aspects
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-20">
+        Operational Aspects
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../operations/" title="Issues" class="md-nav__link">
+      Issues
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mitigation/" title="Attack mitigation" class="md-nav__link">
+      Attack mitigation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sadvisories/" title="Security advisories" class="md-nav__link">
+      Security advisories
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../software_updates/" title="Software updates" class="md-nav__link">
+      Software updates
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
   <li class="md-nav__item">
     <a href="../SCONE_Publications/" title="Publications" class="md-nav__link">
       Publications
@@ -1900,6 +1972,7 @@ SGX device.We determine which SGX device to mount with function  <a href="../sgx
 docker pull sconecuratedimages/crosscompilers
 docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it sconecuratedimages/crosscompilers
 </pre></div>
+
 <p>Let's create some program that stores a secret (<strong>MYBIGS</strong>) in a local variable <em>secret</em>:</p>
 <div class="highlight"><pre><span></span>cat &gt; mysecret.c <span class="s">&lt;&lt; EOF</span>
 <span class="s">#include &lt;stdio.h&gt;</span>
@@ -1923,16 +1996,20 @@ docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it sconecuratedimages/cross
 <span class="s">}</span>
 <span class="s">EOF</span>
 </pre></div>
+
 <p>Compile this program with the SCONE crosscompiler (i.e., gcc):</p>
 <div class="highlight"><pre><span></span>gcc -g -o mysecret mysecret.c
 </pre></div>
+
 <h2 id="simulation-mode">Simulation Mode</h2>
 <p>You can run this program in <strong>SIMULATION MODE</strong>, i.e., this program does not protect your secrets:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM <span class="nv">SCONE_HEAP</span><span class="o">=</span>128K <span class="nv">SCONE_STACK</span><span class="o">=</span>1K ./mysecret
 </pre></div>
+
 <p>Log into a different terminal on your <strong>host</strong>. Let us figure out the process ID of the mysecret program:</p>
 <div class="highlight"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
 </pre></div>
+
 <p>Now, we can dump the memory of this process via the <em>/proc</em> filesystem. You can determine
 the different memory regions of your process via <code>cat /proc/$SPID/maps</code> and
 the memory is stored in <em>/proc/$SPID/mem</em>. We can use the following
@@ -1969,6 +2046,7 @@ Python program to write all pages to <em>stdout</em>: </p>
 <span class="s">sys.stderr.write(&quot;\n&quot;)</span>
 <span class="s">EOF</span>
 </pre></div>
+
 <div class="admonition note">
 <p class="admonition-title">Enclaves in debug mode do not protect your secrets</p>
 <p>If your enclave is in debug mode, one can access all secrets of the enclave. 
@@ -1977,6 +2055,7 @@ This scanner conveniently skips the enclave memory region using condition <code>
 <p>Run this program and grep for the prefix of our secret:</p>
 <div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
 </pre></div>
+
 <p>This will take some time but eventually it will print the full secret <strong>MYBIGS</strong>.</p>
 <h2 id="hardware-mode">Hardware Mode</h2>
 <p>Let us now run the program in hardware mode. First, <strong>ensure that you kill the original program</strong>
@@ -1987,12 +2066,15 @@ by typing <em>control-C</em>.</p>
 <p>Let's start mysecret in an enclave, i.e., in hardware mode inside the container:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>HW <span class="nv">SCONE_HEAP</span><span class="o">=</span>128K <span class="nv">SCONE_STACK</span><span class="o">=</span>1K ./mysecret
 </pre></div>
+
 <p>Update environment variable <em>SPID</em> in a second terminal on your host:</p>
 <div class="highlight"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
 </pre></div>
+
 <p>and then try to find the secret:</p>
 <div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
 </pre></div>
+
 <p>This will run for much less time and in particular, it will not print any secrets.</p>
 <p>Note, however, that secrets stored in the binaries can be found because the binary is
 not encrypted: a copy of the original binary - which is used to start the enclave - 
@@ -2001,6 +2083,7 @@ stays in main memory outside the enclave. </p>
 We can find this secret as follows:</p>
 <div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep THIS_IS_NOT_SECRET
 </pre></div>
+
 <div class="footnote">
 <hr />
 <ol>

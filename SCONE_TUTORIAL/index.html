@@ -1829,6 +1829,78 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-20" type="checkbox" id="nav-20">
+    
+    <label class="md-nav__link" for="nav-20">
+      Operational Aspects
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-20">
+        Operational Aspects
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../operations/" title="Issues" class="md-nav__link">
+      Issues
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mitigation/" title="Attack mitigation" class="md-nav__link">
+      Attack mitigation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sadvisories/" title="Security advisories" class="md-nav__link">
+      Security advisories
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../software_updates/" title="Software updates" class="md-nav__link">
+      Software updates
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
   <li class="md-nav__item">
     <a href="../SCONE_Publications/" title="Publications" class="md-nav__link">
       Publications
@@ -1993,12 +2065,14 @@ REPOSITORY                          TAG                    IMAGE ID            C
 sconecuratedimages/crosscompilers   latest                 dff7975b7f32        <span class="m">7</span> hours ago         <span class="m">1</span>.57GB
 sconecuratedimages/crosscompilers   scone                  dff7975b7f32        <span class="m">7</span> hours ago         <span class="m">1</span>.57GB
 </pre></div>
+
 <p>If the cross compiler image is not yet installed, read Section <a href="../SCONE_Curated_Images/">SCONE Curated Container Images</a> to learn how to install the SCONE cross compiler image.</p>
 <p>If the docker command fails, please ensure that docker is indeed installed (<a href="../dockerinstall/">docker installation</a>). Also, on some systems you might need to use <code>sudo</code> to run docker commands <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
 <h2 id="install-the-tutorial">Install the tutorial</h2>
 <p>Clone the tutorial:</p>
 <div class="highlight"><pre><span></span>&gt; git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
 </pre></div>
+
 <h2 id="native-hello-world">Native Hello World</h2>
 <p>Ensure that <em>hello world</em> runs natively on your machine:</p>
 <div class="highlight"><pre><span></span>&gt; <span class="nb">cd</span> SCONE_TUTORIAL/HelloWorld/
@@ -2006,6 +2080,7 @@ sconecuratedimages/crosscompilers   scone                  dff7975b7f32        <
 &gt; ./native_hello_world
 Hello World
 </pre></div>
+
 <p>Note that the generated executable, i.e., <em>sim_hello_world</em>, will only run on Linux.</p>
 <h2 id="statically-linked-hello-world">Statically-Linked Hello World</h2>
 <p>The default cross compiler variant that runs <em>hello world</em> inside of an enclave is <em>scone gcc</em> and you can find this in container <em>sconecuratedimages/crosscompilers</em>.
@@ -2013,6 +2088,7 @@ This variant requires access to the SGX device.
 We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
 <div class="highlight"><pre><span></span>&gt; docker run --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers scone-gcc hello_world.c  -o sgx_hello_world
 </pre></div>
+
 <p>This generates a statically linked binary. However, as we mentioned above, the binary looks like a dynamically
 linked binary since it is wrapped in a dynamically linked loader program:</p>
 <div class="highlight"><pre><span></span>&gt; ldd ./sgx_hello_world 
@@ -2021,13 +2097,16 @@ linked binary since it is wrapped in a dynamically linked loader program:</p>
     libc.so.6 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libc.so.6 <span class="o">(</span>0x00007f7c29d1f000<span class="o">)</span>
     /lib64/ld-linux-x86-64.so.2 <span class="o">(</span>0x00007f7c2a306000<span class="o">)</span>
 </pre></div>
+
 <p>Ensure that file <em>/etc/sgx-musl.conf</em> exists. If not, store some default file like:</p>
 <div class="highlight"><pre><span></span>&gt; <span class="nb">printf</span> <span class="s2">&quot;Q 1\ne 0 0 0\ns 1 0 0\n&quot;</span> <span class="p">|</span> sudo tee /etc/sgx-musl.conf
 </pre></div>
+
 <p>To run <em>sgx_hello_world</em>, in an enclave, just execute:</p>
 <div class="highlight"><pre><span></span>&gt; ./sgx_hello_world
 Hello World
 </pre></div>
+
 <p>To see some more debug messages, set environment variable <em>SCONE_VERSION=1</em>:</p>
 <div class="highlight"><pre><span></span>&gt; <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./sgx_hello_world
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
@@ -2048,14 +2127,17 @@ Configure options: --enable-file-prot --enable-shared --enable-debug --prefix<sp
 
 Hello World
 </pre></div>
+
 <p>The debug outputs <strong>SCONE_MODE=hw</strong> shows that <em>sgx_hello_world</em> runs in hardware mode, i.e., inside an SGX enclave.</p>
 <p><strong>Note.</strong> The compilation as well as the hello world program will fail in case you do not have an SGX driver installed.</p>
 <h2 id="dynamically-linked-hello-world">Dynamically-Linked Hello World</h2>
 <div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_world.c -o dyn_hello_world
 </pre></div>
+
 <p>To run this natively, just execute the following:</p>
 <div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./dyn_hello_world
 </pre></div>
+
 <p>To run a dynamically-linked binary in an enclave, you need to run this in a special runtime environment. In this environment you can ask binaries to run inside of enclaves by setting environment <em>SCONE_ALPINE=1</em>. To indicate that we are indeed running inside an enclave, we ask to issue some debug messages from inside the enclave by setting environment variable <em>SCONE_VERSION=1</em>:</p>
 <h3 id="hardware-mode-vs-simulation-mode">Hardware Mode vs Simulation Mode</h3>
 <p>For debugging, we support three different modes for execution: <em>hardware, simulation, and automatic</em>:</p>
@@ -2087,11 +2169,13 @@ Configure parameters:
 <span class="m">1</span>.1.15
 Hello World
 </pre></div>
+
 <h3 id="execution-on-a-non-sgx-machine">Execution on a non-SGX machine</h3>
 <p>If you run this inside a container without access to SGX (/dev/isgx), for example, when running on a Mac, you will see the following error message:</p>
 <div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
 <span class="o">[</span>Error<span class="o">]</span> Could not create enclave: Error opening SGX device
 </pre></div>
+
 <p>You could run this in simulation mode as follows:</p>
 <div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
@@ -2108,6 +2192,7 @@ Configure parameters:
 <span class="m">1</span>.1.15
 Hello World
 </pre></div>
+
 <p>Alternatively, you could run this program in automatic mode:</p>
 <div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>AUTO -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/crosscompilers:runtime 
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
@@ -2124,6 +2209,7 @@ Configure parameters:
 <span class="m">1</span>.1.15
 HelloWorld
 </pre></div>
+
 <h2 id="run-strace">Run STRACE</h2>
 <p>Lets see how we can trace the program. Say, you have compile the program as shown above. After that you enter a cross compiler container and strace hello world as follows:</p>
 <div class="highlight"><pre><span></span>&gt; docker run --cap-add SYS_PTRACE -it --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world &gt; strace.log
@@ -2140,6 +2226,7 @@ mmap<span class="o">(</span>NULL, <span class="m">18506</span>, PROT_READ, MAP_P
 close<span class="o">(</span><span class="m">3</span><span class="o">)</span>                                <span class="o">=</span> <span class="m">0</span>
 access<span class="o">(</span><span class="s2">&quot;/etc/ld.so.nohwcap&quot;</span>, F_OK<span class="o">)</span>      <span class="o">=</span> -1 ENOENT <span class="o">(</span>No such file or directory<span class="o">)</span>
 </pre></div>
+
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ"><img alt="asciicast" src="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ.png" /></a></p>
 <div class="footnote">

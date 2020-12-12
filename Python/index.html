@@ -1823,6 +1823,78 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-20" type="checkbox" id="nav-20">
+    
+    <label class="md-nav__link" for="nav-20">
+      Operational Aspects
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-20">
+        Operational Aspects
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../operations/" title="Issues" class="md-nav__link">
+      Issues
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mitigation/" title="Attack mitigation" class="md-nav__link">
+      Attack mitigation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sadvisories/" title="Security advisories" class="md-nav__link">
+      Security advisories
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../software_updates/" title="Software updates" class="md-nav__link">
+      Software updates
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
   <li class="md-nav__item">
     <a href="../SCONE_Publications/" title="Publications" class="md-nav__link">
       Publications
@@ -2003,13 +2075,16 @@ your docker hub ID to get access to this repository.</p>
 <p>You can pull this image as follows:</p>
 <div class="highlight"><pre><span></span>docker pull sconecuratedimages/apps:python-2-alpine3.6
 </pre></div>
+
 <h2 id="python-interpreter">Python Interpreter</h2>
 <p>To run the Python interpreter inside an enclave in interactive mode, first start the container:</p>
 <div class="highlight"><pre><span></span>docker run --rm -it <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/apps:python-2-alpine3.6 sh
 </pre></div>
+
 <p>The execute python inside of the container:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
 </pre></div>
+
 <p>Since we set <strong>SCONE_VERSION=1</strong>, we get the following outputs<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">1</a></sup>:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
@@ -2037,6 +2112,7 @@ Python <span class="m">2</span>.7.13 <span class="o">(</span>default, Jun  <span
 Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&quot;</span>, <span class="s2">&quot;credits&quot;</span> or <span class="s2">&quot;license&quot;</span> <span class="k">for</span> more information.
 &gt;&gt;&gt;
 </pre></div>
+
 <p>Potential error messages:</p>
 <div class="admonition error">
 <p class="admonition-title">Could not create enclave: Error opening SGX device</p>
@@ -2074,6 +2150,7 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 <p>Note that you can set the environment variable of a process - in our case python - running inside a container with docker option <strong>-e</strong>:</p>
 <div class="highlight"><pre><span></span>docker run --rm  <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/apps:python-2-alpine3.6 python myapp.py
 </pre></div>
+
 <p>Will produce an output like</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
@@ -2081,19 +2158,23 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 <span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
 ...
 </pre></div>
+
 <h2 id="numpy">NumPy</h2>
 <p>Let's see how we can install some extra packages that your python program might need. Let us focus on <strong>NumPy</strong> first, a very popular package for scientific computing. Note that the following steps you would typically perform as part of a <a href="../SCONE_Dockerfile/">Dockerfile</a>.</p>
 <p>First, we determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a> and start the SCONE Python  image:</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
 docker run  <span class="nv">$MOUNT_SGXDEVICE</span> -it --rm sconecuratedimages/apps:python-2-alpine3.6 sh
 </pre></div>
+
 <p>This is a minimal image and you need to add some packages to be able to
 install packages that compile external code:</p>
 <div class="highlight"><pre><span></span>apk add --no-cache bats libbsd openssl musl-dev build-base
 </pre></div>
+
 <p>We then install <strong>numpy</strong> inside of the container with the help of <strong>pip</strong>:</p>
 <div class="highlight"><pre><span></span>pip install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
 </pre></div>
+
 <p>This results in an output like</p>
 <div class="highlight"><pre><span></span>Collecting <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
   Downloading https://files.pythonhosted.org/packages/d5/6e/f00492653d0fdf6497a181a1c1d46bbea5a2383e7faf4c8ca6d6f3d2581d/numpy-1.14.5.zip <span class="o">(</span><span class="m">4</span>.9MB<span class="o">)</span>
@@ -2102,9 +2183,11 @@ Installing collected packages: numpy
   Running setup.py install <span class="k">for</span> numpy ... <span class="k">done</span>
 Successfully installed numpy-1.14.5
 </pre></div>
+
 <p>Ok, let's try to execute some examples with <strong>NumPy</strong>. Let's  run Python inside an enclave, give it plenty of heap memory and ask SCONE to print some debug messages:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
 </pre></div>
+
 <p>during startup this issues the following messages</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
@@ -2130,6 +2213,7 @@ Python <span class="m">2</span>.7.14 <span class="o">(</span>default, Dec <span 
 Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&quot;</span>, <span class="s2">&quot;credits&quot;</span> or <span class="s2">&quot;license&quot;</span> <span class="k">for</span> more information.
 &gt;&gt;&gt; 
 </pre></div>
+
 <p>Now, we can import numpy and execute some commands:</p>
 <div class="highlight"><pre><span></span>&gt;&gt;&gt; import numpy as np
 &gt;&gt;&gt; <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span><span class="m">15</span><span class="o">)</span>.reshape<span class="o">(</span><span class="m">3</span>, <span class="m">5</span><span class="o">)</span>
@@ -2149,6 +2233,7 @@ array<span class="o">([[</span> <span class="m">0</span>,  <span class="m">1</sp
 &lt;<span class="nb">type</span> <span class="s1">&#39;numpy.ndarray&#39;</span>&gt;
 &gt;&gt;&gt; 
 </pre></div>
+
 <h2 id="cairo">Cairo</h2>
 <p>Let's look at another popular library: the <strong>cairo</strong> graphics library. <strong>cairo</strong>  is written in C and has 
 Python bindings provided by package <strong>pycairo</strong>. In this case, we need to install the C-library first:</p>
@@ -2182,6 +2267,7 @@ Successfully installed pycairo-1.15.4
 <p>We can now start Python again via </p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
 </pre></div>
+
 <p>before we execute some cairo examples:</p>
 <div class="highlight"><pre><span></span>&gt;&gt;&gt; import cairo
 &gt;&gt;&gt; import math
@@ -2214,6 +2300,7 @@ Successfully installed pycairo-1.15.4
 &gt;&gt;&gt; surface.write_to_png <span class="o">(</span><span class="s2">&quot;example.png&quot;</span><span class="o">)</span> <span class="c1"># Output to PNG</span>
 &gt;&gt;&gt; exit<span class="o">()</span>
 </pre></div>
+
 <p>This generates a file <strong>example.png</strong> in the working directory.</p>
 <h2 id="example">Example</h2>
 <p>Let's look at another example:</p>
