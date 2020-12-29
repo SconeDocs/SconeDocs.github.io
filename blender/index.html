@@ -300,6 +300,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../registry/" title="Scontain Registy" class="md-nav__link">
+      Scontain Registy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../curated_images/" title="Curated Images" class="md-nav__link">
       Curated Images
     </a>
@@ -2008,7 +2020,7 @@
 <img alt="Workflow of Blender Example" src="../img/blender_python.svg#smaller" />
 </center></p>
 <p>Assuming the Python scripts are located in the <strong>INPUTS</strong> directory, we can compute the output image on host <strong>faye</strong> as follows:</p>
-<div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender_python --host faye
+<div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli execute --application registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python --host faye
 </pre></div>
 
 <p>The output of this script is stored in file <em>simple_sphere.png</em> directory <strong>OUTPUTS</strong>. 
@@ -2021,7 +2033,7 @@ Opening this file  - <strong>which was computed inside an enclave with all input
 <img alt="Files needing protection" src="../img/blenderfs.svg" />
 </center></p>
 <p>As we show below, a user can add more Python extensions that help to render images and animations. These python extensions might contain intellectual properties of the user. The <strong>confidentiality as well as the integrity</strong> of these extensions mus be protected.</p>
-<p>The blender image contains all the above files but not the user extensions. We need to ensure <strong>the integrity of the blender application as well as the extensions</strong>, i.e., an attacker cannot modify the blender image without being detected.  We recommend that these container images are signed using <a href="https://docs.docker.com/engine/security/trust/content_trust/">Docker content trust</a>. Note that content trust is, however, not sufficient to ensure that <strong>blender</strong> will actually read the original, unmodified files. For example, an attacker with root access could change this image on the host on which blender is executed.</p>
+<p>The blender image contains all the above files but not the user extensions. We need to ensure <strong>the integrity of the blender application as well as the extensions</strong>, i.e., an attacker cannot modify the blender image without being detected.</p>
 <p><center>
 <img alt="blender file regions" src="../img/blenderprotection.svg" />
 </center></p>
@@ -2127,7 +2139,7 @@ images:
 </ul>
 <p>To remotely start a container with the help of <strong>ssh</strong>, we need to give the CLI container access via command <strong>add-host</strong>. After giving ssh access, we can start the blend applications. To do so, we can
 give it </p>
-<div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender_python --host faye
+<div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli execute --application registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python --host faye
 </pre></div>
 
 <h3 id="blender-scripting">Blender Scripting</h3>

@@ -300,6 +300,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../registry/" title="Scontain Registy" class="md-nav__link">
+      Scontain Registy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../curated_images/" title="Curated Images" class="md-nav__link">
       Curated Images
     </a>
@@ -2059,11 +2071,11 @@
                 
                 <h1 id="scone-hello-world">SCONE Hello World</h1>
 <h3 id="install-sgxmusl-cross-compiler-image">Install sgxmusl cross compiler image</h3>
-<p>Ensure that you installed the various sconecuratedimages/crosscompilers container image:</p>
-<div class="highlight"><pre><span></span>&gt; docker image ls sconecuratedimages/*
+<p>Ensure that you installed the various CAS_session_lang_0_3/crosscompilers container image:</p>
+<div class="highlight"><pre><span></span>&gt; docker image ls CAS_session_lang_0_3/*
 REPOSITORY                          TAG                    IMAGE ID            CREATED             SIZE
-sconecuratedimages/crosscompilers   latest                 dff7975b7f32        <span class="m">7</span> hours ago         <span class="m">1</span>.57GB
-sconecuratedimages/crosscompilers   scone                  dff7975b7f32        <span class="m">7</span> hours ago         <span class="m">1</span>.57GB
+CAS_session_lang_0_3/crosscompilers   latest                 dff7975b7f32        <span class="m">7</span> hours ago         <span class="m">1</span>.57GB
+CAS_session_lang_0_3/crosscompilers   scone                  dff7975b7f32        <span class="m">7</span> hours ago         <span class="m">1</span>.57GB
 </pre></div>
 
 <p>If the cross compiler image is not yet installed, read Section <a href="../SCONE_Curated_Images/">SCONE Curated Container Images</a> to learn how to install the SCONE cross compiler image.</p>
@@ -2083,10 +2095,10 @@ Hello World
 
 <p>Note that the generated executable, i.e., <em>sim_hello_world</em>, will only run on Linux.</p>
 <h2 id="statically-linked-hello-world">Statically-Linked Hello World</h2>
-<p>The default cross compiler variant that runs <em>hello world</em> inside of an enclave is <em>scone gcc</em> and you can find this in container <em>sconecuratedimages/crosscompilers</em>.
+<p>The default cross compiler variant that runs <em>hello world</em> inside of an enclave is <em>scone gcc</em> and you can find this in container <em>CAS_session_lang_0_3/crosscompilers</em>.
 This variant requires access to the SGX device.
 We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<div class="highlight"><pre><span></span>&gt; docker run --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers scone-gcc hello_world.c  -o sgx_hello_world
+<div class="highlight"><pre><span></span>&gt; docker run --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp CAS_session_lang_0_3/crosscompilers scone-gcc hello_world.c  -o sgx_hello_world
 </pre></div>
 
 <p>This generates a statically linked binary. However, as we mentioned above, the binary looks like a dynamically
@@ -2131,11 +2143,11 @@ Hello World
 <p>The debug outputs <strong>SCONE_MODE=hw</strong> shows that <em>sgx_hello_world</em> runs in hardware mode, i.e., inside an SGX enclave.</p>
 <p><strong>Note.</strong> The compilation as well as the hello world program will fail in case you do not have an SGX driver installed.</p>
 <h2 id="dynamically-linked-hello-world">Dynamically-Linked Hello World</h2>
-<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_world.c -o dyn_hello_world
+<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp CAS_session_lang_0_3/muslgcc gcc  hello_world.c -o dyn_hello_world
 </pre></div>
 
 <p>To run this natively, just execute the following:</p>
-<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./dyn_hello_world
+<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp CAS_session_lang_0_3/muslgcc ./dyn_hello_world
 </pre></div>
 
 <p>To run a dynamically-linked binary in an enclave, you need to run this in a special runtime environment. In this environment you can ask binaries to run inside of enclaves by setting environment <em>SCONE_ALPINE=1</em>. To indicate that we are indeed running inside an enclave, we ask to issue some debug messages from inside the enclave by setting environment variable <em>SCONE_VERSION=1</em>:</p>
@@ -2154,7 +2166,7 @@ Hello World
 </ul>
 <p><strong>NOTE</strong>: In production mode, you must only permit running in hardware mode. Scone ensures this with the help of <em>remote attestation</em>: the SCONE configuration and attestation service (CAS) will only provide configuration information and secrets to an application only after it has proven (with the help of SGX CPU extensions) that it is indeed running inside an SGX enclave.</p>
 <h3 id="execution-on-a-sgx-capable-machine">Execution on a SGX-capable machine</h3>
-<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> CAS_session_lang_0_3/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
@@ -2172,12 +2184,12 @@ Hello World
 
 <h3 id="execution-on-a-non-sgx-machine">Execution on a non-SGX machine</h3>
 <p>If you run this inside a container without access to SGX (/dev/isgx), for example, when running on a Mac, you will see the following error message:</p>
-<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> CAS_session_lang_0_3/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
 <span class="o">[</span>Error<span class="o">]</span> Could not create enclave: Error opening SGX device
 </pre></div>
 
 <p>You could run this in simulation mode as follows:</p>
-<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> CAS_session_lang_0_3/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
@@ -2194,7 +2206,7 @@ Hello World
 </pre></div>
 
 <p>Alternatively, you could run this program in automatic mode:</p>
-<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>AUTO -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> sconecuratedimages/crosscompilers:runtime 
+<div class="highlight"><pre><span></span>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -e <span class="nv">SCONE_MODE</span><span class="o">=</span>AUTO -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> CAS_session_lang_0_3/crosscompilers:runtime 
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
@@ -2212,7 +2224,7 @@ HelloWorld
 
 <h2 id="run-strace">Run STRACE</h2>
 <p>Lets see how we can trace the program. Say, you have compile the program as shown above. After that you enter a cross compiler container and strace hello world as follows:</p>
-<div class="highlight"><pre><span></span>&gt; docker run --cap-add SYS_PTRACE -it --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world &gt; strace.log
+<div class="highlight"><pre><span></span>&gt; docker run --cap-add SYS_PTRACE -it --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp CAS_session_lang_0_3/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world &gt; strace.log
 Hello World
 head strace.log
 execve<span class="o">(</span><span class="s2">&quot;/usr/src/myapp/sgx_hello_world&quot;</span>, <span class="o">[</span><span class="s2">&quot;/usr/src/myapp/sgx_hello_world&quot;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">10</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>

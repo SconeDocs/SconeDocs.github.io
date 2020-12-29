@@ -300,6 +300,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../registry/" title="Scontain Registy" class="md-nav__link">
+      Scontain Registy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../curated_images/" title="Curated Images" class="md-nav__link">
       Curated Images
     </a>
@@ -2301,11 +2313,11 @@ kubectl create secret docker-registry sconeapps --docker-server<span class="o">=
 </pre></div>
 
 <p>Start LAS:</p>
-<div class="highlight"><pre><span></span>helm install las sconeapps/las  --set <span class="nv">image</span><span class="o">=</span>sconecuratedimages/kubernetes:las-scone4.2.1 --set service.hostPort<span class="o">=</span><span class="nb">true</span>
+<div class="highlight"><pre><span></span>helm install las sconeapps/las  --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/kubernetes:las-scone4.2.1 --set service.hostPort<span class="o">=</span><span class="nb">true</span>
 </pre></div>
 
 <p>If you use a local cas, you can start this cas service as follows:</p>
-<div class="highlight"><pre><span></span>helm install cas sconeapps/cas --set <span class="nv">image</span><span class="o">=</span>sconecuratedimages/services:cas-scone4.2.1
+<div class="highlight"><pre><span></span>helm install cas sconeapps/cas --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/services:cas-scone4.2.1
 </pre></div>
 
 <p>Install the SGX device plugin for Kubernetes:</p>
@@ -2314,7 +2326,7 @@ kubectl create secret docker-registry sconeapps --docker-server<span class="o">=
 
 <h3 id="run-the-application">Run the application</h3>
 <p>Start by creating a Docker image and setting its name. Remember to specify a repository to which you are allowed to push:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span>sconecuratedimages/application:v0.4 <span class="c1"># please change to an image that you can push</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/application:v0.4 <span class="c1"># please change to an image that you can push</span>
 ./create_image.sh
 <span class="nb">source</span> myenv
 docker push <span class="nv">$IMAGE</span>
@@ -2327,7 +2339,7 @@ docker push <span class="nv">$IMAGE</span>
    --set scone.flask_session<span class="o">=</span><span class="nv">$FLASK_SESSION</span>/flask_restapi <span class="se">\</span>
    --set scone.redis_session<span class="o">=</span><span class="nv">$REDIS_SESSION</span>/redis <span class="se">\</span>
    --set service.type<span class="o">=</span>NodePort <span class="se">\</span>
-   --set redis.image<span class="o">=</span>sconecuratedimages/apps:redis-6-alpine-scone4.2.1
+   --set redis.image<span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/apps:redis-6-alpine-scone4.2.1
 </pre></div>
 
 <p><strong>NOTE</strong>: Setting <code>service.type=LoadBalancer</code> will allow the application to get traffic from the internet (through a managed LoadBalancer).</p>

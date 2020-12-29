@@ -300,6 +300,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../registry/" title="Scontain Registy" class="md-nav__link">
+      Scontain Registy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../curated_images/" title="Curated Images" class="md-nav__link">
       Curated Images
     </a>
@@ -396,8 +408,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#docker-hub-credentials" title="Docker Hub Credentials" class="md-nav__link">
-    Docker Hub Credentials
+  <a href="#scone-hub-credentials" title="SCONE Hub Credentials" class="md-nav__link">
+    SCONE Hub Credentials
   </a>
   
     <nav class="md-nav">
@@ -1930,8 +1942,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#docker-hub-credentials" title="Docker Hub Credentials" class="md-nav__link">
-    Docker Hub Credentials
+  <a href="#scone-hub-credentials" title="SCONE Hub Credentials" class="md-nav__link">
+    SCONE Hub Credentials
   </a>
   
     <nav class="md-nav">
@@ -1992,7 +2004,7 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <li>Access to our git repository <a href="https://github.com/scontain/sconeapps">https://github.com/scontain/sconeapps</a></li>
 </ul>
 </div>
-<p>If you need help installing Kubernetes clusters for confidential applications, just drop us an <a href="mailto:info@scontain.com?Subject=K8s%20Installation&amp;Body=Hi%20SCONE%20Team%2c">email</a>.</p>
+<p>If you need commercial help installing Kubernetes clusters for confidential applications, just drop us an <a href="mailto:info@scontain.com?Subject=K8s%20Installation&amp;Body=Hi%20SCONE%20Team%2c">email</a>.</p>
 <h2 id="sconeapps-curated-confidential-applications">sconeapps: Curated Confidential Applications</h2>
 <p>We support a large variety of confidential applications. One of the most convenient ways
 to deploy confidential applications to Kubernetes is to use <span data-tooltip="Is a very popular package manager for Kubernetes.">Helm</span>. We support this right now  for commercial customers only: For the following steps
@@ -2004,20 +2016,20 @@ helm repo add sconeapps https://<span class="si">${</span><span class="nv">GH_TO
 helm repo update
 </pre></div>
 
-<h2 id="docker-hub-credentials">Docker Hub Credentials</h2>
-<p>The <code>sconeapps</code> images are stored in a private docker hub repo. Hence, to deploy these images, we need to grant you access and  you need to pass your docker hub credentials to Kubernetes.
+<h2 id="scone-hub-credentials">SCONE Hub Credentials</h2>
+<p>The <code>sconeapps</code> images are stored in a private scone hub repo. Hence, to deploy these images, we need to grant you access and  you need to pass your SCONE hub credentials to Kubernetes.
 To do so, you need to create a Kubernetes secret <code>sconeapps</code> containing these credentials.</p>
-<p>You could first define your credentials which includes the generation of a <a href="https://docs.docker.com/docker-hub/access-tokens/">access token</a>:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">DOCKER_HUB_USERNAME</span><span class="o">=</span>...
-<span class="nb">export</span> <span class="nv">DOCKER_HUB_ACCESS_TOKEN</span><span class="o">=</span>...
-<span class="nb">export</span> <span class="nv">DOCKER_HUB_EMAIL</span><span class="o">=</span>...
+<p>You could first define your credentials which includes the generation of a <a href="hhttps://gitlab.scontain.com/-/profile/personal_access_tokens">access token</a>:</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>...
+<span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>...
+<span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>...
 </pre></div>
 
 <p>and then create a Kubernetes secret as follows:</p>
-<div class="highlight"><pre><span></span>kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>index.docker.io/v1/ --docker-username<span class="o">=</span><span class="nv">$DOCKER_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$DOCKER_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$DOCKER_HUB_EMAIL</span>
+<div class="highlight"><pre><span></span>kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com:5050 --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
 </pre></div>
 
-<p>Our helm charts will refer to this secret by default. In case you already use a different secret name for your docker credentials, you can overwrite the name of the secret at the time you install any of the <code>sconeapp</code> charts.</p>
+<p>Our helm charts will refer to this secret by default. In case you already use a different secret name for your SCONE HUB credentials, you can overwrite the name of the secret at the time you install any of the <code>sconeapp</code> charts.</p>
 <h3 id="using-helm">Using Helm</h3>
 <p>See all charts available:</p>
 <div class="highlight"><pre><span></span>helm search repo sconeapps

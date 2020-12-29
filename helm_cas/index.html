@@ -300,6 +300,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../registry/" title="Scontain Registy" class="md-nav__link">
+      Scontain Registy
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../curated_images/" title="Curated Images" class="md-nav__link">
       Curated Images
     </a>
@@ -2011,7 +2023,7 @@ by another already enclaved service. You can also perform the attestation manual
 <p>Second, determine <span data-tooltip="An enclave is identified by a hash value which is called MrEnclave. This hash value is determined by the initial content of the pages of an enclave and their access rights. This means that some of the SCONE environment variables like SCONE_HEAP and SCONE_ALLOW_DLOPEN will affect MrEnclave.">MRENCLAVE</span> of the <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> image. Note for commercial customers, we provide a secure way to determine <span data-tooltip="An enclave is identified by a hash value which is called MrEnclave. This hash value is determined by the initial content of the pages of an enclave and their access rights. This means that some of the SCONE environment variables like SCONE_HEAP and SCONE_ALLOW_DLOPEN will affect MrEnclave.">MRENCLAVE</span>.</p>
 <p>A generic way to determine <span data-tooltip="An enclave is identified by a hash value which is called MrEnclave. This hash value is determined by the initial content of the pages of an enclave and their access rights. This means that some of the SCONE environment variables like SCONE_HEAP and SCONE_ALLOW_DLOPEN will affect MrEnclave.">MRENCLAVE</span> is as follows.
 We set the environment variable <code>IMAGE</code> to the name of the <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> image. If you changed the <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> image, we assume that you set the environment variable <code>SCONE_CAS_IMAGE</code> accordingly (see above). We then compute MRENCLAVE of <span data-tooltip="The SCONE Configuration and Attestation Service (CAS) is a component of the SCONE infrastructure. Programs executed in enclaves, in particular, an SCONE-enabled executable, connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave. Additionally CAS checks that the requesting enclave is allowed to obtain the confidential configuration. Initially, configurations are pushed to the CAS with the SCONE client.">SCONE CAS</span> - assuming that you trust your local computer:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span><span class="si">${</span><span class="nv">SCONE_CAS_IMAGE</span><span class="k">:-</span><span class="nv">sconecuratedimages</span><span class="p">/services:</span><span class="nv">cas</span><span class="p">.trust.group-out-of-date</span><span class="si">}</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span><span class="si">${</span><span class="nv">SCONE_CAS_IMAGE</span><span class="k">:-</span><span class="nv">registry</span><span class="p">.scontain.com:</span><span class="nv">5050</span><span class="p">/sconecuratedimages/services:</span><span class="nv">cas</span><span class="p">.trust.group-out-of-date</span><span class="si">}</span>
 <span class="nb">export</span> <span class="nv">CAS_MRENCLAVE</span><span class="o">=</span><span class="k">$(</span>docker pull <span class="nv">$IMAGE</span> &gt; /dev/null <span class="p">;</span> docker run -i --rm -e <span class="s2">&quot;SCONE_HASH=1&quot;</span> <span class="nv">$IMAGE</span> cas<span class="k">)</span>
 </pre></div>
 
