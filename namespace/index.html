@@ -941,36 +941,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#namespace-convention" title="Namespace Convention" class="md-nav__link">
-    Namespace Convention
+  <a href="#namespace-access-policy" title="Namespace Access Policy" class="md-nav__link">
+    Namespace Access Policy
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#objectives" title="Objectives" class="md-nav__link">
-    Objectives
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attesting-cas" title="Attesting CAS" class="md-nav__link">
-    Attesting CAS
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-a-session" title="Creating a session" class="md-nav__link">
-    Creating a session
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-up-the-container-to-create-a-namespace" title="Setting up the container to create a namespace" class="md-nav__link">
-    Setting up the container to create a namespace
+  <a href="#creating-a-namespace" title="Creating a namespace" class="md-nav__link">
+    Creating a namespace
   </a>
   
 </li>
@@ -1936,36 +1915,15 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#namespace-convention" title="Namespace Convention" class="md-nav__link">
-    Namespace Convention
+  <a href="#namespace-access-policy" title="Namespace Access Policy" class="md-nav__link">
+    Namespace Access Policy
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#objectives" title="Objectives" class="md-nav__link">
-    Objectives
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#attesting-cas" title="Attesting CAS" class="md-nav__link">
-    Attesting CAS
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-a-session" title="Creating a session" class="md-nav__link">
-    Creating a session
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-up-the-container-to-create-a-namespace" title="Setting up the container to create a namespace" class="md-nav__link">
-    Setting up the container to create a namespace
+  <a href="#creating-a-namespace" title="Creating a namespace" class="md-nav__link">
+    Creating a namespace
   </a>
   
 </li>
@@ -1988,46 +1946,45 @@
                 
                 
                 <h1 id="cas-namespaces">CAS Namespaces</h1>
-<p>A CAS instance can be shared by multiple users. Since policy names must be unique per CAS instance, there might be conflicts when creating sessions in the sense that another user has already created a session with that name. The standard name to address such name collisions is to introduce namespaces.</p>
-<h2 id="namespace-convention">Namespace Convention</h2>
-<p>We are working on extending CAS will provide <strong>namespaces</strong>, i.e., a scope for session names.
-When one has created a namespace, one controls which session names can be created in this namespace.</p>
-<p>Until the support is in place, we suggest a simple cooperative approach for namespaces. The prefix of a name until the first <code>~</code> is the namespace. We create a name space <code>$NS</code> by creating a session with name <code>$NS</code>.</p>
-<h2 id="objectives">Objectives</h2>
-<p>We use the creation of namespaces to introduce some basic concepts:
-We show how to attest CAS and how to create a session with the help of the SCONE CLI.</p>
-<h2 id="attesting-cas">Attesting CAS</h2>
-<p>To attest CAS, we need to know the expected <code>MRENCLAVE</code> of the CAS. One way to determine is to download the CAS image and determine <code>MRENCLAVE</code> (by setting <code>SCONE_HASH=1</code>). One might not always have access to the image and how can one check that the image was not modified.</p>
-<p>We use here an alternative way to determine <code>MRENCLAVE</code> of CAS and other images. We maintain a signed list of MrEnclaves on <code>https://sconedocs.github.io/txt/mrenclaves.txt</code>. One can download the list, check the signature and if the signature is ok, use the <code>MRENCLAVE</code> of the image we want to use.</p>
-<h2 id="creating-a-session">Creating a session</h2>
-<p>We need a session description first. The session could look like this</p>
-<div class="highlight"><pre><span></span>name: $NS
+<p>Multiple users can share a CAS instance. Since policy names must be unique per CAS instance, there might be conflicts when creating sessions: another user might have already created a session with that name. The standard solution to address such name collisions is to introduce namespaces.</p>
+<p>Sessions can be organized hierarchically by creating them within the <strong>namespace</strong> of another session. Organizations and large teams can benefit from namespaces to structure their sessions and restrict the creation and management of nested sessions to a set of authorized users. If one uses SCONE in the context of Kubernetes, one might want to create a corresponding CAS namespace for each Kubernetes namespace in which one executes confidential services.</p>
+<h2 id="namespace-access-policy">Namespace Access Policy</h2>
+<p>SCONE CAS supports <strong>namespaces</strong>, i.e., a scope for session names, since version 5.1. To create a new namespace, one creates a session with the name of the namespace. By creating a namespace, one automatically controls who can create sessions in this namespace. To control access to namespaces, we added a new access policy option:</p>
+<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace</span>
 
-access_policy:
-  read:
-   - CREATOR
-  update:
-   - CREATOR
+<span class="nt">access_policy</span><span class="p">:</span>
+  <span class="nt">create_sessions</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
 </pre></div>
 
-<p>We can upload this session with the command</p>
+<p>To create a new sessions in the namespace <code>my-namespace</code>, one has to provide one of the credentials provided of list <code>create_sessions</code>. If omitted, all entities listed under <code>update</code> will be able to create sessions.</p>
+<h2 id="creating-a-namespace">Creating a namespace</h2>
+<p>To create a new namespace <code>my-namespace</code>, we first create a session description.
+The session description might be stored in a file <code>policy.yml</code> and look like this</p>
+<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace</span>
+
+<span class="nt">access_policy</span><span class="p">:</span>
+  <span class="nt">read</span><span class="p">:</span>
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
+  <span class="nt">update</span><span class="p">:</span>
+   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
+  <span class="nt">create_sessions</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
+</pre></div>
+
+<p>We can upload this session with the SCONE CLI as follows:</p>
 <div class="highlight"><pre><span></span>scone session create policy.yml
 </pre></div>
 
-<h2 id="setting-up-the-container-to-create-a-namespace">Setting up the container to create a namespace</h2>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">CLI_IMAGE</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com:5050/sconecuratedimages/sconecli&quot;</span>
-determine_sgx_device <span class="c1"># see https://sconedocs.github.io/sgxinstall/</span>
-docker run <span class="nv">$SGXDEVICE</span> -it --rm <span class="nv">$CLI_IMAGE</span> bash
-apk add --no-cache git openssl gnupg curl <span class="c1"># add some missing packages</span>
+<p>In order to create session <code>hello-world</code> in the namespace  <code>my-namespace</code>, set the new session's name to:</p>
+<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace/hello-world</span>
 </pre></div>
 
-<p>In the CLI image, we first clone </p>
-<div class="highlight"><pre><span></span>git clone https://github.com/scontain/create_namespace.git
-<span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;4-2-1.scone-cas.cf&quot;</span>
-<span class="nb">export</span> <span class="nv">NS</span><span class="o">=</span><span class="s2">&quot;MyNamespace&quot;</span>
-
-<span class="nb">cd</span> create_namespace
-./create_namespace --debug --namespace<span class="o">=</span><span class="nv">$NS</span> --cas<span class="o">=</span><span class="nv">$SCONE_CAS_ADDR</span>
+<p>You must have permission to create the session in this namespace.</p>
+<p>Namespaces can be nested. You can use <code>hello-world</code> itself as a namespace.</p>
+<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace/hello-world/project-1</span>
 </pre></div>
                 
                   
