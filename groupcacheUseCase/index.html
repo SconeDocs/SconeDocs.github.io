@@ -2054,65 +2054,65 @@ apk add go git curl
 <p><strong>That's it!</strong>  </p>
 <h3 id="example">Example</h3>
 <p>OK, we should show how to use group cache. We show this for a simple application from <a href="https://gist.github.com/fiorix/816117cfc7573319b72d">fiorix</a>:</p>
-<div class="highlight"><pre><span></span>    cat &gt; groupcache.go <span class="s">&lt;&lt; EOF</span>
-<span class="s">    // Simple groupcache example: https://github.com/golang/groupcache</span>
-<span class="s">    // Running 3 instances:</span>
-<span class="s">    // go run groupcache.go -addr=:8080 -pool=http://127.0.0.1:8080,http://127.0.0.1:8081,http://127.0.0.1:8082</span>
-<span class="s">    // go run groupcache.go -addr=:8081 -pool=http://127.0.0.1:8081,http://127.0.0.1:8080,http://127.0.0.1:8082</span>
-<span class="s">    // go run groupcache.go -addr=:8082 -pool=http://127.0.0.1:8082,http://127.0.0.1:8080,http://127.0.0.1:8081</span>
-<span class="s">    // Testing:</span>
-<span class="s">    // curl localhost:8080/color?name=red</span>
-<span class="s">    package main</span>
+<div class="highlight"><pre><span></span>cat &gt; groupcache.go <span class="s">&lt;&lt; EOF</span>
+<span class="s">// Simple groupcache example: https://github.com/golang/groupcache</span>
+<span class="s">// Running 3 instances:</span>
+<span class="s">// go run groupcache.go -addr=:8080 -pool=http://127.0.0.1:8080,http://127.0.0.1:8081,http://127.0.0.1:8082</span>
+<span class="s">// go run groupcache.go -addr=:8081 -pool=http://127.0.0.1:8081,http://127.0.0.1:8080,http://127.0.0.1:8082</span>
+<span class="s">// go run groupcache.go -addr=:8082 -pool=http://127.0.0.1:8082,http://127.0.0.1:8080,http://127.0.0.1:8081</span>
+<span class="s">// Testing:</span>
+<span class="s">// curl localhost:8080/color?name=red</span>
+<span class="s">package main</span>
 
-<span class="s">    import (</span>
-<span class="s">        &quot;errors&quot;</span>
-<span class="s">        &quot;flag&quot;</span>
-<span class="s">        &quot;log&quot;</span>
-<span class="s">        &quot;net/http&quot;</span>
-<span class="s">        &quot;strings&quot;</span>
+<span class="s">import (</span>
+<span class="s">    &quot;errors&quot;</span>
+<span class="s">    &quot;flag&quot;</span>
+<span class="s">    &quot;log&quot;</span>
+<span class="s">    &quot;net/http&quot;</span>
+<span class="s">    &quot;strings&quot;</span>
+<span class="s">    &quot;context&quot;</span>
+<span class="s">    &quot;github.com/golang/groupcache&quot;</span>
+<span class="s">)</span>
 
-<span class="s">        &quot;github.com/golang/groupcache&quot;</span>
-<span class="s">    )</span>
+<span class="s">var Store = map[string][]byte{</span>
+<span class="s">    &quot;red&quot;:   []byte(&quot;#FF0000&quot;),</span>
+<span class="s">    &quot;green&quot;: []byte(&quot;#00FF00&quot;),</span>
+<span class="s">    &quot;blue&quot;:  []byte(&quot;#0000FF&quot;),</span>
+<span class="s">}</span>
 
-<span class="s">    var Store = map[string][]byte{</span>
-<span class="s">        &quot;red&quot;:   []byte(&quot;#FF0000&quot;),</span>
-<span class="s">        &quot;green&quot;: []byte(&quot;#00FF00&quot;),</span>
-<span class="s">        &quot;blue&quot;:  []byte(&quot;#0000FF&quot;),</span>
-<span class="s">    }</span>
+<span class="s">var Group = groupcache.NewGroup(&quot;foobar&quot;, 64&lt;&lt;20, groupcache.GetterFunc(</span>
+<span class="s">    func(ctx context.Context, key string, dest groupcache.Sink) error {</span>
+<span class="s">        log.Println(&quot;looking up&quot;, key)</span>
+<span class="s">        v, ok := Store[key]</span>
+<span class="s">        if !ok {</span>
+<span class="s">            return errors.New(&quot;color not found&quot;)</span>
+<span class="s">        }</span>
+<span class="s">        dest.SetBytes(v)</span>
+<span class="s">        return nil</span>
+<span class="s">    },</span>
+<span class="s">))</span>
 
-<span class="s">    var Group = groupcache.NewGroup(&quot;foobar&quot;, 64&lt;&lt;20, groupcache.GetterFunc(</span>
-<span class="s">        func(ctx groupcache.Context, key string, dest groupcache.Sink) error {</span>
-<span class="s">            log.Println(&quot;looking up&quot;, key)</span>
-<span class="s">            v, ok := Store[key]</span>
-<span class="s">            if !ok {</span>
-<span class="s">                return errors.New(&quot;color not found&quot;)</span>
-<span class="s">            }</span>
-<span class="s">            dest.SetBytes(v)</span>
-<span class="s">            return nil</span>
-<span class="s">        },</span>
-<span class="s">    ))</span>
-
-<span class="s">    func main() {</span>
-<span class="s">        addr := flag.String(&quot;addr&quot;, &quot;:8080&quot;, &quot;server address&quot;)</span>
-<span class="s">        peers := flag.String(&quot;pool&quot;, &quot;http://localhost:8080&quot;, &quot;server pool list&quot;)</span>
-<span class="s">        flag.Parse()</span>
-<span class="s">        http.HandleFunc(&quot;/color&quot;, func(w http.ResponseWriter, r *http.Request) {</span>
-<span class="s">            color := r.FormValue(&quot;name&quot;)</span>
-<span class="s">            var b []byte</span>
-<span class="s">            err := Group.Get(nil, color, groupcache.AllocatingByteSliceSink(&amp;b))</span>
-<span class="s">            if err != nil {</span>
-<span class="s">                http.Error(w, err.Error(), http.StatusNotFound)</span>
-<span class="s">                return</span>
-<span class="s">            }</span>
-<span class="s">            w.Write(b)</span>
-<span class="s">            w.Write([]byte{&#39;\n&#39;})</span>
-<span class="s">        })</span>
-<span class="s">        p := strings.Split(*peers, &quot;,&quot;)</span>
-<span class="s">        pool := groupcache.NewHTTPPool(p[0])</span>
-<span class="s">        pool.Set(p...)</span>
-<span class="s">        http.ListenAndServe(*addr, nil)</span>
-<span class="s">    }</span>
-<span class="s">    EOF</span>
+<span class="s">func main() {</span>
+<span class="s">    addr := flag.String(&quot;addr&quot;, &quot;:8080&quot;, &quot;server address&quot;)</span>
+<span class="s">    peers := flag.String(&quot;pool&quot;, &quot;http://localhost:8080&quot;, &quot;server pool list&quot;)</span>
+<span class="s">    flag.Parse()</span>
+<span class="s">    http.HandleFunc(&quot;/color&quot;, func(w http.ResponseWriter, r *http.Request) {</span>
+<span class="s">        color := r.FormValue(&quot;name&quot;)</span>
+<span class="s">        var b []byte</span>
+<span class="s">        err := Group.Get(nil, color, groupcache.AllocatingByteSliceSink(&amp;b))</span>
+<span class="s">        if err != nil {</span>
+<span class="s">            http.Error(w, err.Error(), http.StatusNotFound)</span>
+<span class="s">            return</span>
+<span class="s">        }</span>
+<span class="s">        w.Write(b)</span>
+<span class="s">        w.Write([]byte{&#39;\n&#39;})</span>
+<span class="s">    })</span>
+<span class="s">    p := strings.Split(*peers, &quot;,&quot;)</span>
+<span class="s">    pool := groupcache.NewHTTPPool(p[0])</span>
+<span class="s">    pool.Set(p...)</span>
+<span class="s">    http.ListenAndServe(*addr, nil)</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
 </pre></div>
 
 <p>Let's compile this with <strong>scone-gccgo</strong>:</p>
