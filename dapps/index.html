@@ -2361,7 +2361,7 @@ by executing</p>
 
 <p>We can execute this image on a SGX-capable host. This host has to have the SCONE local attestation service (LAS) and Docker installed. We describe in the <a href="../sgxinstall/">installation section</a> on how to install SGX driver and how to install LAS <a href="../LASIntro/">here</a>.</p>
 <div class="admonition note">
-<p class="admonition-title">Compatibility</p>
+<p class="admonition-title">Compatibility of LAS and CAS</p>
 <p>If you are using one of our public CAS as a <code>secretManagementService</code> (it is current default behavior of our images),  please insure that your local version of LAS has at least same major version as CAS that you are accessing. Current default CAS has version <code>4.2.1</code>, so your local LAS has to be <code>4.*</code>.</p>
 </div>
 <p>In what follows, we assume that the name of the host is stored in environment variable <strong>host</strong>.</p>
@@ -2406,7 +2406,7 @@ since <strong>docker run</strong> does not pull/update the image.</p>
 We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 Now, execute the command on <strong>host</strong> and we ask it to be pushed to <strong>free.keep.sh</strong>:</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
-<span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>docker run -t --device<span class="o">=</span>/dev/isgx --rm registry.scontain.com:5050/sconecuratedimages/dapps:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>  --push free.keep.sh<span class="k">)</span>
+<span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>docker run -t --device<span class="o">=</span>/dev/isgx --network host --rm registry.scontain.com:5050/sconecuratedimages/dapps:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>  --push free.keep.sh<span class="k">)</span>
 </pre></div>
 
 <p>Let's look at the output:</p>
@@ -2438,7 +2438,7 @@ Now, execute the command on <strong>host</strong> and we ask it to be pushed to 
 <p>Now that you know how our example works, it is time to present you CLIs that we ship with our images. These CLIs have enough options that you can configure them in according to your needs.</p>
 <p>A CLI included into <strong>registry.scontain.com:5050/sconecuratedimages/dapps:copy_dapp_cli</strong>
 <div class="highlight"><pre><span></span>scone.sh: a utility to either push encrypted files or decrypt result files
-<span class="o">(</span>C<span class="o">)</span> Scontain.com, <span class="m">2018</span>. See https://sconedocs.github.io
+<span class="o">(</span>C<span class="o">)</span> Scontain.com, <span class="m">2021</span>. See https://sconedocs.github.io
 
 Usage: decrypt <span class="o">[</span>options<span class="o">]</span>
      --help   This usage statement
@@ -2453,6 +2453,8 @@ Encrypt mode:
            <span class="nb">read</span> session template from <span class="nb">local</span> path like /conf/sessiontemplate
      -r,  --remoteFileSystem TRANSFER
            hostname and port of service used to transfer files <span class="o">[</span>default: free.keep.sh<span class="o">]</span>
+     -k, --insecure
+           permits insecure SSL connections with remoteFileSystem
      -v,  --verbose
            print progress messages
      --help
@@ -2469,9 +2471,24 @@ Decrypt mode:
 </pre></div></p>
 <p>And a CLI included into <strong>registry.scontain.com:5050/sconecuratedimages/dapps:copy_dapp_runtime</strong></p>
 <div class="highlight"><pre><span></span>application.sh a utility to demonstrate how to push volumes to remote applications
-<span class="o">(</span>C<span class="o">)</span> Scontain UG, www.scontain.com,  www.sconedocs.github.io
+<span class="o">(</span>C<span class="o">)</span> Scontain.com, <span class="m">2021</span>. See https://sconedocs.github.io
 
-Usage: application.sh --secretManagementService ADDRESS --url URL --sessionID SESSION --push TRANSFER_SERVICE <span class="o">(</span>default:free.keep.sh<span class="o">)</span>
+     -s, --secretManagementService ADDRESS
+           IP address or name of SCONE secret management service <span class="o">[</span>default <span class="o">]</span>
+     -u, --url URL
+           <span class="nb">read</span> session template from <span class="nb">local</span> path like /conf/sessiontemplate
+     -p,  --push TRANSFER_SERVICE
+           hostname and port of service used to push encrypted output files <span class="o">[</span>default: free.keep.sh<span class="o">]</span>
+     -s,  --sessionID SESSION
+           ID of the session uploaded to secretManagementService
+     -k, --insecure
+           permits insecure SSL connections with TRANSFER_SERVICE
+     -v,  --verbose
+           print progress messages
+     --help
+           application.sh usage statement
+
+  Example: application.sh --sessionID <span class="m">60534003595811684552131953</span>/application --secretManagementService <span class="m">150</span>.165.85.86  --url https://free.keep.sh/KmdrBEvGKM66Jd04/scone-upload.zip --push free.keep.sh
 </pre></div>
                 
                   
