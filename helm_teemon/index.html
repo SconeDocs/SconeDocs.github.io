@@ -1958,14 +1958,16 @@
                 
                 
                 <h1 id="deploying-teemon">Deploying TEEMon</h1>
-<p><a href="../teemon/">TEEMon</a> is our monitoring infrastructure for Kubernetes clusters. TEEMon provides fine-grained performance metrics during runtime, including SGX metrics like free EPC pages and pages evicted to main memory. It is integrated with several open-source tools:  Prometheus, Grafana and Node Exporter. We also added a special exporter for SGX-related metrics.</p>
+<p><a href="../teemon/">TEEMon</a> is our monitoring infrastructure for Kubernetes clusters. TEEMon provides fine-grained performance metrics during runtime, including SGX metrics like free EPC pages and pages evicted to main memory. It is integrated with several open-source tools: Prometheus, Grafana and Node Exporter. We also added a special exporter for SGX-related metrics.</p>
 <div class="admonition info">
 <p class="admonition-title">Prerequisites</p>
 <ul>
 <li>A <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> cluster and you deployed <a href="../helm/">helm</a> and the <a href="../helm_sgxdevplugin/">Kubernetes SGX plugin</a></li>
+https://kubernetes.io/">Kubernetes</span> cluster</li>
+<li><a href="../helm/">Helm</a> is deployed</li>
+<li><a href="../helm_sgxdevplugin/">Kubernetes SGX plugin</a> is installed</li>
 <li>We granted you access to <span data-tooltip="sconeapps is a repo with helm charts to install SCONE-based confidential applications like LAS, CAS and MariaDB.">sconeapps</span> and <code>TEEMon</code> container images</li>
-<li>You have installed the <a href="../sgxinstall/">metrics SGX driver extension</a></li>
+<li><a href="../sgxinstall/">Metrics SGX driver extension</a> is installed</li>
 </ul>
 </div>
 <div class="admonition note">
@@ -1973,8 +1975,8 @@ https://kubernetes.io/">Kubernetes</span> cluster and you deployed <a href="../h
 <p>TEEMon collects SGX-related metrics that are provided by our SGX Driver <a href="../sgxinstall/">metrics</a> extension. In Kubernetes clusters without this driver extension (like on AKS), TEEMon will not run correctly.</p>
 </div>
 <h2 id="deployment">Deployment</h2>
-<p>The monitoring framework runs in native mode. Hence, we delegate the secret management of TEEMon to Kubernetes. 
-Grafana requires an admin password. Hence, we need to set an admin username and password as a Kubernetes secret named <code>teemon</code>.  We set <code>MY_PASSWORD</code> to a new random password first and then create a new secret:</p>
+<p>The monitoring framework runs in native mode. Hence, we delegate the secret management of TEEMon to Kubernetes.
+Grafana requires an admin password. Hence, we need to set an admin username and password as a Kubernetes secret named <code>teemon</code>. We set <code>MY_PASSWORD</code> to a new random password first and then create a new secret:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">MY_PASSWORD</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">32</span><span class="k">)</span>
 kubectl create secret generic teemon --from-literal<span class="o">=</span><span class="nv">username</span><span class="o">=</span>admin --from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MY_PASSWORD</span><span class="s2">&quot;</span>
 </pre></div>
@@ -1993,7 +1995,7 @@ kubectl create secret generic teemon --from-literal<span class="o">=</span><span
 <h2 id="dashboard">Dashboard</h2>
 <p><a href="../teemon/">TEEMon</a> provides out of the box three dashboards:</p>
 <ul>
-<li>an <strong>SGX dashboard</strong> to  show resource metrics related to Intel SGX:</li>
+<li>an <strong>SGX dashboard</strong> to show resource metrics related to Intel SGX:</li>
 </ul>
 <p><center>
 <img alt="SCONE Workflow" src="../img/SGX_dashboard.png#fullwidth" title="Dashboard shows SGX-related metrics" />
@@ -2005,7 +2007,7 @@ kubectl create secret generic teemon --from-literal<span class="o">=</span><span
 <img alt="SCONE Workflow" src="../img/docker_dashboard.png#fullwidth" title="Dashboard displays metrics related to containers" />
 </center></p>
 <ul>
-<li>an <strong>infrastructure dashboard</strong> to  display resource metrics of the different nodes of a Kubernetes cluster:</li>
+<li>an <strong>infrastructure dashboard</strong> to display resource metrics of the different nodes of a Kubernetes cluster:</li>
 </ul>
 <p><center>
 <img alt="SCONE Workflow" src="../img/infrastructure_dashboard.png#fullwidth" title="Dashboard displays node related statistics" />

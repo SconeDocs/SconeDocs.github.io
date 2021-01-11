@@ -1988,16 +1988,25 @@
                 <h1 id="kubernetes-sgx-plugin-sgxdevplugin">Kubernetes SGX Plugin (sgxdevplugin)</h1>
 <div class="admonition info">
 <p class="admonition-title">Prerequisites</p>
-<p>A <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> cluster and the <a href="../helm/">helm setup</a> was already performed.</p>
+<ul>
+<li>A <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> cluster</li>
+<li><a href="../helm/">Helm setup</a> was performed</li>
+</ul>
 </div>
 <h2 id="background">Background</h2>
-<p>Your Kubernetes cluster might be heterogeneous, i.e., it might contain nodes with  different capabilities. Hence, some of the nodes might have SGX version 1 support and some might have full SGX version 2 support and some might have partial SGX version 2 support and some servers might have no SGX support at all. With SCONE, you can run the same binary on version 1 or version 2 hosts. Depending on the version of your CPU and your SGX driver, you might see devices <code>/dev/sgx</code> (DCAP) or <code>/dev/isgx</code> (IAS) or ... . You should not - and you do not -  need to care about about these details.</p>
-<p>SCONE will find the right SGX device and will adjust its behavior depending on the kind of CPU you are running on. When scheduling your confidential application on a cluster, you ideally want to just specify that you need SGX support. Of course, in addition to this basic scheduling on a SGX-capable node, you can use all the niceties of Kubernetes, like  <code>affinity</code> and <code>tolerations</code>, to optimize the scheduling.</p>
-<p>To access the SGX device in a Kubernetes cluster, you might need to run the containers in <strong>privileged</strong> mode.  Of course, one wants to avoid running applications in privileged mode. Our Kubernetes SGX plugin allows you to run containers accessing the SGX device without requiring privileged mode. Note, however, that the plugin has to run as a privileged container itself.</p>
-<p>If you prefer to run without this plugin, you can do so as we describe in this <a href="../hello_world_kubernetes/">tutorial</a>. Note, however, that our <code>sconeapps</code> helm charts expect this Kubernetes SGX plugin.</p>
+<p>Your <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> cluster might be heterogeneous, i.e., it might contain nodes with different capabilities. Hence, some of the nodes might have SGX version 1 support and some might have full SGX version 2 support and some might have partial SGX version 2 support and some servers might have no SGX support at all. With SCONE, you can run the same binary on version 1 or version 2 hosts. Depending on the version of your CPU and your SGX driver, you might see devices <code>/dev/sgx</code> (DCAP) or <code>/dev/isgx</code> (IAS) or ... . You should not - and you do not -  need to care about about these details.</p>
+<p>SCONE will find the right SGX device and will adjust its behavior depending on the kind of CPU you are running on. When scheduling your confidential application on a cluster, you ideally want to just specify that you need SGX support. Of course, in addition to this basic scheduling on a SGX-capable node, you can use all the niceties of <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span>, like  <code>affinity</code> and <code>tolerations</code>, to optimize the scheduling.</p>
+<p>To access the SGX device in a <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> cluster, you might need to run the containers in <strong>privileged</strong> mode. Of course, one wants to avoid running applications in privileged mode. Our <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> SGX plugin allows you to run containers accessing the SGX device without requiring privileged mode. Note, however, that the plugin has to run as a privileged container itself.</p>
+<p>If you prefer to run without this plugin, you can do so as we describe in this <a href="../hello_world_kubernetes/">tutorial</a>. Note, however, that our <code>sconeapps</code> helm charts expect this <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> SGX plugin.</p>
 <h2 id="usage">Usage</h2>
-<p>We provide a plugin for Kubernetes that permits containers to access the SGX device without having privileged access. You will just need to specify that your container requires access to a SGX device. You need, however, give this container access to <code>RAWIO</code>.</p>
+<p>We provide a plugin for <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> that permits containers to access the SGX device without having privileged access. You will just need to specify that your container requires access to a SGX device. However, you need to give this container access to <code>RAWIO</code>.</p>
 <p>You can specify that a container (<code>MariaDB</code>) of your Pod <code>db</code> requires access to SGX as follows:</p>
 <div class="highlight"><pre><span></span>apiVersion: v1
 kind: Pod
@@ -2016,27 +2025,30 @@ spec:
 </pre></div>
 
 <p>With <code>sgx</code> you say that any SGX device is fine for your applications. This should be the default with SCONE-based applications.</p>
-<p>In case you need to run on a machine which has a DCAP-based attestation, you can  specify as follows:</p>
+<p>In case you need to run on a machine which has a DCAP-based attestation, you can specify as follows:</p>
 <div class="highlight"><pre><span></span>        limits:
           sgx.k8s.io/dcap: 1   # Requires DCAP-based attestation
 </pre></div>
 
-<p>In case you need to run on a machine which has an IAS-based attestation, you can  specify as follows:</p>
+<p>In case you need to run on a machine which has an IAS-based attestation, you can specify as follows:</p>
 <div class="highlight"><pre><span></span>        limits:
           sgx.k8s.io/ias: 1   # Requires IAS-based attestation
 </pre></div>
 
-<h2 id="deploying-kubernetes-sgx-plugin">Deploying Kubernetes SGX Plugin</h2>
-<p>The <code>sconeapps/sgx_plugin</code> chart will deploy  the Kubernetes SGX Plugin in your cluster.
+<h2 id="deploying-kubernetes-sgx-plugin">Deploying <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> SGX Plugin</h2>
+<p>The <code>sconeapps/sgx_plugin</code> chart will deploy the <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> SGX plugin in your cluster.
 You can just execute:</p>
 <div class="highlight"><pre><span></span>helm install sgxdevplugin sconeapps/sgxdevplugin
 </pre></div>
 
-<p>This starts the Kubernetes SGX plugin in the default <span data-tooltip="An open source container orchestration platform. More information at
+<p>This starts the <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> SGX plugin in the default <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> namespace. This will limit the number
 of SGX devices per node to 20 (default). If you want to run more enclaves per node, please increase the
 the value.  </p>
-<p>To increase the maximum allocatable SGX devices per node, please increase the value of <code>maxSGXPods</code>. 
+<p>To increase the maximum allocatable SGX devices per node, please increase the value of <code>maxSGXPods</code>.
 You can set this value by executing:</p>
 <div class="highlight"><pre><span></span>helm install sgxdevplugin sconeapps/sgxdevplugin  --set <span class="nv">maxSGXPods</span><span class="o">=</span><span class="m">100</span>
 </pre></div>
@@ -2046,7 +2058,8 @@ You can set this value by executing:</p>
 </pre></div>
 
 <h2 id="checking-status-of-sgx-devices">Checking Status of SGX devices</h2>
-<p>You can check the number of allocatable SGX devices on all nodes of your Kubernetes cluster as follows:</p>
+<p>You can check the number of allocatable SGX devices on all nodes of your <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> cluster as follows:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NODES</span><span class="o">=</span><span class="sb">`</span>kubectl get node --output<span class="o">=</span>name<span class="sb">`</span>
 <span class="k">for</span> N in <span class="nv">$NODES</span><span class="p">;</span> <span class="k">do</span>  <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$N</span><span class="s2">:&quot;</span> <span class="p">;</span> kubectl get <span class="nv">$N</span> -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.allocatable}&#39;</span> <span class="p">;</span> <span class="nb">echo</span> <span class="p">;</span>  <span class="k">done</span>
 </pre></div>

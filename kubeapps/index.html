@@ -2044,32 +2044,29 @@
                 <h1 id="kubeapps">Kubeapps</h1>
 <p><a href="https://kubeapps.com/">Kubeapps</a> is a dashboard for <a href="../helm/">helm</a>.
 You can use <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
-deploy and manage SCONE-based confidential applications.">Kubeapps</span>   to deploy and manage your confidential applications.
-While we expect that most confidential applications will be deployed via the <a href="../helm/">helm</a> <span data-tooltip="A Command Line Interface (CLI) is a textual interface to a computer. It is useful for scripting (i.e., automation) and typically, used for system and service administration.">CLI</span>,
-using a dashboard is a convenient way to inspect the running confidential as well as native applications. Moreover, the dashboard informs you when updates of the applications are available to be installed.</p>
+deploy and manage SCONE-based confidential applications.">Kubeapps</span> to deploy and manage your confidential applications. While we expect that most confidential applications will be deployed via the <a href="../helm/">helm</a> <span data-tooltip="A Command Line Interface (CLI) is a textual interface to a computer. It is useful for scripting (i.e., automation) and typically, used for system and service administration.">CLI</span>, using a dashboard is a convenient way to inspect the running confidential as well as native applications. Moreover, the dashboard informs you when updates of the applications are available to be installed.</p>
 <div class="admonition info">
 <p class="admonition-title">Prerequisites</p>
-<p>A <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> cluster and the <a href="../helm/">helm setup</a> was already performed.</p>
+<ul>
+<li>A <span data-tooltip="An open source container orchestration platform. More information at
+https://kubernetes.io/">Kubernetes</span> cluster</li>
+<li><a href="../helm/">Helm setup</a> was performed</li>
+</ul>
 </div>
 <h2 id="deploy-and-manage">Deploy and Manage</h2>
-<p>We provide a catalog with <code>sconeapps</code>, i.e., curated, confidential applications that can
-be installed with the help of <a href="../helm/">helm</a> or via point and click using Kubeapps.</p>
+<p>We provide a catalog with <code>sconeapps</code>, i.e., curated, confidential applications that can be installed with the help of <a href="../helm/">helm</a> or via point and click using Kubeapps.</p>
 <p>Kubeapps provides you with a view of available <code>sconeapps</code>, like this:</p>
 <p><center>
 <img alt="SCONE Workflow" src="../img/KubeAppsCatalog.png#fullwidth" title="Deploy Sconeapps with Kubeapps" />
 </center></p>
 <p>You can select an application that you want to start and deploy it as described below.</p>
 <h2 id="deploy-a-sconeapp">Deploy a sconeapp</h2>
-<p>When deploying an application, you can customize its configuration values. For example, for
-LAS, i.e., the SCONE's local attestation service, you will be able to configure the 
-parameters of the Helm chart that is used to install this application:</p>
+<p>When deploying an application, you can customize its configuration values. For example, for LAS, SCONE's local attestation service, you will be able to configure the parameters of the Helm chart that is used to install this application:</p>
 <p><center>
 <img alt="SCONE Workflow" src="../img/KubeAppsStartingLAS.png#fullwidth" title="Deploy Sconeapps with Kubeapps" />
 </center></p>
 <h2 id="inspecting-applications">Inspecting Applications</h2>
-<p>Kubeapps is a dashboard that can show you all running applications. You can select an
-application for inspection.</p>
+<p>Kubeapps is a dashboard that can show you all running applications. You can select an application for inspection.</p>
 <p><center>
 <img alt="SCONE Workflow" src="../img/KubeAppsApplications.png#fullwidth" title="Dashboard shows all running applications" />
 </center></p>
@@ -2079,14 +2076,13 @@ application for inspection.</p>
 <img alt="SCONE Workflow" src="../img/KubeAppsLAS.png#fullwidth" title="Dashboard shows all running applications" />
 </center></p>
 <h2 id="software-updates">Software Updates</h2>
-<p>Kubeapps shows that software updates are available in the dashboard view as well as for the
-individual applications:</p>
+<p>Kubeapps shows that software updates are available in the dashboard view as well as for the individual applications:</p>
 <p>center&gt;
 <img alt="SCONE Software Update" src="../img/app-update.png#fullwidth" title="Dashboard indicates when a software update is available." />
 </center></p>
-<p>Note that before you press <strong>Upgrade</strong>, you need to ensure that your policy permits this upgrade: This requires that your policy is set up to permit software updates. If software updates are not permitted, the services will not be permitted to get access to its secrets. Hence, one would need to downgrade the service again.</p>
+<p>Note that before you press <strong>Upgrade</strong>, you need to ensure that your policy permits this upgrade. This requires that your policy is set up to permit software updates. If software updates are not permitted, the services will not be permitted to get access to its secrets. Hence, one would need to downgrade the service again.</p>
 <h2 id="deploying-kubeapps">Deploying Kubeapps</h2>
-<p><code>sconeapps</code> is a private Helm repository. Hence, we need to grant you access and you need a GitHub token  to access the <code>sconeapps</code> repo.</p>
+<p><code>sconeapps</code> is a private Helm repository. Hence, we need to grant you access and you need a GitHub token to access the <code>sconeapps</code> repo.</p>
 <p>Define an environment variable that contains this token:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GH_TOKEN</span><span class="o">=</span>...
 </pre></div>
@@ -2113,16 +2109,14 @@ helm install -f kubeapps_values.yml kubeapps --namespace kubeapps bitnami/kubeap
 </pre></div>
 
 <h2 id="port-forwarding">Port Forwarding</h2>
-<p>To display the dashboard on your browser, you need to forward the kubeapp port to your
-local machine. Say, you want to present this on <code>localhost:8080</code>, then you can forward the
-kubeapp port as follows:</p>
-<div class="highlight"><pre><span></span>kubectl port-forward -n kubeapps services/kubeapps <span class="m">8090</span>:80
+<p>To display the dashboard on your browser, you need to forward the kubeapp port to your local machine. Say, you want to present this on <code>localhost:8080</code>, then you can forward the kubeapp port as follows:</p>
+<div class="highlight"><pre><span></span>kubectl port-forward -n kubeapps services/kubeapps <span class="m">8080</span>:80
 </pre></div>
 
 <p>The Kubeapps dashboard can now be viewed at:</p>
-<p><a href="http://localhost:8090/">http://localhost:8090/</a></p>
+<p><a href="http://localhost:8080/">http://localhost:8080/</a></p>
 <h2 id="access-control">Access Control</h2>
-<p>For production mode, you should define a Role-based Access Control. For testing, you might want to create a simple service account:</p>
+<p>For production mode, you should define a role-based access control. For testing, you might want to create a simple service account:</p>
 <div class="highlight"><pre><span></span>kubectl create serviceaccount kubeapps-operator
 kubectl create clusterrolebinding kubeapps-operator --clusterrole<span class="o">=</span>cluster-admin --serviceaccount<span class="o">=</span>default:kubeapps-operator
 </pre></div>

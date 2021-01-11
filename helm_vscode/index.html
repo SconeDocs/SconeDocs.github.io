@@ -2022,10 +2022,7 @@
                 
                 
                 <h1 id="visual-studio-code-and-scone-crosscompiler">Visual Studio Code and SCONE CrossCompiler</h1>
-<p><a href="https://code.visualstudio.com/">Visual Studio Code</a> is one of our favorite editors.
-Hence, we combine Visual Studio Code with our SCONE CrossCompiler. We also activate some useful 
-programming language extensions. We also activate a <code>code runner</code> extension:
-one can compile and run a confidential application with a single click.</p>
+<p><a href="https://code.visualstudio.com/">Visual Studio Code</a> is one of our favorite editors. Hence, we combine Visual Studio Code with our SCONE CrossCompiler. We also activate some useful programming language extensions. We also activate a <code>code runner</code> extension; one can compile and run a confidential application with a single click.</p>
 <p><center>
 <img alt="VS Code and SCONE CrossCompiler" src="../img/vscode.png#fullwidth" title="We support execution of Visual Studio Code combined with our SCONE CrossCompiler in a Kubernetes Cluster" />
 </center></p>
@@ -2034,7 +2031,9 @@ one can compile and run a confidential application with a single click.</p>
 <p class="admonition-title">Prerequisites</p>
 <ul>
 <li>A <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> cluster and you deployed <a href="../helm/">helm</a> and the <a href="../helm_sgxdevplugin/">Kubernetes SGX plugin</a></li>
+https://kubernetes.io/">Kubernetes</span> cluster</li>
+<li><a href="../helm/">Helm</a> is deployed</li>
+<li><a href="../helm_sgxdevplugin/">Kubernetes SGX plugin</a> is insatlled</li>
 <li>We granted you access to the <span data-tooltip="sconeapps is a repo with helm charts to install SCONE-based confidential applications like LAS, CAS and MariaDB.">sconeapps</span> repo and to the SCONE IDE images</li>
 </ul>
 </div>
@@ -2043,19 +2042,16 @@ a password to log in, you need to set this password as a Kubernetes secret named
 <div class="highlight"><pre><span></span>kubectl create secret generic ide-secret --from-literal<span class="o">=</span><span class="nv">PASSWORD</span><span class="o">=</span>New-password
 </pre></div>
 
-<p>Please replace <code>New-password</code> by a new, strong password.</p>
-<p>While we do not run Visual Code inside of SGX enclaves, we schedule it on a SGX-capable node (using the <a href="../helm_sgxdevplugin/">SGX Plugin</a>) to ensure
-that we can run the compiled code inside of SGX enclaves. You can deploy an instance by executing:</p>
+<p>Please replace <code>New-password</code> with a new, strong password.</p>
+<p>While we do not run Visual Code inside of SGX enclaves, we schedule it on a SGX-capable node (using the <a href="../helm_sgxdevplugin/">SGX Plugin</a>) to ensure that we can run the compiled code inside of SGX enclaves. You can deploy an instance by executing:</p>
 <div class="highlight"><pre><span></span>helm install vscode sconeapps/vscode
 </pre></div>
 
-<p>To display Visual Code Studio in your browser, you need to forward the service port to your
-local machine. Say, you want to present this on <code>localhost:8081</code>, then you can forward the
-service port as follows:</p>
+<p>To display Visual Code Studio in your browser, you need to forward the service port to your local machine. Say, you want to present this on <code>localhost:8081</code>, then you can forward the service port as follows:</p>
 <div class="highlight"><pre><span></span>kubectl port-forward svc/vscode <span class="m">8081</span>:8081
 </pre></div>
 
-<p>The Visual Studio instance, can now be viewed at:</p>
+<p>The Visual Studio instance can now be viewed at:</p>
 <p><a href="http://localhost:8081/">http://localhost:8081/</a></p>
 <p>Please use different Kubernetes namespaces (i.e., add <code>-n MyNameSpace</code> in the commands) in case you want to run multiple instances of Visual Code Studio.</p>
 <h2 id="usage">Usage</h2>
@@ -2069,9 +2065,8 @@ service port as follows:</p>
 </ul>
 <p>If you need support for another programming languages, send us an email.</p>
 <h2 id="configuration">Configuration</h2>
-<p>By default, path <code>/home/scone/workspace</code> is mapped to a persistent volume. The files are not encrypted, e.g., the files are accessible admins of the host on which the container is executing.  This chart uses the SCONE SGX Plugin to ensure that binaries generated with the help
-of vscode can run inside of enclaves. Note that vscode itself is executing in native mode.</p>
-<p>Note that <code>git</code> is included in the Visual Code image and we recommend to use <code>git</code> to ensure the durability of your code.</p>
+<p>By default, path <code>/home/scone/workspace</code> is mapped to a persistent volume. The files are not encrypted, e.g., the files are accessible admins of the host on which the container is executing. This chart uses the SCONE SGX Plugin to ensure that binaries generated with the help of vscode can run inside of enclaves. Note that vscode itself is executing in native mode.</p>
+<p>Note that <code>git</code> is included in the Visual Code image. We recommend the usage of <code>git</code> to ensure the durability of your code.</p>
                 
                   
                 
