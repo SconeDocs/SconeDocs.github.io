@@ -2009,10 +2009,13 @@ docker run -it <span class="nv">$MOUNT_SGXDEVICE</span> -p3000:3000 registry.sco
 </pre></div>
 
 <p>In case you have no sgx driver installed, <strong>the programs will then run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span></strong>, i.e., the SCONE software runs but in native mode and not inside an enclave.</p>
-<p>Inside of the container, we first add <strong>npm</strong>:</p>
-<div class="highlight"><pre><span></span>apk add --no-cache nodejs-npm
-</pre></div>
-
+<div class="admonition warning">
+<p class="admonition-title">Do not add <code>npm</code></p>
+<p>The new node container images have <code>npm</code> already installed.
+If one would add <code>nodejs-npm</code> with <code>apk</code>, the <strong>native</strong> version will be installed and the SCONE version is replaced.
+<div class="highlight"><pre><span></span><span class="c1"># DO NOT EXECUTE apk add --no-cache nodejs-npm #</span>
+</pre></div></p>
+</div>
 <p>Ensure we can run even in a resource-constrainted VM by setting the maximum heap size to a reasonable value of 1GB:</p>
 <div class="highlight"><pre><span></span>export SCONE_HEAP=1G
 </pre></div>
