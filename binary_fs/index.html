@@ -1660,8 +1660,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#a-note-on-patchelf" title="A Note on Patchelf" class="md-nav__link">
-    A Note on Patchelf
+  <a href="#what-executables-are-supported" title="What executables are supported" class="md-nav__link">
+    What executables are supported
   </a>
   
 </li>
@@ -2002,8 +2002,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#a-note-on-patchelf" title="A Note on Patchelf" class="md-nav__link">
-    A Note on Patchelf
+  <a href="#what-executables-are-supported" title="What executables are supported" class="md-nav__link">
+    What executables are supported
   </a>
   
 </li>
@@ -2161,7 +2161,8 @@ strace -o strace.log -f <span class="nv">$EXECUTABLE</span>
 grep <span class="s2">&quot;open&quot;</span> strace.log
 </pre></div>
 
-<p>The output will then show which files the binary has accessed. Be sure to include these files in the binary fs to make your application funciton properly.</p>
+<p>The output will then show which files the binary has accessed. Be sure to include these files in the binary fs to make your application function properly.
+Note that you do <strong>not</strong> have to include files that are already dependencies of your binary; i.e., do not include files that appear in <code>ldd $(which your_binary)</code>.</p>
 <h2 id="possible-networking-problems">Possible Networking Problems</h2>
 <p>Note that the <code>binary-fs</code> will not have access to <code>/etc/</code> files which are only available at deployment on e.g. a cluster. These files may include <code>/etc/resolv.conf</code>, which your service needs to access the DNS. If you are deploying your service with <code>binary-fs</code> to a Kubernetes cluster, include the following injection file in your policy for <code>resolv.conf</code>:</p>
 <div class="highlight"><pre><span></span><span class="nt">images</span><span class="p">:</span>
@@ -2177,8 +2178,12 @@ grep <span class="s2">&quot;open&quot;</span> strace.log
 </pre></div>
 
 <p>This addresses the Cluster's <code>CoreDNS</code> service, with which your service will be able to address other services within the Cluster.</p>
-<h2 id="a-note-on-patchelf">A Note on Patchelf</h2>
-<p>We do <strong>not</strong> officially support <code>patchelf</code>. <code>patchelf</code> does not always function as we expect, and it has not been thoroughly maintained. In particular, for some executables, e.g., mariaDB and memcached, linking in <code>.so</code> files using <code>patchelf</code> will cause a segmentation fault error upon executing the patched executable. We have found <code>patchelf</code> to work with Python and NGINX. We are working on an official alternative.</p>
+<h2 id="what-executables-are-supported">What executables are supported</h2>
+<p>Currently, only binaries compiled as position-independent code (pie) can use the binary fs. For all other binaries, applying the binary fs may result in the binary having segmentation fault errors or the binary ignoring the binary fs. To ensure your binary is compatible, execute <code>file $(which your_binary)</code> and check the output if it is a pie executable. To illustrate:
+<div class="highlight"><pre><span></span>$ file <span class="k">$(</span>which python3.7<span class="k">)</span>
+/usr/bin/python3.7: ELF <span class="m">64</span>-bit LSB pie executable, x86-64, version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked, interpreter /opt/scone/lib/ld-scone-x86_64.so.1, bad note name size 0xb57f3448, bad note name size 0xb57f3448, stripped
+<span class="c1"># pie executable -&gt; binary fs compatible</span>
+</pre></div></p>
                 
                   
                 
