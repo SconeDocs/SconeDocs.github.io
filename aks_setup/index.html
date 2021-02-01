@@ -372,8 +372,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../helm/" title="Deploying Helm" class="md-nav__link">
-      Deploying Helm
+    <a href="../helm/" title="SconeApps" class="md-nav__link">
+      SconeApps
     </a>
   </li>
 
@@ -1911,21 +1911,26 @@
                 
                 
                 <h1 id="aks-setup">AKS Setup</h1>
-<p>SCONE-based confidential applications can be deploy  with <a href="../helm/"><code>helm</code></a>, i.e., the Kubernetes Package Manager on AKS. To do so, you need to</p>
-<ul>
-<li>ensure <code>helm</code> has access to our <strong>helm charts</strong>: <a href="../helm/">helm installation</a></li>
-<li>ensure that the <strong>SCONE SGX Plugin</strong> is installed: <a href="../helm_sgxdevplugin/">plugin installation</a></li>
-<li>ensure that our <strong>SCONE LAS</strong> (local attestation service) is installed: <a href="../helm_las/">LAS installation</a></li>
-</ul>
 <div class="admonition note">
 <p class="admonition-title">Simplified Deployment</p>
-<p>In the near future, we will also support the native AKS SGX Plugin, i.e., if the SCONE SGX Plugin is not installed, we will use the AKS SGX Plugin instead. Also, if the LAS service is not installed, we will in future be able to use the service offered by AKS. In this way, getting started will become even easier. <strong>For now, please install the SCONE SGX Plugin and SCONE LAS</strong>.</p>
+<p>In our <a href="../helm/">SconeApps</a>, we also support the native AKS SGX Plugin, i.e., the is no need  to install the SCONE Kubernetes plugin on AKS.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">MAA-based attestation</p>
+<p>Right now, SCONE-based confidential services are attested using DCAP or EPID-based attestation. In the very near future, one can enable Microsoft Azure Attestation (MAA) in a confidential service's CAS policy. Using a policy, one can also securely pass the MAA token to the confidential service.</p>
+</div>
+<p>SCONE-based confidential applications can be deploy  with <a href="../helm/"><code>helm</code></a>, i.e., the Kubernetes Package Manager on AKS. To do so, you need to</p>
+<ul>
+<li>ensure <code>helm</code> has access to our <strong>SconeApps helm charts</strong>: <a href="../helm/">SconeApps</a></li>
+<li>ensure that our <strong>SCONE LAS</strong> (local attestation service) is installed with helm: <a href="../helm_las/">LAS installation</a></li>
+</ul>
 <p>AKS is compatible with <code>helm</code>, i.e., one can deploy applications with <code>helm</code> as soon as your confidential AKS cluster is running.
-To set up an AKS cluster, use the AKS command line interface. A quick walk-through on how to deploy a Kubernetes cluster and how to deploy applications on AKS, please follow this <a href="https://docs.microsoft.com/en-us/azure/confidential-computing/confidential-nodes-aks-getstarted">description</a>.</p>
+You need to specify <code>--useSGXDevPlugin=azure</code> to use the Azure SGX Plugin and  <code>--set sgxEpcMem=16</code> (in MiB) to specify the required EPC size. 
+We support a variety of <a href="../helm/">helm charts</a>: we provide confidential variants of <strong>mariadb, maxscale, memcached, nginx, openvino, pytorch, spark, teemon, tensorflow, TensorFlowLite</strong>, and <strong>Zookeeper</strong>.</p>
+<p>To set up an AKS cluster, use the AKS command line interface. A quick walk-through on how to deploy a Kubernetes cluster and how to deploy applications on AKS, please follow this <a href="https://docs.microsoft.com/en-us/azure/confidential-computing/confidential-nodes-aks-getstarted">description</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Compatibility</p>
-<p>Note that our SCONE services will stay compatible with any Kubernetes cluster, i.e., you could deploy some confidential services on your own Kubernetes cluster while others run on AKS. Deploying with <code>helm</code> makes it very easy to redeploy workloads on a different Kubernetes cluster, like, moving service from your private cluster to AKS, or vice versa.</p>
+<p>Note that SCONE confidential services will stay compatible with any Kubernetes cluster, i.e., you can deploy some confidential services on your own Kubernetes cluster while others run on AKS. On AKS, you can enable additional Azure services in the policy, like, using MAA for attestation. Deploying with <code>helm</code> makes it very easy to redeploy workloads on a different Kubernetes cluster, like, moving service from your private cluster to AKS.</p>
 </div>
                 
                   
