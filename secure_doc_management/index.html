@@ -360,8 +360,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../operations/" title="Issues" class="md-nav__link">
-      Issues
+    <a href="../operations/" title="Workflows" class="md-nav__link">
+      Workflows
     </a>
   </li>
 
@@ -453,11 +453,11 @@
       <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
     
     <label class="md-nav__link" for="nav-4">
-      Kubernetes SCONE CC
+      SconeApps and Kubernetes
     </label>
     <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
       <label class="md-nav__title" for="nav-4">
-        Kubernetes SCONE CC
+        SconeApps and Kubernetes
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
@@ -2318,7 +2318,7 @@ http {
 <span class="k">CMD</span> sh -c <span class="s2">&quot;python3 /rest_api.py&quot;</span>
 </pre></div>
 
-<p>The binary also requires certain <code>/etc/</code> files for networking within the cluster, e.g., <code>/etc/resolv.conf</code>. Currently, we simply inject these files into the enclaved service using the FastAPI's <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/policy-setup/fastapi_session.yml">policy</a>. This workaround is only temporary- we are working on making these files accessible without file injection while running the service, as the Kubernetes cluster should be able to alter these files during execution.</p>
+<p>The binary also requires certain <code>/etc/</code> files for networking within the cluster, e.g., <code>/etc/resolv.conf</code>. Currently, we simply inject these files into the confidential service using the FastAPI's <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/policy-setup/fastapi_session.yml">policy</a>. This workaround is only temporary- we are working on making these files accessible without file injection while running the service, as the Kubernetes cluster should be able to alter these files during execution.</p>
 <h2 id="code">Code</h2>
 <p>The source code of this example is available on our repository- ask us for permission, and then continue with the following commands:</p>
 <div class="highlight"><pre><span></span>git clone https://gitlab.scontain.com/enterJazz/secure-doc-management.git
@@ -2332,13 +2332,14 @@ http {
 <div class="highlight"><pre><span></span>helm repo add sconeapps https://<span class="si">${</span><span class="nv">GH_TOKEN</span><span class="si">}</span>@raw.githubusercontent.com/scontain/sconeapps/master/
 helm repo update
 </pre></div></p>
-<p>Give SconeApps access to the private docker images (see <a href="../helm/">the helm docs</a>):
+<p>Give SconeApps access to the private docker images (see <a href="../helm/">the helm docs</a>):</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>...
 <span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>...
 <span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>...
 
 kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com:5050 --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
-</pre></div></p>
+</pre></div>
+
 <p>Label your Kubernetes nodes that are <code>sgx</code>-enabled:</p>
 <div class="highlight"><pre><span></span>kubectl label nodes &lt;my-node&gt; <span class="nv">sgx</span><span class="o">=</span>enabled
 </pre></div>
