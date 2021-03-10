@@ -2140,9 +2140,11 @@
                 <h1 id="cas-namespaces">CAS Namespaces</h1>
 <p>Multiple users can share a CAS instance. Since policy names must be unique per CAS instance, there might be conflicts when creating sessions: another user might have already created a session with that name. The standard solution to address such name collisions is to introduce namespaces.</p>
 <p>Sessions can be organized hierarchically by creating them within the <strong>namespace</strong> of another session. Organizations and large teams can benefit from namespaces to structure their sessions and restrict the creation and management of nested sessions to a set of authorized users. If one uses SCONE in the context of Kubernetes, one might want to create a corresponding CAS namespace for each Kubernetes namespace in which one executes confidential services.</p>
+<p>Please note that using CAS namespaces requires <a href="../CAS_session_lang_0_3/">SCONE Session Language v0.3</a> or higher.</p>
 <h2 id="namespace-access-policy">Namespace Access Policy</h2>
 <p>SCONE CAS supports <strong>namespaces</strong>, i.e., a scope for session names, since version 5.1. To create a new namespace, one creates a session with the name of the namespace. By creating a namespace, one automatically controls who can create sessions in this namespace. To control access to namespaces, we added a new access policy option:</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace</span>
+<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
 
 <span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">create_sessions</span><span class="p">:</span>
@@ -2156,6 +2158,7 @@
 <p>To create a new namespace <code>my-namespace</code>, we first create a session description.
 The session description might be stored in a file <code>policy.yml</code> and look like this</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace</span>
+<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
 
 <span class="nt">access_policy</span><span class="p">:</span>
   <span class="nt">read</span><span class="p">:</span>
@@ -2170,13 +2173,15 @@ The session description might be stored in a file <code>policy.yml</code> and lo
 <div class="highlight"><pre><span></span>scone session create policy.yml
 </pre></div>
 
-<p>In order to create session <code>hello-world</code> in the namespace  <code>my-namespace</code>, set the new session's name to:</p>
+<p>In order to create session <code>hello-world</code> in the namespace <code>my-namespace</code>, set the new session's name to:</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace/hello-world</span>
+<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
 </pre></div>
 
 <p>You must have permission to create the session in this namespace.</p>
 <p>Namespaces can be nested. You can use <code>hello-world</code> itself as a namespace.</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace/hello-world/project-1</span>
+<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
 </pre></div>
                 
                   
