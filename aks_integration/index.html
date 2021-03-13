@@ -438,6 +438,18 @@
   </li>
 
         
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../attestation_by_client/" title="Attestation by client" class="md-nav__link">
+      Attestation by client
+    </a>
+  </li>
+
+        
       </ul>
     </nav>
   </li>
@@ -886,6 +898,13 @@
           <li class="md-nav__item">
   <a href="#example" title="Example" class="md-nav__link">
     Example
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#granting-access" title="Granting Access" class="md-nav__link">
+    Granting Access
   </a>
   
 </li>
@@ -2176,6 +2195,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#granting-access" title="Granting Access" class="md-nav__link">
+    Granting Access
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#secret-placeholders" title="Secret Placeholders" class="md-nav__link">
     Secret Placeholders
   </a>
@@ -2240,8 +2266,9 @@
 </ul>
 <p>We will support these features starting with SCONE release 5.3.0.</p>
 <h2 id="aad-token">aad-token</h2>
-<p>CAS can retrieve access tokens for <em>Microsoft Azure Active Directory (AAD)</em>. While they are primarily used to import secrets from <em>Azure Key Vault</em> (see below), they can also be consumed by application services.</p>
+<p>CAS can retrieve access tokens (aad-token) for <em>Microsoft Azure Active Directory (AAD)</em>. While they are primarily used to import secrets from <em>Azure Key Vault</em> (see below), they can also be consumed by application services.</p>
 <h3 id="parameters">Parameters</h3>
+<p>To retrieve an aad-token, one has to specify secrets:</p>
 <ul>
 <li><a href="https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant"><code>tenant_id</code></a>: The ID of an AAD tenant (required)</li>
 <li><code>client_id</code>: The ID of an AAD application of the referenced AAD tenant (required)</li>
@@ -2249,9 +2276,9 @@
 <li><code>application_secret</code>: A shared secret that was registered with AAD</li>
 <li><code>private_key</code> and <code>certificate_thumbprint</code>: A PEM-encoded PKCS#8 RSA private key belonging to a certificate that was registered with AAD, and a thumbprint of this certificate that was returned during registration.</li>
 </ul>
-<div class="admonition note">
+<div class="admonition note granting api permissions">
 <p class="admonition-title">Note</p>
-<p>The AAD application must have application API permissions to access secrets of an Azure Key Vault. For information on how to set up an Azure application for API access, see <a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app">https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app</a>. The Key Vault permissions for the application must then be configured using Azure <a href="https://docs.microsoft.com/en-us/azure/key-vault/general/assign-access-policy-portal">access policies</a> or Azure <a href="https://docs.microsoft.com/en-us/azure/key-vault/general/rbac-guide">role-based access control</a>.</p>
+<p>The application must have application API permissions to access secrets of an Azure Key Vault. For information on how to set up an Azure application for API access, see <a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app">https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app</a>. The Key Vault permissions for the application must then be configured using Azure <a href="https://docs.microsoft.com/en-us/azure/key-vault/general/assign-access-policy-portal">access policies</a> or Azure <a href="https://docs.microsoft.com/en-us/azure/key-vault/general/rbac-guide">role-based access control</a>.</p>
 </div>
 <h3 id="example">Example</h3>
 <p>In a CAS policy, one can define aad-tokens as follows:</p>
@@ -2274,10 +2301,16 @@
       <span class="nt">certificate_thumbprint</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">B033DB596639F3CA02D6537055E85B8EFE060756</span>
 </pre></div>
 
+<div class="admonition note">
+<p class="admonition-title">Protecting the credentials to retrieve the AAD Token</p>
+<p>To protect the credentials define within a policy P, policy P defines who can read P. In quite a few cases, one wants to permit that anybody can read policy <strong>P</strong>. However, one does not want to expose the credentials to retrieve, say, the aad-token <code>ad_token_1</code>.  Our recommendation is to define the credentials to retrieve <code>ad_token_1</code> in a second CAS policy, say, <strong>P2</strong>. Policy <strong>P2</strong> specifies the credentials for <code>ad_token_1</code> and exports <code>ad_token_1</code> to policy <strong>P</strong>. One can define  <strong>P2</strong> such that <strong>nobody</strong> can read <strong>P2</strong>. Policy <strong>P</strong> imports <code>ad_token_1</code> from <strong>P2</strong>. Policy <strong>P2</strong> could state that anybody can read <strong>P2</strong>: a reader would only learn the name <code>ad_token_1</code>, but it would not be able to read token <code>ad_token_1</code> nor the credentials used to retrieve <code>ad_token_1</code>.</p>
+</div>
+<h3 id="granting-access">Granting Access</h3>
+<p>As we already mentioned above, one can limit who can retrieve a policy.</p>
 <h3 id="secret-placeholders">Secret Placeholders</h3>
 <p>Assuming a secret named <code>ad_token_1</code>, use <code>$$SCONE::ad_token_1$$</code> in program arguments, environment variables or secret injection files. AAD token secrets do not support any format suffix. The token can be used to authenticate directly for Microsoft Azure services.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="admonition-title">Token Lifetime</p>
 <p>Tokens are only valid for a limited amount of time (a couple of minutes), which means they can only be used successfully immediately after program start.</p>
 </div>
 <h2 id="azure-key-vault-integration">Azure Key Vault Integration</h2>
@@ -2306,14 +2339,14 @@
 <li><code>token</code>: A reference to an <code>aad-token</code> secret of the form <code>$$SCONE::&lt;secret-name&gt;$$</code>. This token will be used to authenticate requests against the vault. If the session contains exactly one <code>aad-token</code> secret, the parameter is optional, and this secret will be used by default. If the session contains multiple <code>aad-token</code> secrets, the parameter must be specified.</li>
 </ul>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="admonition-title">import vs import_akv</p>
 <p><code>import</code> and <code>import_akv</code> are mutually exclusive.
 The secret's <code>kind</code> is optional and will be inferred if omitted.</p>
 </div>
 <h3 id="secret-placeholders_1">Secret Placeholders</h3>
 <p>Assuming a secret named <code>db_encryption_key</code>, use <code>$$SCONE::db_encryption_key$$</code> in program arguments, environment variables or secret injection files. These secrets support the specified CAS format suffixes. However, PKCS#12-encoded certificates are represented as strings.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="admonition-title">Certificate Representation</p>
 <p>PEM-encoded certificates imported from a key vault will be represented as X.509 secrets. These support format suffix.
 PKCS#12-encoded certificates, on the other hand, will be represented as plain text secrets, i.e. suffixes such as <code>:privatekey</code> <strong>cannot</strong> be used in secret placeholders.</p>
 </div>
