@@ -185,8 +185,8 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="Executive summary" class="md-nav__link">
-      Executive summary
+    <a href=".." title="News and Overview" class="md-nav__link">
+      News and Overview
     </a>
   </li>
 
@@ -384,18 +384,6 @@
           
           
 
-
-  <li class="md-nav__item">
-    <a href="../sconify_image/" title="Sconify Image" class="md-nav__link">
-      Sconify Image
-    </a>
-  </li>
-
-        
-          
-          
-          
-
   
 
 
@@ -433,15 +421,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#scone-file-protection-sconification" title="SCONE File Protection Sconification" class="md-nav__link">
-    SCONE File Protection Sconification
+  <a href="#scone-file-protection" title="SCONE File Protection" class="md-nav__link">
+    SCONE File Protection
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#scone-binary-file-system-sconification" title="SCONE Binary File System Sconification" class="md-nav__link">
-    SCONE Binary File System Sconification
+  <a href="#scone-binary-file-system" title="SCONE Binary File System" class="md-nav__link">
+    SCONE Binary File System
   </a>
   
 </li>
@@ -528,6 +516,18 @@
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sconify_image/" title="Sconify Image" class="md-nav__link">
+      Sconify Image
+    </a>
   </li>
 
         
@@ -2245,15 +2245,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#scone-file-protection-sconification" title="SCONE File Protection Sconification" class="md-nav__link">
-    SCONE File Protection Sconification
+  <a href="#scone-file-protection" title="SCONE File Protection" class="md-nav__link">
+    SCONE File Protection
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#scone-binary-file-system-sconification" title="SCONE Binary File System Sconification" class="md-nav__link">
-    SCONE Binary File System Sconification
+  <a href="#scone-binary-file-system" title="SCONE Binary File System" class="md-nav__link">
+    SCONE Binary File System
   </a>
   
 </li>
@@ -2352,33 +2352,31 @@
                 <h1 id="sconify-container-image-standard-edition">Sconify Container Image (Standard Edition)</h1>
 <div class="admonition info">
 <p class="admonition-title">Prerequisites</p>
-<ul>
-<li>read section <a href="../sconify/">Sconify</a> to understand the general sconification workflow</li>
-</ul>
+<p>Please read section <a href="../sconify/">Sconify</a> to understand the general sconification workflow first.</p>
 </div>
-<p><strong>Sconify Image</strong> is a command line tool within a SCONE image that enables the <em>sconification</em> of native images without detailed knowledge of the SCONE framework. Sconify Image transforms native images to encrypted SCONE-enabled images. We call this transformation <em>sconification</em>. These SCONE-enabled images execute their service within an SGX enclave and thereby utilize SCONE infrastructure. In particular, the features of Sconify Image are:</p>
+<p><code>sconify_image</code> is a command line tool within a SCONE image that enables the <em>sconification</em> of native images without detailed knowledge of the SCONE framework. <code>sconify_image</code> transforms a native container image to an encrypted SCONE-enabled image <strong>in one step</strong>. We call this transformation <em>sconification</em>. These SCONE-enabled images execute their service within an SGX enclave using the SCONE runtime. In particular, the features of <code>sconify_image</code> are:</p>
 <ul>
-<li>sconification of the native image binary, such that the execution of the binary is encrypted within an SGX enclave</li>
-<li>encryption and integrity of native image files, only giving access to the sconified binary, which is <a href="../advantages/">verified by the SCONE infrastructure</a></li>
-<li>creation of a <a href="../CAS_session_lang_0_3/">SCONE policy</a>, with sensible defaults (e.g. including native image environment and working directory), and with options to customize to use additional features of the SCONE policy language (e.g. SCONE shared volumes, shared secrets, injected files)- ensuring only the sconified binary can access the secure resources</li>
-<li>usage of all these features with only a single command- enabling easy integration to CI/CD workflows</li>
+<li>sconification of the native image binary such that the execution of the sconified binary is performed within an SGX enclave</li>
+<li>encryption and integrity protection of native image files:  giving access to the sconified binary only after it is <a href="../advantages/">attested by the SCONE platform</a></li>
+<li>creation of a <a href="../CAS_session_lang_0_3/">SCONE policy</a> using sensible defaults (e.g., including native image environment variables and working directory), and with options to customize to use additional features of the SCONE policy language (e.g., SCONE shared volumes, shared secrets, injected files) - ensuring only the sconified binary can access the secured resources, and</li>
+<li>usage of all these features with only a single command - enabling an easy integration into existing CI/CD workflows.</li>
 </ul>
 <p>We continue by demonstrating the usage of Sconify Image by sconifying a Python Flask REST API image. We thereby show the two main methods of image sconification with:</p>
 <ol>
 <li><a href="../SCONE_Fileshield/">SCONE File Protection</a></li>
 <li><a href="../binary_fs/">SCONE Binary File System</a></li>
 </ol>
-<p>Further, we show how Sconify Image facilitates easy modification of the SCONE policy. Finally, we give a detailed technical description of all command line options that the tool supports.</p>
+<p>Furthermore, we show how <code>sconify_image</code> facilitates easy modification of the SCONE policy. Finally, we give a detailed technical description of all command line options that the tool supports.</p>
 <div class="admonition info">
-<p class="admonition-title"><code>sconify_image</code> supports only Alpine Linux-based images</p>
-<p>This 1-step conversion supports native images based on Alpine Linux only. We plan to support Ubuntu-based images in the near future too.</p>
+<p class="admonition-title"><code>sconify_image</code> currently supports only Alpine container images</p>
+<p>This 1-step conversion supports native images based on Alpine Linux only. We plan to support Ubuntu-based images in the very near future too.</p>
 </div>
 <div class="admonition warning">
-<p class="admonition-title">Sconify Image Overhead</p>
-<p>Sconify Image, especially with binary-fs, requires a significant amount of computational resources. Thus, Sconify Image sconification may take longer than expected. In particular, we expect Sconify Image to be executed as part of a CI pipeline, on a server with at least 64GB RAM.</p>
+<p class="admonition-title">Sconify Image Processing TIme</p>
+<p>When using the binary-fs, <code>sconify_image</code> requires a significant amount of computational and memory resources:  <code>sconify_image</code> may take several minutes to sconify an image. Typically, this is not an issue since <code>sconify_image</code> will run as part of a CI pipeline running on a server with sufficient main memory.</p>
 </div>
 <h2 id="sconify-image-workflow">Sconify Image Workflow</h2>
-<h3 id="scone-file-protection-sconification">SCONE File Protection Sconification</h3>
+<h3 id="scone-file-protection">SCONE File Protection</h3>
 <p>Suppose we have a simple Python Flask REST API service which we wish to sconify. We present the general workflow of the <em>sconification</em> process using <strong>SCONE File Protection</strong>:</p>
 <p><img alt="Sconify Image Workflow" src="../img/scone_workflow.svg#fullwidth" /></p>
 <p>As shown, Sconify Image sconifies the native binary, and copies the sconified binary to the encrypted image. Further, Sconify Image encrypts the service's code and data files, and copies these encrypted files to the encrypted image as well. During the sconification of the image, Sconify Image creates a security policy containing metadata to decrypt the encrypted files and to check the files integrity. This policy also contains additional information, e.g., the native images environment and working directory. Sconify Image uploads this policy to an <a href="../attestation/">attested</a> <a href="CASOverview">SCONE CAS</a>. After Sconify Image finishes this process, we can run a confidential container from the encrypted image. Upon execution, the SCONE CAS attests the service to ensure its trustworthiness. After a successful attestation, the CAS sends the service the secrets specified in the policy, which enable the service to execute as expected.</p>
@@ -2439,7 +2437,7 @@ Typically, we use the <a href="../CAS_cli/">SCONE CLI</a> to attest the CAS and 
 <p>Upon successful execution, the tool then returns the name of the session (<code>"$NAMESPACE/$SESSION"</code>), and the encrypted image under the name <code>"$ENCRYPTED_IMAGE"</code> will have been created. The encrypted image also contains the <code>CAS_ADDR</code> and <code>LAS_ADDR</code>, as well as the <a href="../SCONE_ENV/#scone-configuration-file"><code>SCONE_CONFIG_ID</code></a>. As such, we can then simply run the service, and it will utilize existing SCONE infrastructure without the need for further specification:
 <div class="highlight"><pre><span></span>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="nv">$ENCRYPTED_IMAGE</span>
 </pre></div></p>
-<h3 id="scone-binary-file-system-sconification">SCONE Binary File System Sconification</h3>
+<h3 id="scone-binary-file-system">SCONE Binary File System</h3>
 <p>Using the <a href="../binary_fs/">SCONE Binary File System</a> (binary-fs), we can embed the service's files into the binary. This embedding extends the protection of the SGX enclave to the binary-fs. Further, the enclave's measurement (MRENCLAVE) then reflects the file system state.
 As such, the usage of binary-fs changes the process of Sconify Image sconification. The updated process is as follows:</p>
 <p><img alt="Sconify Image Workflow Binary FS" src="../img/scone_workflow_binary_fs.svg#fullwidth" /></p>
@@ -2753,7 +2751,7 @@ Exporting to multiple sessions is also possible:
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../sconify_image/" title="Sconify Image" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../sconify/" title="Sconify" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -2762,19 +2760,19 @@ Exporting to multiple sessions is also possible:
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Sconify Image
+                Sconify
               </span>
             </div>
           </a>
         
         
-          <a href="../mitigation/" title="Attack mitigation" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../sconify_image/" title="Sconify Image" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Attack mitigation
+                Sconify Image
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
