@@ -496,6 +496,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#scone-signer" title="Scone Signer" class="md-nav__link">
+    Scone Signer
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2320,6 +2327,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#scone-signer" title="Scone Signer" class="md-nav__link">
+    Scone Signer
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2472,9 +2486,9 @@ We can then use the <code>config.json</code> in other containers to read and upd
   -v <span class="nv">$PWD</span>/private-sconify-image-key:/root/.cas my-scone-image
 </pre></div></p>
 <h3 id="acquire-sconify-image-resources">Acquire Sconify Image Resources</h3>
-<p>During the sconification process, Sconify Image generates the encrypted image's Dockerfile and session. To collect these resources, we add a volume to Sconify Image:
+<p>During the sconification process, Sconify Image generates the encrypted image's Dockerfile and session. To collect these resources, we add a volume to Sconify Image. Sconify Image stores resources in <code>/build-resources</code>:
 <div class="highlight"><pre><span></span>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -v <span class="nv">$PWD</span>/sconify-image-resources:/usr/local/bin/<span class="si">${</span><span class="nv">NATIVE_IMAGE</span><span class="p">##*/</span><span class="si">}</span> <span class="se">\ </span><span class="c1"># RESOURCE COLLECTION VOLUME</span>
+    -v <span class="nv">$PWD</span>/sconify-image-resources:/build-resources <span class="se">\ </span><span class="c1"># RESOURCE COLLECTION VOLUME</span>
     -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
     registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
     sconify_image ...
@@ -2523,6 +2537,14 @@ Exporting to multiple sessions is also possible:
 
 <!-- TODO add resource collection with volume -->
 
+<h3 id="scone-signer">Scone Signer</h3>
+<p>Sconify Image can also sign binaries of images during sconification, using the <a href="../scone-signer/">scone signer</a>. Only signed binaries may run in production mode. Signing binaries requires an Intel verified private key. To use the scone signer, add the option <code>--scone-signer=PRIVATE_KEY_PATH</code>, whereby the <code>PRIVATE_KEY_PATH</code> is the patch to the private key <strong>accessible by the container</strong>. We give the container access with a volume. A corresponding command can look as follows:
+<div class="highlight"><pre><span></span>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
+    -v <span class="nv">$PWD</span>/my-private-key.pem:/my-private-key.pem <span class="se">\ </span><span class="c1"># SUPPLY CONTAINER THE KEY</span>
+    -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
+    registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
+    sconify_image ... --scone-signer<span class="o">=</span>/my-private-key.pem
+</pre></div></p>
 <h2 id="supported-options">Supported Options</h2>
 <table>
 <thead>
