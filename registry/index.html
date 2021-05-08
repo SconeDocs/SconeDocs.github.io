@@ -376,6 +376,40 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#search-for-container-images" title="Search for Container Images" class="md-nav__link">
+    Search for Container Images
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-token" title="API Token" class="md-nav__link">
+    API Token
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-ids" title="Project IDs" class="md-nav__link">
+    Project IDs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-project-ids" title="Common Project IDs" class="md-nav__link">
+    Common Project IDs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -2296,6 +2330,40 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#search-for-container-images" title="Search for Container Images" class="md-nav__link">
+    Search for Container Images
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-token" title="API Token" class="md-nav__link">
+    API Token
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-ids" title="Project IDs" class="md-nav__link">
+    Project IDs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-project-ids" title="Common Project IDs" class="md-nav__link">
+    Common Project IDs
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -2357,6 +2425,114 @@
 <a href="https://gitlab.scontain.com/users/password/new">https://gitlab.scontain.com/users/password/new</a></p>
 <p>If you do not remember your email address or your login: You should have gotten an email regarding this and, you need to reset the password because you are given a random password.</p>
 <p>You should have the same access rights as previously. If not, please let us know.</p>
+<h2 id="search-for-container-images">Search for Container Images</h2>
+<p>One disadvantage of our registry is that finding images and tags using the GUI is not very comfortable.
+The advantage of the registry is, however, that it has an [API] (<a href="https://docs.gitlab.com/ee/api/container_registry.html">https://docs.gitlab.com/ee/api/container_registry.html</a>) 
+that one can use to automate the searches. We show how to use this API.</p>
+<h3 id="api-token">API Token</h3>
+<p>Create an API Token at <a href="https://gitlab.scontain.com/-/profile/personal_access_tokens">https://gitlab.scontain.com/-/profile/personal_access_tokens</a> by</p>
+<ul>
+<li>selecting a <strong>name</strong> of the token, e.g., <code>api_token</code></li>
+<li>selecting <strong>scope</strong> <code>api</code> and then</li>
+<li>pressing button <strong>create personal access token</strong>.</li>
+</ul>
+<p>Say, you store this token in an environment variable <code>GITLAB_APITOKEN</code>, i.e.,</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GITLAB_APITOKEN</span><span class="o">=</span><span class="sb">`</span>YOUR-API-TOKEN-HERE<span class="sb">`</span>
+</pre></div>
+
+<h3 id="project-ids">Project IDs</h3>
+<p>Each image repository is associated with a project and each project has a unique project ID. To find
+the project ID for a image repository, let's say you want to find the project ID for a repo <code>crosscompiler</code>, you could 
+do this as follows:</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">REPO</span><span class="o">=</span>crosscompiler
+curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB_APITOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects?search=</span><span class="nv">$REPO</span><span class="s2">&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].id,.[].name&#39;</span>
+</pre></div>
+
+<p>This would output something like</p>
+<div class="highlight"><pre><span></span>17
+&quot;crosscompilers&quot;
+</pre></div>
+
+<p>saying that <code>17</code> is the project ID of repo <code>sconecuratedimages/crosscompilers</code>. You could now set 
+the project ID and list all image tags of this repo:</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PROJECT_ID</span><span class="o">=</span><span class="k">$(</span>curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB_APITOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects?search=</span><span class="nv">$REPO</span><span class="s2">&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].id&#39;</span><span class="k">)</span>
+curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB_APITOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects/</span><span class="nv">$PROJECT_ID</span><span class="s2">/registry/repositories?tags=1&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].tags[].name&#39;</span>
+</pre></div>
+
+<p>This will output many tags like</p>
+<div class="highlight"><pre><span></span>&quot;alpine&quot;
+&quot;alpine-scone1&quot;
+&quot;alpine-scone1.0&quot;
+&quot;alpine-scone1.0.0&quot;
+&quot;alpine-scone1.0.1&quot;
+&quot;alpine-scone2&quot;
+...
+</pre></div>
+
+<p>Now you can use the command line to search for the tags that you are interested in. Say, you want to search for all tags of SCONE version 3.5.0.
+In this case, you could define a patter <code>scone5.3.0</code> and filter the output as follows:</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATTERN</span><span class="o">=</span><span class="s2">&quot;scone5.3.0&quot;</span>
+curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB_APITOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects/</span><span class="nv">$PROJECT_ID</span><span class="s2">/registry/repositories?tags=1&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].tags[].name&#39;</span> <span class="p">|</span> grep <span class="s2">&quot;</span><span class="nv">$PATTERN</span><span class="s2">&quot;</span>
+</pre></div>
+
+<p>The output might look as follows:</p>
+<div class="highlight"><pre><span></span>&quot;alpine-scone5.3.0&quot;
+&quot;alpine3.7-scone5.3.0&quot;
+&quot;latest-scone5.3.0&quot;
+&quot;pkg-builder-alpine-3.11-scone5.3.0&quot;
+&quot;pkg-builder-alpine-scone5.3.0&quot;
+&quot;runtime-alpine-scone5.3.0&quot;
+&quot;runtime-alpine3.7-scone5.3.0&quot;
+&quot;runtime-scone5.3.0&quot;
+&quot;ubuntu-scone5.3.0&quot;
+&quot;ubuntu16.04-scone5.3.0&quot;
+&quot;ubuntu18.04-scone5.3.0&quot;
+</pre></div>
+
+<h3 id="common-project-ids">Common Project IDs</h3>
+<p>To simplify the search for tags, here are some common project IDs.</p>
+<table>
+<thead>
+<tr>
+<th>Project ID</th>
+<th>Repo Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15</td>
+<td>registry.scontain.com:5050/sconecuratedimages/apps</td>
+</tr>
+<tr>
+<td>17</td>
+<td>registry.scontain.com:5050/sconecuratedimages/crosscompilers</td>
+</tr>
+<tr>
+<td>67</td>
+<td>registry.scontain.com:5050/sconecuratedimages/dapps</td>
+</tr>
+<tr>
+<td>10</td>
+<td>registry.scontain.com:5050/sconecuratedimages/mono</td>
+</tr>
+<tr>
+<td>26</td>
+<td>registry.scontain.com:5050/sconecuratedimages/node</td>
+</tr>
+<tr>
+<td>23</td>
+<td>registry.scontain.com:5050/sconecuratedimages/python</td>
+</tr>
+<tr>
+<td>21</td>
+<td>registry.scontain.com:5050/sconecuratedimages/sconecli</td>
+</tr>
+<tr>
+<td>20</td>
+<td>registry.scontain.com:5050/sconecuratedimages/services</td>
+</tr>
+</tbody>
+</table>
                 
                   
                 
