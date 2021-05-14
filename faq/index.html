@@ -2180,6 +2180,33 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#container-image" title="Container Image" class="md-nav__link">
+    Container Image
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#failed-access" title="Failed Access" class="md-nav__link">
+    Failed Access
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-a-image-tag" title="Finding a image tag" class="md-nav__link">
+    Finding a image tag
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#attestation" title="Attestation" class="md-nav__link">
     Attestation
   </a>
@@ -2579,6 +2606,33 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#container-image" title="Container Image" class="md-nav__link">
+    Container Image
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#failed-access" title="Failed Access" class="md-nav__link">
+    Failed Access
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-a-image-tag" title="Finding a image tag" class="md-nav__link">
+    Finding a image tag
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#attestation" title="Attestation" class="md-nav__link">
     Attestation
   </a>
@@ -2964,6 +3018,14 @@
                 
                 
                 <h1 id="frequently-asked-questions">Frequently Asked Questions</h1>
+<h2 id="container-image">Container Image</h2>
+<h3 id="failed-access">Failed Access</h3>
+<p>When pulling an image from our image registry fails, sometimes it is not clear if the image does not exist or if one does not have access rights
+to this image. You can check via <code>gitlab.scontain.com</code> if you have access to the  image repo and if a certain tag exists. For example, if you want to
+check if you have access rights to pull images from repo <code>sconecuratedimages/node</code>, you could open page <a href="https://gitlab.scontain.com/sconecuratedimages">https://gitlab.scontain.com/sconecuratedimages</a> to search for this repo. Alternatively, you could directly go to <a href="https://gitlab.scontain.com/sconecuratedimages/node/container_registry">https://gitlab.scontain.com/sconecuratedimages/node/container_registry</a> to see if you have access to this page and if the tag exists. On how to check if the tag exists, please see the next point.</p>
+<h3 id="finding-a-image-tag">Finding a image tag</h3>
+<p>If you want to check if a certain tag exists, you can use the GUI of our registry: <a href="https://gitlab.scontain.com/sconecuratedimages">https://gitlab.scontain.com/sconecuratedimages</a> to find the repo
+and then to find the tag. If there exists a large number of tags in a repo, this can be inconvenient. If you like to use the command line, you could <a href="../registry/#search-for-container-images">search for tags using the CLI</a>.</p>
 <h2 id="attestation">Attestation</h2>
 <h3 id="how-can-i-verify-the-authenticity-and-integrity-of-my-running-running-in-enclave-if-i-access-it-remotely">How can I verify the authenticity and integrity of my running running in enclave, if I access it remotely</h3>
 <p>One approach is to store the encrypted certificate in an encrypted file region and SCONE CAS gives the service access to the file key only after a successful attestation. If the service can authenticate itself with the correct certificate, this means that it passed the attestation.</p>
@@ -2999,7 +3061,7 @@ In case you want to use attestation, you need to run on an SGX-capable machine.<
 <p>Try to figure out - using tools like top - which processes are using up your memory. Sometimes, you might have too many active docker containers running: check this with <code>docker ps -a</code>. Try to run docker containers  with <code>docker run --rm</code> to enforce automatic cleanup after a container exits.</p>
 <h3 id="my-program-does-not-start-up">My program does not start up</h3>
 <p><em>Context</em>: For SGX version 1, we have to preallocate all memory an enclave can use during its startup. We cannot estimate how much memory your application needs. Hence, for SGX version 1, we provide environment variables 
-<a href="SCONE_ENV/#memory-related-environment-variables">SCONE_HEAP</a> and <a href="SCONE_ENV/#memory-related-environment-variables">SCONE_STACK</a>.</p>
+<a href="../SCONE_ENV/#memory-related-environment-variables">SCONE_HEAP</a> and <a href="../SCONE_ENV/#memory-related-environment-variables">SCONE_STACK</a>.</p>
 <p>For Java and GO programs, set <code>SCONE_HEAP</code> to at least <em>1G</em>. The default heap size is 64MB.</p>
 <p>The default stack size is 64KBytes. This is too little for some applications like Python and MariaDB. A good value for applications that use lots of stack seem to be 4MBytes, i.e., set <code>export  SCONE_STACK=4M</code>.</p>
 <h3 id="my-program-has-a-very-large-virt-memory-footprint">My program has a very large VIRT memory footprint</h3>
@@ -3019,13 +3081,13 @@ the important measure is the physical memory used:  <strong>top</strong> reports
 <p>SGX version 1: check that you machine has sufficient main memory <a href="#memory-related-issues">see above</a>)</p>
 </li>
 <li>
-<p>Run your program with <a href="GO/#debugging"><strong>scone-gdb</strong></a> to determine where your program crashes</p>
+<p>Run your program with <a href="../GO/#debugging"><strong>scone-gdb</strong></a> to determine where your program crashes</p>
 </li>
 </ul>
 <h2 id="running-inside-of-enclaves">Running inside of enclaves</h2>
 <h3 id="how-do-i-know-that-i-run-inside-of-an-enclave">How do I know that I run inside of an enclave?</h3>
 <ul>
-<li>Set environment variable <a href="SCONE_ENV/#debug"><code>SCONE_VERSION=1</code></a>: you will see in what <a href="SCONE_ENV/#run-mode">mode</a> your program is running.</li>
+<li>Set environment variable <a href="../SCONE_ENV/#debug"><code>SCONE_VERSION=1</code></a>: you will see in what <a href="../SCONE_ENV/#run-mode">mode</a> your program is running.</li>
 </ul>
 <h3 id="how-can-i-experimentally-show-that-i-run-inside-of-an-enclave">How can I experimentally show that I run inside of an enclave?</h3>
 <p>Please check out our <a href="memory_dump">memory dump tutorial</a> on this.</p>
@@ -3055,7 +3117,7 @@ use our TCP shield.</p>
 <h3 id="what-are-protected-dynamic-libraries">What are protected dynamic libraries?</h3>
 <p>The dynamic libraries loaded during start up of program are included in the hash of the enclave, i.e., any modification of any of these libraries will change <strong>MrEnclave</strong>. In that sense, the dynamic libraries are  <strong>integrity protected</strong> since any modifications will result in a failed attestation.</p>
 <p>One can determine the dynamic libraries which are loaded during startup with command <strong>ldd</strong> for native binaries. Note that depending on how the binary is build (static linking, dynamic linking, for Alpine Linux or for Ubuntu), <strong>ldd</strong> might only print the dynamic libraries used to start the enclave.</p>
-<p>To enable the loading of <strong>protected dynamic libraries</strong>, i.e., encrypted or authenticated shared libraries, set environment variable <a href="SCONE_ENV/#dynamic-library-support"><code>SCONE_ALLOW_DLOPEN=1</code></a> in your session policy.
+<p>To enable the loading of <strong>protected dynamic libraries</strong>, i.e., encrypted or authenticated shared libraries, set environment variable <a href="../SCONE_ENV/#dynamic-library-support"><code>SCONE_ALLOW_DLOPEN=1</code></a> in your session policy.
 If you want to disallow this, do not define <code>SCONE_ALLOW_DLOPEN</code>.</p>
 <h3 id="what-are-unprotected-dynamic-libraries">What are unprotected dynamic libraries?</h3>
 <p>An <strong>unprotected shared library</strong>, i.e., a shared library that is neither encrypted nor authenticated by the filesystem shield). It is loaded after the program has started by the application with
@@ -3077,7 +3139,7 @@ of your code.</p>
 <h3 id="cpu-utilization-number-of-threads-is-higher-than-in-native-mode">CPU utilization / number of threads is higher than in native mode</h3>
 <p>By default, we use multiple threads to serve inside the enclave and to serve system calls outside the enclave.
 If theses threads have no work to do, they go to sleep.</p>
-<p>You can reduce the number of threads / CPU utilization by specifying a SCONE <a href="SCONE_ENV/#format-of-scone-configuration-file">configuration file</a> which uses less threads. For example, you could use one thread inside the enclave and one outside the enclave with this configuration file:</p>
+<p>You can reduce the number of threads / CPU utilization by specifying a SCONE <a href="../SCONE_ENV/#format-of-scone-configuration-file">configuration file</a> which uses less threads. For example, you could use one thread inside the enclave and one outside the enclave with this configuration file:</p>
 <div class="highlight"><pre><span></span>cat &gt; /etc/sgx-musl.conf <span class="s">&lt;&lt; EOF</span>
 <span class="s">Q 1</span>
 <span class="s">e -1 0 0</span>
@@ -3087,9 +3149,9 @@ If theses threads have no work to do, they go to sleep.</p>
 
 <h3 id="the-cpu-utilization-is-still-higher-than-in-native-mode">The CPU utilization is still higher than in native mode</h3>
 <p>In our experience, then newest version of SCONE needs less than 1-2% CPU utilization when a service is idling.</p>
-<p>If the CPU utilization of a service is higher than the native version during idle periods, you could try to tune the <a href="SCONE_ENV/#format-of-scone-configuration-file">the backoff behavior of the queues</a> by setting parameters <code>L</code> and <code>P</code> appropriately. Note that the standard values should in most cases do not need any tuning.</p>
+<p>If the CPU utilization of a service is higher than the native version during idle periods, you could try to tune the <a href="../SCONE_ENV/#format-of-scone-configuration-file">the backoff behavior of the queues</a> by setting parameters <code>L</code> and <code>P</code> appropriately. Note that the standard values should in most cases do not need any tuning.</p>
 <h3 id="the-memory-usage-is-higher-than-in-native-mode">The memory usage is higher than in native mode</h3>
-<p>The issue is that SGX v1 enclaves must allocate all memory at startup since enclaves are fixed (- this will change with SGXv2). You can reduce memory consumption by setting <a href="SCONE_ENV/#memory-related-environment-variables">SCONE_HEAP and SCONE_STACK</a>. In SGX v2 we will allocate memory on demand, i.e., we will be more memory efficient.</p>
+<p>The issue is that SGX v1 enclaves must allocate all memory at startup since enclaves are fixed (- this will change with SGXv2). You can reduce memory consumption by setting <a href="../SCONE_ENV/#memory-related-environment-variables">SCONE_HEAP and SCONE_STACK</a>. In SGX v2 we will allocate memory on demand, i.e., we will be more memory efficient.</p>
 <p>Note that in SGX v2, we will be able to dynamically adjust the size of the heap and the stack sizes automatically, i.e.,
 one does not need to allocate all memory in the beginning. This will also reduce the startup times.</p>
 <h3 id="high-startup-times">High startup times</h3>
@@ -3103,7 +3165,7 @@ one does not need to allocate all memory in the beginning. This will also reduce
 with environment variable <code>SCONE_LOG=7</code>.</p>
 <h2 id="driver-issues">Driver Issues</h2>
 <h3 id="no-access-to-sgx-device">No Access to SGX device</h3>
-<p>Ensure that you <a href="sgxinstall/#determine-sgx-device">installed the Intel SGX driver</a>  on your machine and that the SGX driver <a href="sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">is accessible in your container</a>.</p>
+<p>Ensure that you <a href="../sgxinstall/#determine-sgx-device">installed the Intel SGX driver</a>  on your machine and that the SGX driver <a href="sgxinstall/#checking-availability-of-sgx-device-inside-of-containers">is accessible in your container</a>.</p>
                 
                   
                 
