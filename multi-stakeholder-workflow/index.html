@@ -2433,7 +2433,7 @@ access to confidential images to other stakeholders. For simplicity, we perform 
 <div class="highlight"><pre><span></span>./deploy-compute.sh
 </pre></div>
 
-<p>The tail of the output should look like</p>
+<p>The native Dockerfile passes a value <code>15</code> to the first container. This value is read from an encrypted volume and printed to the log. The tail of the output should therefore look like</p>
 <div class="highlight"><pre><span></span>15
 DONE!
 </pre></div>
@@ -2443,7 +2443,21 @@ passing an option <code>-v VALUE</code> to the Python script. For example, you c
 <div class="highlight"><pre><span></span><span class="k">CMD</span> <span class="p">[</span> <span class="s2">&quot;python3&quot;</span> <span class="p">,</span> <span class="s2">&quot;/code/input-x.py&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;20&quot;</span> <span class="p">]</span>
 </pre></div>
 
-<p>In this case, the output of the computation would be <code>22</code> instead of <code>15</code> (because the default value is <code>13</code>).</p>
+<p>After running <code>sconify_compute</code> again, the policy of the sconified input container will now specify that we pass option <code>-v 20</code> to the input container: </p>
+<div class="highlight"><pre><span></span>services:
+   - name: input-x-service
+     image_name: input-x-service_image
+     mrenclaves: [09ed4f279ffa98ab045bde1ffcc2ca75f4f00b68fb8bd0d3ddb5430d1dbd7490]
+     command: &quot;python3 /code/input-x.py -v 20&quot;
+     environment:
+         SCONE_MODE: hw
+         SCONE_LOG: &quot;7&quot;
+         LANG: &quot;C.UTF-8&quot;
+         PATH: &quot;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;
+     pwd: /
+</pre></div>
+
+<p>In this case, the output of the computation will be <code>20</code> instead of <code>15</code>.</p>
                 
                   
                 
