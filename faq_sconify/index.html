@@ -195,10 +195,12 @@
       
       
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
     
     <label class="md-nav__link" for="nav-2">
       Quick Start
@@ -267,6 +269,76 @@
     <a href="../multi-stakeholder-workflow/" title="Multi-Stakeholder Example" class="md-nav__link">
       Multi-Stakeholder Example
     </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Troubleshooting
+      </label>
+    
+    <a href="./" title="Troubleshooting" class="md-nav__link md-nav__link--active">
+      Troubleshooting
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#credentials" title="Credentials" class="md-nav__link">
+    Credentials
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apple-macos" title="Apple MacOS" class="md-nav__link">
+    Apple MacOS
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-docker-credential-osxkeychain-not-found" title="Error docker-credential-osxkeychain not found" class="md-nav__link">
+    Error docker-credential-osxkeychain not found
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -2231,76 +2303,6 @@
   </li>
 
     
-      
-      
-      
-
-  
-
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Troubleshooting
-      </label>
-    
-    <a href="./" title="Troubleshooting" class="md-nav__link md-nav__link--active">
-      Troubleshooting
-    </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#credentials" title="Credentials" class="md-nav__link">
-    Credentials
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#apple-macos" title="Apple MacOS" class="md-nav__link">
-    Apple MacOS
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#error-docker-credential-osxkeychain-not-found" title="Error docker-credential-osxkeychain not found" class="md-nav__link">
-    Error docker-credential-osxkeychain not found
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
-  </li>
-
-    
   </ul>
 </nav>
                   </div>
@@ -2367,7 +2369,8 @@
                 
                 <h1 id="troubleshooting-sconify_image">Troubleshooting: <code>sconify_image</code></h1>
 <h2 id="credentials">Credentials</h2>
-<p>To build and deploy sconified images, you need to set up your credentials correctly to pull images:</p>
+<p>To build and deploy sconified images, you need to set up your credentials correctly to pull images. To do so,
+you probably want to put the following definitions in some script:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GH_TOKEN</span><span class="o">=</span>                 <span class="c1"># GitHub Token for SconeApps - see https://sconedocs.github.io/helm/</span>
 <span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>   <span class="c1"># Scontain Registry Token - see https://sconedocs.github.io/helm</span>
 <span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>       <span class="c1"># Scontain Registry User name - see https://sconedocs.github.io/helm</span>
@@ -2379,7 +2382,8 @@
 <span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span><span class="si">${</span><span class="nv">SCONE_HUB_EMAIL</span><span class="p">:?</span><span class="s2">&quot;SCONE_HUB_EMAIL is not set! Please set to a valid username for registry.scontain.com&quot;</span><span class="si">}</span>
 </pre></div>
 
-<p>you short create a secret for accessing the registry (<a href="see https://sconedocs.github.io/helm/">more info</a>):</p>
+<p>To deploy the SCONE SGX Plugin and the SCONE Local Attestation Service (LAS) as well as other SconeApps, 
+you would need to create a Kubernetes secret for accessing the SCONE registry (<a href="../helm/">more info</a>):</p>
 <div class="highlight"><pre><span></span>kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com:5050 --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
 </pre></div>
 
@@ -2449,7 +2453,7 @@ failed to solve with frontend dockerfile.v0: failed to solve with frontend gatew
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../faq/" title="FAQ" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../multi-stakeholder-workflow/" title="Multi-Stakeholder Example" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -2458,11 +2462,25 @@ failed to solve with frontend dockerfile.v0: failed to solve with frontend gatew
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                FAQ
+                Multi-Stakeholder Example
               </span>
             </div>
           </a>
         
+        
+          <a href="../cc-telenovela/" title="CC Soap Opera" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                CC Soap Opera
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
         
       </nav>
     </div>
