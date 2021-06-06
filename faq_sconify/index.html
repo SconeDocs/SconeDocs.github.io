@@ -2380,11 +2380,16 @@ you probably want to put the following definitions in some script:</p>
 <span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span><span class="si">${</span><span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="p">:?</span><span class="s2">&quot;SCONE_HUB_ACCESS_TOKEN is not set! Please set to a valid registry.scontain.com token.&quot;</span><span class="si">}</span>
 <span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span><span class="si">${</span><span class="nv">SCONE_HUB_USERNAME</span><span class="p">:?</span><span class="s2">&quot;SCONE_HUB_USERNAME is not set! Please set to a valid username for registry.scontain.com&quot;</span><span class="si">}</span>
 <span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span><span class="si">${</span><span class="nv">SCONE_HUB_EMAIL</span><span class="p">:?</span><span class="s2">&quot;SCONE_HUB_EMAIL is not set! Please set to a valid username for registry.scontain.com&quot;</span><span class="si">}</span>
+
+<span class="nb">export</span> <span class="nv">PULL_SECRET_NAME</span><span class="o">=</span>sconeapps
+<span class="nb">export</span> <span class="nv">MY_DOCKER_REPOSITORY</span><span class="o">=</span>...
+<span class="nb">export</span> <span class="nv">K8S_IMAGE_PULL_SECRET</span><span class="o">=</span>regcred
 </pre></div>
 
 <p>To deploy the SCONE SGX Plugin and the SCONE Local Attestation Service (LAS) as well as other SconeApps, 
 you would need to create a Kubernetes secret for accessing the SCONE registry (<a href="../helm/">more info</a>):</p>
 <div class="highlight"><pre><span></span>kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com:5050 --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
+kubectl create secret docker-registry <span class="nv">$K8S_IMAGE_PULL_SECRET</span> --docker-server<span class="o">=</span><span class="nv">$MY_DOCKER_REPOSITORY</span> --docker-username<span class="o">=</span><span class="s2">&quot;</span>$<span class="s2">...&quot;</span> --docker-password<span class="o">=</span><span class="s2">&quot;</span>$<span class="s2">...&quot;</span> --docker-email<span class="o">=</span><span class="s2">&quot;</span>$<span class="s2">...&quot;</span>
 </pre></div>
 
 <h2 id="apple-macos">Apple MacOS</h2>
