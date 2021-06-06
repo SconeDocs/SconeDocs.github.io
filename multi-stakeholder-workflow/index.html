@@ -2419,19 +2419,31 @@ access <strong>vol 1</strong> and <strong>policy 2</strong> the permission to ac
 <h2 id="example-code">Example Code</h2>
 <p>If you want to have access to the code of this example, please send us an email from your work email and your github ID.</p>
 <p>Running this example, you would need to clone the code:</p>
-<p>``bash
-git clone <a href="https://github.com/scontain/multi-stakeholder-workflow.git">https://github.com/scontain/multi-stakeholder-workflow.git</a>
-<div class="highlight"><pre><span></span>Assuming that you defined your credentials already ([setting your credentials](faq_sconify.md)), you can create the confidential images
-by executing:
+<div class="highlight"><pre><span></span>git clone https://github.com/scontain/multi-stakeholder-workflow.git
+</pre></div>
 
-```bash
-./sconify-compute.sh
-</pre></div></p>
+<p>Assuming that you defined your credentials already (<a href="../faq_sconify/">setting your credentials</a>), you can create the confidential images
+by executing:</p>
+<div class="highlight"><pre><span></span>./sconify-compute.sh
+</pre></div>
+
 <p>Note that in reality, all stakeholders would sconify their images separately because the stakeholders only want to give
 access to confidential images to other stakeholders. For simplicity, we perform this sconification of the images in a single script.</p>
 <p>One can deploy this workflow to a Kubernetes cluster by executing:</p>
-<div class="highlight"><pre><span></span>./sconify-compute.sh
+<div class="highlight"><pre><span></span>./deploy-compute.sh
 </pre></div>
+
+<p>The tail of the output should look like</p>
+<div class="highlight"><pre><span></span>15
+DONE!
+</pre></div>
+
+<p>As a next step, you could change the native Dockerfile (path <code>containers/input-x/Dockerfile</code>) to set a different value by
+passing an option <code>-v VALUE</code> to the Python script. For example, you could set the command in the Dockerfile to</p>
+<div class="highlight"><pre><span></span><span class="k">CMD</span> <span class="p">[</span> <span class="s2">&quot;python3&quot;</span> <span class="p">,</span> <span class="s2">&quot;/code/input-x.py&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;20&quot;</span> <span class="p">]</span>
+</pre></div>
+
+<p>In this case, the output of the computation would be <code>22</code> instead of <code>15</code> (because the default value is <code>13</code>).</p>
                 
                   
                 
