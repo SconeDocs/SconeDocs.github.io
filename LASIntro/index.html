@@ -1147,6 +1147,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#troubleshooting" title="Troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+</li>
+      
       
       
       
@@ -2350,6 +2357,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#troubleshooting" title="Troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+</li>
+      
       
       
       
@@ -2369,7 +2383,9 @@
                 
                 <h1 id="las-for-development">LAS for Development</h1>
 <p>We explain how to start a Local Attestation Service (LAS) instance for development. LAS is need to perform a local attestation (i.e., this creates a <strong>quote</strong> that can be verified by CAS). Note that this LAS runs inside a debug enclave, i.e., <strong>do not use this LAS instance in production</strong>. For setting up a production mode LAS, send us an email.</p>
-<p>For running LAS in a Kubernetes Cluster, please set up <a href="../helm_las/">LAS with helm</a>.</p>
+<div class="admonition info">
+<p class="admonition-title">For running LAS in a Kubernetes Cluster, please set up <a href="../helm_las/">LAS with helm</a>.</p>
+</div>
 <h2 id="pulling-las-image">Pulling LAS Image</h2>
 <p>To start LAS, you first pull LAS to your local registry. To do so, please set the environment variable
 <code>LAS</code> to the image repository that we given you access to. The standard LAS image name is defined as follows:</p>
@@ -2383,7 +2399,7 @@
 <p>If this fails, ensure that you are logged into docker (via <code>docker login</code>) and that we
 granted you access to that image.</p>
 <h3 id="determining-the-sgx-device">Determining the SGX device</h3>
-<p>Depending on the platform, the SGX device is named <code>/dev/isgx</code> or <code>/dev/sgx</code>. To write generic
+<p>Depending on the platform, the SGX device is named <code>/dev/isgx</code> or <code>/dev/sgx</code> or <code>/dev/sgx_enclave</code>. To write generic
 software, you could use the bash function <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 It sets environment variable <code>SGXDEVICE</code> to the device that needs to be mounted.</p>
 <h3 id="starting-and-stopping-las">Starting and Stopping LAS</h3>
@@ -2427,6 +2443,9 @@ cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
 <p>You can stop LAS by executing:</p>
 <div class="highlight"><pre><span></span>docker-compose stop
 </pre></div>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>You might need to run the LAS container <code>--privileged</code> in case the user executing LAS is not member of group <code>sgx_prv</code>. Alternatively, you might need to pass device <code>/dev/sgx_provision</code> into the container.</p>
                 
                   
                 

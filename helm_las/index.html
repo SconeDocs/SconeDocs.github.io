@@ -685,6 +685,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#troubleshooting" title="Troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+</li>
+      
       
       
       
@@ -2338,6 +2345,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#troubleshooting" title="Troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+</li>
+      
       
       
       
@@ -2420,6 +2434,39 @@ https://kubernetes.io/">Kubernetes</span> namespace. The application is called <
 
 <p>You can copy and paste this to your policy to ensure that your application(s) can only run in a certain Kubernetes cluster.</p>
 <p>If you do not even trust your Kubernetes cluster to correctly determine the public keys of the LAS instances, let us know and we can suggest more secure alternatives.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>As we mentioned above, one can check if the helm release <code>las</code> is installed by executing:</p>
+<div class="highlight"><pre><span></span>helm status las
+</pre></div>
+
+<p>You can retrieve the manifest for las as follows:</p>
+<div class="highlight"><pre><span></span>helm get manifest las
+</pre></div>
+
+<p>One can determine the spawned <code>las</code> pods as follows:</p>
+<div class="highlight"><pre><span></span>kubectl get pods <span class="p">|</span> grep las
+</pre></div>
+
+<p>This might result in an output like follows:</p>
+<div class="highlight"><pre><span></span>las-fbhgn   1/1     Running   0          16m
+</pre></div>
+
+<p>We can now look at the logs as follows:</p>
+<div class="highlight"><pre><span></span>kubectl logs las-fbhgn
+</pre></div>
+
+<p>and this will print a log which might look as follows</p>
+<div class="highlight"><pre><span></span>/var/run/aesmd/aesm.socket not found - Starting local in-container AESM service
+The path of system bundle: System Bundle
+ecdsa_quote_service_bundle_name:2.0.0
+epid_quote_service_bundle_name:2.0.0
+le_launch_service_bundle_name:2.0.0
+linux_network_service_bundle_name:2.0.0
+pce_service_bundle_name:2.0.0
+quote_ex_service_bundle_name:2.0.0
+system_bundle:4.0.0
+...
+</pre></div>
                 
                   
                 
