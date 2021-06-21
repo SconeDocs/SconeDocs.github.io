@@ -228,18 +228,6 @@
           
           
 
-
-  <li class="md-nav__item">
-    <a href="../sconify/" title="Sconify" class="md-nav__link">
-      Sconify
-    </a>
-  </li>
-
-        
-          
-          
-          
-
   
 
 
@@ -269,8 +257,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#native-code" title="Native Code" class="md-nav__link">
-    Native Code
+  <a href="#standard-image-generation" title="Standard Image Generation" class="md-nav__link">
+    Standard Image Generation
   </a>
   
 </li>
@@ -290,8 +278,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-the-example" title="Running the example" class="md-nav__link">
-    Running the example
+  <a href="#deploying-the-example" title="Deploying the example" class="md-nav__link">
+    Deploying the example
   </a>
   
 </li>
@@ -325,6 +313,30 @@
   
 </nav>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../lean_deployment/" title="Lean deployment" class="md-nav__link">
+      Lean deployment
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../sconify/" title="Sconify" class="md-nav__link">
+      Sconify
+    </a>
   </li>
 
         
@@ -2382,8 +2394,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#native-code" title="Native Code" class="md-nav__link">
-    Native Code
+  <a href="#standard-image-generation" title="Standard Image Generation" class="md-nav__link">
+    Standard Image Generation
   </a>
   
 </li>
@@ -2403,8 +2415,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-the-example" title="Running the example" class="md-nav__link">
-    Running the example
+  <a href="#deploying-the-example" title="Deploying the example" class="md-nav__link">
+    Deploying the example
   </a>
   
 </li>
@@ -2456,7 +2468,11 @@ generate a <strong>security policy</strong> as well as a <strong>helm chart</str
 </pre></div>
 
 </details>
-<h2 id="native-code">Native Code</h2>
+<h2 id="standard-image-generation">Standard Image Generation</h2>
+<p>To generate the standard container image, we use a simple Dockerfile-based flow:</p>
+<p><center>
+<img alt="Production Setup" src="../img/standard_image_flow.png#fullwidth" title="We created a standard container image with the help of docker build." />
+</center></p>
 <p>The native service consists of a very simple Python program (see <a href="https://github.com/scontain/hello-world-kubernetes/blob/master/native-image/code/app.py">https://github.com/scontain/hello-world-kubernetes/blob/master/native-image/code/app.py</a>)
 that implements a counter. The counter is stored in a file. It creates this file and initializes it with value "0" - in case the file does not yet exist. The path of this file can be changed via option <code>-v PATH</code>. Next, it reads the integer stored in the file, increments it by 1, and writes back the new content of the file.</p>
 <div class="highlight"><pre><span></span><span class="o">...</span>
@@ -2490,12 +2506,17 @@ of times this program has been executed. We want to ensure that this counter can
 </ul>
 <p>To protect the counter, we sconify the container image.</p>
 <h2 id="sconification">Sconification</h2>
+<p>The sconification follows the following flow:</p>
+<p><center>
+<img alt="Production Setup" src="../img/sconify_image_hwk8s.png#fullwidth" title="Sconify_image generates a confidential container image, a policy, and a helm chart." />
+</center></p>
 <p>In the sconification process, we</p>
 <ul>
 <li>create a confidential container image that protects all code against modifications by an adversary,</li>
-<li>we store the file in a Kubernetes volume,</li>
-<li>we transparently encrypt the Kubernetes volume to protect against modifications, rollbacks, and deletions by the adversary, and</li>
-<li>we deploy the confidential service with the help of a helm chart that we generate</li>
+<li>to deploy the confidential service, we generate a helm chart, and</li>
+<li>we creata a SCONE policy which</li>
+<li>which defines how to attest the application, and</li>
+<li>defines that the file is transparently encrypted and is protected against modifications, rollbacks, and deletions by an adversary.</li>
 </ul>
 <p>The <code>sconify_image</code> performs all these steps (see <a href="https://github.com/scontain/hello-world-kubernetes/blob/master/demo.sh#L174-L199">https://github.com/scontain/hello-world-kubernetes/blob/master/demo.sh#L174-L199</a>): We specify as arguments (amongst other details): </p>
 <ul>
@@ -2504,7 +2525,11 @@ of times this program has been executed. We want to ensure that this counter can
 <li>the command that is executed by the confidential image (<code>--command=...</code>)</li>
 <li>a persistent Kubernetes volume that is used to store the file <code>/V1/num</code></li>
 </ul>
-<h2 id="running-the-example">Running the example</h2>
+<h2 id="deploying-the-example">Deploying the example</h2>
+<p>The deployment follows the following flow:</p>
+<p><center>
+<img alt="Deployment Flow" src="../img/deployment_hwk8s.png#fullwidth" title="We deploy the application with helm." />
+</center></p>
 <p>The repository contains a script <code>demo.sh</code>(see <a href="https://github.com/scontain/hello-world-kubernetes/blob/master/demo.sh">https://github.com/scontain/hello-world-kubernetes/blob/master/demo.sh</a>) to execute this example using</p>
 <ul>
 <li>minikube on your local machine (<code>./demo.sh -m</code>), </li>
@@ -2522,6 +2547,9 @@ Enclave hash: e2f7cb1c13fa16d2a48f1727ebf1c20ac8185e72e14f647e876072e1f006377d
 </pre></div>
 
 <h2 id="generated-policy">Generated Policy</h2>
+<p><center>
+<img alt="Attestation Flow" src="../img/transparent_attestation.png#fullwidth" title="SCONE transparently attests service and provisions the service." />
+</center></p>
 <p>The sconification creates a policy for this Python program. This defines</p>
 <ul>
 <li>defines a name space (<code>ns-8991241572316</code>) and a session name (<code>python-session</code>)</li>
@@ -2601,7 +2629,7 @@ when deploy the chart via <code>helm install</code>. Moreover, we also generate 
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../sconify/" title="Sconify" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../workflows/" title="Overview" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -2610,19 +2638,19 @@ when deploy the chart via <code>helm install</code>. Moreover, we also generate 
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Sconify
+                Overview
               </span>
             </div>
           </a>
         
         
-          <a href="../sconify_filetypes/" title="File Types" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../lean_deployment/" title="Lean deployment" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                File Types
+                Lean deployment
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
