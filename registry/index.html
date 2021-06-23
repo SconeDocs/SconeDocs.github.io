@@ -240,8 +240,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../lean_deployment/" title="Lean deployment" class="md-nav__link">
-      Lean deployment
+    <a href="../lean_deployment/" title="kubectl" class="md-nav__link">
+      kubectl
     </a>
   </li>
 
@@ -2577,11 +2577,11 @@ that one can use to automate the searches. We show how to use this API.</p>
 <p>Create an API Token at <a href="https://gitlab.scontain.com/-/profile/personal_access_tokens">https://gitlab.scontain.com/-/profile/personal_access_tokens</a> by</p>
 <ul>
 <li>selecting a <strong>name</strong> of the token, e.g., <code>api_token</code></li>
-<li>selecting <strong>scope</strong> <code>api</code> and then</li>
+<li>selecting <strong>scope</strong> <code>read_api</code> and <code>read_registry</code>and</li>
 <li>pressing button <strong>create personal access token</strong>.</li>
 </ul>
-<p>Say, you store this token in an environment variable <code>GITLAB_APITOKEN</code>, i.e.,</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">GITLAB_APITOKEN</span><span class="o">=</span><span class="sb">`</span>YOUR-API-TOKEN-HERE<span class="sb">`</span>
+<p>Say, you store this token in an environment variable <code>SCONE_HUB_ACCESS_TOKEN</code>, i.e.,</p>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span><span class="sb">`</span>YOUR-API-TOKEN-HERE<span class="sb">`</span>
 </pre></div>
 
 <h3 id="project-ids">Project IDs</h3>
@@ -2589,7 +2589,7 @@ that one can use to automate the searches. We show how to use this API.</p>
 the project ID for a image repository, let's say you want to find the project ID for a repo <code>crosscompiler</code>, you could 
 do this as follows:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">REPO</span><span class="o">=</span>crosscompiler
-curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB_APITOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects?search=</span><span class="nv">$REPO</span><span class="s2">&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].id,.[].name&#39;</span>
+curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects?search=</span><span class="nv">$REPO</span><span class="s2">&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].id,.[].name&#39;</span>
 </pre></div>
 
 <p>This would output something like</p>
@@ -2599,8 +2599,8 @@ curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB
 
 <p>saying that <code>17</code> is the project ID of repo <code>sconecuratedimages/crosscompilers</code>. You could now set 
 the project ID and list all image tags of this repo:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PROJECT_ID</span><span class="o">=</span><span class="k">$(</span>curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB_APITOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects?search=</span><span class="nv">$REPO</span><span class="s2">&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].id&#39;</span><span class="k">)</span>
-curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB_APITOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects/</span><span class="nv">$PROJECT_ID</span><span class="s2">/registry/repositories?tags=1&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].tags[].name&#39;</span>
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PROJECT_ID</span><span class="o">=</span><span class="k">$(</span>curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects?search=</span><span class="nv">$REPO</span><span class="s2">&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].id&#39;</span><span class="k">)</span>
+curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects/</span><span class="nv">$PROJECT_ID</span><span class="s2">/registry/repositories?tags=1&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].tags[].name&#39;</span>
 </pre></div>
 
 <p>This will output many tags like</p>
@@ -2616,7 +2616,7 @@ curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB
 <p>Now you can use the command line to search for the tags that you are interested in. Say, you want to search for all tags of SCONE version 3.5.0.
 In this case, you could define a patter <code>scone5.3.0</code> and filter the output as follows:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATTERN</span><span class="o">=</span><span class="s2">&quot;scone5.3.0&quot;</span>
-curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$GITLAB_APITOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects/</span><span class="nv">$PROJECT_ID</span><span class="s2">/registry/repositories?tags=1&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].tags[].name&#39;</span> <span class="p">|</span> grep <span class="s2">&quot;</span><span class="nv">$PATTERN</span><span class="s2">&quot;</span>
+curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects/</span><span class="nv">$PROJECT_ID</span><span class="s2">/registry/repositories?tags=1&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].tags[].name&#39;</span> <span class="p">|</span> grep <span class="s2">&quot;</span><span class="nv">$PATTERN</span><span class="s2">&quot;</span>
 </pre></div>
 
 <p>The output might look as follows:</p>
