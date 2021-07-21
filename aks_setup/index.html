@@ -982,9 +982,52 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        AKS Setup
+      </label>
+    
     <a href="./" title="AKS Setup" class="md-nav__link md-nav__link--active">
       AKS Setup
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#creating-an-aks-cluster" title="Creating an AKS cluster" class="md-nav__link">
+    Creating an AKS cluster
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploying-las-local-attestation-service" title="Deploying LAS (Local Attestation Service)" class="md-nav__link">
+    Deploying LAS (Local Attestation Service)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-a-scone-application" title="Deploy a SCONE application" class="md-nav__link">
+    Deploy a SCONE application
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -2223,6 +2266,36 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#creating-an-aks-cluster" title="Creating an AKS cluster" class="md-nav__link">
+    Creating an AKS cluster
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploying-las-local-attestation-service" title="Deploying LAS (Local Attestation Service)" class="md-nav__link">
+    Deploying LAS (Local Attestation Service)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-a-scone-application" title="Deploy a SCONE application" class="md-nav__link">
+    Deploy a SCONE application
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2237,13 +2310,13 @@
                 <h1 id="aks-setup">AKS Setup</h1>
 <div class="admonition note">
 <p class="admonition-title">Simplified Deployment</p>
-<p>In our <a href="../helm/">SconeApps</a>, we also support the native AKS SGX Plugin, i.e., the is no need  to install the <a href="../helm_sgxdevplugin/">SCONE SGX Plugin</a> on AKS.</p>
+<p>In our <a href="../helm/">SconeApps</a>, we also support the native AKS SGX Plugin, i.e., there is no need  to install the <a href="../helm_sgxdevplugin/">SCONE SGX Plugin</a> on AKS.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">MAA-based attestation</p>
-<p>Right now, SCONE-based confidential services are attested using DCAP or EPID-based attestation. Starting with SCONE 5.3.0, one can enable Microsoft Azure Attestation (MAA) and import secrets from Azure Key Vault (AKV) via SCONE CAS policies.</p>
+<p>Right now, SCONE-based confidential services are attested using DCAP or EPID-based attestation. Starting with SCONE 5.4.0, one can enable Microsoft Azure Attestation (MAA), as well as import secrets from Azure Key Vault (AKV) via SCONE CAS policies.</p>
 </div>
-<p>SCONE-based confidential applications can be deploy  with <a href="../helm/"><code>helm</code></a>, i.e., the Kubernetes Package Manager on AKS. To do so, you need to</p>
+<p>SCONE-based confidential applications can be deployed with <a href="../helm/"><code>helm</code></a>, i.e., the Kubernetes Package Manager on AKS. To do so, you need to</p>
 <ul>
 <li>ensure <code>helm</code> has access to our <strong>SconeApps helm charts</strong>: <a href="../helm/">SconeApps</a></li>
 <li>ensure that our <strong>SCONE LAS</strong> (local attestation service) is installed with helm: <a href="../helm_las/">LAS installation</a></li>
@@ -2251,11 +2324,122 @@
 <p>AKS is compatible with <code>helm</code>, i.e., one can deploy applications with <code>helm</code> as soon as your confidential AKS cluster is running.
 You need to specify <code>--useSGXDevPlugin=azure</code> to use the Azure SGX Plugin and  <code>--set sgxEpcMem=16</code> (in MiB) to specify the required EPC size.
 We support a variety of <a href="../helm/">helm charts</a>: we provide confidential variants of, for example,  <strong>mariadb, maxscale, memcached, nginx, openvino, pytorch, spark, teemon, tensorflow, TensorFlowLite</strong>, and <strong>Zookeeper</strong>.</p>
-<p>To set up an AKS cluster, use the AKS command line interface. A quick walk-through on how to deploy a Kubernetes cluster and how to deploy applications on AKS, please follow this <a href="https://docs.microsoft.com/en-us/azure/confidential-computing/confidential-nodes-aks-get-started">description</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Compatibility</p>
 <p>Note that SCONE confidential services will stay compatible with any Kubernetes cluster, i.e., you can deploy some confidential services on your own Kubernetes cluster while others run on AKS. On AKS, you can enable additional Azure services in the policy, like, using MAA for attestation. Outside of AKS, you can enable DCAP-based attestation and use SCONE CAS for secret management. Deploying with <code>helm</code> makes it very easy to redeploy workloads on different Kubernetes clusters, like, moving services from your development Kubernetes cluster to AKS.</p>
 </div>
+<h2 id="creating-an-aks-cluster">Creating an AKS cluster</h2>
+<p>To set up an AKS cluster, use the AKS command line interface and follow the steps on the offical Azure Kuberentes Service <a href="https://docs.microsoft.com/en-us/azure/confidential-computing/confidential-nodes-aks-get-started">documentation</a>. A brief summary follows:</p>
+<ol>
+<li>You need a <em>resource group</em> for the new cluster. You can create a new one named <code>myResourceGroup</code> in the <code>westus2</code> region by running:</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="go">az group create --name myResourceGroup --location westus2</span>
+</pre></div>
+
+<ol>
+<li>Create the cluster with the confidential computing add-on enabled. This command will create a system node pool, responsible for running the Kubernetes control plane services. You can control the number of nodes through <code>-c</code> option.</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="go">az aks create --name myAKSCluster --generate-ssh-keys --enable-addon confcom -g myResourceGroup</span>
+</pre></div>
+
+<ol>
+<li>Create the confidential node pool with Intel SGX and the Azure SGX device plugin. You can configure the number of nodes through <code>-c</code> option. Change the VM size by setting a different <code>--node-vm-size</code> (<a href="https://docs.microsoft.com/en-us/azure/virtual-machines/dcv2-series">see all available sizes</a>).</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="go">az aks nodepool add --cluster-name myAKSCluster --name confcompool1 --node-vm-size Standard_DC2s_v2 --resource-group myResourceGroup</span>
+</pre></div>
+
+<ol>
+<li>Get the credentials for the cluster. This will write the credentials to your default kubeconfig (<code>$KUBECONFIG</code> or <code>~/.kube.config</code>):</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="go">az aks get-credentials --name myAKSCluster --resource-group myResourceGroup</span>
+</pre></div>
+
+<h2 id="deploying-las-local-attestation-service">Deploying LAS (Local Attestation Service)</h2>
+<p>You need to deploy our Local Attestation Service (LAS) to run your SCONE applications with remote attestation.</p>
+<ol>
+<li>
+<p>Install Helm and add the <code>sconeapps</code> repo. You might need to <a href="../helm/">request access</a> first.</p>
+</li>
+<li>
+<p>Install the <a href="../helm_las/">LAS Helm chart</a>. In this example, we use the Azure SGX device plugin that comes with the cluster.</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="go">helm install las sconeapps/las --set useSGXDevPlugin=azure</span>
+</pre></div>
+
+<ol>
+<li>That's it. LAS pods should now be running (one per node) in your cluster.</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="gp">$</span> kubectl get pods
+<span class="go">NAME        READY   STATUS    RESTARTS   AGE</span>
+<span class="go">las-2z2vk   1/1     Running   0          5s</span>
+<span class="go">las-7vdkt   1/1     Running   0          5s</span>
+</pre></div>
+
+<h2 id="deploy-a-scone-application">Deploy a SCONE application</h2>
+<p>To run your first SCONE application on the confidential AKS cluster, use the following manifest from our <a href="../hello_world_kubernetes/">Kubernetes tutorial</a>.</p>
+<div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">matchLabels</span><span class="p">:</span>
+      <span class="nt">run</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+  <span class="nt">replicas</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">metadata</span><span class="p">:</span>
+      <span class="nt">labels</span><span class="p">:</span>
+        <span class="nt">run</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sconecuratedimages/kubernetes:hello-k8s-scone0.1</span>
+        <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Always</span>
+        <span class="nt">ports</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">containerPort</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+        <span class="nt">env</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GREETING</span>
+          <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">howdy!</span>
+        <span class="nt">resources</span><span class="p">:</span>
+          <span class="nt">limits</span><span class="p">:</span>
+            <span class="nt">sgx.intel.com/epc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5Mi</span>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+  <span class="nt">labels</span><span class="p">:</span>
+    <span class="nt">run</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">ports</span><span class="p">:</span>
+  <span class="p p-Indicator">-</span> <span class="nt">port</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8080</span>
+    <span class="nt">protocol</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">TCP</span>
+  <span class="nt">selector</span><span class="p">:</span>
+    <span class="nt">run</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
+</pre></div>
+
+<ol>
+<li>Run the application.</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="go">kubectl create -f app.yaml</span>
+</pre></div>
+
+<ol>
+<li>Redirect a local port to the service port.</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="go">kubectl port-forward svc/hello-world 8080:8080 &amp;</span>
+</pre></div>
+
+<ol>
+<li>Send a request to the service.</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="gp">$</span> curl localhost:8080
+<span class="go">Hello World!</span>
+<span class="gp">$</span>GREETING is: howdy!
+</pre></div>
+
+<p>To run the same application with remote attestation, transparent filesystem encryption and secret delivery, check our <a href="../hello_world_kubernetes/">Kubernetes tutorial</a>.</p>
                 
                   
                 
