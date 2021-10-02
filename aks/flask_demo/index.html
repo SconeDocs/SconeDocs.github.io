@@ -2313,6 +2313,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../../release5.6/" title="SCONE 5.6.0" class="md-nav__link">
+      SCONE 5.6.0
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="../../release5.5/" title="SCONE 5.5.0" class="md-nav__link">
       SCONE 5.5.0
     </a>
@@ -2568,8 +2580,8 @@ workflow</strong> in the sense that we use a generic script to transform an exis
 
 <p>While we do not show how to enforce client authentication of the REST API, we show how to do this for Redis in the next section.</p>
 <h2 id="tls-based-mutual-attestation">TLS-based Mutual Attestation</h2>
-<p>The communication between the Flask-based service, say, <span><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and Redis instance, say, <span><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> is encrypted via TLS. Actually, we make sure that the service <span><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and instance <span><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> <strong>attest</strong> each other. Attestation means that <span><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> ensures that <span><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> satisfies all requirements specified in <span><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span>'s security policy and <span><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> ensures that <span><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> satisfies all the requirements of <span><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>'s policy. Of course, this should be done without changing the code of neither <span><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> nor <span><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span>. In case that <span><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and <span><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> are using TLS with client authentication, this is straightforward to enforce. (If this is not the case, please contact us for an alternative.)</p>
-<p>To ensure mutual attestation, the operator of Redis defines a <a href="https://github.com/scontain/flask_example/blob/master/redis-template.yml">policy</a> in which it defines a certification authority (<code>redis_ca_cert</code>) and defines both a Redis certificate (<code>redis_ca_cert</code>) as well as a Redis client certificate (<code>redis_client_cert</code>). The client certificate and the private key (<code>redis_client_key</code>) are exported to the policy of the Flask service <span><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>. The policy for this looks like this:</p>
+<p>The communication between the Flask-based service, say, <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and Redis instance, say, <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> is encrypted via TLS. Actually, we make sure that the service <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and instance <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> <strong>attest</strong> each other. Attestation means that <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> ensures that <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> satisfies all requirements specified in <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span>'s security policy and <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> ensures that <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> satisfies all the requirements of <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>'s policy. Of course, this should be done without changing the code of neither <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> nor <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span>. In case that <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> are using TLS with client authentication, this is straightforward to enforce. (If this is not the case, please contact us for an alternative.)</p>
+<p>To ensure mutual attestation, the operator of Redis defines a <a href="https://github.com/scontain/flask_example/blob/master/redis-template.yml">policy</a> in which it defines a certification authority (<code>redis_ca_cert</code>) and defines both a Redis certificate (<code>redis_ca_cert</code>) as well as a Redis client certificate (<code>redis_client_cert</code>). The client certificate and the private key (<code>redis_client_key</code>) are exported to the policy of the Flask service <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>. The policy for this looks like this:</p>
 <div class="highlight"><pre><span></span>secrets:
   - name: redis_key
     kind: private-key
@@ -2598,7 +2610,7 @@ workflow</strong> in the sense that we use a generic script to transform an exis
     - session: $FLASK_SESSION # export the session CA certificate to client session
 </pre></div>
 
-<p>Note that <code>$FLASK_SESSION</code> is replaced by the unique name of the policy of <span><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>. The security
+<p>Note that <code>$FLASK_SESSION</code> is replaced by the unique name of the policy of <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>. The security
 policies are in this example on the same <a href="../../helm_cas/">SCONE CAS (Configuration and Attestation Service)</a>. In more complex scenarios, the policies could also be stored on separate SCONE CAS instances operated by different entities.</p>
 <p>The flask service can import the Redis CA certificate, client certificate and private key as follows:</p>
 <div class="highlight"><pre><span></span>secrets:
