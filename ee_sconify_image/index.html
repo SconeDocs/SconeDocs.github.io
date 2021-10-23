@@ -3156,7 +3156,9 @@ cat identity.crt.pem &gt;&gt; identity.pem
 <h4 id="disable-session-security-attestation">Disable Session Security Attestation</h4>
 <p>By default, sessions uploaded by Sconify Image requires the service that wishes to utilize them to be attested by the CAS. This attestation requires the presence of a LAS. To enable a session to be usable by any service, we can disable the services attesation with <code>--disable-session-security-attestation</code>. This option is not secure, as it allows the session to be used by any service. This usability may expose secrets and secure configuration.</p>
 <h2 id="all-supported-options">All Supported Options</h2>
-<div class="highlight"><pre><span></span>  -h, --help               display this help and exit
+<div class="highlight"><pre><span></span>The following options are supported:
+
+  -h, --help               display this help and exit
 
 REQUIRED:
   --from=NATIVE_IMAGE      name of the native image (which this script encrypts)
@@ -3168,48 +3170,54 @@ OPTIONAL:
   --base=BASE_IMAGE        set the base image used to generate the encrypted
                              image (default=alpine:3.10)
   --command=SESSION_CMD    set the command in the session to be securely
-                             executed, e.g.,
-                             &#39;/my-app/my-binary /my-app/secret-foo.txt&#39;.
+                             executed, e.g., 
+                             &#39;/my-app/my-binary /my-app/secret-foo.txt&#39;. 
                              (default: ENTRYPOINT + CMD of native image)
-  --env=&quot;KEY=VALUE&quot;    set additional env variables to include in the
+  --env=&quot;KEY=VALUE&quot;    set additional env variables to include in the 
                              session, in addition to env vars from native image
   --cli=CLI_IMAGE          set the SCONE CLI image (default=registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image)
   --service-name=SERVICE_NAME      set the name of the service within the
                               SESSION (default: service). Is used for
                               SCONE_CONFIG_ID=SESSION/service
-  --dir=DIRECTORY          add directory to encrypt; add one option per
+  --dir=DIRECTORY          add directory to encrypt; add one option per 
                              directory. Will be added to the BASE_IMAGE file
-                             system. NOT compatible with &#39;--trace&#39; and
-                             &#39;--binary-fs&#39;
-  --plain=DIRECTORY        copy directories that are not encrypted to the
+                             system. NOT compatible with `--binary-fs`
+  --plain=DIRECTORY        copy directories that are not encrypted to the 
                              TO_IMAGE file system
   --plain-file=FILE        copy files that are not encrypted to the TO_IMAGE
                              file system
-  --volume=NAME:PATH[:[FROM_SESSION][:TO_SESSION_1]:...[:TO_SESSION_N]]
+  --host-path=PATH         add a host path, served directly from the host file
+                             system, WIHOUT any protection through SCONE.
+                             Used for e.g. files containing system specific data,
+                             such as networking configurations (`/etc/hosts`,
+                             `/etc/resolv.conf`), or special device files.
+                             The plain file must be present on the final image.
+                             A convenient way to access plain files from the native
+                             image is to use `--plain` or `--plain-file` in
+                             addition to `--host-path`.
+  --volume=NAME:PATH[:[FROM_SESSION][:TO_SESSION_1]:...[:TO_SESSION_N]] 
                            set a volume with name NAME at path PATH in the
                              session
                              (see sconedocs.github.io/CAS_session_lang_0_3/#volumes).
                              Optionally EITHER import volume from FROM_SESSION
                              OR export to TO_SESSION. Multiple export volumes
                              may be specified. If FROM_SESSION empty, only
-                             TO_SESSSION will be used (e.g. name:path::to_session)
+                             TO_SESSION will be used (e.g. name:path::to_session)
   --cas=CAS_ADDR           set the name of the CAS_ADDR (default=5-2-0.scone-cas.cf)
-  --cas-debug              permit CAS to be in debug mode
   --las=LAS_ADDR           set the name of the LAS service (default=localhost:18766)
-  --trace=TRACE_FILE       use tracefile to create encrypted files
   --template=TEMPLATE_FILE file containing policy template
                              (default=/src/session-template.yml)
   --session=SESSION_FILE   file that will contain the session
                              (default=/build-resources/session.yml)
-  --secrets=FILE           policy section that defines secrets
+  --secrets=FILE           policy section that defines secrets 
                              (see sconedocs.github.io/CAS_session_lang_0_3/#secrets)
                              MUST BE MAPPED TO CONTAINER WITH VOLUME (-v).
   --injectedfiles=FILE     policy section that defines the injected files
                              (see sconedocs.github.io/CAS_session_lang_0_3/#secret-injection-files)
                              MUST BE MAPPED TO CONTAINER WITH VOLUME (-v).
-
   --namespace=NAMESPACE    namespace of this session (default=RANDOM)
-  --create-namespace       create namespace (instead of using existing namespace)
+  --create-namespace       create namespace (instead of using existing namespace).
+                             Issues a warning if namespace already exists.
   --identity=FILE          Identity file to use during session creation.
                              If omitted, the automatically generated CLI identity
                              will be used. An identity file must contain a PEM-encoded
@@ -3219,8 +3227,25 @@ OPTIONAL:
                              Please note that a valid Docker credentials file MUST be provided in its
                              default location (~/.docker/config.json). For example, you can mount it to
                              the sconify container with a volume (-v):
-                                -v $HOME/.docker/config.json:/root/.docker/config.json
-                             This parameter will not have any effect if --docker-trust-sign is also set.
+                                -v /root/.docker/config.json:/root/.docker/config.json
+  --dry-run                no transformation will be performed, only command will be printed
+  --generate-sconefile     generates sconefile suitabile from scone build, implies --dry-run
+
+ATTESTATION:
+  --allow-tcb-vulnerabilities  Sets default hardware vulnerability tolerations
+                             in the generated session. Thereby allows sconified service
+                             to run on platforms with an insecure Trusted Computing Base (TCB).
+                             Allows for `tolerate`: hyperthreading, insecure-igpu,
+                             outdated-tcb, software-hardening-needed, insecure-configuration.
+                             For `ignore_advisories`: &quot;*&quot; (all)
+                             See https://sconedocs.github.io/CAS_session_lang_0_3/#tolerating-hardware-attestation-issues.
+  --allow-debug-mode       Sets the `debug-mode` toleration in the generated
+                             session. Thereby allows the sconified service to run on
+                             platforms without enclave protection. Allows the extraction
+                             of secrets.
+                             See https://sconedocs.github.io/CAS_session_lang_0_3/#tolerating-hardware-attestation-issues.
+  --cas-debug              Permits the CAS to be in debug mode. CAS thereby does NOT PROTECT
+                             SECRETS.
 
 ADVANCED:
 DISABLE DEFAULTS:
@@ -3242,13 +3267,28 @@ DISABLE DEFAULTS:
                              verified. NO SERVICE AUTHENTICATION IS PERFORMED UPON
                              SESSION USAGE.
                              (see sconedocs.github.io/CAS_session_lang_0_3/#disabling-attestation)
+  --disable-replace-unsconifiable-binaries   for binaries node
+                             Sconify Image replaces these binaries with a pre-
+                             sconified binary instead of sconifying it, as the
+                             binary must be compiled differently to work with
+                             SCONE. This option disables this feature.
+  --disable-update-session-if-exists if a session exists, sconify image by default
+                             will attempt to update that session. Setting this option
+                             causes this tool to fail if the specified session
+                             exists.
+  --disable-ld-library-path-in-session   If no LD_LIBRARY_PATH env var is in the native
+                             image or set via `--env`, an LD_LIBRARY_PATH is generated
+                             and included in the generated session.
+                             Sconified services may then load required dependencies,
+                             which may otherwise be unreachable when using the default
+                             LD_LIBRARY_PATH. Setting this option disables this behavior.
 
 BINARY FILE SYSTEM (binary fs):
-  --binary-fs              use the SCONE binary file system to embed the file
+  --binary-fs              use the SCONE binary file system to embed the file 
                              system into the binary; ONLY SUPPORTS PIE COMPILED
                              BINARIES (see sconedocs.github.io/binary_fs/)
   --fs-dir=DIRECTORY       add a directory to the binary-fs; one option per dir
-  --fs-file=FILE           specify certain files to include in the binary fs.
+  --fs-file=FILE           specify certain files to include in the binary fs. 
                              Useful if including the file&#39;s directory makes the
                              binary fs too large.
   --crosscompiler=CROSSCOMPILER_IMAGE    scone crosscompiler image for compiling
@@ -3263,25 +3303,40 @@ SIGNING:
                              (uses other arguments from environment).
                              (see sconedocs.github.io/scone-signer/)
                              MUST BE MAPPED TO CONTAINER WITH VOLUME (-v).
-  --docker-trust-sign=PRIVATE_KEY_PASSPHRASE   sign the image with docker trust
-                             signer (requires docker trust private key on
-                             platform and corresponding public key to be added
-                             to target repo of TO_IMAGE). WILL EXECUTE A DOCKER PUSH.
 
 KUBERNETES:
   --k8s-helm-workload-type=[deployment|statefulset|daemonset|job] generate a Helm chart to deploy
                                       the sconified application to a Kubernetes cluster as the specified
                                       resource.
+  --k8s-helm-expose=PORT            set PORT to be exposed in the generated charts via a Kubernetes Service.
   --k8s-helm-output-dir=DIRECTORY   save generated charts to DIRECTORY.
                                       (default=/sconify-helm)
+  --k8s-helm-volume=NAME:PATH       define an extra volume for the generated Helm chart. The resource name in
+                                      the chart might be slightly different due to Kubernetes naming constraints,
+                                      please check the generated chart documentation. THIS VOLUME WILL NOT
+                                      BE ENCRYPTED OR INTEGRITY-PROTECTED BY SCONE. For encrypted volumes, use
+                                      --volume instead.
+  --k8s-helm-manifests=PATH         render Kubernetes manifests from the generated Helm chart and save them to PATH.
+  --k8s-helm-set=&quot;PARAM=VALUE&quot;    set default values in generated chart parameters. Parameter &quot;PARAM&quot; (must be a valid
+                                      YAML path) will be assigned the default value &quot;VALUE&quot; (must be a valid string).
+                                      Refer to the generated documentation to see all supported parameters.
+
+AZURE INTEGRATION:
+  --azure-attestation=MAA_URL  set attestation mode to maa and use a Microsoft Azure Attestation provider.
+                                 The enclave MUST comply with both policies (MAA and SCONE) to be attested.
+                                 This attestation mode only works for services that run on Azure. Please note
+                                 that the TCB verification is done solely by Microsoft (see
+                                 https://sconedocs.github.io/CAS_session_lang_0_3/#microsoft-azure-attestation)
 
 SCONE ENV VARS:
   --heap=INT               heap size (default=1G)[SCONE_HEAP]
   --stack=INT              stack size (default=1M) [SCONE_STACK]
-  --dlopen=[0|1|2]         dlopen: 0 - disable,
+  --dlopen=[0|1|2]         dlopen: 0 - disable, 
                              1 - enable and require authentication (default),
                              2 - debug only [SCONE_ALLOW_DLOPEN]
   --fork=[0|1]             enable fork (default=0) [SCONE_FORK]
+  --log=[trace|info|warning|error|fatal]   sets SCONE_LOG level
+                           (default: log level of SCONE runtime)
 
 DEBUG:
   -x, --debug              enables &#39;set -x&#39; (commands are printed)
