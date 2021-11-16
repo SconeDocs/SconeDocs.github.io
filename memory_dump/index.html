@@ -1417,6 +1417,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#production-mode" title="Production Mode" class="md-nav__link">
+    Production Mode
+  </a>
+  
+</li>
+      
       
       
       
@@ -2350,6 +2357,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#production-mode" title="Production Mode" class="md-nav__link">
+    Production Mode
+  </a>
+  
+</li>
+      
       
       
       
@@ -2387,7 +2401,7 @@ By default, binaries are not encrypted.  Hence, <strong>do not store any secrets
 SCONE can protect these secrets by permitting to encrypt shared libraries.</p>
 <h2 id="example">Example</h2>
 <p>We use the SCONE crosscompiler image and start an container with access to the
-SGX device.We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
+SGX device. We determine which SGX device to mount with function <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
 docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers
 docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
@@ -2423,7 +2437,7 @@ docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:50
 
 <h2 id="simulation-mode">Simulation Mode</h2>
 <p>You can run this program in <strong>SIMULATION MODE</strong>, i.e., this program does not protect your secrets:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM <span class="nv">SCONE_HEAP</span><span class="o">=</span>128K <span class="nv">SCONE_STACK</span><span class="o">=</span>1K ./mysecret
+<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM ./mysecret
 </pre></div>
 
 <p>Log into a different terminal on your <strong>host</strong>. Let us figure out the process ID of the mysecret program:</p>
@@ -2434,49 +2448,46 @@ docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:50
 the different memory regions of your process via <code>cat /proc/$SPID/maps</code> and
 the memory is stored in <em>/proc/$SPID/mem</em>. We can use the following
 Python program to write all pages to <em>stdout</em>: </p>
-<div class="highlight"><pre><span></span>cat &gt; dumpstack.py <span class="s">&lt;&lt; EOF</span>
-<span class="s">import sys, os, string, re</span>
+<div class="highlight"><pre><span></span>cat &gt; dumpmemory.py <span class="s">&lt;&lt; EOF</span>
+<span class="s">import sys,re</span>
 
 <span class="s">pid = sys.argv[1]</span>
+<span class="s">print(&quot;PID = %s \n&quot; % pid)</span>
 <span class="s">maps_file = open(&quot;/proc/%s/maps&quot; % pid, &#39;r&#39;)</span>
-<span class="s">mem_file = open(&quot;/proc/%s/mem&quot; % pid, &#39;r&#39;)</span>
-<span class="s">r=0</span>
+<span class="s">mem_file= open(&quot;/proc/%s/mem&quot; % pid, &#39;rb&#39;)</span>
 
-<span class="s">for line in maps_file.readlines():  # for each mapped region</span>
-<span class="s">    w=line.rsplit(None, 1)[-1] # last word</span>
-<span class="s">    if  w != &quot;[vvar]&quot; and w != &quot;[vdso]&quot; and w != &quot;[vsyscall]&quot; and w != &quot;/dev/isgx&quot; and w != &quot;/dev/sgx&quot;:</span>
-<span class="s">        m = re.match(r&#39;([0-9A-Fa-f]+)-([0-9A-Fa-f]+) ([-r])&#39;, line)</span>
-<span class="s">        r += 1</span>
-<span class="s">        p = 0</span>
-<span class="s">        if m.group(3) == &#39;r&#39;:  # if this is a readable region</span>
+<span class="s">for line in maps_file.readlines():</span>
+<span class="s">    m = re.match(r&#39;([0-9A-Fa-f]+)-([0-9A-Fa-f]+) ([-r][-w])&#39;, line)</span>
+<span class="s">    if m.group(3) == &quot;rw&quot; or m.group(3) == &quot;r-&quot; :</span>
+<span class="s">        try:</span>
 <span class="s">            start = int(m.group(1), 16)</span>
+<span class="s">            if start &gt; 0xFFFFFFFFFFFF:</span>
+<span class="s">                continue</span>
+<span class="s">            print(&quot;\nOK : \n&quot; + line+&quot;\n&quot;)</span>
 <span class="s">            end = int(m.group(2), 16)</span>
-<span class="s">            while start &lt; end:</span>
-<span class="s">                try:</span>
-<span class="s">                    mem_file.seek(start)  # seek to region start</span>
-<span class="s">                    chunk = mem_file.read(4096)  # read region contents</span>
-<span class="s">                    sys.stdout.write(chunk)</span>
-<span class="s">                    p += 1</span>
-<span class="s">                    if p &gt; 1000:</span>
-<span class="s">                        sys.stderr.write(&quot;region = %02d, index=%x    \r&quot; % (r,start))</span>
-<span class="s">                        p = 0</span>
-<span class="s">                    start += 4096</span>
-<span class="s">                except:</span>
-<span class="s">                    pass</span>
-<span class="s">sys.stderr.write(&quot;\n&quot;)</span>
+<span class="s">            mem_file.seek(start) </span>
+<span class="s">            chunk = mem_file.read(end - start)</span>
+<span class="s">            print(chunk)</span>
+<span class="s">            sys.stdout.flush()</span>
+<span class="s">        except Exception as e:</span>
+<span class="s">            print(str(e))  </span>
+<span class="s">    else:</span>
+<span class="s">        print(&quot;\nPASS : \n&quot; + line+&quot;\n&quot;)</span>
+
+<span class="s">print(&quot;END&quot;)</span>
 <span class="s">EOF</span>
 </pre></div>
 
-<div class="admonition note">
-<p class="admonition-title">Enclaves in debug mode do not protect your secrets</p>
-<p>If your enclave is in debug mode, one can access all secrets of the enclave. 
-This scanner conveniently skips the enclave memory region using condition <code>and w != "/dev/isgx" and ...</code>. Drop this condition and you should also find the secret. Run your program in <strong>production mode</strong> to ensure that one cannot access the secrets.</p>
-</div>
 <p>Run this program and grep for the prefix of our secret:</p>
-<div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
+<div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> &gt;<span class="p">&amp;</span> memdump.log
+grep -o MYBIGS memdump.log
 </pre></div>
 
 <p>This will take some time but eventually it will print the full secret <strong>MYBIGS</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Enclaves in SIM mode</p>
+<p>You will find your secret in memory region used by enclave but you will notice that SGX device is not used.</p>
+</div>
 <h2 id="hardware-mode">Hardware Mode</h2>
 <p>Let us now run the program in hardware mode. First, <strong>ensure that you kill the original program</strong>
 by typing <em>control-C</em>.</p>
@@ -2484,26 +2495,58 @@ by typing <em>control-C</em>.</p>
 <img alt="Finding secret in prerelease mode" src="../img/prerelease_finding_secrets.svg" />
 </center></p>
 <p>Let's start mysecret in an enclave, i.e., in hardware mode inside the container:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>HW <span class="nv">SCONE_HEAP</span><span class="o">=</span>128K <span class="nv">SCONE_STACK</span><span class="o">=</span>1K ./mysecret
+<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>HW ./mysecret
 </pre></div>
 
-<p>Update environment variable <em>SPID</em> in a second terminal on your host:</p>
+<p>Update environment variable <em>SPID</em> in a <strong>second</strong> terminal on your host:</p>
 <div class="highlight"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
 </pre></div>
 
 <p>and then try to find the secret:</p>
-<div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep MYBI
+<div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> &gt;<span class="p">&amp;</span> memdump_HW.log
+grep -o MYBIGS memdump_HW.log
 </pre></div>
 
-<p>This will run for much less time and in particular, it will not print any secrets.</p>
-<p>Note, however, that secrets stored in the binaries can be found because the binary is
+<div class="admonition note">
+<p class="admonition-title">Enclaves in debug mode do not protect your secrets</p>
+<p>If your enclave is in debug mode, one can access all secrets of the enclave. </p>
+</div>
+<h2 id="production-mode">Production Mode</h2>
+<p>To protect your secrets you have provided them only to the attested production enclaves.
+If enclave is signed with a suitable key, it will start in production mode.
+One can simply generate such a key for CPU that supports FLC. 
+To check, if your CPU supports FLC use:
+<div class="highlight"><pre><span></span>cpuid <span class="p">|</span> grep SGX_LC
+</pre></div>
+or 
+<div class="highlight"><pre><span></span>lscpu <span class="p">|</span> grep sgx_lc
+</pre></div></p>
+<p>You can generate a key with following script:</p>
+<div class="highlight"><pre><span></span>openssl genrsa -3 -out key.pem <span class="m">3072</span>
+</pre></div>
+
+<p>And sign a binary with <a href="../scone-signer/">scone signer</a> like this:
+<div class="highlight"><pre><span></span>scone-signer sign -p --key<span class="o">=</span>key.pem ./mysecret
+</pre></div></p>
+<p>Then, <strong>kill the original program</strong> by typing <em>control-C</em> and start a new one that will run in production mode.
+And one more time, update environment variable <em>SPID</em> in a <strong>second</strong> terminal on your host:</p>
+<p>And then you run:</p>
+<div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> &gt;<span class="p">&amp;</span> memdump_PRD.log
+grep -o MYBIGS memdump_PRD.log
+</pre></div>
+
+<p>This time <code>grep</code> will not find secretes on stack.
+That is because enclave memory is encrypted and protected from outside access.
+Also, this example shows that if you provide secretes <strong>after</strong> attestation, it can not be extracted from SGX enclave.</p>
+<p>Note that <strong>secrets stored in the binaries can be found</strong> because the binary is
 not encrypted: a copy of the original binary - which is used to start the enclave - 
-stays in main memory outside the enclave. </p>
+stays in the main memory outside the enclave. </p>
 <p>Let's look for the string <strong>THIS_IS_NOT_SECRET</strong> in our example application. 
 We can find this secret as follows:</p>
-<div class="highlight"><pre><span></span>sudo python dumpstack.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep THIS_IS_NOT_SECRET
+<div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep THIS_IS_NOT_SECRET
 </pre></div>
 
+<p>Always use <a href="../CAS_session_lang_0_3/">SCONE policy</a> to provide secrets to enclaves.</p>
 <div class="footnote">
 <hr />
 <ol>
