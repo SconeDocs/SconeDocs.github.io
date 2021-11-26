@@ -756,6 +756,47 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#deploying-a-confidential-memcached-with-the-kubeapps-dashboard" title="Deploying a confidential Memcached with the Kubeapps dashboard" class="md-nav__link">
+    Deploying a confidential Memcached with the Kubeapps dashboard
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" title="Prerequisites" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-policies" title="Upload policies" class="md-nav__link">
+    Upload policies
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-a-new-release-using-the-kubeapps-dashboard" title="Deploy a new release using the Kubeapps dashboard" class="md-nav__link">
+    Deploy a new release using the Kubeapps dashboard
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-a-client-to-see-memcached-in-action" title="Deploy a client to see Memcached in action" class="md-nav__link">
+    Deploy a client to see Memcached in action
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -2420,6 +2461,47 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#deploying-a-confidential-memcached-with-the-kubeapps-dashboard" title="Deploying a confidential Memcached with the Kubeapps dashboard" class="md-nav__link">
+    Deploying a confidential Memcached with the Kubeapps dashboard
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" title="Prerequisites" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-policies" title="Upload policies" class="md-nav__link">
+    Upload policies
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-a-new-release-using-the-kubeapps-dashboard" title="Deploy a new release using the Kubeapps dashboard" class="md-nav__link">
+    Deploy a new release using the Kubeapps dashboard
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-a-client-to-see-memcached-in-action" title="Deploy a client to see Memcached in action" class="md-nav__link">
+    Deploy a client to see Memcached in action
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
       
       
       
@@ -2523,6 +2605,56 @@ kubectl create clusterrolebinding kubeapps-operator --clusterrole<span class="o"
 deploy and manage SCONE-based confidential applications.">Kubeapps</span> dashboard, you need to determine the API Token:</p>
 <div class="highlight"><pre><span></span><span class="nv">APITOKEN</span><span class="o">=</span><span class="k">$(</span>kubectl get -n default secret <span class="k">$(</span>kubectl get -n default serviceaccount kubeapps-operator -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.secrets[].name}&#39;</span><span class="k">)</span> -o go-template<span class="o">=</span><span class="s1">&#39;{{.data.token | base64decode}}&#39;</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span><span class="k">)</span>
 <span class="nb">echo</span> <span class="nv">$APITOKEN</span>
+</pre></div>
+
+<h2 id="deploying-a-confidential-memcached-with-the-kubeapps-dashboard">Deploying a confidential Memcached with the Kubeapps dashboard</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Kubeapps setup done, including port forwarding to access the dashboard and the determined API Token.</li>
+<li>Clone <a href="https://gitlab.scontain.com/matteus/kubeapps-demo">this</a> repo and go to the repo's root dir.</li>
+</ul>
+<h3 id="upload-policies">Upload policies</h3>
+<p>To deploy Memcached with Kubeapps, you need to upload the policies to CAS first. In this example, we also use a Memcached client to see Memcached in action. In this case, the Memcached session exports a certificate and a key to be used by the client since the Memcached has TLS enabled.</p>
+<p>Submit the policies with the help of SCONE CLI:</p>
+<div class="highlight"><pre><span></span><span class="nb">alias</span> <span class="nv">scone</span><span class="o">=</span><span class="s2">&quot;docker run -it --rm \</span>
+<span class="s2">    -v /var/run/docker.sock:/var/run/docker.sock \</span>
+<span class="s2">    -v \&quot;</span><span class="nv">$HOME</span><span class="s2">/.docker/config.json:/root/.docker/config.json\&quot; \</span>
+<span class="s2">    -v \&quot;\$PWD:/root\&quot; \</span>
+<span class="s2">    -w /root \</span>
+<span class="s2">    registry.scontain.com:5050/community/cli &quot;</span>
+</pre></div>
+
+<div class="highlight"><pre><span></span>scone ./upload_policies.sh
+</pre></div>
+
+<h3 id="deploy-a-new-release-using-the-kubeapps-dashboard">Deploy a new release using the Kubeapps dashboard</h3>
+<p>Search for memcached in Kubeapps catalog.</p>
+<p><center>
+<img alt="Memcached Search Result" src="img/memcached_search_catalog.png#fullwidth" title="Dashboard shows Memcached in the search result." />
+</center></p>
+<p>Click on the deploy button.</p>
+<p><center>
+<img alt="Memcached Search Result" src="../img/memcached_config_screen.png#fullwidth" title="Dashboard shows text field to configure chart values." />
+</center></p>
+<p>Fill the release name on the top with memcached.</p>
+<p>Delete the content of the YAML text field. Copy the content of the file chart_values.yml generated by the previous step in the terminal and paste into the text field.</p>
+<p>Now, click <code>on deploy 0.3.0</code> button.</p>
+<p>After a few seconds, you will see one Pod ready, like in the following figure.</p>
+<p><center>
+<img alt="Memcached Search Result" src="../img/memcached_running_screen.png#fullwidth" title="Dashboard shows Memcached running." />
+</center></p>
+<h3 id="deploy-a-client-to-see-memcached-in-action">Deploy a client to see Memcached in action</h3>
+<p>Load the environment variables generated by the upload policies step.</p>
+<div class="highlight"><pre><span></span><span class="nb">source</span> client_env
+</pre></div>
+
+<p>Apply the Memcached client to see the Memcached in action.</p>
+<div class="highlight"><pre><span></span>envsubst &lt; client_deployment.yml <span class="p">|</span> kubectl apply -f -
+</pre></div>
+
+<p>You can see the logs in using the following command.</p>
+<div class="highlight"><pre><span></span>kubectl logs -f <span class="k">$(</span>kubectl get pods -o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.items[0].metadata.name}&#39;</span> <span class="se">\</span>
+    -l <span class="nv">app</span><span class="o">=</span>memcached-client<span class="k">)</span>
 </pre></div>
                 
                   
