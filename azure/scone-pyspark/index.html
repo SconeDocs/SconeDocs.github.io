@@ -809,6 +809,26 @@
     Run yourself
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tldr" title="TL;DR" class="md-nav__link">
+    TL;DR
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#walkthrough" title="Walkthrough" class="md-nav__link">
+    Walkthrough
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -2353,6 +2373,26 @@
     Run yourself
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tldr" title="TL;DR" class="md-nav__link">
+    TL;DR
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#walkthrough" title="Walkthrough" class="md-nav__link">
+    Walkthrough
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -2387,7 +2427,7 @@
 </thead>
 <tbody>
 <tr>
-<td align="center">December 9<sup>th</sup>, 2021</td>
+<td align="center">December 10<sup>th</sup>, 2021</td>
 <td align="center">5.6.1</td>
 </tr>
 </tbody>
@@ -2401,7 +2441,44 @@
 </ul>
 <p>The virtual machine also includes one sample application to process a large dataset (from Azure Blob Storage) on a Kubernetes cluster in a distributed and secure fashion, with full encrypted application code and data, as well as remote attestation policies.</p>
 <h2 id="sample-application">Sample application</h2>
+<p>This offer includes a sample application to showcase how SCONE PySpark can be leveraged to run distributed confidential data processing applications over large datasets on a Kubernetes cluster. Horizontally scale your workloads while keeping your application code and data fully encrypted and remotely attested using hardware-based attestation evidences. To learn more about the sample application, check out its <a href="https://github.com/mdrakiburrahman/sgx-pyspark-sql-demo">original GitHub repository</a>.</p>
 <h3 id="run-yourself">Run yourself</h3>
+<h4 id="tldr">TL;DR</h4>
+<div class="highlight"><pre><span></span><span class="nb">cd</span> /opt/scone/pyspark
+
+<span class="c1"># Configure execution through environment variables.</span>
+<span class="c1"># REPO: container registry to host the generated Spark images. You must have push access to it!  </span>
+<span class="nb">export</span> <span class="nv">REPO</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/experimental
+<span class="nb">export</span> <span class="nv">SPARK_IMAGE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$REPO</span><span class="s2">:spark-scone-5.6.0&quot;</span>
+<span class="c1"># SCONE_CAS_ADDR and SCONE_CAS_MRENCLAVE: address and MrEnclave of the SCONE CAS.</span>
+<span class="c1"># In this example we use a public CAS instance maintained by Scontain.</span>
+<span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;5-6-0.scone-cas.cf&quot;</span>
+<span class="nb">export</span> <span class="nv">SCONE_CAS_MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;0902eec722b3de0d11b56aab3671cc8540e62bd2333427780c8a9cd855e4f298&quot;</span>
+<span class="c1"># MAA_PROVIDER: address of a Microsoft Azure Attestation provider. If you want to enable MAA, please</span>
+<span class="c1"># edit section &quot;security.attestation&quot; file &quot;policies/pyspark.hw.yaml.template&quot;.</span>
+<span class="c1">#export MAA_PROVIDER=&quot;https://sharedeus.eus.attest.azure.net&quot;</span>
+<span class="c1"># K8S_PULL_SECRET: configure Kubernetes to pull images from private repositories.</span>
+<span class="nb">export</span> <span class="nv">K8S_PULL_SECRET</span><span class="o">=</span><span class="s2">&quot;my-pull-secret&quot;</span>
+
+<span class="c1"># Build and push encrypted Spark image.</span>
+./build-spark-image.sh
+<span class="nb">source</span> build/env.sh
+docker push <span class="nv">$SPARK_IMAGE</span>
+
+<span class="c1"># Submit SCONE policies to the select SCONE CAS.</span>
+./create-policies.sh
+
+<span class="c1"># Start local minikube cluster.</span>
+./start-minikube-cluster.sh
+
+<span class="c1"># Deploy the application to the local minikube cluster.</span>
+./deploy-spark-application.sh
+
+<span class="c1"># You can check the progress of the execution through kubectl.</span>
+kubectl logs -l<span class="o">=</span>spark-role<span class="o">=</span>driver -f
+</pre></div>
+
+<h4 id="walkthrough">Walkthrough</h4>
 <ul>
 <li>Move to repository.</li>
 </ul>
@@ -2412,7 +2489,7 @@
 <li>We are building one image for the Spark driver and Spark executors. Specify the name of the image. <strong>You must have push access to the chosen repository!</strong></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">REPO</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/experimental
-<span class="nb">export</span> <span class="nv">SPARK_IMAGE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$REPO</span><span class="s2">&quot;&quot;:spark-scone-5.6.0&quot;</span>
+<span class="nb">export</span> <span class="nv">SPARK_IMAGE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$REPO</span><span class="s2">:spark-scone-5.6.0&quot;</span>
 </pre></div>
 
 <ul>
@@ -2459,17 +2536,31 @@ envsubst <span class="s1">&#39;$SCONE_CAS_ADDR $CAS_NAMESPACE $PYSPARK_SESSION_N
 <div class="highlight"><pre><span></span><span class="c1"># Attest SCONE CAS.</span>
 docker run --rm -t <span class="se">\</span>
   -e <span class="nv">SCONE_CLI_CONFIG</span><span class="o">=</span>/cas/config.json <span class="se">\</span>
-  -v <span class="nv">$PWD</span>/build/policies:/policies <span class="se">\</span>
   -v <span class="nv">$PWD</span>/build/cas:/cas <span class="se">\</span>
   --entrypoint bash <span class="se">\</span>
-  <span class="nv">$SPARK_IMAGE</span>
-    -c <span class="s2">&quot;scone cas attest </span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2"> </span><span class="nv">$SCONE_CAS_MRENCLAVE</span><span class="s2"> -GCS --only_for_testing-debug --only_for_testing-ignore-signer &amp;&amp; \</span>
-<span class="s2">    scone session create /policies/namespace.yaml &amp;&amp; \</span>
-<span class="s2">    scone session create /policies/pyspark.yaml&quot;</span>
+  <span class="nv">$SPARK_IMAGE</span> -c <span class="s2">&quot;scone cas attest </span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2"> </span><span class="nv">$SCONE_CAS_MRENCLAVE</span><span class="s2"> -GCS --only_for_testing-debug --only_for_testing-ignore-signer&quot;</span>
+
+<span class="c1"># Create your CAS namespace from the template and submit it.</span>
+envsubst <span class="s1">&#39;$CAS_NAMESPACE&#39;</span> &lt; policies/namespace.yaml.template &gt; build/policies/namespace.yaml
+docker run --rm -t <span class="se">\</span>
+  -e <span class="nv">SCONE_CLI_CONFIG</span><span class="o">=</span>/cas/config.json <span class="se">\</span>
+  -v <span class="nv">$PWD</span>/build/cas:/cas <span class="se">\</span>
+  -v <span class="nv">$PWD</span>/build/policies:/policies <span class="se">\</span>
+  --entrypoint bash <span class="se">\</span>
+  <span class="nv">$SPARK_IMAGE</span> -c <span class="s2">&quot;scone session create /policies/namespace.yaml&quot;</span>
+
+<span class="c1"># Create your SCONE policy for Spark drivers and executors from the template and submit it.</span>
+envsubst <span class="s1">&#39;$SCONE_CAS_ADDR $CAS_NAMESPACE $PYSPARK_SESSION_NAME $DRIVER_MAIN_FSPF_KEY $DRIVER_MAIN_FSPF_TAG $DRIVER_VOLUME_FSPF_KEY $DRIVER_VOLUME_FSPF_TAG $DRIVER_JAVA_MRENCLAVE $DRIVER_PYTHON_MRENCLAVE $EXECUTOR_JAVA_MRENCLAVE&#39;</span> &lt; policies/pyspark.hw.yaml.template &gt; build/policies/pyspark.yaml
+docker run --rm -t <span class="se">\</span>
+  -e <span class="nv">SCONE_CLI_CONFIG</span><span class="o">=</span>/cas/config.json <span class="se">\</span>
+  -v <span class="nv">$PWD</span>/build/cas:/cas <span class="se">\</span>
+  -v <span class="nv">$PWD</span>/build/policies:/policies <span class="se">\</span>
+  --entrypoint bash <span class="se">\</span>
+  <span class="nv">$SPARK_IMAGE</span> -c <span class="s2">&quot;scone session create /policies/pyspark.yaml&quot;</span>
 </pre></div>
 
 <ul>
-<li>Export the <code>SCONE_CONFIG_ID</code> for the submitted policies.</li>
+<li>Export the SCONE_CONFIG_ID for the submitted policies.</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_NAMESPACE</span><span class="s2">/</span><span class="nv">$PYSPARK_SESSION_NAME</span><span class="s2">/nyc-taxi-yellow&quot;</span>
 </pre></div>
@@ -2489,7 +2580,7 @@ docker run --rm -t <span class="se">\</span>
 <ul>
 <li>Start the local minikube cluster. Setup the SCONE SGX device plugin and LAS.</li>
 </ul>
-<div class="highlight"><pre><span></span>minikube start
+<div class="highlight"><pre><span></span>minikube start --cpus <span class="m">8</span> --memory 28G
 
 <span class="c1"># Install the SCONE SGX device plugin and SCONE LAS.</span>
 helm install sgxdevplugin /opt/scone/sconeapps/sgxdevplugin-1.2.0.tgz
@@ -2497,7 +2588,13 @@ helm install las /opt/scone/sconeapps/las-0.3.4.tgz
 </pre></div>
 
 <ul>
-<li>Gather the address of the minikube master. </li>
+<li>Setup RBAC policies for Spark.</li>
+</ul>
+<div class="highlight"><pre><span></span>kubectl create -f kubernetes/rbac.yaml
+</pre></div>
+
+<ul>
+<li>Gather the address of the minikube master.</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nv">MASTER_ADDRESS</span><span class="o">=</span><span class="k">$(</span>kubectl config view --minify -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.clusters[0].cluster.server}&#39;</span><span class="k">)</span>
 </pre></div>
