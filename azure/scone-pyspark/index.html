@@ -797,6 +797,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#quickstart" title="Quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sample-application" title="Sample application" class="md-nav__link">
     Sample application
   </a>
@@ -2361,6 +2368,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#quickstart" title="Quickstart" class="md-nav__link">
+    Quickstart
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sample-application" title="Sample application" class="md-nav__link">
     Sample application
   </a>
@@ -2427,8 +2441,8 @@
 </thead>
 <tbody>
 <tr>
-<td align="center">December 10<sup>th</sup>, 2021</td>
-<td align="center">5.6.1</td>
+<td align="center">December 15<sup>th</sup>, 2021</td>
+<td align="center">5.6.2</td>
 </tr>
 </tbody>
 </table>
@@ -2439,7 +2453,29 @@
 <li>container images for our Attestation Services, as well as many of our curated images</li>
 <li>charts from our SconeApps Helm chart repository</li>
 </ul>
-<p>The virtual machine also includes one sample application to process a large dataset (from Azure Blob Storage) on a Kubernetes cluster in a distributed and secure fashion, with full encrypted application code and data, as well as remote attestation policies.</p>
+<p>The virtual machine also includes one sample application to process a large dataset (from Azure Blob Storage) on a Kubernetes cluster in a secure fashion, with full encrypted application code and data, as well as remote attestation policies.</p>
+<p><img alt="⚠️" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/26a0.svg" title=":warning:" /> Important! This offer currently requires a node size of at least 32 GB of memory. We recommend using <strong>Standard_DC8s_v2</strong>, <strong>Standard_DC8s_v3</strong> or <strong>Standard_DC8ds_v3</strong> node sizes. Read more about <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/dcv2-series">DCsv2</a> and <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/dcv3-series">DCsv3</a> families on Azure.</p>
+<h2 id="quickstart">Quickstart</h2>
+<p>To get started, search for "SCONE Confidential PySpark on Kubernetes" in the Azure Portal search bar and select our offer under "Marketplace" section:</p>
+<p><img alt="Search for SCONE Confidential PySpark on Kubernetes on Azure Marketplace" src="../images/pyspark-quickstart1.png" /></p>
+<p>Click on "Create" button:</p>
+<p><img alt="Create a VM from the SCONE Confidential PySpark on Kubernetes offer" src="../images/pyspark-quickstart2.png" /></p>
+<p>Configure your Virtual Machine according to your needs. Choose a size from families <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/dcv2-series">DCsv2-series</a> (Coffee Lake processors), <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/dcv3-series">DCsv3-series or DCdsv3-series</a>  (Ice Lake processors) to have Intel SGX enabled on your Virtual Machine. <strong>This offer requires at least 32 GB of memory</strong>, so we recommend the sizes <strong>Standard_DC8s_v2</strong>, <strong>Standard_DC8s_v3</strong> or <strong>Standard_DC8ds_v3</strong>. Setup user access through password or SSH keys.</p>
+<p><img alt="Configure your VM for the SCONE Confidential PySpark on Kubernetes offer" src="../images/pyspark-quickstart3.png" /></p>
+<p>Once you configured your VM, click on "Review + create" button and to review and validate your configuration. Click on "Create" once validation is finished.</p>
+<p><img alt="Review and validate the configuration for the SCONE Confidential PySpark on Kubernetes offer before creating the VM" src="../images/pyspark-quickstart4.png" /></p>
+<p>After the deployment process is complete, click on "Go to resource" to see your newly-created VM.</p>
+<p><img alt="Once deployment is complete, go to resource to see more information about the VM" src="../images/pyspark-quickstart5.png" /></p>
+<p>Copy the IP address of your VM under the field "Public IP address".</p>
+<p><img alt="Copy the public IP address of the SCONE Confidential PySpark on Kubernetes VM" src="../images/pyspark-quickstart6.png" /></p>
+<p>You can use this IP to login to your VM through SSH, using the authentication method that you choose on the configuration step.</p>
+<div class="highlight"><pre><span></span>ssh azureuser@20.117.75.242
+</pre></div>
+
+<p>Once you're logged in to the Virtual Machine, you're good to go!</p>
+<div class="highlight"><pre><span></span>azureuser@scone-pyspark:~$ <span class="nb">echo</span> <span class="s2">&quot;Have fun! :-)&quot;</span>
+</pre></div>
+
 <h2 id="sample-application">Sample application</h2>
 <p>This offer includes a sample application to showcase how SCONE PySpark can be leveraged to run distributed confidential data processing applications over large datasets on a Kubernetes cluster. Horizontally scale your workloads while keeping your application code and data fully encrypted and remotely attested using hardware-based attestation evidences. To learn more about the sample application, check out its <a href="https://github.com/mdrakiburrahman/sgx-pyspark-sql-demo">original GitHub repository</a>.</p>
 <h3 id="run-yourself">Run yourself</h3>
@@ -2584,7 +2620,7 @@ docker run --rm -t <span class="se">\</span>
 
 <span class="c1"># Install the SCONE SGX device plugin and SCONE LAS.</span>
 helm install sgxdevplugin /opt/scone/sconeapps/sgxdevplugin-1.2.0.tgz
-helm install las /opt/scone/sconeapps/las-0.3.4.tgz
+helm install las /opt/scone/sconeapps/las-0.3.4.tgz --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/kubernetes:las.microsoft-azure-experimental-scone5.6.0
 </pre></div>
 
 <ul>
