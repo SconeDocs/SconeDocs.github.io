@@ -2570,7 +2570,6 @@ be <code>5-0-0.scone-cas.cf</code>. You can overwrite these defaults by setting 
 <p>To deploy nginx SCONE with the default parameters to your Kubernetes cluster:</p>
 <div class="highlight"><pre><span></span>helm install my-nginx sconeapps/nginx
 </pre></div>
-
 <p>Have a look at the <a href="#parameters">Parameters</a> section for a complete list of parameters this chart supports.</p>
 <h4 id="sgx-device">SGX device</h4>
 <p>By default, this helm chart uses the <a href="../helm_sgxdevplugin/">SCONE SGX Plugin</a>. Hence, it sets the resource limits of CAS as follows:</p>
@@ -2578,7 +2577,6 @@ be <code>5-0-0.scone-cas.cf</code>. You can overwrite these defaults by setting 
   <span class="nt">limits</span><span class="p">:</span>
     <span class="nt">sgx.k8s.io/sgx</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
 </pre></div>
-
 <p>Alternatively, set <code>useSGXDevPlugin</code> to <code>azure</code> (e.g., <code>--useSGXDevPlugin=azure</code>) to support Azure's SGX Device Plugin. Since Azure requires the amount of EPC memory allocated to your application to be specified, the parameter <code>sgxEpcMem</code> (SGX EPC memory in MiB) becomes required too (e.g., <code>--set useSGXDevPlugin=azure --set sgxEpcMem=16</code>).</p>
 <p>In case you do not want to use the SGX plugin, you can remove the resource limit and explicitly mount the local SGX device into your container by setting:</p>
 <div class="highlight"><pre><span></span><span class="nt">extraVolumes</span><span class="p">:</span>
@@ -2590,18 +2588,15 @@ be <code>5-0-0.scone-cas.cf</code>. You can overwrite these defaults by setting 
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dev-isgx</span>
     <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span>
 </pre></div>
-
 <p>Please note that mounting the local SGX device into your container requires privileged mode, which will grant your container access to ALL host devices. To enable privileged mode, set <code>securityContext</code>:</p>
 <div class="highlight"><pre><span></span><span class="nt">securityContext</span><span class="p">:</span>
   <span class="nt">privileged</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
-
 <h3 id="testing-your-chart">Testing your chart</h3>
 <p>This chart includes tests to make sure your nginx is working as expected. This current version does not yet possess a corresponding policy, and thus <code>scone.attestation</code> is current not enabled.</p>
 <p>To run the tests, simply run:</p>
 <div class="highlight"><pre><span></span>helm <span class="nb">test</span> my-nginx
 </pre></div>
-
 <p>Helm will print the result of the tests:</p>
 <div class="highlight"><pre><span></span>NAME: my-nginx
 LAST DEPLOYED: Wed Dec 16 11:15:47 2020
@@ -2613,7 +2608,6 @@ Last Started:   Wed Dec 16 11:16:24 2020
 Last Completed: Wed Dec 16 11:16:29 2020
 Phase:          Succeeded
 </pre></div>
-
 <p>If the tests are successful, Helm will delete the deployed tests resources automatically.</p>
 <h3 id="accessing-your-nginx">Accessing your nginx</h3>
 <p>This chart supports two service types for nginx: <code>ClusterIP</code> and <code>NodePort</code>.</p>
@@ -2628,7 +2622,6 @@ kubectl --namespace default port-forward <span class="nv">$POD_NAME</span> <span
 <p>You can then manually check that the nginx is working by:</p>
 <div class="highlight"><pre><span></span>curl -o /dev/null -s -w <span class="s2">&quot;%{http_code}&quot;</span> <span class="m">127</span>.0.0.1:8080
 </pre></div>
-
 <p>It should then return <code>200</code></p>
 <h5 id="nodeport">NodePort</h5>
 <p>You can also set <code>service.type</code> to <code>NodePort</code>, and the nginx instance will be exposed to the outside through the same port in every worker node. By default, the port is randomly assigned by Kubernetes. You can define a custom port by setting <code>service.nodePort</code>, but keep in mind that this port must be available (service creation will fail otherwise).</p>
@@ -2638,11 +2631,9 @@ kubectl --namespace default port-forward <span class="nv">$POD_NAME</span> <span
 <span class="nb">export</span> <span class="nv">NODE_IP</span><span class="o">=</span><span class="k">$(</span>kubectl get nodes --namespace default -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.items[0].status.addresses[0].address}&quot;</span><span class="k">)</span>
 <span class="nb">echo</span> http://<span class="nv">$NODE_IP</span>:<span class="nv">$NODE_PORT</span>
 </pre></div>
-
 <p>You can then manually check that the nginx is working by:</p>
 <div class="highlight"><pre><span></span>curl -o /dev/null -s -w <span class="s2">&quot;%{http_code}&quot;</span> http://<span class="nv">$NODE_IP</span>:<span class="nv">$NODE_PORT</span>
 </pre></div>
-
 <p>It should then return <code>200</code></p>
 <p>Internal DNS entries (e.g., <code>RELEASE-nginx-scone-7dbb5d97c7-ktt78</code>) will still be created, so you can use them when contacting nginx from inside the cluster.</p>
 <h3 id="parameters">Parameters</h3>
@@ -2857,12 +2848,10 @@ kubectl --namespace default port-forward <span class="nv">$POD_NAME</span> <span
 <p>Specify each parameter using the <code>--set key=value[,key=value]</code> argument to <code>helm install</code>. For example,</p>
 <div class="highlight"><pre><span></span><span class="go">helm install my-nginx-release --set scone.attestation.NGINXConfigID=my_name_space/nginx_policy,scone.attestation.cas=cas.example.com sconeapps/nginx</span>
 </pre></div>
-
 <p>The above command sets the policy to <code>my_name_space/memcached_policy</code> and using the CAS <code>cas.example.com</code>.</p>
 <p>Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,</p>
 <div class="highlight"><pre><span></span><span class="go">helm install my-nginx-release -f values.yaml sconeapps/nginx</span>
 </pre></div>
-
 <div class="admonition tip">
 <p class="admonition-title">One can use the default <code>values.yaml</code> in the SconeApps repo</p>
 </div>

@@ -2385,7 +2385,6 @@
 touch Dockerfile
 touch my_service.py
 </pre></div>
-
 <p>Now to create the actual service, which we save to <code>my_service.py</code>:</p>
 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
@@ -2441,7 +2440,6 @@ touch my_service.py
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
-
 <p>Along with the corresponding <code>Dockerfile</code>:</p>
 <div class="highlight"><pre><span></span><span class="k">FROM</span><span class="s"> alpine:3.10</span>
 
@@ -2453,13 +2451,11 @@ touch my_service.py
 
 <span class="k">ENTRYPOINT</span> <span class="p">[</span> <span class="s2">&quot;python3&quot;</span><span class="p">,</span> <span class="s2">&quot;my_service.py&quot;</span> <span class="p">]</span>
 </pre></div>
-
 <p>Now to build and test the native version:</p>
 <div class="highlight"><pre><span></span>docker build . --tag my_native_service
 docker run -it --rm my_native_service -x <span class="m">42</span> -a <span class="m">4</span> -b <span class="m">8</span>
 <span class="c1"># 176</span>
 </pre></div>
-
 <p>We now sconify the native service using the <a href="../sconify_image/">sconify image tool</a>. We thereby disable the session upload as we create a session manually afterwards. Further, we save its build resources to an extra directory:</p>
 <!-- TODO add description for extra options / command @vasyl used in session.yml -->
 
@@ -2491,7 +2487,6 @@ docker run <span class="se">\</span>
         --cas<span class="o">=</span><span class="m">5</span>-6-0.scone-cas.cf <span class="se">\</span>
         --command<span class="o">=</span><span class="s2">&quot;python3 my_service.py -a 4 -b 12 -x @@1&quot;</span>
 </pre></div>
-
 <p>To enable the 2FA with OTP, we will need a base32-encoded shared secret. Such a secret can be generated on <a href="https://totp.info/">https://totp.info/</a> (although you will need to add 3 extra chars). With this secret, we continue by modifying the session generated in <code>sconify-resources/session.yml</code> (or you can copy/pase the following session):</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_session_&lt;random-id&gt;</span>
 <span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
@@ -2527,7 +2522,6 @@ docker run <span class="se">\</span>
     <span class="nt">tolerate</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">hyperthreading</span><span class="p p-Indicator">,</span> <span class="nv">insecure-igpu</span><span class="p p-Indicator">,</span> <span class="nv">outdated-tcb</span><span class="p p-Indicator">,</span> <span class="nv">software-hardening-needed</span><span class="p p-Indicator">,</span> <span class="nv">insecure-configuration</span><span class="p p-Indicator">,</span> <span class="nv">debug-mode</span><span class="p p-Indicator">]</span>
     <span class="nt">ignore_advisories</span><span class="p">:</span> <span class="s">&quot;*&quot;</span>
 </pre></div>
-
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>We use secure arguments in this session for -a and -x: the values of <code>a</code> and <code>b</code> remain hidden. The user will only be able to supply the value for <code>x</code>: this is denoted by <code>@@1</code>. </p>
@@ -2559,7 +2553,6 @@ docker run -it --rm <span class="se">\</span>
     my_sconified_service <span class="m">42</span>
 <span class="c1"># 180</span>
 </pre></div>
-
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>As we use secure arguments, we have to overwrite the entrypoint and command of the sconified python image, such that the first argument is the value of  <code>x</code>, i.e.,  42 in this example execution.</p>

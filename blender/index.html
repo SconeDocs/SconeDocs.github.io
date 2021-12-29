@@ -2442,7 +2442,6 @@
 <p>Assuming the Python scripts are located in the <strong>INPUTS</strong> directory, we can compute the output image on host <strong>faye</strong> as follows:</p>
 <div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli execute --application registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python --host faye
 </pre></div>
-
 <p>The output of this script is stored in file <em>simple_sphere.png</em> directory <strong>OUTPUTS</strong>. 
 Opening this file  - <strong>which was computed inside an enclave with all inputs, outputs, the scripts, and the processing being always encrypted</strong>, results in the following output.</p>
 <p><img alt="rugged_donut" src="../img/rugged_donut.gif" /></p>
@@ -2519,7 +2518,6 @@ exports:
     name: registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python
     export: &quot;*&quot;
 </pre></div>
-
 <p>In this case, the volumes themselves are defined by the user. To simplify this process of defining the session, creating encrypted volumes and pushing these to the site at which the image is executed, we provide a simple CLI (Command Line Interface).</p>
 <p>When a user executes blender, this blender container will be started in the context of a CAS session. The session defines the actually keys and tags of the volumes that are mapped into the blender container. The actually session is derived by the CLI from a session template that looks like this:</p>
 <div class="highlight"><pre><span></span>name: $SESSION
@@ -2544,7 +2542,6 @@ images:
    - name: registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python
      import: scone:blender
 </pre></div>
-
 <h2 id="cli">CLI</h2>
 <p>Most users, they probably do not want to learn about sessions and the details how to protect their intellectual property. They expect instead that </p>
 <ul>
@@ -2561,7 +2558,6 @@ images:
 give it </p>
 <div class="highlight"><pre><span></span>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli execute --application registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python --host faye
 </pre></div>
-
 <h3 id="blender-scripting">Blender Scripting</h3>
 <p>Let us show an example with an encrypted Python program that is executed on the remote site along with blender to
 render an image. We take an example from <a href="https://github.com/njanakiev/blender-scripting/blob/master/scripts/simple_sphere.py">github</a> by <a href="https://github.com/njanakiev">Nikolai Janakiev</a>: This Python program is unmodified an will be shipped and run in an encrypted fashion on the remote host that executes the blender image. While this is probably not necessary for open source
@@ -2620,7 +2616,6 @@ code to protect its <strong>confidentiality</strong>, it is important to protect
     <span class="n">rnd</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">render_folder</span><span class="p">,</span> <span class="s1">&#39;simple_sphere.png&#39;</span><span class="p">)</span>
     <span class="n">bpy</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">render</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">write_still</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
-
 <p>We have to copy this scripts - together with some the <em>utils</em> module - in folder <strong>INPUTS</strong>. This folder will
 be encrypted and pushed to remote host which is given by argument <strong>--host ALIAS</strong>. We can execute this
 Python script on host <strong>faye</strong> as shown above.</p>

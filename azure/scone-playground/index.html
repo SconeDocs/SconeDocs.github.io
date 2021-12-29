@@ -2576,11 +2576,9 @@
 <p>You can use this IP to login to your VM through SSH, using the authentication method that you choose on the configuration step.</p>
 <div class="highlight"><pre><span></span>ssh azureuser@20.117.90.4
 </pre></div>
-
 <p>Once you're logged in to the Virtual Machine, we recommend that you add your user to the Docker group, so that you don't need <code>sudo</code> to use Docker and run the demos.</p>
 <div class="highlight"><pre><span></span>azureuser@scone-playground:~$ sudo usermod -aG docker <span class="nv">$USER</span>
 </pre></div>
-
 <p>Reload your current shell (e.g. by logging to the VM again) to reflect the changes and you're good to go!</p>
 <h2 id="demos-and-examples">Demos and examples</h2>
 <p>Please check all the demos and their respective instructions below.</p>
@@ -2619,7 +2617,6 @@
 docker build . -t <span class="nv">$NATIVE_IMAGE</span>
 docker push <span class="nv">$NATIVE_IMAGE</span>
 </pre></div>
-
 <ul>
 <li>Specify your target image.</li>
 </ul>
@@ -2628,19 +2625,16 @@ docker push <span class="nv">$NATIVE_IMAGE</span>
 <span class="c1"># `imagePushPolicy` is set to &quot;Always&quot;.</span>
 <span class="nb">export</span> <span class="nv">TARGET_IMAGE</span><span class="o">=</span>registry.scontain.com:5050/clenimar/scone-build-demo/hello-world-python:0.1-confidential
 </pre></div>
-
 <ul>
 <li>Specify your CAS namespace.</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NAMESPACE</span><span class="o">=</span>hello-world-<span class="nv">$RANDOM$RANDOM</span>
 </pre></div>
-
 <ul>
 <li>Move to scone-build samples repository and replace the image names.</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">cd</span> /opt/scone/demos/scone_build/examples/hello-world-python
 </pre></div>
-
 <ul>
 <li>
 <p>Edit <code>Sconefile</code>.</p>
@@ -2660,14 +2654,12 @@ docker push <span class="nv">$NATIVE_IMAGE</span>
 dd <span class="k">if</span><span class="o">=</span>/dev/urandom <span class="nv">of</span><span class="o">=</span>~/.rnd <span class="nv">bs</span><span class="o">=</span><span class="m">256</span> <span class="nv">count</span><span class="o">=</span><span class="m">1</span>
 scone-identity
 </pre></div>
-
 <p>This will produce <code>identity.pem</code> in your local directory.</p>
 <ul>
 <li>Run <code>scone-build</code>.</li>
 </ul>
 <div class="highlight"><pre><span></span>scone-build -b ./build-resources
 </pre></div>
-
 <ul>
 <li>Wait for it to finish. Now start the local Kubernetes cluster (if not already):</li>
 </ul>
@@ -2677,21 +2669,18 @@ scone-identity
 helm install sgxdevplugin /opt/scone/sconeapps/sgxdevplugin-1.2.0.tgz
 helm install las /opt/scone/sconeapps/las-0.3.4.tgz
 </pre></div>
-
 <ul>
 <li>Install the generated Helm chart.</li>
 </ul>
 <div class="highlight"><pre><span></span>sudo chmod -R <span class="m">777</span> charts
 helm install hello-world-scone charts/service
 </pre></div>
-
 <p>You might want to configure additional parameters for the Helm chart. For example, if <code>$TARGET_IMAGE</code> belongs to a private registry, you must specify an Image Pull Secret, by adding <code>--set imagePullSecrets[0].name=$secretName</code> to the <code>helm install</code> line... Check the chart docs (<code>cat charts/service/README.md</code>) to see all supported parameters.</p>
 <ul>
 <li>Make sure your "Hello, World" application has run successfully. Get the pod name:</li>
 </ul>
 <div class="highlight"><pre><span></span>kubectl get pods <span class="p">|</span> grep hello-world
 </pre></div>
-
 <ul>
 <li>Then get its logs. For example:</li>
 </ul>
@@ -2699,7 +2688,6 @@ helm install hello-world-scone charts/service
 $ kubectl logs hello-world-scone-sconify-service--1-2cds8 -f
 Hello World!
 </pre></div>
-
 <h3 id="confidential-service-meshes">Confidential service meshes</h3>
 <table>
 <thead>
@@ -2722,7 +2710,6 @@ Hello World!
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">cd</span> /opt/scone/demos/flask_example
 </pre></div>
-
 <ul>
 <li>Define image names and your CAS namespace:</li>
 </ul>
@@ -2733,7 +2720,6 @@ Hello World!
 <span class="c1"># choose a random CAS namespace for this tutorial.</span>
 <span class="nb">export</span> <span class="nv">NAMESPACE</span><span class="o">=</span><span class="s2">&quot;network-shield-demo-&quot;&quot;</span><span class="nv">$RANDOM</span><span class="s2">&quot;&quot;</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
 </pre></div>
-
 <ul>
 <li>Create the confidential image for the server. Extract key and tag for the encrypted filesystem.</li>
 </ul>
@@ -2741,7 +2727,6 @@ Hello World!
 <span class="nv">SCONE_FSPF_KEY_SERVER</span><span class="o">=</span><span class="k">$(</span>cat native-files/keytag <span class="p">|</span> grep -o -e <span class="s2">&quot;key: [0-9a-f]\{64\}&quot;</span> <span class="p">|</span> awk <span class="s1">&#39; { print $2 } &#39;</span><span class="k">)</span>
 <span class="nv">SCONE_FSPF_TAG_SERVER</span><span class="o">=</span><span class="k">$(</span>cat native-files/keytag <span class="p">|</span> grep -o -e <span class="s2">&quot;tag: [0-9a-f]\{32\}&quot;</span> <span class="p">|</span> awk <span class="s1">&#39; { print $2 } &#39;</span><span class="k">)</span>
 </pre></div>
-
 <ul>
 <li>Create the confidential image for the client. Extract key and tag for the encrypted filesystem.</li>
 </ul>
@@ -2751,7 +2736,6 @@ Hello World!
 <span class="nv">SCONE_FSPF_TAG_CLIENT</span><span class="o">=</span><span class="k">$(</span>cat native-files/keytag <span class="p">|</span> grep -o -e <span class="s2">&quot;tag: [0-9a-f]\{32\}&quot;</span> <span class="p">|</span> awk <span class="s1">&#39; { print $2 } &#39;</span><span class="k">)</span>
 <span class="nb">cd</span> -
 </pre></div>
-
 <ul>
 <li>Submit initial policies (i.e., without the Network Shield enabled).</li>
 </ul>
@@ -2774,7 +2758,6 @@ scone session create --use-env policies/templates/redis.yml.template
 <span class="c1"># (exit SCONE CLI container)</span>
 <span class="nb">exit</span>
 </pre></div>
-
 <ul>
 <li>Start the local Kubernetes cluster (if not already):</li>
 </ul>
@@ -2784,7 +2767,6 @@ scone session create --use-env policies/templates/redis.yml.template
 helm install sgxdevplugin /opt/scone/sconeapps/sgxdevplugin-1.2.0.tgz
 helm install las /opt/scone/sconeapps/las-0.3.4.tgz
 </pre></div>
-
 <ul>
 <li>Deploy services to Kubernetes.</li>
 </ul>
@@ -2796,13 +2778,11 @@ helm install network-shield-demo deploy/helm <span class="se">\</span>
   --set <span class="nv">image</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SERVER_IMAGE</span><span class="s2">&quot;</span> <span class="se">\</span>
   --set <span class="nv">client_image</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CLIENT_IMAGE</span><span class="s2">&quot;</span>
 </pre></div>
-
 <ul>
 <li>Check that the client is working.</li>
 </ul>
 <div class="highlight"><pre><span></span>kubectl logs -l <span class="nv">app</span><span class="o">=</span>client
 </pre></div>
-
 <ul>
 <li>Now enter the client pod. Inside of the pod, install tcpdump and check the traffic for sensitive data.</li>
 </ul>
@@ -2811,7 +2791,6 @@ kubectl <span class="nb">exec</span> -it <span class="nv">$CLIENT_POD</span> bas
 apk add tcpdump
 tcpdump -i eth0 -s <span class="m">0</span> -Xvv tcp port <span class="m">4996</span>
 </pre></div>
-
 <ul>
 <li>Now it's time to activate the Network Shield. To do so, we update the policies with the Network Shield environment variables. Check policies or refer to the screencast for more details.</li>
 </ul>
@@ -2831,7 +2810,6 @@ scone session update --use-env policies/templates/client.yml.template
 <span class="c1"># (exit SCONE CLI container)</span>
 <span class="nb">exit</span>
 </pre></div>
-
 <ul>
 <li>
 <p>Changes will take effect after the services are restarted. Restart the server.</p>
@@ -2869,13 +2847,11 @@ scone session update --use-env policies/templates/client.yml.template
 <div class="highlight"><pre><span></span><span class="nb">cd</span> /opt/scone/demos/multi-stakeholder-workflow/workflow_k8s_helm
 <span class="nb">export</span> <span class="nv">MY_DOCKER_REPOSITORY</span><span class="o">=</span>...
 </pre></div>
-
 <ul>
 <li>We transform native containers into confidential images with <code>sconify_image</code>. The source code and Dockerfiles for each container can be inspected in <code>containers/</code> directory. Each container has its own <code>sconify_me.sh</code> script, which performs the one-step transformation into a confidential container. To sconify (i.e. transform) all containers at once, run:</li>
 </ul>
 <div class="highlight"><pre><span></span>./sconify-compute.sh
 </pre></div>
-
 <ul>
 <li>At this point, the security policies and Helm charts were already generated. You can inspect Helm charts in <code>charts/</code> directory. To deploy all charts in the correct sequence, run:</li>
 </ul>
@@ -2886,7 +2862,6 @@ scone session update --use-env policies/templates/client.yml.template
 
 ./deploy-compute.sh
 </pre></div>
-
 <ul>
 <li>The script will run to completion and print the logs for each service. You can also check the pods and their logs using <code>kubectl</code>.</li>
 </ul>
@@ -2912,13 +2887,11 @@ scone session update --use-env policies/templates/client.yml.template
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">cd</span> /opt/scone/demos/multi-stakeholder-ml
 </pre></div>
-
 <ul>
 <li>To run the whole demo at once, run:</li>
 </ul>
 <div class="highlight"><pre><span></span>./run.sh
 </pre></div>
-
 <ul>
 <li>To run the demo step by step, we also provide a thorough set of instructions at:</li>
 </ul>

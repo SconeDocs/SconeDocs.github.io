@@ -2442,15 +2442,12 @@
 <span class="s">}</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>We can compile this natively as follows:</p>
 <div class="highlight"><pre><span></span>gcc print-arg-env.c -g -O3 -o print-arg-env
 </pre></div>
-
 <p>And we can now run this with some some arguments and some environment variables:</p>
 <div class="highlight"><pre><span></span><span class="nv">ENV2</span><span class="o">=</span>World <span class="nv">ENV1</span><span class="o">=</span>! ./print-arg-env Hello
 </pre></div>
-
 <p>This results in an output similar to this:</p>
 <div class="highlight"><pre><span></span>argv: ./print-arg-env Hello
 environ:
@@ -2458,21 +2455,17 @@ ENV2=World
 ENV1=!
 ...
 </pre></div>
-
 <p>Let's cross-compile this program to run inside of enclaves as follows. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
 <div class="highlight"><pre><span></span>determine_sgx_device
 docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/work registry.scontain.com:5050/sconecuratedimages/crosscompilers scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env
 </pre></div>
-
 <p>We can now determine <code>MRENCLAVE</code> as follows:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="sb">`</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./scone-print-arg-env<span class="sb">`</span>
 <span class="nb">echo</span> MRENCLAVE of scone-print-arg-env is <span class="nv">$MRENCLAVE</span>
 </pre></div>
-
 <p>We can now run the program inside of an enclave but not under the control of CAS as follows:</p>
 <div class="highlight"><pre><span></span><span class="nv">ENV2</span><span class="o">=</span>World <span class="nv">ENV1</span><span class="o">=</span>! ./scone-print-arg-env Hello
 </pre></div>
-
 <p>This will result in the same output as before:</p>
 <div class="highlight"><pre><span></span>argv: ./print-arg-env Hello
 environ:
@@ -2480,7 +2473,6 @@ ENV2=World
 ENV1=!
 ...
 </pre></div>
-
 <div class="admonition warning">
 <p class="admonition-title">Without CAS: No Confidentiality and Integrity of Arguments and Environment Variables</p>
 <p>Note that neither the integrity nor the confidentiality of these arguments are protected.
@@ -2499,16 +2491,13 @@ need to run the program in the context of CAS.**</p>
 on the local machine:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
 </pre></div>
-
 <p>Alternatively, you can use a our <a href="../public-CAS/">public CAS instance</a> at domain <code>scone-cas.cf</code>:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf
 </pre></div>
-
 <p>We also assume that you already started a <a href="../LASIntro/">LAS</a> in the background via <code>docker-compose up -d las</code>
 on the local machine:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
 </pre></div>
-
 <p>We can now create a new session on cas as follows:</p>
 <div class="highlight"><pre><span></span>cat &gt; session.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">name: secure-arguments-example</span>
@@ -2527,7 +2516,6 @@ on the local machine:</p>
 <span class="s">     pwd: /</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>Let's make sure that we have a client certificate to identify this client:</p>
 <div class="highlight"><pre><span></span>    mkdir -p conf
     <span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
@@ -2538,19 +2526,15 @@ on the local machine:</p>
       -config &lt;<span class="o">(</span>cat /etc/ssl/openssl.cnf &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;[SAN]\nsubjectAltName=DNS:www.scontain.com&#39;</span><span class="o">))</span>
     <span class="k">fi</span>
 </pre></div>
-
 <p>Next, we will upload this session to CAS:</p>
 <div class="highlight"><pre><span></span>curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
 </pre></div>
-
 <p>This results in an output similar to this:</p>
 <div class="highlight"><pre><span></span>Created Session[id=ce81e4cd-eed4-4f12-9bfc-c93e3dd4b454, name=secure-arguments, status=Pending]c
 </pre></div>
-
 <p>Note that if you try to upload to a session that already exists, you will get an error code like this:</p>
 <div class="highlight"><pre><span></span>Could not create successor session. Invalid previous session digest: Some(&quot;5de101e4980f312527e1c308dfe6c7bc465660c0fea6b98983efa5baf94bf362&quot;) != None
 </pre></div>
-
 <p>In other words, if you want to update a session, you need to define a <code>predecessor</code> key in the session that specifies the current session. This is to ensure that a client does not overwrite a just updated session, i.e., it permits to detect write/write conflicts.</p>
 <h3 id="executing-print-arg-env">Executing Print-Arg-Env</h3>
 <p>Let us now execute <code>scone-print-arg-env</code> in the context of session <code>secure-arguments-example</code>. To do so, we need
@@ -2558,7 +2542,6 @@ to pass in environment variable <code>SCONE_CONFIG_ID</code> which contains the 
 <code>SCONE_CAS_ADDR</code>as well as <code>SCONE_LAS_ADDR</code> as we have shown above.</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span>secure-arguments-example/scone-print-arg-env ./scone-print-arg-env
 </pre></div>
-
 <p>This will print the following output:</p>
 <div class="highlight"><pre><span></span>argv: ./scone-print-arg-env arg1 arg2 arg3
 environ:
@@ -2567,12 +2550,10 @@ env2=in
 env1=running
 env3=enclave
 </pre></div>
-
 <p>Note that the environment variables - except those expected by the SCONE runtime to locate LAS, CAS and the session - are ignored. This means
 even if we pass additional arguments and environment variables,  the output does not change. The execution of</p>
 <div class="highlight"><pre><span></span><span class="nv">IRGNORED_ENV</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span>secure-arguments-example/scone-print-arg-env ./scone-print-arg-env IGNORED1 IGNORED2
 </pre></div>
-
 <p>results in the same output:</p>
 <div class="highlight"><pre><span></span>argv: ./scone-print-arg-env arg1 arg2 arg3
 environ:
@@ -2581,7 +2562,6 @@ env2=in
 env1=running
 env3=enclave
 </pre></div>
-
 <p>The SCONE variables provided by the environment are not protected in any way and
 we designed SCONE assuming that an attacker could modify these environment variables. This could
 lead to denial of service attacks but not to the exposure of any secrets.</p>

@@ -2431,18 +2431,15 @@ spec:
         limits:
           sgx.k8s.io/sgx: 1   # Requires to some sgx device like /dev/isgx or /dev/sgx or successor
 </pre></div>
-
 <p>With <code>sgx</code> you say that any SGX device is fine for your applications. This should be the default with SCONE-based applications.</p>
 <p>In case you need to run on a machine which has a DCAP-based attestation, you can specify as follows:</p>
 <div class="highlight"><pre><span></span>        limits:
           sgx.k8s.io/dcap: 1   # Requires DCAP-based attestation
 </pre></div>
-
 <p>In case you need to run on a machine which has an IAS-based attestation, you can specify as follows:</p>
 <div class="highlight"><pre><span></span>        limits:
           sgx.k8s.io/ias: 1   # Requires IAS-based attestation
 </pre></div>
-
 <h2 id="deploying-kubernetes-sgx-plugin">Deploying <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> SGX Plugin</h2>
 <p>The <code>sconeapps/sgx_plugin</code> chart will deploy the <span data-tooltip="An open source container orchestration platform. More information at
@@ -2450,7 +2447,6 @@ https://kubernetes.io/">Kubernetes</span> SGX plugin in your cluster.
 You can just execute:</p>
 <div class="highlight"><pre><span></span>helm install sgxdevplugin sconeapps/sgxdevplugin
 </pre></div>
-
 <p>This starts the <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> SGX plugin in the default <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> namespace. This will limit the number
@@ -2460,18 +2456,15 @@ the value.  </p>
 You can set this value by executing:</p>
 <div class="highlight"><pre><span></span>helm install sgxdevplugin sconeapps/sgxdevplugin  --set <span class="nv">maxSGXPods</span><span class="o">=</span><span class="m">100</span>
 </pre></div>
-
 <p>If the plugin is already executing, you can change the value as follows:</p>
 <div class="highlight"><pre><span></span>helm upgrade  sgxdevplugin sconeapps/sgxdevplugin --set <span class="nv">maxSGXPods</span><span class="o">=</span><span class="m">100</span>
 </pre></div>
-
 <h2 id="checking-status-of-sgx-devices">Checking Status of SGX devices</h2>
 <p>You can check the number of allocatable SGX devices on all nodes of your <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> cluster as follows:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NODES</span><span class="o">=</span><span class="sb">`</span>kubectl get node --output<span class="o">=</span>name<span class="sb">`</span>
 <span class="k">for</span> N in <span class="nv">$NODES</span><span class="p">;</span> <span class="k">do</span>  <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$N</span><span class="s2">:&quot;</span> <span class="p">;</span> kubectl get <span class="nv">$N</span> -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.allocatable}&#39;</span> <span class="p">;</span> <span class="nb">echo</span> <span class="p">;</span>  <span class="k">done</span>
 </pre></div>
-
 <p>If the number of SGX devices is too small, increase the number of allocatable SGX devices as explained above.</p>
                 
                   

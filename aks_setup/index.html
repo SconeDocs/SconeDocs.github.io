@@ -2407,25 +2407,21 @@ We support a variety of <a href="../helm/">helm charts</a>: we provide confident
 </ol>
 <div class="highlight"><pre><span></span><span class="go">az group create --name myResourceGroup --location westus2</span>
 </pre></div>
-
 <ol>
 <li>Create the cluster with the confidential computing add-on enabled. This command will create a system node pool, responsible for running the Kubernetes control plane services. You can control the number of nodes through <code>-c</code> option.</li>
 </ol>
 <div class="highlight"><pre><span></span><span class="go">az aks create --name myAKSCluster --generate-ssh-keys --enable-addon confcom -g myResourceGroup</span>
 </pre></div>
-
 <ol>
 <li>Create the confidential node pool with Intel SGX and the Azure SGX device plugin. You can configure the number of nodes through <code>-c</code> option. Change the VM size by setting a different <code>--node-vm-size</code> (<a href="https://docs.microsoft.com/en-us/azure/virtual-machines/dcv2-series">see all available sizes</a>).</li>
 </ol>
 <div class="highlight"><pre><span></span><span class="go">az aks nodepool add --cluster-name myAKSCluster --name confcompool1 --node-vm-size Standard_DC2s_v2 --resource-group myResourceGroup</span>
 </pre></div>
-
 <ol>
 <li>Get the credentials for the cluster. This will write the credentials to your default kubeconfig (<code>$KUBECONFIG</code> or <code>~/.kube.config</code>):</li>
 </ol>
 <div class="highlight"><pre><span></span><span class="go">az aks get-credentials --name myAKSCluster --resource-group myResourceGroup</span>
 </pre></div>
-
 <h2 id="deploying-las-local-attestation-service">Deploying LAS (Local Attestation Service)</h2>
 <p>You need to deploy our Local Attestation Service (LAS) to run your SCONE applications with remote attestation.</p>
 <ol>
@@ -2438,7 +2434,6 @@ We support a variety of <a href="../helm/">helm charts</a>: we provide confident
 </ol>
 <div class="highlight"><pre><span></span><span class="go">helm install las sconeapps/las --set useSGXDevPlugin=azure</span>
 </pre></div>
-
 <ol>
 <li>That's it. LAS pods should now be running (one per node) in your cluster.</li>
 </ol>
@@ -2447,7 +2442,6 @@ We support a variety of <a href="../helm/">helm charts</a>: we provide confident
 <span class="go">las-2z2vk   1/1     Running   0          5s</span>
 <span class="go">las-7vdkt   1/1     Running   0          5s</span>
 </pre></div>
-
 <h2 id="deploy-a-scone-application">Deploy a SCONE application</h2>
 <p>To run your first SCONE application on the confidential AKS cluster, use the following manifest from our <a href="../hello_world_kubernetes/">Kubernetes tutorial</a>.</p>
 <div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
@@ -2490,19 +2484,16 @@ We support a variety of <a href="../helm/">helm charts</a>: we provide confident
   <span class="nt">selector</span><span class="p">:</span>
     <span class="nt">run</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello-world</span>
 </pre></div>
-
 <ol>
 <li>Run the application.</li>
 </ol>
 <div class="highlight"><pre><span></span><span class="go">kubectl create -f app.yaml</span>
 </pre></div>
-
 <ol>
 <li>Redirect a local port to the service port.</li>
 </ol>
 <div class="highlight"><pre><span></span><span class="go">kubectl port-forward svc/hello-world 8080:8080 &amp;</span>
 </pre></div>
-
 <ol>
 <li>Send a request to the service.</li>
 </ol>
@@ -2510,7 +2501,6 @@ We support a variety of <a href="../helm/">helm charts</a>: we provide confident
 <span class="go">Hello World!</span>
 <span class="gp">$</span>GREETING is: howdy!
 </pre></div>
-
 <p>To run the same application with remote attestation, transparent filesystem encryption and secret delivery, check our <a href="../hello_world_kubernetes/">Kubernetes tutorial</a>.</p>
                 
                   

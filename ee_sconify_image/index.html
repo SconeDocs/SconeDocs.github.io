@@ -2927,7 +2927,6 @@
     <span class="o">&amp;&amp;</span> pip3 install -r /app/requirements.txt
 <span class="k">CMD</span> python3 -B /app/rest_api.py
 </pre></div>
-
 <p>To then use Sconify Image, we must select resources relevant for sconification. We see that the program code is in <code>/app</code>, and the data files that the service uses are in <code>/tls</code>. Further, our service runs in Python. Upon inspection, e.g., with <code>$(which python3)</code>, we find that our binary is located at <code>/usr/bin/python3.7</code>. We specify this information:
 <div class="highlight"><pre><span></span><span class="nv">PROTECT_DIR_1</span><span class="o">=</span><span class="s2">&quot;/app&quot;</span>
 <span class="nv">PROTECT_DIR_2</span><span class="o">=</span><span class="s2">&quot;/tls&quot;</span>
@@ -2994,7 +2993,6 @@ We may require access to files containing system specific data, which are not av
     --heap<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_HEAP</span><span class="s2">&quot;</span> --stack<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_STACK</span><span class="s2">&quot;</span> --dlopen<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_ALLOW_DLOPEN</span><span class="s2">&quot;</span> <span class="se">\</span>
     --binary-fs
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Service Library Inclusion</p>
 <p>For supported services, we include service libraries into the binary file system by default. To view supported service, run <code>docker run --rm registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image sconify_image --help</code></p>
@@ -3048,10 +3046,11 @@ As we copy the binary to a different image than the native image, some shared ob
 <li><a href="../CAS_session_lang_0_3/#command">command</a></li>
 <li><a href="../CAS_session_lang_0_3/#environment">environment variables</a></li>
 <li><a href="../CAS_session_lang_0_3/#pwd">working directory</a></li>
-<li><a href="../CAS_session_lang_0_3/#volumes">volumes</a>
-<!-- - <a href="CAS_session_lang_0_3.md#secrets">secrets</a> -->
-<!-- - <a href="CAS_session_lang_0_3.md#secret-injection-files_1">injected files</a> --></li>
+<li><a href="../CAS_session_lang_0_3/#volumes">volumes</a></li>
 </ul>
+<!-- - [secrets](CAS_session_lang_0_3.md#secrets) -->
+<!-- - [injected files](CAS_session_lang_0_3.md#secret-injection-files_1) -->
+
 <h3 id="command">Command</h3>
 <p>By default, Sconify Image sets the command in the security policy as the command in the native image. The container image executes this command upon a successful attestation by the CAS. To set a custom command, we can use <code>--command=SESSION_CMD</code>.</p>
 <h3 id="environment-variables">Environment Variables</h3>
@@ -3104,7 +3103,6 @@ TODO:
 <p>Extending the previous Flask service example, which should run as a Kubernetes <code>Deployment</code>, we set:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">WORKLOAD_TYPE</span><span class="o">=</span><span class="s2">&quot;deployment&quot;</span>
 </pre></div>
-
 <p>Generated charts are by default saved to <code>/sconify-helm</code>, so we add a volume to save the charts locally: <code>-v $PWD/charts:/sconify-helm</code>. The charts will be saved to a local directory called <code>charts</code>. The output directory can be configured through <code>--k8s-helm-output-dir=$DIR</code> option.</p>
 <p>Finally, since the Kubernetes cluster needs to pull the sconified image before running it, we add <code>--push-image</code> and mount Docker credentials inside the container <code>-v $HOME/.docker/config.json:/root/.docker/config.json</code> , so <code>sconify_images</code> can push the images automatically. You can also push the images yourself after the sconification process is done.</p>
 <div class="highlight"><pre><span></span>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
@@ -3121,15 +3119,12 @@ TODO:
     --push-image <span class="se">\</span>
     --k8s-helm-workload-type<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$WORKLOAD_TYPE</span><span class="s2">&quot;</span>
 </pre></div>
-
 <p>After the sconification process is finished, the generated chart can be installed as follows (using the defaults inherited from <code>sconify_image</code>):</p>
 <div class="highlight"><pre><span></span>helm install my-flask-api charts/<span class="nv">$SERVICE</span>
 </pre></div>
-
 <p>You can customize parameter values via <code>--set</code> option in <code>helm install</code>. For example, to deploy the Flask service with 5 replicas, and specifying an <a href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/">imagePullSecret</a> so that Kubernetes can pull images from a private registry:</p>
 <div class="highlight"><pre><span></span>helm install my-flask-api charts/<span class="nv">$SERVICE</span> --set <span class="nv">replicaCount</span><span class="o">=</span><span class="m">5</span> --set imagePullSecrets<span class="o">[</span><span class="m">0</span><span class="o">]</span>.name<span class="o">=</span>my-secret
 </pre></div>
-
 <p>Charts generated by Sconify Image also include documentation. Refer to the documentation to see the full list of parameters accepted by the chart.</p>
 <div class="admonition note">
 <p class="admonition-title">Kubernetes Naming Constraints</p>

@@ -2466,11 +2466,10 @@ You can utilize SCONE volumes to persistently store data on the host's file syst
 
 <span class="k">CMD</span> sh -c <span class="s2">&quot;python3 /hello-world.py&quot;</span>
 </pre></div>
-
 <h2 id="basic-usage">Basic Usage</h2>
-<p>SCONE Binary FS is implemented as a SCONE runtime extension with which users can modify certain behavior of the SCONE runtime.
-<!-- An overview of runtime extensions and their usage can in the <a href="runtime.md">runtime documentation</a>. NOTE not yet included in Docs -->
-The particular interface that has to be implemented for the Binary FS (as all other SCONE runtime extension interfaces) is described in the <code>scone_rt_ext.h</code> header file of the SCONE cross compiler installation that can be accessed in the cross-compiler container with <code>cat /opt/scone/cross-compiler/x86_64-linux-musl/include/scone_rt_ext.h</code>.</p>
+<p>SCONE Binary FS is implemented as a SCONE runtime extension with which users can modify certain behavior of the SCONE runtime.</p>
+<!-- An overview of runtime extensions and their usage can in the [runtime documentation](runtime.md). NOTE not yet included in Docs -->
+<p>The particular interface that has to be implemented for the Binary FS (as all other SCONE runtime extension interfaces) is described in the <code>scone_rt_ext.h</code> header file of the SCONE cross compiler installation that can be accessed in the cross-compiler container with <code>cat /opt/scone/cross-compiler/x86_64-linux-musl/include/scone_rt_ext.h</code>.</p>
 <p>This is the source code of a "hello world" example of a binary fs SCONE runtime extension:
 <div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;scone_rt_ext.h&gt;</span><span class="cp"></span>
@@ -2535,20 +2534,16 @@ No such file or directory
     --include <span class="s1">&#39;/usr/lib/libexpat.so.1*&#39;</span> <span class="se">\</span>
     --include /start-barbican.py
 </pre></div>
-
 <p>We must then compile the <code>binary-fs.c</code> file using the <code>registry.scontain.com:5050/sconecuratedimages/crosscompilers</code> image, as it contains the <code>scone gcc</code>:</p>
 <div class="highlight"><pre><span></span>scone gcc /binary-fs.c -O0 -shared -o /libbinary-fs.so
 </pre></div>
-
 <p>Moving on, we move the generated <code>libbinary-fs.so</code> back to our original Python image. In this image, we link the <code>.so</code> file to the enclave binary using <code>patchelf</code>:</p>
 <div class="highlight"><pre><span></span>apk add patchelf
 patchelf --add-needed libbinary-fs.so <span class="sb">`</span>which python3<span class="sb">`</span>
 </pre></div>
-
 <p>Currently, <code>patchelf</code> does not update the signature of the binary, although it changes the binary's contents. Thus, running the binary without further environment modification will produce an error. To ensure that we update the corresponding signature, we must set the <code>SCONE_HEAP</code> environment variable to a different value than it was before. The setting of this variable will prompt SCONE to recompute the signature of the executable. The enclave executable will then function properly:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>512M python3 /start-barbican.py
 </pre></div>
-
 <h2 id="what-files-to-include-in-the-file-system">What Files to include in the File System</h2>
 <p>To find out what files to include in the <code>binary-fs</code>, simply run your image with <code>strace</code> and identify which files the binary opens:</p>
 <div class="highlight"><pre><span></span>docker run -it --rm --device /dev/isgx -e <span class="nv">SCONE_LOG</span><span class="o">=</span>trace --cap-add SYS_PTRACE <span class="nv">$IMAGE</span> sh
@@ -2556,7 +2551,6 @@ apk add strace
 strace -o strace.log -f <span class="nv">$EXECUTABLE</span>
 grep <span class="s2">&quot;open&quot;</span> strace.log
 </pre></div>
-
 <p>The output will then show which files the binary has accessed. Be sure to include these files in the binary fs to make your application function properly.
 Note that you do <strong>not</strong> have to include files that are already dependencies of your binary; i.e., do not include files that appear in <code>ldd $(which your_binary)</code>.</p>
 <h2 id="possible-networking-problems">Possible Networking Problems</h2>
@@ -2572,7 +2566,6 @@ Note that you do <strong>not</strong> have to include files that are already dep
            <span class="no">search sgx-scone.svc.cluster.local svc.cluster.local cluster.local</span>
            <span class="no">options ndots:5</span>
 </pre></div>
-
 <p>This addresses the Cluster's <code>CoreDNS</code> service, with which your service will be able to address other services within the Cluster.</p>
 <h2 id="what-executables-are-supported">What executables are supported</h2>
 <p>Currently, only binaries compiled as position-independent code (pie) can use the binary fs. For all other binaries, applying the binary fs may result in the binary having segmentation fault errors or the binary ignoring the binary fs. To ensure your binary is compatible, execute <code>file $(which your_binary)</code> and check the output if it is a pie executable. To illustrate:

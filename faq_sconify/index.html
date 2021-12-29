@@ -2409,13 +2409,11 @@ you probably want to put the following definitions in some script:</p>
 <span class="nb">export</span> <span class="nv">MY_DOCKER_REPOSITORY</span><span class="o">=</span>...
 <span class="nb">export</span> <span class="nv">K8S_IMAGE_PULL_SECRET</span><span class="o">=</span>regcred
 </pre></div>
-
 <p>To deploy the SCONE SGX Plugin and the SCONE Local Attestation Service (LAS) as well as other SconeApps, 
 you would need to create a Kubernetes secret for accessing the SCONE registry (<a href="../helm/">more info</a>):</p>
 <div class="highlight"><pre><span></span>kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com:5050 --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
 kubectl create secret docker-registry <span class="nv">$K8S_IMAGE_PULL_SECRET</span> --docker-server<span class="o">=</span><span class="nv">$MY_DOCKER_REPOSITORY</span> --docker-username<span class="o">=</span><span class="s2">&quot;</span>$<span class="s2">...&quot;</span> --docker-password<span class="o">=</span><span class="s2">&quot;</span>$<span class="s2">...&quot;</span> --docker-email<span class="o">=</span><span class="s2">&quot;</span>$<span class="s2">...&quot;</span>
 </pre></div>
-
 <h2 id="apple-macos">Apple MacOS</h2>
 <p>When executing <code>sconify_image</code> on MacOS, you might experience some issue regarding docker credentials.</p>
 <h3 id="error-docker-credential-osxkeychain-not-found">Error <code>docker-credential-osxkeychain</code> not found</h3>
@@ -2426,11 +2424,9 @@ log as follows (you need to switch on verbose and debug mode):</p>
 failed to solve with frontend dockerfile.v0: failed to solve with frontend gateway.v0: rpc error: code = Unknown desc = error getting credentials - err: exec: &quot;docker-credential-osxkeychain&quot;: executable file not found in $PATH, out: ``
 # syntax=docker/dockerfile:1.2
 </pre></div>
-
 <p>To mitigate this error, you need to change your config on MacOS:</p>
 <div class="highlight"><pre><span></span>vi <span class="nv">$HOME</span>/.docker/config.json
 </pre></div>
-
 <p>This might look like this:</p>
 <div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;credsStore&quot;</span> <span class="p">:</span> <span class="s2">&quot;osxkeychain&quot;</span><span class="p">,</span>
@@ -2445,7 +2441,6 @@ failed to solve with frontend dockerfile.v0: failed to solve with frontend gatew
   <span class="nt">&quot;experimental&quot;</span> <span class="p">:</span> <span class="s2">&quot;disabled&quot;</span>
 <span class="p">}</span>
 </pre></div>
-
 <p>and you might want to change this to</p>
 <div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">&quot;auths&quot;</span> <span class="p">:</span> <span class="p">{</span>
@@ -2459,7 +2454,6 @@ failed to solve with frontend dockerfile.v0: failed to solve with frontend gatew
   <span class="nt">&quot;experimental&quot;</span> <span class="p">:</span> <span class="s2">&quot;disabled&quot;</span>
 <span class="p">}</span>
 </pre></div>
-
 <p>to mitigate this error.</p>
                 
                   

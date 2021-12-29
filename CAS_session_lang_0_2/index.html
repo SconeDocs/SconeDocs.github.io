@@ -2861,15 +2861,15 @@ This value is used to reference the session in multiple situations.
 For example, when a session shall be updated the hash of the predecessor session has to be provided to ensure continuity, i.e., no lost-updates.</p>
 <p>The session hash is deterministically calculated from the session description, such that any modification to the description would yield a different hash.
 Moreover, the calculation is cryptographically sound in the sense that a malicious operator can not come up with a modified session description that has the same session hash, i.e., it is <a href="https://en.wikipedia.org/wiki/Preimage_attack">Preimage-Attack</a> resistant.</p>
-<p>The exact procedure of how the session hash is obtained is an implementation detail.
-<!-- TODO Have a properly defined procedure. --></p>
+<p>The exact procedure of how the session hash is obtained is an implementation detail.</p>
+<!-- TODO Have a properly defined procedure. -->
+
 <h2 id="session-description-structure">Session Description Structure</h2>
 <p>There are a number of top-level keys in a session file.</p>
 <h3 id="version">Version</h3>
 <p>This document describes version 0.2.</p>
 <div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.2&quot;</span>
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Without a <code>version</code> field, version 0.1 is assumed, make sure to include the field in all session descriptions in order to use version 0.2.</p>
@@ -2884,13 +2884,11 @@ Further, we set a somewhat arbitrary restriction of a maximal length of 128 char
 In <a href="https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions">PCRE</a> the match clause matching valid session names would be <code>[A-Za-z0-9_\-.~]{1,128}</code>.</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-testing-session</span>
 </pre></div>
-
 <p>Providing a session name is <strong>mandatory</strong>.</p>
 <h3 id="predecessor-session">Predecessor Session</h3>
 <p>If a session description is an update for a previously existing session, i.e. the session's name is already in use, it has to include the previous session's hash to detect and prevent lost updates.</p>
 <div class="highlight"><pre><span></span><span class="nt">predecessor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The value has to be 32 hex encoded bytes.</p>
@@ -2910,13 +2908,11 @@ These properties may contain secrets and would be prone to inspection and manipu
         <span class="nt">VAR_1</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">value</span>
     <span class="nt">pwd</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/</span>
 </pre></div>
-
 <h3 id="name">name</h3>
 <p>To be able to identify a service, every service has to have a <code>name</code> key.
 As the name will be part of the routeable session identification in the future, its character set and length is restricted in the same way as the session name is.</p>
 <div class="highlight"><pre><span></span>    <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-test-service</span>
 </pre></div>
-
 <p>Providing a service name is <strong>mandatory</strong>.</p>
 <h3 id="command">command</h3>
 <p>The command of a service is a sequence of the program's name plus any <a href="https://en.wikipedia.org/wiki/Command-line_interface#Arguments">command-line arguments</a> that have to be provided for it to deliver the expected service.</p>
@@ -2927,12 +2923,10 @@ Although not enforced, in the future automatic scheduling will not function prop
 </div>
 <div class="highlight"><pre><span></span>    <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test --arg=value</span>
 </pre></div>
-
 <p>The command can be specified as a list, as well.
 This is helpful in situations where the automatic whitespace splitting would rip arguments apart.</p>
 <div class="highlight"><pre><span></span>    <span class="nt">command</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;test&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;--my_name&quot;</span><span class="p p-Indicator">,</span> <span class="s">&quot;Franz</span><span class="nv"> </span><span class="s">Gregor&quot;</span><span class="p p-Indicator">]</span>
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Command arguments have to be C-String compatible, i.e., they are not allowed to contain a NULL byte.</p>
@@ -2943,7 +2937,6 @@ As we cannot trust pre-existing environment variables, only the environment spec
 <div class="highlight"><pre><span></span>    <span class="nt">environment</span><span class="p">:</span>
         <span class="nt">VAR_1</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">value</span>
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
@@ -2958,7 +2951,6 @@ Changing the pwd to <code>/plaintext/</code> before the writing would lead it to
 To prevent this kind of manipulation the pwd of a SCONE service has to be specified explicitly in the session description.</p>
 <div class="highlight"><pre><span></span>    <span class="nt">pwd</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/home/user/scone/encrypted</span>
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Please note that:
@@ -2972,7 +2964,6 @@ To prevent this kind of manipulation the pwd of a SCONE service has to be specif
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_service</span>
     <span class="nt">image_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_image</span>
 </pre></div>
-
 <p>Images must be specified if their volumes or secret injection files should be used by a service.</p>
 <h3 id="attestation">Attestation</h3>
 <p>Attestation is the process of verifying a remote SCONE program's integrity ensuring it has not been (maliciously) manipulated.
@@ -2986,12 +2977,10 @@ The measurement value of a SCONE program can be determined by running it either 
 <div class="highlight"><pre><span></span>$ <span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./go-webserver
 d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61
 </pre></div>
-
 <p>Any modifications to the executable, malicious or not, will void access capabilities.</p>
 <p>A service can define a list of mrenclaves that are allowed to get access to the configuration as follows:</p>
 <div class="highlight"><pre><span></span>    <span class="nt">mrenclaves</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="nv">d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61</span><span class="p p-Indicator">]</span>
 </pre></div>
-
 <p>For example, you can define <code>mrenclave</code>s for different permitted <code>HEAP_SIZE</code>s. Also, to permit a smooth transition to new service versions, you can first add the mrenclaves of the new version, upgrade the services, and then remove the <code>mrenclave</code>s of the old service version. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3018,7 +3007,6 @@ This is necessary for CAS to know how to <strong>generate</strong> its value or 
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ascii</span>
       <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;secret-value&quot;</span>
 </pre></div>
-
 <p>Note that explicit secret values can contain any character that can be represented in YAML.
 In particular, newline and escape sequences can be put into such a secret.
 The only exception to this rule is the NULL byte that can not be part of an ascii secret.
@@ -3033,7 +3021,6 @@ If no <code>size</code> is given, a default length of 20 will be used.</p>
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ascii</span>
       <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">12</span>
 </pre></div>
-
 <h4 id="binary-secrets">Binary Secrets</h4>
 <p><code>binary</code> secrets behave similar to <code>ascii</code> secrets except </p>
 <ul>
@@ -3046,7 +3033,6 @@ If no <code>size</code> is given, a default length of 20 will be used.</p>
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">binary</span>
       <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DEADBEEF</span>
 </pre></div>
-
 <h4 id="certificates">Certificates</h4>
 <p>CAS can generate X509v3 certificates as well.
 In fact, CAS provides a whole certificate PKI.</p>
@@ -3059,7 +3045,6 @@ Leaf certificates are indicated with <code>x509</code> and intermediate certific
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_intermediate_certificate</span>
     <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">x509-ca</span>
 </pre></div>
-
 <p>Note that certificates have to be generated by CAS - they cannot be specified by the user.</p>
 <p>Certificates differ from other secrets in terms of access.
 Please see the <code>Secret Access</code> chapter for the details.</p>
@@ -3073,7 +3058,6 @@ This, in particular, allows exporting the session CA certificate to other sessio
     <span class="nt">export</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">another-session</span>
 </pre></div>
-
 <p>Note that, while normal certificates (<code>x509</code>, or <code>x509-ca</code>) expose also their key, session certificates do only expose their certificate.</p>
 <p>Certificates differ from other secrets in terms of access.
 Please see the <code>Secret Access</code> chapter for the details.</p>
@@ -3087,7 +3071,6 @@ These placeholders are of the form <code>$$SCONE::secret_name$$</code>.</p>
     <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">service_name --private-key $$SCONE::service_private_key$$ --non-confidential-argument 1234 --non-confidential-flag</span>
     <span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
 </pre></div>
-
 <p>In the above example, the <code>command</code>'s program arguments will be presented to the service with <code>$$SCONE::service_private_key$$</code> replaced by the actual value of <code>service_private_key</code>.</p>
 <p>To inject secrets into a service's environment the session description could contain this:</p>
 <div class="highlight"><pre><span></span>    <span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
@@ -3095,7 +3078,6 @@ These placeholders are of the form <code>$$SCONE::secret_name$$</code>.</p>
       <span class="nt">FILE_ENCRYPTION_KEY</span><span class="p">:</span> <span class="s">&quot;$$SCONE::MY_SERVICES_ENCRYPTION_SECRET$$&quot;</span>
     <span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Secrets referred to (<code>service_private_key</code> and <code>MY_SERVICES_ENCRYPTION_SECRET</code> in the above example) have to be either defined in the <code>secrests</code> section of the session description or imported from another session.</p>
@@ -3123,7 +3105,6 @@ Instead, a secret injection file allows to specify a placeholder for the passwor
 user=mysqluser
 password=$$SCONE::mysqlpass$$
 </pre></div>
-
 <p>The path to this configuration file must be specified as part of an image (see <a href="#images">Images</a>). The corresponding session would look like this:</p>
 <div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database_client</span>
@@ -3134,7 +3115,6 @@ password=$$SCONE::mysqlpass$$
     <span class="nt">injection_files</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/etc/mysql/my.cnf</span>
 </pre></div>
-
 <p>Alternatively, the file's content may be specified within the session:</p>
 <div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database_client</span>
@@ -3149,7 +3129,6 @@ password=$$SCONE::mysqlpass$$
           <span class="no">user=mysqluser</span>
           <span class="no">password=$$SCONE::mysqlpass$$</span>
 </pre></div>
-
 <p>The <code>content</code> specified in the session file can contain multiline strings.
 This way, entire configuration files can be embedded in the session description, even if no secret injection is required.
 Producing valid multiline strings in YAML can be challenging - <a href="https://yaml-multiline.info/">https://yaml-multiline.info/</a> can be of great help to find the desired syntax.</p>
@@ -3169,7 +3148,6 @@ They would define an access certificate, configure the database to only allow co
     <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">x509</span>
     <span class="nt">export</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">database_client</span>
 </pre></div>
-
 <p>The secret owner might also specify multiple receiving sessions at once:</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">database_operator</span>
 
@@ -3180,7 +3158,6 @@ They would define an access certificate, configure the database to only allow co
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">database_client</span>
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">another_client</span>
 </pre></div>
-
 <p>Furthermore, the export might be restricted to certain instances of the importing session.
 For more details, see the concrete format by which other sessions can be referenced in <a href="#referencing-other-sessions">Referencing Other Sessions</a>.</p>
 <p>The database client, on the other hand, would import it and could use it in their session as if it was their own certificate:</p>
@@ -3191,7 +3168,6 @@ For more details, see the concrete format by which other sessions can be referen
     <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">x509</span> <span class="c1"># optional</span>
     <span class="nt">import</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">database_operator</span>
 </pre></div>
-
 <p>On the importing side, the <code>kind</code> of a secret can be optionally defined to ensure imported secrets match a specific form, but this is not strictly necessary.</p>
 <p>In very specific cases, secrets may also be made public (exported to any session <em>without authentication</em>) - this may be useful when, for example,  defining certificate hashes:</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">policy_checker</span>
@@ -3202,7 +3178,6 @@ For more details, see the concrete format by which other sessions can be referen
     <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;ce29906ee68a580410f0d41c67984ff7b384310e84dadf2b07c21252aa01fe1f&quot;</span>
     <span class="nt">export_public</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
-
 <p>This hash can be used in another session's access control policy through secret substitution (see <a href="#access-control">Access Control</a>):</p>
 <div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">checked_session</span>
 
@@ -3214,7 +3189,6 @@ For more details, see the concrete format by which other sessions can be referen
   <span class="nt">read</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="s">&quot;$$SCONE::policy_checker_certificate_hash&quot;</span>
 </pre></div>
-
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>By using <code>export_public: true</code>, the whole world will be able to see the secret value. Make sure this is your intention.</p>
@@ -3231,7 +3205,6 @@ In short: secret values which were generated as part of the old session will be 
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">binary</span>
       <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">DEADBEEF</span>
 </pre></div>
-
 <p>Example new session:</p>
 <div class="highlight"><pre><span></span><span class="nt">secrets</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_generated_ascii_secret</span>
@@ -3240,7 +3213,6 @@ In short: secret values which were generated as part of the old session will be 
     <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">foobar</span>
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">x509</span>
 </pre></div>
-
 <p>In the given example, the value of <code>my_generated_ascii_secret</code> will be kept, as it stays an ASCII secret of the same size, whereas <code>foobar</code> will be freshly generated, since its kind changed.</p>
 <p>Secret migration also takes place when using a different session description language version (e.g. 0.1 -&gt; 0.2)!
 For details, see <a href="../session_secret/#secret-migration">the session secrets migration documentation</a>.</p>
@@ -3256,20 +3228,17 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
     <span class="nt">fspf_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">f843051d21afa9e52a5b54a708a8032bc49581e982696a81393b8da4a32d00b8</span>
     <span class="nt">fspf_tag</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8d8fbe332fb9c893020be791ccd3e8a8</span>
 </pre></div>
-
 <p><code>fspf_key</code> is the key used to encrypt <code>volume.fspf</code> (file system protection file for the volume) and <code>fspf_tag</code> describes the initial state of the volume. On each volume update (e.g., creation of a file in the region or update of an existing file), the SCONE runtime will send a new <code>fspf_tag</code> to CAS to ensure integrity and freshness of the volume state.</p>
 <p>If neither <code>fspf_key</code> nor <code>fspf_tag</code> are specified, a volume will be automatically initialized during the first use:</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
 </pre></div>
-
 <p>The volume will contain a single encrypted region, and a new key will be generated by CAS to encrypt <code>volume.fspf</code>. Once initialized, CAS and the runtime will work together to track the updates of the volume, similar to a regular volume. This ensures that a volume can be initialized only once. Use of automatically initialized volumes ensures that the key for the file system is only visible inside of CAS and the application(s) that get access to this volume, i.e., no system administrator will ever see the volume key.</p>
 <p>Volumes may be exported to other sessions, which implies authorizing the other sessions to decrypt and read existing files or encrypt and store new files:</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
     <span class="nt">export</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">another-session</span>
 </pre></div>
-
 <p>or</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
@@ -3277,20 +3246,17 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">another-session</span>
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">foobar:668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088</span>
 </pre></div>
-
 <p>The concrete format by which other sessions can be referenced is described in section <a href="#referencing-other-sessions">Referencing Other Sessions</a>.</p>
 <p>Similarly, volumes may be imported from another session (in which case fspf key/tag and export list must be omitted):</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
     <span class="nt">import</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">the_exporting_session</span>
 </pre></div>
-
 <h2 id="images">Images</h2>
 <p>The <code>images</code> keyword allows specifying images usable by services (see section <a href="#service-description">Service Description</a>). Each image has an arbitrary but unique <code>name</code>:</p>
 <div class="highlight"><pre><span></span><span class="nt">images</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_image</span>
 </pre></div>
-
 <p>Images may define access to <a href="#volumes">volumes</a>, by referencing a previously declared volume's <code>name</code> and giving it a mount point (<code>path</code>):</p>
 <div class="highlight"><pre><span></span><span class="nt">volumes</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
@@ -3301,7 +3267,6 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
       <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my_database</span>
         <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/media/database</span>
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The given path must already exist in the filesystem, e.g., through a mounted docker volume. The information provided as part of the session description are only used to encrypt and authenticate all of the volume's files. The CAS does not actually store the encrypted files.</p>
@@ -3317,7 +3282,6 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
           <span class="no">user=mysqluser</span>
           <span class="no">password=$$SCONE::mysqlpass$$</span>
 </pre></div>
-
 <p>For details, refer to section <a href="#secret-injection-files">Secret Injection Files</a>.</p>
 <h2 id="access-control">Access Control</h2>
 <p>Any operation on a session description requires permission. If the entity requesting a certain operation is not explicitly permitted to perform said operation, the request will fail. <code>access_policy</code> keyword allows to specify lists of entities that are allowed to perform the following operations:</p>
@@ -3333,7 +3297,6 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
 <div class="highlight"><pre><span></span>$ sha256sum cert.pem
 1809fafa119b97db77a43562c5241b3db33d21a85516e35ebe0a19bf0e3d29ee  cert.pem
 </pre></div>
-
 <ul>
 <li><code>CREATOR</code> keyword: permit access to the creator of the policy: this is the public key of the TLS client certificate used when creating this session</li>
 <li><code>ANY</code> keyword: permit access to any entity. If <code>ANY</code> is specified, there must be no other entries in the list for this operation</li>
@@ -3347,7 +3310,6 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
   <span class="nt">update</span><span class="p">:</span>
    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
 </pre></div>
-
 <p>If the session description does not overwrite some of the operations, default values are used.</p>
 <p>Example policy:</p>
 <div class="highlight"><pre><span></span><span class="nt">access_policy</span><span class="p">:</span>
@@ -3392,7 +3354,6 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
   <span class="nt">update</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">NONE</span>
 </pre></div>
-
 <p>This policy will allow read requests from the creator, a user whose public certificate has hash <code>1809fafa119b97db77a43562c5241b3db33d21a85516e35ebe0a19bf0e3d29ee</code>, a user whose certificate is specified in the session description and a user whose credential is taken from the secret named <code>remote_validation_service</code> (which may be imported from another session). No one is allowed to update the session description.</p>
 <h2 id="referencing-other-sessions">Referencing Other Sessions</h2>
 <p>In some cases it may be necessary to reference other sessions, e.g. when exporting or importing <a href="#volumes">volumes</a> or <a href="#secret-sharing">secrets</a>. This is possible using the given session ID format:</p>

@@ -2388,7 +2388,6 @@
 <p>We first need to start a container which includes the SCONE crosscompiler which is based on Ubuntu<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>:</p>
 <div class="highlight"><pre><span></span>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/src registry.scontain.com:5050/sconecuratedimages/crosscompilers:ubuntu
 </pre></div>
-
 <p>We map the local directory of the host into the container (via option <em>-v</em>) to be able to executed the generated binary on the host.</p>
 <p>Now execute the following command inside the container to create the hello world program:</p>
 <div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">src</span>
@@ -2399,14 +2398,12 @@
 <span class="p">}</span>
 <span class="n">EOF</span>
 </pre></div>
-
 <p>Compile the program with:
 <div class="highlight"><pre><span></span>gcc -o helloworld helloworld.c
 </pre></div></p>
 <p>You can run this program with some debug output in the container:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
 </pre></div>
-
 <p>This will print something like:</p>
 <div class="highlight"><pre><span></span>export SCONE_QUEUES=4
 export SCONE_SLOTS=256
@@ -2430,7 +2427,6 @@ Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtre
 Enclave hash: 2805aa551a1019d86f33b6f14774a18792a5a3cc483d002782c9d851d851bf5a
 Hello World
 </pre></div>
-
 <p>The output shows that SCONE is running in <strong>simulation mode</strong>: "<em>export SCONE_MODE=sim</em>"</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2440,7 +2436,6 @@ Hello World
 <p>Now, exit the container by executing:</p>
 <div class="highlight"><pre><span></span><span class="nb">exit</span>
 </pre></div>
-
 <p>On the host, you can now execute the generated <strong>helloworld</strong> program<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.
 First, we need to ensure that there exists a <a href="../SCONE_ENV/#scone-configuration-file">SCONE configuration file</a>. We store this in
 the local directory:</p>
@@ -2450,11 +2445,9 @@ the local directory:</p>
 <span class="s">s -1 0 0</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>Now, we start the program with debug messages and using the configuration file in the local directory:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_CONFIG</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>/sgx-musl.conf <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
 </pre></div>
-
 <p>In case your host has the Intel sgx driver installed, the output will show that it is executed in hardware mode on the host:</p>
 <div class="highlight"><pre><span></span>...
 export SCONE_MODE=hw
@@ -2462,7 +2455,6 @@ export SCONE_MODE=hw
 Enclave hash: 2805aa551a1019d86f33b6f14774a18792a5a3cc483d002782c9d851d851bf5a
 Hello World
 </pre></div>
-
 <p>If you do not have the sgx driver installed, the program runs in simulation mode.</p>
 <div class="footnote">
 <hr />

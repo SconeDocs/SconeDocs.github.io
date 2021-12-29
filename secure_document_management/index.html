@@ -2616,7 +2616,6 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
         --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/kubernetes:las-scone5.0.0 <span class="se">\</span>
         --set nodeSelector.agentpool<span class="o">=</span><span class="s2">&quot;confcompool1&quot;</span>
 </pre></div>
-
 <h2 id="tldr">TL;DR</h2>
 <ul>
 <li>please, register an account with the <a href="https://gitlab.scontain.com/">SCONE registry</a></li>
@@ -2688,7 +2687,6 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
     <span class="nt">private_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SERVER_CA_KEY</span>
     <span class="nt">export_public</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
-
 <p>In the first section, <code># nginx - fastapi tls</code>, the NGINX session imports the client and the server CA certificates from the FastAPI session. It thereby uses the CA certificate to identify the FastAPI service, and identifies itself to the service using the client certificates.</p>
 <p>In the second section, <code># (...) nginx - client tls</code>, we issue server certificates for the NGINX. For the NGINX Server CA certificate, we set <code>export_public: true</code>. This settings allows users to extract the CA certificate corresponding to this policy, thus enabling them to verify the NGINX server.</p>
 <p>To make the certificates available to the NGINX service, we inject the certificates into the NGINX file system. We specify this injection in the <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/policy-setup/nginx_session.yml">NGINX policy</a> using the previous SCONE policy secrets as follows:</p>
@@ -2708,7 +2706,6 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
        <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/nginx/server.key</span>
          <span class="nt">content</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$$SCONE::server.key$$</span>
 </pre></div>
-
 <p>The NGINX can then access these injected files as normal files, e.g., in its configuration:
 <div class="highlight"><pre><span></span>events {}
 http {
@@ -2763,7 +2760,6 @@ http {
     <span class="nt">export</span><span class="p">:</span>
     <span class="p p-Indicator">-</span> <span class="nt">session</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$NGINX_SESSION</span> <span class="c1"># export the session CA certificate to upload session</span>
 </pre></div>
-
 <p>We thereby replace <code>$NGINX_SESSION</code> with the policy name of the NGINX. For increased security, we can also specify the corresponding <a href="https://sconedocs.github.io/CAS_session_lang_0_3/#session-description-hash">session hash</a>. In this scenario, the policies are on the same <a href="https://sconedocs.github.io/helm_cas/">SCONE CAS</a>. In more complex cases, the policies can be stored on different <a href="https://sconedocs.github.io/helm_cas/">SCONE CAS</a>.</p>
 <p>The NGINX can then import the FastAPI CA certificate, client certificate and private key, as we saw before:</p>
 <div class="highlight"><pre><span></span><span class="nt">secrets</span><span class="p">:</span>
@@ -2794,7 +2790,6 @@ http {
     <span class="nt">private_key</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SERVER_CA_KEY</span>
     <span class="nt">export_public</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
-
 <p><code>$FASTAPI_SESSION</code> is the exporting policy of the FastAPI. The NGINX can then use these exported secrets, as we also saw before:</p>
 <div class="highlight"><pre><span></span><span class="nt">images</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx_image</span>
@@ -2807,7 +2802,6 @@ http {
        <span class="p p-Indicator">-</span> <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/nginx/fastapi-client.key</span>
          <span class="nt">content</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$$SCONE::FASTAPI_CLIENT_CERT.key$$</span>
 </pre></div>
-
 <p>To ensure that the SCONE CAS supplying these policies is authentic, we typically attest the SCONE CAS before uploading any policies using the <a href="https://sconedocs.github.io/aks/flask_demo/helm_cas/#attesting-scone-cas">SCONE CAS CLI</a>.</p>
 <h2 id="binary-fs-for-fastapi">Binary FS for FastAPI</h2>
 <p>As we mentioned before, we secure our FastAPI server using the <code>binary-fs</code>. We use the tool while building the initial Docker image. We seperate this process in three stages. In the first stage, we apply the <code>binaryfs</code> command to create a file system <code>.c</code> file. In the second stage, we compile the <code>.c</code> file into an <code>.so</code> file using the <code>scone gcc</code>. In the third stage, we link the generated <code>.so</code> file into the binary using <code>patchelf</code>. We apply these stages in the Dockerfile as follows:</p>
@@ -2859,13 +2853,11 @@ http {
 
 <span class="k">CMD</span> sh -c <span class="s2">&quot;python3 /rest_api.py&quot;</span>
 </pre></div>
-
 <p>The binary also requires certain <code>/etc/</code> files for networking within the cluster, e.g., <code>/etc/resolv.conf</code>. Currently, we simply inject these files into the confidential service using the FastAPI's <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/policy-setup/fastapi_session.yml">policy</a>.</p>
 <p>The source code of this example is available on our repository- ask us for permission, and then continue with the following commands:</p>
 <div class="highlight"><pre><span></span>git clone https://gitlab.scontain.com/enterJazz/secure-doc-management.git
 <span class="nb">cd</span> secure-doc-management
 </pre></div>
-
 <h2 id="execution-on-a-kubernetes-cluster">Execution on a Kubernetes Cluster</h2>
 <p>We intend this example to be run on a Kubernetes cluster.</p>
 <h3 id="install-scone-services">Install SCONE Services</h3>
@@ -2873,7 +2865,6 @@ http {
 <div class="highlight"><pre><span></span>helm repo add sconeapps https://<span class="si">${</span><span class="nv">GH_TOKEN</span><span class="si">}</span>@raw.githubusercontent.com/scontain/SconeApps/master/
 helm repo update
 </pre></div>
-
 <p>Give SconeApps access to the private docker images (see <a href="../helm/">SconeApps</a>):</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>...
 <span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>...
@@ -2881,7 +2872,6 @@ helm repo update
 
 kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com:5050 --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
 </pre></div>
-
 <p>Start Local Attestation Service (LAS) on Azure (we use a remote CAS in this case):</p>
 <div class="highlight"><pre><span></span><span class="c1"># nodeSelector may have to be adjusted according to your nodes</span>
 helm install las sconeapps/las <span class="se">\</span>
@@ -2890,19 +2880,16 @@ helm install las sconeapps/las <span class="se">\</span>
         --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/kubernetes:las-scone5.0.0 <span class="se">\</span>
         --set nodeSelector.agentpool<span class="o">=</span><span class="s2">&quot;confcompool1&quot;</span>
 </pre></div>
-
 <p>To setup on a vanilla Kubernetes cluster:</p>
 <div class="highlight"><pre><span></span>helm install las sconeapps/las --set service.hostPort<span class="o">=</span><span class="nb">true</span>
 helm install sgxdevplugin sconeapps/sgxdevplugin
 </pre></div>
-
 <h3 id="run-the-application">Run the Application</h3>
 <p>Start by by specifying Docker image repositories to which you may push:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">MARIADB_TARGET_IMAGE</span><span class="o">=</span>your/repo:mariadb-protected
 <span class="nb">export</span> <span class="nv">MEMCACHED_TARGET_IMAGE</span><span class="o">=</span>your/repo:memcached-tls-protected
 <span class="nb">export</span> <span class="nv">NGINX_TARGET_IMAGE</span><span class="o">=</span>your/repo:nginx-proxy-server-protected
 </pre></div>
-
 <p>Then use the Helm chart in <code>./secure-doc-management</code> to deploy the application to a Kubernetes cluster. We strongly recommend using the script:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NAMESPACE</span><span class="o">=</span>&lt;your_kubernetes_namespace&gt; <span class="c1"># e.g. default</span>
 ./setup-secure-doc-management.sh
@@ -2910,7 +2897,6 @@ helm install sgxdevplugin sconeapps/sgxdevplugin
 <span class="c1"># without Azure:</span>
 <span class="c1"># export USE_AZURE=false; ./setup-secure-doc-management.sh</span>
 </pre></div>
-
 <!-- *NOTE:* Setting `service.type=LoadBalancer` will allow the application to get traffic from the internet (through a managed LoadBalancer). -->
 
 <!-- TODO setup load balancer -->
@@ -2919,13 +2905,11 @@ helm install sgxdevplugin sconeapps/sgxdevplugin
 <p>After all resources are <code>Running</code>, you can test the API via Helm:</p>
 <div class="highlight"><pre><span></span>helm <span class="nb">test</span> secure-doc-management
 </pre></div>
-
 <p>Helm will run a pod with a couple of pre-set queries to check if the API is working properly.</p>
 <h3 id="access-the-application">Access the Application</h3>
 <p>For ease of use, we access the application within the cluster through a client pod, which the helm charts also deploys.</p>
 <div class="highlight"><pre><span></span>kubectl <span class="nb">exec</span> --stdin --tty <span class="k">$(</span>kubectl get pods --selector<span class="o">=</span>app.kubernetes.io/name<span class="o">=</span>client-scone -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.items[*].metadata.name}&#39;</span><span class="k">)</span> -- /bin/bash
 </pre></div>
-
 <p>The IP of the host is stored under <code>$NGINX_HOST</code> in the pod. The pod has also retrieved the certificate of the application beforehand, in <code>/tmp/nginx-ca.crt</code>. The exact commands to establish the secure communication with the application are:</p>
 <div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;Attest SCONE CAS&quot;</span>
 scone cas attest --accept-configuration-needed --accept-group-out-of-date --only_for_testing-debug --only_for_testing-ignore-signer <span class="nv">$SCONE_CAS_ADDR</span> <span class="nv">$CAS_MRENCLAVE</span>
@@ -2936,13 +2920,11 @@ scone cas show-certificate <span class="nv">$SCONE_CAS_ADDR</span> &gt; /tmp/sco
 <span class="nb">echo</span> <span class="s2">&quot;Get nginx public CACERT from CAS REST API&quot;</span>
 <span class="nb">echo</span> -e <span class="k">$(</span>curl --cacert /tmp/scone-ca.crt https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/v1/values/session<span class="o">=</span><span class="nv">$NGINX_CONFIG_ID</span>,secret<span class="o">=</span>SERVER_CA_CERT <span class="p">|</span> jq <span class="s1">&#39;.value&#39;</span><span class="k">)</span> <span class="p">|</span> head -c -2 <span class="p">|</span> tail -c +2 &gt; /tmp/nginx-ca.crt
 </pre></div>
-
 <p>Now, from within the pod, you can perform queries such as:</p>
 <div class="highlight"><pre><span></span>curl --cacert /tmp/nginx-ca.crt -ubobross:password123 -X GET https://<span class="nv">$NGINX_HOST</span>/users/create_account
 curl --cacert /tmp/nginx-ca.crt -ubobross:password123 -X POST -H <span class="s2">&quot;Content-Type: application/json&quot;</span> -d <span class="s1">&#39;{&quot;record_id&quot;:&quot;31&quot;,&quot;content&quot;:&quot;Ever make mistakes in life? Lets make them birds. Yeah, theyre birds now.&quot;}&#39;</span> https://<span class="nv">$NGINX_HOST</span>/documents/create_document
 curl --cacert /tmp/nginx-ca.crt -ubobross:password123 -X GET https://secure-doc-management-nginx-scone/documents/31
 </pre></div>
-
 <h3 id="clean-up">Clean Up</h3>
 <p>To uninstall the charts we installed during this demo, execute:</p>
 <div class="highlight"><pre><span></span>helm uninstall las

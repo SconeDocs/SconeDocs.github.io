@@ -2412,7 +2412,6 @@ httpsServer.listen(443, function () {
   console.log(&#39;Ok.&#39;);
 });
 </pre></div>
-
 <p>A policy template defines a private key and a certificate that is signed with a CA certificate
 that is also created in this policy. We set the DNS name of the certifcate to <code>app</code>. We define a secret <code>GREETING: "Hello NodeJS"</code> as an environment variable passed to <code>app</code>. In this policy, we assume that our development machine has not seen many firmware updates recently:</p>
 <div class="highlight"><pre><span></span>name: $NODE_SESSION
@@ -2470,12 +2469,10 @@ security:
     tolerate: [debug-mode, hyperthreading, insecure-igpu, outdated-tcb]
     ignore_advisories: [&quot;INTEL-SA-00076&quot;, &quot;INTEL-SA-00088&quot;, &quot;INTEL-SA-00106&quot;, &quot;INTEL-SA-00115&quot;, &quot;INTEL-SA-00135&quot;, &quot;INTEL-SA-00203&quot;, &quot;INTEL-SA-00161&quot;, &quot;INTEL-SA-00220&quot;, &quot;INTEL-SA-00270&quot;, &quot;INTEL-SA-00293&quot;, &quot;INTEL-SA-00320&quot;, &quot;INTEL-SA-00329&quot;, &quot;INTEL-SA-00233&quot;, &quot;INTEL-SA-00220&quot;, &quot;INTEL-SA-00270&quot;, &quot;INTEL-SA-00293&quot;, &quot;INTEL-SA-00320&quot;, &quot;INTEL-SA-00329&quot;]
 </pre></div>
-
 <p>We need to set the <code>MRENCLAVE</code> and the name of the policy (<code>NODE_SESSION</code>) before we upload the session to a CAS instance. To simplify this upload and running of the node application, we pushed the code to github. Just clone it and enter the newly cloned directory</p>
 <div class="highlight"><pre><span></span>git clone https://github.com/scontain/node_example.git
 <span class="nb">cd</span> node_example
 </pre></div>
-
 <p>We need to set some environment variables and upload our session:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;4-2-1.scone-cas.cf&quot;</span> <span class="c1"># we use a public SCONE CAS to store the session policies</span>
 <span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;sconecuratedimages/apps:node-10.14-alpine&quot;</span>
@@ -2483,11 +2480,9 @@ security:
 <span class="nb">export</span> <span class="nv">NODE_SESSION</span><span class="o">=</span><span class="k">$(</span>./upload_session --template<span class="o">=</span>nodejs-template.yml --session<span class="o">=</span>nodejs-session.yml  --image<span class="o">=</span><span class="nv">$IMAGE</span> --cas<span class="o">=</span><span class="nv">$CAS_ADDR</span><span class="k">)</span>
 <span class="nb">export</span> <span class="nv">DEVICE</span><span class="o">=</span><span class="k">$(</span>./determine_sgx_device<span class="k">)</span> <span class="c1"># determine the SGX device of the local computer</span>
 </pre></div>
-
 <p>and then run locally by executing</p>
 <div class="highlight"><pre><span></span>docker-compose up
 </pre></div>
-
 <p>This will print some log messages and eventually print</p>
 <div class="highlight"><pre><span></span>node_1  | Example tls app start!
 node_1  | read the secret :Hello NodeJS
@@ -2495,17 +2490,14 @@ node_1  | Example tls app listening on port 443!
 node_1  | scone mode is :Hello NodeJS
 node_1  | Ok.
 </pre></div>
-
 <p>indicating that the <code>app</code> is ready to process requests.</p>
 <h2 id="client-request">Client Request</h2>
 <p>Execute client request via https:</p>
 <div class="highlight"><pre><span></span>curl -k https://localhost:443
 </pre></div>
-
 <p>The output will be:</p>
 <div class="highlight"><pre><span></span>Hello World!Hello NodeJS
 </pre></div>
-
 <p>Note that '-k' is the insecure mode and if we drop this option, the output will look like this:</p>
 <div class="highlight"><pre><span></span>curl https://localhost:443
 
@@ -2516,18 +2508,15 @@ curl failed to verify the legitimacy of the server and therefore could not
 establish a secure connection to it. To learn more about this situation and
 how to fix it, please visit the web page mentioned above.
 </pre></div>
-
 <p>Let's fix this warning and by doing so we also <strong>attest</strong> the node service.</p>
 <h2 id="get-ca-certificate-used-to-sign-certificate-of-node-app">Get CA Certificate used to sign certificate of node app</h2>
 <p>Retrieve the exported ca certificate with curl from CAS. Note that we told CAS to export the  CA certifcate by setting <code>export_public: true</code>in the policy. We store the certificate in file `ca-cert':</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">ca_cert</span><span class="o">=</span><span class="k">$(</span>curl -k https://<span class="si">${</span><span class="nv">CAS_ADDR</span><span class="si">}</span>:8081/v1/values/session<span class="o">=</span><span class="nv">$NODE_SESSION</span> <span class="p">|</span> jq <span class="s2">&quot;.values.api_ca_cert.value&quot;</span> <span class="p">|</span> tr -d <span class="se">\&quot;</span> <span class="k">)</span>
 <span class="nb">printf</span> <span class="s2">&quot;\n</span><span class="nv">$ca_cert</span><span class="s2">&quot;</span> &gt; ca_cert
 </pre></div>
-
 <p>We can now use this ca certificate to verify the certificate from our application:</p>
 <div class="highlight"><pre><span></span>curl --capath <span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">&quot;</span> --cacert ca_cert --verbose https://app:443 --resolve app:443:127.0.0.1
 </pre></div>
-
 <h2 id="notes">Notes</h2>
 <ul>
 <li>

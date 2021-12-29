@@ -2461,7 +2461,6 @@ The SCONE CLI is deployed as part of a docker image:</p>
 docker pull <span class="nv">$SCONE_CLI_IMAGE</span>
 docker run -it <span class="nv">$SCONE_CLI_IMAGE</span>
 </pre></div>
-
 <h2 id="attesting-scone-cas">Attesting SCONE CAS</h2>
 <p>SCONE CAS attests services on startup and also provisions secrets to attested services.
 Before uploading a policy to a CAS instance, we need to attest this CAS instance
@@ -2473,7 +2472,6 @@ are ok that we communicate with a CAS that executes in debug mode.</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf
 scone cas attest <span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span> --only_for_testing-debug  --only_for_testing-ignore-signer --only_for_testing-trust-any
 </pre></div>
-
 <h2 id="creating-a-scone-policy">Creating a SCONE policy</h2>
 <p>We <strong>create</strong> a policy, <strong>read</strong> the policy back, and then <strong>update</strong> the policy.
 Typically, <code>sconify_image</code> would create the namespace as well as the initial policy of a service.
@@ -2498,24 +2496,20 @@ cat &gt; my_namespace.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">   - CREATOR</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>We can now create this namespace with command <a href="../CAS_cli/#scone-session-create">scone session create</a>:</p>
 <div class="highlight"><pre><span></span>scone session create --cas <span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span> --only_for_testing-disable-attestation-verification --use-env my_namespace.yml
 </pre></div>
-
 <h2 id="determining-the-id-of-an-existing-policy">Determining the ID of an existing policy</h2>
 <p>This policy is associated with a unique ID. The ID could be viewed similar to a <code>git</code> commit time stamp. This ID is needed when we want to update a session. The ID is printed when the policy / namespace is created. When this namespace/policy was created by <code>sconify_image</code>, we might not remember this ID.</p>
 <p>To recover the ID of a policy, we can perform the following steps. First, we read and store the current policy that describes this namespace as follows
 (see <a href="../CAS_cli/#scone-session-read">scone session read</a>):</p>
 <div class="highlight"><pre><span></span>scone session <span class="nb">read</span>  --cas <span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span> <span class="nv">$NAMESPACE</span>  --only_for_testing-disable-attestation-verification &gt; my_namespace_from_cas.yml
 </pre></div>
-
 <p>The session that we read, might be slightly different from the policy that we created. For example, it contains the public key of the creator.
 Given the current policy, we can determine the ID as follows (see <a href="../CAS_cli/#scone-session-verify">scone session verify</a>):</p>
 <div class="highlight"><pre><span></span>scone session verify  --cas <span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span> -n <span class="nv">$NAMESPACE</span>  --only_for_testing-disable-attestation-verification my_namespace_from_cas.yml &gt; namespace_id
 <span class="nb">export</span> <span class="nv">ID</span><span class="o">=</span><span class="k">$(</span>cat namespace_id<span class="k">)</span>
 </pre></div>
-
 <h2 id="updating-the-policy">Updating the policy</h2>
 <p>When updating a policy, we need to set the <code>predecessor</code> field, i.e., we need to say which policy version to update (to ensure a linear history of policy updates). The policy that we read from CAS contains a field <code>creator</code>, this is the public key of the creator. We cannot change the creator's public key and hence, we replace that field. Technically, we can  update the namespace / policy as follows:</p>
 <div class="highlight"><pre><span></span>sed <span class="s2">&quot;s/predecessor:.*/predecessor: </span><span class="nv">$ID</span><span class="s2"> /; s/creator: .*/ /&quot;</span> my_namespace_from_cas.yml &gt; new_namespace_policy.yml
@@ -2527,7 +2521,6 @@ cat &gt;&gt; new_namespace_policy.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">      size: 12</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>The new namespace policy might look as follows:</p>
 <div class="highlight"><pre><span></span><span class="nn">---</span>
 <span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
@@ -2546,14 +2539,12 @@ cat &gt;&gt; new_namespace_policy.yml <span class="s">&lt;&lt;EOF</span>
       <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ascii</span>
       <span class="nt">size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">12</span>
 </pre></div>
-
 <h3 id="linear-history">Linear History</h3>
 <p>Note that the field <code>predecessor</code> ensures that we do not overwrite any concurrent updates. In case of an concurrent update, the predecessor ID would be wrong and the update would fail. In this case, we would need to read the newest policy, determine the ID, and then update the policy.</p>
 <h3 id="uploading-the-new-policy">Uploading the new policy</h3>
 <p>We can now upload the modified as follows (see <a href="../CAS_cli/#scone-session-update">scone session verify</a>):</p>
 <div class="highlight"><pre><span></span>scone session update  --cas <span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span>  --only_for_testing-disable-attestation-verification new_namespace_policy.yml
 </pre></div>
-
 <p>On success, the session update command will print the new ID of the updated policy.</p>
                 
                   

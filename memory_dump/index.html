@@ -2418,7 +2418,6 @@ SGX device. We determine which SGX device to mount with function <a href="../sgx
 docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers
 docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
 </pre></div>
-
 <p>Let's create some program that stores a secret (<strong>MYBIGS</strong>) in a local variable <em>secret</em>:</p>
 <div class="highlight"><pre><span></span>cat &gt; mysecret.c <span class="s">&lt;&lt; EOF</span>
 <span class="s">#include &lt;stdio.h&gt;</span>
@@ -2442,20 +2441,16 @@ docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:50
 <span class="s">}</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>Compile this program with the SCONE crosscompiler (i.e., gcc):</p>
 <div class="highlight"><pre><span></span>gcc -g -o mysecret mysecret.c
 </pre></div>
-
 <h2 id="simulation-mode">Simulation Mode</h2>
 <p>You can run this program in <strong>SIMULATION MODE</strong>, i.e., this program does not protect your secrets:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM ./mysecret
 </pre></div>
-
 <p>Log into a different terminal on your <strong>host</strong>. Let us figure out the process ID of the mysecret program:</p>
 <div class="highlight"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
 </pre></div>
-
 <p>Now, we can dump the memory of this process via the <em>/proc</em> filesystem. You can determine
 the different memory regions of your process via <code>cat /proc/$SPID/maps</code> and
 the memory is stored in <em>/proc/$SPID/mem</em>. We can use the following
@@ -2489,12 +2484,10 @@ Python program to write all pages to <em>stdout</em>: </p>
 <span class="s">print(&quot;END&quot;)</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>Run this program and grep for the prefix of our secret:</p>
 <div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> &gt;<span class="p">&amp;</span> memdump.log
 grep -o MYBIGS memdump.log
 </pre></div>
-
 <p>This will take some time but eventually it will print the full secret <strong>MYBIGS</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Enclaves in SIM mode</p>
@@ -2509,16 +2502,14 @@ by typing <em>control-C</em>.</p>
 <p>Let's start mysecret in an enclave, i.e., in hardware mode inside the container:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>HW ./mysecret
 </pre></div>
-
 <p>Update environment variable <em>SPID</em> in a <strong>second</strong> terminal on your host:</p>
 <div class="highlight"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
 </pre></div>
-
 <p>and then try to find the secret:</p>
 <div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> &gt;<span class="p">&amp;</span> memdump_HW.log
 grep -o MYBIGS memdump_HW.log
 </pre></div>
-
+<p>And in few seconds you will see your secret.</p>
 <div class="admonition note">
 <p class="admonition-title">Enclaves in debug mode do not protect your secrets</p>
 <p>If your enclave is in debug mode, one can access all secrets of the enclave. </p>
@@ -2536,7 +2527,6 @@ or
 <p>You can generate a key with following script:</p>
 <div class="highlight"><pre><span></span>openssl genrsa -3 -out key.pem <span class="m">3072</span>
 </pre></div>
-
 <p>And sign a binary with <a href="../scone-signer/">scone signer</a> like this:
 <div class="highlight"><pre><span></span>scone-signer sign -p --key<span class="o">=</span>key.pem ./mysecret
 </pre></div></p>
@@ -2546,7 +2536,6 @@ And one more time, update environment variable <em>SPID</em> in a <strong>second
 <div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> &gt;<span class="p">&amp;</span> memdump_PRD.log
 grep -o MYBIGS memdump_PRD.log
 </pre></div>
-
 <p>This time <code>grep</code> will not find secretes on stack.
 That is because enclave memory is encrypted and protected from outside access.
 Also, this example shows that if you provide secretes <strong>after</strong> attestation, it can not be extracted from SGX enclave.</p>
@@ -2557,7 +2546,6 @@ stays in the main memory outside the enclave. </p>
 We can find this secret as follows:</p>
 <div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep THIS_IS_NOT_SECRET
 </pre></div>
-
 <p>Always use <a href="../CAS_session_lang_0_3/">SCONE policy</a> to provide secrets to enclaves.</p>
 <div class="footnote">
 <hr />

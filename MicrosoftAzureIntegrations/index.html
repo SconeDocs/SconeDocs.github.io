@@ -2545,7 +2545,6 @@
 <p>We showcase the integrations to Microsoft Azure built in SCONE platform. You can clone this example as follows:</p>
 <div class="highlight"><pre><span></span>git clone https://github.com/scontain/scone-azure-integration.git
 </pre></div>
-
 <h2 id="summary">Summary</h2>
 <p>In this sample, a Flask REST API (built with SCONE) running on a Confidential Azure Kubernetes Service cluster is attested by a Microsoft Azure Attestation provider, allowing secrets stored in an Azure Key Vault instance and in the SCONE CAS (Configuration and Attestation Service) to be securely delivered to the attested enclave instance.</p>
 <h2 id="demo">Demo</h2>
@@ -2562,7 +2561,6 @@
 <span class="nb">export</span> <span class="nv">AZURE_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
 <span class="nb">export</span> <span class="nv">AZURE_CLIENT_SECRET</span><span class="o">=</span><span class="s2">&quot;...&quot;</span>
 </pre></div>
-
 <h4 id="create-an-azure-key-vault-instance">Create an Azure Key Vault instance</h4>
 <p>Please refer to the official Azure documentation to see <a href="https://docs.microsoft.com/en-us/azure/key-vault/secrets/quick-create-portal">how to create an Azure Key Vault instance</a>. This tutorial assumes that the AKV has to secrets:</p>
 <ul>
@@ -2574,14 +2572,12 @@
 <span class="nb">export</span> <span class="nv">AKV_SECRET_NAME</span><span class="o">=</span><span class="s2">&quot;sample-secret&quot;</span>
 <span class="nb">export</span> <span class="nv">AKV_CERT_SECRET_NAME</span><span class="o">=</span><span class="s2">&quot;flask&quot;</span>
 </pre></div>
-
 <p>Finally, refer to the official Azure documentation to <a href="https://docs.microsoft.com/en-us/azure/key-vault/general/assign-access-policy-portal">give AKV access the application you created in the previous example</a>.</p>
 <h4 id="create-microsoft-azure-attestation-provider">Create Microsoft Azure Attestation provider</h4>
 <p>This step is required only if you want to explore custom policies. Please refer to the official Azure documentation to see <a href="https://docs.microsoft.com/en-us/azure/attestation/quickstart-portal">how to create an MAA instance</a> and <a href="https://docs.microsoft.com/en-us/azure/attestation/author-sign-policy">submit custom policies</a>.</p>
 <p>If you are not interested in custom policies, you can rely on one of the shared MAA instances provided by Microsoft, <em>e.g.</em>:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">MAA_PROVIDER</span><span class="o">=</span><span class="s2">&quot;https://sharedcus.cus.attest.azure.net&quot;</span>
 </pre></div>
-
 <h4 id="create-a-confidential-azure-kubernetes-service-cluster">Create a Confidential Azure Kubernetes Service cluster</h4>
 <p>This step is required only if you want to run the demo in a Kubernetes cluster using the included Helm charts. Please refer to the official Azure documentation to see <a href="https://docs.microsoft.com/en-us/azure/confidential-computing/confidential-nodes-aks-overview">how to create a confidential AKS cluster</a>.</p>
 <p>If you are not interested in Kubernetes, you can rely on the included docker-compose manifests in <code>deploy/compose</code>. Please note that you must run the demo in an <a href="https://docs.microsoft.com/en-us/azure/confidential-computing/confidential-computing-enclaves">Azure Confidential Computing VM</a>, otherwise MAA won't attest your enclaves.</p>
@@ -2590,7 +2586,6 @@
 <p>Export the appropriate image names and SGX device:</p>
 <div class="highlight"><pre><span></span><span class="nb">source</span> environment
 </pre></div>
-
 <p>Install SCONE Attestation Services: CAS and LAS. We expose CAS to the internet through an Azure Load Balancer and an external IP address (<code>--set service.type=LoadBalancer</code>). If you want to specify a specific static IP address, you have to create it in the appropriate resource group and add <code>--set service.loadBalancerIP=$STATIC_IP</code>. Please refer to the Azure documentation to see <a href="https://docs.microsoft.com/en-us/azure/aks/static-ip">how to create static IP addresses to use with AKS</a>.</p>
 <p>Please also note that the services rely on the SGX Device Plugin (<code>--set useSGXDevPlugin=azure</code>) and AESM (<code>--set externalAesmd.enabled=true</code>) provided by Azure.</p>
 <div class="highlight"><pre><span></span>helm install cas deploy/helm/cas <span class="se">\</span>
@@ -2601,17 +2596,14 @@
 helm install las deploy/helm/las <span class="se">\</span>
    --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span>azure
 </pre></div>
-
 <h4 id="submit-policies">Submit policies</h4>
 <p>First, retrieve the CAS public IP (please note that it may take a while until the IP is available):</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="k">$(</span>kubectl get svc cas --template <span class="s2">&quot;{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}&quot;</span><span class="k">)</span>
 </pre></div>
-
 <p>Specify the name of the CAS namespace and of the session we are going to create.</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">CAS_NAMESPACE</span><span class="o">=</span>azure-integration-<span class="nv">$RANDOM$RANDOM$RANDOM</span>
 <span class="nb">export</span> <span class="nv">PYTHON_SESSION_NAME</span><span class="o">=</span>demo
 </pre></div>
-
 <p>Start a local SCONE CLI container to submit policies to our CAS. Pass the environment variables to the local container, so the CLI can use them to populate the session template (<code>session.template.yml</code>):</p>
 <div class="highlight"><pre><span></span>docker run -d --rm --network host <span class="se">\</span>
    -v <span class="nv">$PWD</span>:/templates <span class="se">\</span>
@@ -2631,26 +2623,21 @@ helm install las deploy/helm/las <span class="se">\</span>
    -c <span class="s2">&quot;sleep 7200&quot;</span>
 docker <span class="nb">exec</span> -it scone-cli bash
 </pre></div>
-
 <p>Inside of the CLI container, run:</p>
 <div class="highlight"><pre><span></span>./templates/attest-cas.sh
 </pre></div>
-
 <p>Create a CAS namespace:</p>
 <div class="highlight"><pre><span></span>scone session create --use-env /templates/namespace.template.yml
 </pre></div>
-
 <p>Submit the templates by running the following command. The option <code>--use-env</code> will allow the CLI to use the environment to replace variables inside of the session template.</p>
 <div class="highlight"><pre><span></span>scone session create --use-env /templates/session.template.yml
 </pre></div>
-
 <h4 id="start-application">Start application</h4>
 <p>Run the application without attestation: the application will crash because there are no certificates in the expected locations.</p>
 <div class="highlight"><pre><span></span>helm install api-no-attestation deploy/helm/rest-api-sample <span class="se">\</span>
    --set service.type<span class="o">=</span>LoadBalancer <span class="se">\</span>
    --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span>azure
 </pre></div>
-
 <p>Now, run the application with attestation. The REST API should start once it gets attested and the appropriate secret and certificates—retrieved from AKV—are transparently and securely injected into the enclave's filesystem and environment.</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$CAS_NAMESPACE</span>/<span class="nv">$PYTHON_SESSION_NAME</span>/rest-api
 helm install api deploy/helm/rest-api-sample <span class="se">\</span>
@@ -2659,22 +2646,18 @@ helm install api deploy/helm/rest-api-sample <span class="se">\</span>
    --set scone.cas<span class="o">=</span><span class="nv">$SCONE_CAS_ADDR</span> <span class="se">\</span>
    --set scone.configId<span class="o">=</span><span class="nv">$SCONE_CONFIG_ID</span>
 </pre></div>
-
 <p>Retrieve the public IP address for our REST API:</p>
 <div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">API_ADDR</span><span class="o">=</span><span class="k">$(</span>kubectl get svc api-rest-api-sample --template <span class="s2">&quot;{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}&quot;</span><span class="k">)</span>
 </pre></div>
-
 <p>Access the REST API using cURL. Please note that you must use the <em>Common Name</em> as specified in the certificate that you created in AKV.</p>
 <div class="highlight"><pre><span></span>curl https://rest-api.scone.sample:4996/secret --resolve rest-api.scone.sample:4996:<span class="nv">$API_ADDR</span>
 </pre></div>
-
 <blockquote>
 <p>If you created a self-signed certificate in AKV, you need to pass <code>-k</code> flag to cURL.</p>
 </blockquote>
 <p>The expected output looks like:</p>
 <div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;access_timestamp&quot;</span><span class="p">:</span><span class="mf">1615855461.7656054</span><span class="p">,</span><span class="nt">&quot;secret&quot;</span><span class="p">:</span><span class="s2">&quot;a13f688c788626380ae1209e31e664891fc19dcdd0cfa29c27ca7e6e16b83a95&quot;</span><span class="p">}</span>
 </pre></div>
-
 <h3 id="limitations">Limitations</h3>
 <ul>
 <li>

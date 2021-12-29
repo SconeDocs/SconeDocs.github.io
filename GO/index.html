@@ -2314,7 +2314,6 @@
 determine_sgx_device
 docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
 </pre></div>
-
 <p>In case you do not have an SGX driver installed, no device will be mounted and
 applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <p>Lets consider a simple GO program (take from a <a href="https://golang.org/doc/articles/wiki/">GO tutorial</a>):</p>
@@ -2340,15 +2339,12 @@ applications will run in <span data-tooltip="The application does not run inside
 <span class="s">}</span>
 <span class="s">EOF</span>
 </pre></div>
-
 <p>You can cross-compile this program as follows:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>1G scone-gccgo web-srv.go -O3 -o web-srv-go -g
 </pre></div>
-
 <p>You can start the compiled program (and enable some debug messages) as follows:</p>
 <div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./web-srv-go <span class="p">&amp;</span>
 </pre></div>
-
 <p>The output should look as follows:</p>
 <div class="highlight"><pre><span></span>export SCONE_QUEUES=4
 export SCONE_SLOTS=256
@@ -2371,23 +2367,18 @@ Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtre
 
 Enclave hash: dea1dadce2884bbfd642c10f436c1d02db7ac0f4e4f3abe5d2fde031056405dd
 </pre></div>
-
 <p>You can now connect to port 8080, for example, with <em>curl</em>:</p>
 <div class="highlight"><pre><span></span>curl localhost:8080/SCONE
 </pre></div>
-
 <p>The output should be as follows:</p>
 <div class="highlight"><pre><span></span>Hi there, I love SCONE!
 </pre></div>
-
 <p>You can terminate the server with</p>
 <div class="highlight"><pre><span></span>curl localhost:8080/EXIT
 </pre></div>
-
 <p>This will output the following text:</p>
 <div class="highlight"><pre><span></span>curl: (52) Empty reply from server
 </pre></div>
-
 <h2 id="building-dependencies">Building Dependencies</h2>
 <p>Building larger applications that include external dependencies can be difficult when using <strong>scone-gccgo</strong> alone.
 To simplify the building of complex applications, we recommend the use of the <strong>go</strong> command.</p>
@@ -2396,11 +2387,9 @@ To simplify the building of complex applications, we recommend the use of the <s
 <div class="highlight"><pre><span></span>$ apk update
 $ apk add go
 </pre></div>
-
 <p>You can then build your dependencies with the help of <strong>go</strong> and the SCONE go crosscompiler:</p>
 <div class="highlight"><pre><span></span>$ go build -compiler gccgo -buildmode=exe
 </pre></div>
-
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>you need to specify <strong>gccgo</strong> not <strong>scone-gccgo</strong>: <strong>gccgo</strong> is an alias of  <strong>scone-gccgo</strong>.</p>
@@ -2412,12 +2401,10 @@ $ apk add go
 <p>Standard containers have not sufficient rights to use the debugger.  Hence, you must start a container with <em>SYS_PTRACE</em> capability. For example:</p>
 <div class="highlight"><pre><span></span>docker run --cap-add SYS_PTRACE -it -p <span class="m">8080</span>:8080 -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>/EXAMPLE:/usr/src/myapp -w /usr/src/myapp  registry.scontain.com:5050/sconecuratedimages/crosscompilers
 </pre></div>
-
 <h3 id="handling-illegal-instructions">Handling Illegal instructions</h3>
 <p>Some instructions, like CPUID, are not permitted inside of enclaves. For some of these instructions, like CPUID, we provide an automatic emulation. However, we recommend not to use any illegal instructions inside of enclaves despite having an automatic emulation of these instructions. For example, we provide static replacements of the CPUID instruction. </p>
 <div class="highlight"><pre><span></span>scone-gdb ./web-srv-go
 </pre></div>
-
 <p>This will produce the following output:</p>
 <div class="highlight"><pre><span></span>GNU gdb (Ubuntu 7.12.50.20170314-0ubuntu1.1) 7.12.50.20170314-git
 Copyright (C) 2017 Free Software Foundation, Inc.
@@ -2438,23 +2425,19 @@ Setting environment variable &quot;LD_PRELOAD&quot; to null value.
 Reading symbols from ./web-srv-go...done.
 [SCONE] Initializing...
 </pre></div>
-
 <p>If your program contains some illegal instructions, you need to ask the debugger to forward the signals,
 that these illegal instructions cause, to the program via <strong>handle SIGILL nostop pass</strong>: </p>
 <div class="highlight"><pre><span></span># (gdb) 
 handle SIGILL nostop pass
 </pre></div>
-
 <p>This will produce the following output:</p>
 <div class="highlight"><pre><span></span>Signal        Stop  Print   Pass to program Description
 SIGILL        No    Yes     Yes             Illegal instruction
 (gdb)
 </pre></div>
-
 <p>Since we do not patch the CPUID instructions in this run, </p>
 <div class="highlight"><pre><span></span>run
 </pre></div>
-
 <p>you will see something like this:</p>
 <div class="highlight"><pre><span></span>Starting program: /usr/src/myapp/web-srv-go 
 warning: Error disabling address space randomization: Operation not permitted
@@ -2483,7 +2466,6 @@ Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
 
 Thread 8 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
 </pre></div>
-
 <p>You could interrupt this execution via control c:</p>
 <div class="highlight"><pre><span></span>^C
 Thread <span class="m">1</span> <span class="s2">&quot;web-srv-go&quot;</span> received signal SIGINT, Interrupt.
@@ -2495,7 +2477,6 @@ Thread <span class="m">1</span> <span class="s2">&quot;web-srv-go&quot;</span> r
 <span class="o">(</span>gdb<span class="o">)</span> cont
 Continuing.
 </pre></div>
-
 <h3 id="breakpoints">Breakpoints</h3>
 <p>scone-gdb support breakpoints. Say, we want to get control in the debugger whenever a request is being
 processed by the handler. We would set a breakpoint at function <strong>main.handler</strong> as follows:</p>
@@ -2537,7 +2518,6 @@ Thread <span class="m">6</span> <span class="s2">&quot;web-srv-go&quot;</span> r
 
 Thread <span class="m">6</span> <span class="s2">&quot;web-srv-go&quot;</span> received signal SIGILL, Illegal instruction.
 </pre></div>
-
 <p>Note that at the time when we are setting the breakpoint, the symbols of the code running inside
 of the enclave are not yet known. Hence, we just let gdb know that the symbol will be defined later on.</p>
 <p>We are now sending a request with the help of <em>curl</em> from a different window. This triggers the breakpoint:</p>
@@ -2552,7 +2532,6 @@ Thread <span class="m">7</span> <span class="s2">&quot;web-srv-go&quot;</span> h
 <span class="o">(</span>gdb<span class="o">)</span> c
 Continuing.
 </pre></div>
-
 <h2 id="screencast">Screencast</h2>
 <script id="asciicast-285881" src="https://asciinema.org/a/285881.js" async></script>
                 
