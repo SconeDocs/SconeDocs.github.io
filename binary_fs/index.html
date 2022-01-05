@@ -2437,20 +2437,20 @@ You can utilize SCONE volumes to persistently store data on the host's file syst
 
 <span class="c"># remove object archive as very large and not necessary for executing the python program</span>
 <span class="c"># &amp; apply scone binaryfs with SCONE_MODE=auto, as build will not have access to /dev/isgx</span>
-<span class="k">RUN</span> rm /usr/lib/python3.7/config-3.7m-x86_64-linux-gnu/libpython3.7m.a <span class="o">&amp;&amp;</span> <span class="se">\</span>
-    <span class="nv">SCONE_MODE</span><span class="o">=</span>auto scone binaryfs / /binary-fs.c -v <span class="se">\</span>
+<span class="k">RUN</span> mkdir binary-fs-dir <span class="o">&amp;&amp;</span>  rm /usr/lib/python3.7/config-3.7m-x86_64-linux-gnu/libpython3.7m.a <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nv">SCONE_MODE</span><span class="o">=</span>auto scone binaryfs / /binary-fs-dir -v <span class="se">\</span>
         --include <span class="s1">&#39;/usr/lib/python3.7/*&#39;</span> <span class="se">\</span>
         --include /hello-world.py
 
 <span class="c"># Second stage: compile the binary fs</span>
 <span class="k">FROM</span><span class="s"> registry.scontain.com:5050/sconecuratedimages/crosscompilers:alpine AS crosscompiler</span>
 
-<span class="k">COPY</span> --from<span class="o">=</span>binary-fs /binary-fs.c /.
+<span class="k">COPY</span> --from<span class="o">=</span>binary-fs /binary-fs-dir /.
 
-<span class="k">RUN</span> scone gcc /binary-fs.c -O0 -shared -o /libbinary-fs.so
+<span class="k">RUN</span> scone gcc ./binary_fs_blob.s ./libbinary_fs_template.a -shared -o /libbinary-fs.so
 
 
-<span class="c"># Third stage: patch the binary-fs into the enclave executable</span>
+<span class="c"># Third stage: patch the binaryfs into the enclave executable</span>
 <span class="k">FROM</span><span class="s"> registry.scontain.com:5050/sconecuratedimages/apps:python-3.7.3-alpine3.10</span>
 
 <span class="k">COPY</span> --from<span class="o">=</span>crosscompiler /libbinary-fs.so /.
