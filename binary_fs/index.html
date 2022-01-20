@@ -2052,13 +2052,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#basic-usage" title="Basic Usage" class="md-nav__link">
-    Basic Usage
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#generating-binary-fs-images-from-existing-file-systems" title="Generating Binary FS Images from existing File Systems" class="md-nav__link">
     Generating Binary FS Images from existing File Systems
   </a>
@@ -2068,13 +2061,6 @@
         <li class="md-nav__item">
   <a href="#what-files-to-include-in-the-file-system" title="What Files to include in the File System" class="md-nav__link">
     What Files to include in the File System
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#possible-networking-problems" title="Possible Networking Problems" class="md-nav__link">
-    Possible Networking Problems
   </a>
   
 </li>
@@ -2370,13 +2356,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#basic-usage" title="Basic Usage" class="md-nav__link">
-    Basic Usage
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#generating-binary-fs-images-from-existing-file-systems" title="Generating Binary FS Images from existing File Systems" class="md-nav__link">
     Generating Binary FS Images from existing File Systems
   </a>
@@ -2386,13 +2365,6 @@
         <li class="md-nav__item">
   <a href="#what-files-to-include-in-the-file-system" title="What Files to include in the File System" class="md-nav__link">
     What Files to include in the File System
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#possible-networking-problems" title="Possible Networking Problems" class="md-nav__link">
-    Possible Networking Problems
   </a>
   
 </li>
@@ -2422,10 +2394,14 @@
                 
                 
                 <h1 id="scone-binary-file-system">SCONE Binary File System</h1>
-<p>The <strong>SCONE Binary File System</strong> (Binary FS) is a mechanism with which the user can embed a file system image into an enclave binary's executable.
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>This document reflects the state of SCONE v5.7.0</p>
+</div>
+<p>The <strong>SCONE Binary File System</strong> (Binary FS) is a mechanism with which the user can embed a file system image into an enclave.
 Thereby, SGX' enclave protection mechanism is extended to the enclave's file system since the enclave's measurement (MRENCLAVE) will reflect the file system state.
 This is a particularly appealing solution for interpreted languages such as Python or Java where the actual program code (e.g. PyTorch or Kafka) is not part of the interpreter binary but read from byte code files in the file system.
-Embedding a file system into a binary means that the binary file has a dependency for a dynamic library that contains the necessary files. We create this dependency with the help of <code>patchelf --add-needed</code>. Such an approach provides flexibility of patching an existing binary (e.g. Python or Java) rather than a long recompilation of this binary with an object file.
+The file system contents are stored in a form of a shared library. Using the environment variable <code>SCONE_EXTENSIONS_PATH</code> this library can be added into the enclave during enclave creation. One must specify the path to the library in the variable, separating multiple libraries with <code>:</code> (e.g. <code>lib1.so:lib2.so</code>).
 Note that, 1) modifications the program does to the binary fs are not persistent, after each start the binary fs is in its initial state, and 2) the binary fs replaces the entire file system, i.e. an enclave with binary fs won't be able to read or write from the host's file system.
 You can utilize SCONE volumes to persistently store data on the host's file system.</p>
 <h2 id="tldr">TL;DR</h2>
@@ -2433,14 +2409,16 @@ You can utilize SCONE volumes to persistently store data on the host's file syst
 <div class="highlight"><pre><span></span><span class="c"># First stage: apply the binary-fs</span>
 <span class="k">FROM</span><span class="s"> registry.scontain.com:5050/sconecuratedimages/apps:python-3.7.3-alpine3.10 AS binary-fs</span>
 
-<span class="k">RUN</span> <span class="nb">echo</span> <span class="s2">&quot;print(&#39;Hello World!&#39;)&quot;</span> &gt; /hello-world.py
+<span class="k">RUN</span> <span class="nb">echo</span> <span class="s2">&quot;print(&#39;Hello World!&#39;)&quot;</span> &gt; /hello-world.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    mkdir /binary-fs
 
-<span class="c"># remove object archive as very large and not necessary for executing the python program</span>
 <span class="c"># &amp; apply scone binaryfs with SCONE_MODE=auto, as build will not have access to /dev/isgx</span>
 <span class="k">RUN</span> mkdir binary-fs-dir <span class="o">&amp;&amp;</span>  rm /usr/lib/python3.7/config-3.7m-x86_64-linux-gnu/libpython3.7m.a <span class="o">&amp;&amp;</span> <span class="se">\</span>
     <span class="nv">SCONE_MODE</span><span class="o">=</span>auto scone binaryfs / /binary-fs-dir -v <span class="se">\</span>
         --include <span class="s1">&#39;/usr/lib/python3.7/*&#39;</span> <span class="se">\</span>
-        --include /hello-world.py
+        --include /hello-world.py <span class="se">\</span>
+        --host-path<span class="o">=</span>/etc/resolv.conf <span class="se">\</span>
+        --host-path<span class="o">=</span>/etc/hosts
 
 <span class="c"># Second stage: compile the binary fs</span>
 <span class="k">FROM</span><span class="s"> registry.scontain.com:5050/sconecuratedimages/crosscompilers:alpine AS crosscompiler</span>
@@ -2453,71 +2431,14 @@ You can utilize SCONE volumes to persistently store data on the host's file syst
 <span class="c"># Third stage: patch the binaryfs into the enclave executable</span>
 <span class="k">FROM</span><span class="s"> registry.scontain.com:5050/sconecuratedimages/apps:python-3.7.3-alpine3.10</span>
 
-<span class="k">COPY</span> --from<span class="o">=</span>crosscompiler /libbinary-fs.so /.
+<span class="k">COPY</span> --from<span class="o">=</span>crosscompiler /libbinary-fs.so /lib/libbinary-fs.so
 
-<span class="k">RUN</span> apk add --no-cache patchelf <span class="o">&amp;&amp;</span> <span class="se">\</span>
-    patchelf --add-needed libbinary-fs.so <span class="sb">`</span>which python3<span class="sb">`</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
-    apk del patchelf
+<span class="k">ENV</span> <span class="nv">SCONE_EXTENSIONS_PATH</span><span class="o">=</span><span class="s2">&quot;/lib/libbinary-fs.so&quot;</span>
 
-
-<span class="k">ENV</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>512M
-<span class="k">ENV</span> <span class="nv">SCONE_LOG</span><span class="o">=</span>debug
-<span class="k">ENV</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">&quot;/&quot;</span>
+<span class="k">ENV</span> <span class="nv">SCONE_LOG</span><span class="o">=</span>info
 
 <span class="k">CMD</span> sh -c <span class="s2">&quot;python3 /hello-world.py&quot;</span>
 </pre></div>
-<h2 id="basic-usage">Basic Usage</h2>
-<p>SCONE Binary FS is implemented as a SCONE runtime extension with which users can modify certain behavior of the SCONE runtime.</p>
-<!-- An overview of runtime extensions and their usage can in the [runtime documentation](runtime.md). NOTE not yet included in Docs -->
-<p>The particular interface that has to be implemented for the Binary FS (as all other SCONE runtime extension interfaces) is described in the <code>scone_rt_ext.h</code> header file of the SCONE cross compiler installation that can be accessed in the cross-compiler container with <code>cat /opt/scone/cross-compiler/x86_64-linux-musl/include/scone_rt_ext.h</code>.</p>
-<p>This is the source code of a "hello world" example of a binary fs SCONE runtime extension:
-<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;scone_rt_ext.h&gt;</span><span class="cp"></span>
-
-<span class="n">binary_fs_config_t</span> <span class="n">fs_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">.</span><span class="n">binary_fs_file_t_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">binary_fs_file_t</span><span class="p">),</span>
-<span class="p">};</span>
-
-<span class="n">binary_fs_file_t</span> <span class="o">*</span><span class="n">files</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="o">&amp;</span><span class="p">(</span><span class="n">binary_fs_file_t</span><span class="p">){</span>
-        <span class="p">.</span><span class="n">path</span> <span class="o">=</span> <span class="s">&quot;/farewell/english&quot;</span><span class="p">,</span>
-        <span class="p">.</span><span class="n">content</span> <span class="o">=</span> <span class="s">&quot;Goodbye&quot;</span><span class="p">,</span>
-        <span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
-    <span class="p">},</span>
-    <span class="nb">NULL</span>
-<span class="p">};</span>
-
-<span class="n">scone_rt_hook_status_t</span> <span class="nf">scone_rt_hook_binary_fs</span><span class="p">(</span><span class="n">binary_fs_interface_version_t</span> <span class="o">*</span><span class="n">version</span><span class="p">,</span> <span class="n">binary_fs_config_t</span> <span class="o">*</span><span class="n">config</span><span class="p">,</span> <span class="n">binary_fs_file_t</span> <span class="o">**</span><span class="n">file</span><span class="p">[])</span> <span class="p">{</span>
-    <span class="o">*</span><span class="n">version</span> <span class="o">=</span> <span class="n">BINARY_FS_VERSION_V1</span><span class="p">;</span>
-    <span class="o">*</span><span class="n">config</span> <span class="o">=</span> <span class="n">fs_config</span><span class="p">;</span>
-    <span class="o">*</span><span class="n">file</span> <span class="o">=</span> <span class="n">files</span><span class="p">;</span>
-
-    <span class="k">return</span> <span class="n">SCONE_HOOK_STATUS_SUCCESS</span><span class="p">;</span>
-<span class="p">}</span>
-</pre></div></p>
-<p>It has to be compiled and linked into the enclave binary to make use of it:
-<div class="highlight"><pre><span></span><span class="c1"># Compilation of binary fs</span>
-$ scone gcc ./binary-fs.c -shared -o ./binary-fs.so
-<span class="c1"># Linking into enclave binary</span>
-$ scone gcc ./print_file.c ./binary-fs.so -o print_file
-
-<span class="c1"># Printing file that is part of the binary fs in the host file system</span>
-$ cat /farewell/english
-cat: /farewell/english: No such file or directory
-<span class="c1"># Printing the file from the enclave</span>
-$ ./print_file /farewell/english
-Goodbye
-
-<span class="c1"># Printing file that exists in the host file system</span>
-$ cat /etc/lsb-release
-<span class="nv">DISTRIB_ID</span><span class="o">=</span>Ubuntu
-<span class="nv">DISTRIB_RELEASE</span><span class="o">=</span><span class="m">20</span>.04
-<span class="nv">DISTRIB_CODENAME</span><span class="o">=</span>focal
-<span class="nv">DISTRIB_DESCRIPTION</span><span class="o">=</span><span class="s2">&quot;Ubuntu 20.04.1 LTS&quot;</span>
-<span class="c1"># But not in the binary fs</span>
-$ ./print_file /etc/lsb-release
-No such file or directory
-</pre></div></p>
 <h2 id="generating-binary-fs-images-from-existing-file-systems">Generating Binary FS Images from existing File Systems</h2>
 <p>The SCONE CLI provides the <code>binaryfs</code> command with which an existing directory tree can be turned into a binary fs source code file.</p>
 <p>We illustrate the usage of this command by creating a binary fs source code image for Barbican (a python application). Within the SCONE Python image <code>registry.scontain.com:5050/sconecuratedimages/apps:barbican-11-alpine</code> we execute:</p>
@@ -2532,19 +2453,36 @@ No such file or directory
     --include <span class="s1">&#39;/usr/lib/libev.so.4*&#39;</span> <span class="se">\</span>
     --include <span class="s1">&#39;/usr/lib/libffi.so.6*&#39;</span> <span class="se">\</span>
     --include <span class="s1">&#39;/usr/lib/libexpat.so.1*&#39;</span> <span class="se">\</span>
-    --include /start-barbican.py
+    --include /start-barbican.py <span class="se">\</span>
+    --host-path<span class="o">=</span>/etc/resolv.conf <span class="se">\</span>
+    --host-path<span class="o">=</span>/etc/hosts
 </pre></div>
-<p>We must then compile the <code>binary-fs.c</code> file using the <code>registry.scontain.com:5050/sconecuratedimages/crosscompilers</code> image, as it contains the <code>scone gcc</code>:</p>
-<div class="highlight"><pre><span></span>scone gcc /binary-fs.c -O0 -shared -o /libbinary-fs.so
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>To include files on the host file system, we use the <code>--host-path</code> option of binary-fs. The usage of this option is required e.g. for networking, as the binary-fs will need access to files typically managed by an underlying networking daemon. Note that these files are NOT protected by the SGX and are thereby unsafe!</p>
+</div>
+<p>Alternatively, we can copy the root directory of our binary-fs to a target directory, and create the binary-fs directly from this new directory:</p>
+<div class="highlight"><pre><span></span><span class="c1"># create the binary-fs root directory (which we use to create the binary-fs)</span>
+mkdir -p /my-binaryfs-root-dir
+
+<span class="c1"># copy all our files into the binary-fs root dir</span>
+<span class="c1"># the root dir will be embedded into the binary-fs in `/`</span>
+cp -r /my-app /my-libs /my-binaryfs-root-dir/.
+
+<span class="c1"># generate the binary-fs files</span>
+<span class="nv">SCONE_MODE</span><span class="o">=</span>sim scone binaryfs /my-binaryfs-root-dir .
 </pre></div>
-<p>Moving on, we move the generated <code>libbinary-fs.so</code> back to our original Python image. In this image, we link the <code>.so</code> file to the enclave binary using <code>patchelf</code>:</p>
-<div class="highlight"><pre><span></span>apk add patchelf
-patchelf --add-needed libbinary-fs.so <span class="sb">`</span>which python3<span class="sb">`</span>
+<p>We must then compile the files created by <code>binaryfs</code> (<code>binary_fs.blob</code>, <code>binary_fs_blob.s</code>, <code>libbinary_fs_template.a</code>) using the <code>registry.scontain.com:5050/sconecuratedimages/crosscompilers</code> image, as it contains the <code>scone gcc</code>:</p>
+<div class="highlight"><pre><span></span>scone gcc ./binary_fs_blob.s ./libbinary_fs_template.a -shared -o /libbinary-fs.so
 </pre></div>
-<p>Currently, <code>patchelf</code> does not update the signature of the binary, although it changes the binary's contents. Thus, running the binary without further environment modification will produce an error. To ensure that we update the corresponding signature, we must set the <code>SCONE_HEAP</code> environment variable to a different value than it was before. The setting of this variable will prompt SCONE to recompute the signature of the executable. The enclave executable will then function properly:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>512M python3 /start-barbican.py
+<p>Moving on, we move the generated <code>libbinary-fs.so</code> back to our original Python image. In this image, we set the <code>.so</code> file to be included in the enclave upon execution using the environment variable <code>SCONE_EXTENSIONS_PATH</code>:</p>
+<div class="highlight"><pre><span></span><span class="nv">SCONE_EXTENSIONS_PATH</span><span class="o">=</span><span class="s2">&quot;/lib/libbinary-fs.so&quot;</span>
+</pre></div>
+<p>Then we are all set! When we execute the sconified executable, the runtime will include the binary-fs.</p>
+<div class="highlight"><pre><span></span>python3 /start-barbican.py
 </pre></div>
 <h2 id="what-files-to-include-in-the-file-system">What Files to include in the File System</h2>
+<p>Typically, one must include all libraries which are not loaded by the dynamic loader, as well as any code not linked to the binary (e.g. python code files). As mentioned before, files which are changed by daemons and other host files are to be inclued with <code>--host-path</code>.</p>
 <p>To find out what files to include in the <code>binary-fs</code>, simply run your image with <code>strace</code> and identify which files the binary opens:</p>
 <div class="highlight"><pre><span></span>docker run -it --rm --device /dev/isgx -e <span class="nv">SCONE_LOG</span><span class="o">=</span>trace --cap-add SYS_PTRACE <span class="nv">$IMAGE</span> sh
 apk add strace
@@ -2553,20 +2491,6 @@ grep <span class="s2">&quot;open&quot;</span> strace.log
 </pre></div>
 <p>The output will then show which files the binary has accessed. Be sure to include these files in the binary fs to make your application function properly.
 Note that you do <strong>not</strong> have to include files that are already dependencies of your binary; i.e., do not include files that appear in <code>ldd $(which your_binary)</code>.</p>
-<h2 id="possible-networking-problems">Possible Networking Problems</h2>
-<p>Note that the <code>binary-fs</code> will not have access to <code>/etc/</code> files which are only available at deployment on e.g. a cluster. These files may include <code>/etc/resolv.conf</code>, which your service needs to access the DNS. If you are deploying your service with <code>binary-fs</code> to a Kubernetes cluster, include the following injection file in your policy for <code>resolv.conf</code>:</p>
-<div class="highlight"><pre><span></span><span class="nt">images</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">your_image</span>
-    <span class="nt">injection_files</span><span class="p">:</span>
-      <span class="l l-Scalar l-Scalar-Plain">...</span>
-      <span class="l l-Scalar l-Scalar-Plain"># Network files</span>
-      <span class="l l-Scalar l-Scalar-Plain">- path</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/etc/resolv.conf</span>
-        <span class="l l-Scalar l-Scalar-Plain">content</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">|</span>
-           <span class="no">nameserver 10.96.0.10</span>
-           <span class="no">search sgx-scone.svc.cluster.local svc.cluster.local cluster.local</span>
-           <span class="no">options ndots:5</span>
-</pre></div>
-<p>This addresses the Cluster's <code>CoreDNS</code> service, with which your service will be able to address other services within the Cluster.</p>
 <h2 id="what-executables-are-supported">What executables are supported</h2>
 <p>Currently, only binaries compiled as position-independent code (pie) can use the binary fs. For all other binaries, applying the binary fs may result in the binary having segmentation fault errors or the binary ignoring the binary fs. To ensure your binary is compatible, execute <code>file $(which your_binary)</code> and check the output if it is a pie executable. To illustrate:
 <div class="highlight"><pre><span></span>$ file <span class="k">$(</span>which python3.7<span class="k">)</span>
