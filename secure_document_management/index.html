@@ -2632,7 +2632,7 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <ul>
 <li>please, register an account with the <a href="https://gitlab.scontain.com/">SCONE registry</a></li>
 <li>ask us for access to SconeApps via email</li>
-<li>pull this <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management">repository</a></li>
+<li>pull this <a href="https://gitlab.scontain.com/community/secure-doc-management">repository</a></li>
 <li>create the corresponding Kubernetes secret for the registry and then <code>$ export IMAGE_PULL_SECRET=&lt;your_secret&gt;</code></li>
 <li>set target images that you can push to for <code>MEMCACHED_TARGET_IMAGE</code>, <code>NGINX_TARGET_IMAGE</code> and <code>MARIADB_TARGET_IMAGE</code> (again with <code>$ export ...</code>)</li>
 <li>execute <code>$ ./setup-secure-doc-management.sh</code> to upload the policies to SCONE CAS and </li>
@@ -2640,7 +2640,7 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <li>available commands for the REST API are documented in <code>./secure-doc-management/templates/NOTES.txt</code> (displayed after script has terminated)</li>
 </ul>
 <h2 id="secure-fastapi-service">Secure FastAPI service</h2>
-<p>We implement a simple FastAPI-based service. The Python <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/fastapi-setup/rest_api.py">code</a> implements a REST API:</p>
+<p>We implement a simple FastAPI-based service. The Python <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/fastapi-setup/rest_api.py">code</a> implements a REST API:</p>
 <ul>
 <li>we create a new account by sending a request to <code>/users/create_account</code> with the flag <code>-u&lt;username&gt;:&lt;password&gt;</code></li>
 <li>all subsequent requests containing the <code>-u&lt;username&gt;:&lt;password&gt;</code> flag authenticate this user</li>
@@ -2653,10 +2653,10 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <h2 id="secure-mariadb">Secure MariaDB</h2>
 <p>We store the documents and user authentication information in a secure MariaDB, which we also run inside of an enclave. Further, we ensure its memory remains encrypted. As such, the documents and login data users store inside the database remain secure. We further elaborate on the database in <a href="https://sconedocs.github.io/helm/">this section</a>.</p>
 <h2 id="secure-memcached-rate-limiter">Secure Memcached Rate Limiter</h2>
-<p>To ensure that our MariaDB is not overloaded by excess requests, we limit requests per user using a Memcached service. We thereby ensure that a user can make at most 10 requests per minute. If the user's requests exceed that limit, we do not serve requests to their corresponding IP address for the remainder of the minute. We implement this limiter by storing the user's IP and their number of requests in a key/value pair in the Memcached service in our <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/fastapi-setup/rest_api.py">Python program</a>: <code>mc_client.set(key=client_ip, value=1, expire=60)</code>. Upon a request, we increment the key/value pair using Memcached's <code>incr</code> command: <code>mc_client.incr(key=client_ip, value=1)</code>. If this value exceeds 10, we do not serve the requests. The key value pair expires after 60 seconds.</p>
+<p>To ensure that our MariaDB is not overloaded by excess requests, we limit requests per user using a Memcached service. We thereby ensure that a user can make at most 10 requests per minute. If the user's requests exceed that limit, we do not serve requests to their corresponding IP address for the remainder of the minute. We implement this limiter by storing the user's IP and their number of requests in a key/value pair in the Memcached service in our <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/fastapi-setup/rest_api.py">Python program</a>: <code>mc_client.set(key=client_ip, value=1, expire=60)</code>. Upon a request, we increment the key/value pair using Memcached's <code>incr</code> command: <code>mc_client.incr(key=client_ip, value=1)</code>. If this value exceeds 10, we do not serve the requests. The key value pair expires after 60 seconds.</p>
 <p>As we attribute the IP of a user to Personally Identifiable Information (PII), we have to protect this data. We ensure this protection by running the Memcached inside of an enclave.</p>
 <h2 id="secure-nginx-proxy-server">Secure NGINX Proxy Server</h2>
-<p>We employ an NGINX to be the main API of the service, and to ensure secure communication over the wire with TLS. The NGINX requires users to send their requests over TLS, as we specify in its <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/nginx-setup/nginx.conf">configuration</a>. The NGINX then forwards such requests to the FastAPI service, also using TLS. It thereby specifies the correct FastAPI port, thus enabling the user to send the service requests without having to specify the port themselves.</p>
+<p>We employ an NGINX to be the main API of the service, and to ensure secure communication over the wire with TLS. The NGINX requires users to send their requests over TLS, as we specify in its <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/nginx-setup/nginx.conf">configuration</a>. The NGINX then forwards such requests to the FastAPI service, also using TLS. It thereby specifies the correct FastAPI port, thus enabling the user to send the service requests without having to specify the port themselves.</p>
 <p>As the NGINX thereby receives the sensitive information of the documents, we run the NGINX proxy server in an enclave as well.</p>
 <h2 id="tls-certificates">TLS Certificates</h2>
 <p>We must secure the communication between 1) the application's services and between 2) the user and the application. Therefore, we need to issue and provision multiple certificates:</p>
@@ -2670,7 +2670,7 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <p><center>
 <img alt="Certificates" src="../img/secure-doc-manager-key-distribution.svg#fullwidth" />
 </center></p>
-<p>We provision these certificates using <a href="https://sconedocs.github.io/CAS_session_lang_0_3/">SCONE policies</a>. We now illustrate the use of the policies for certificate provisioning by inspecting the <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/policy-setup/nginx_session.yml">NGINX policy</a>.</p>
+<p>We provision these certificates using <a href="https://sconedocs.github.io/CAS_session_lang_0_3/">SCONE policies</a>. We now illustrate the use of the policies for certificate provisioning by inspecting the <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/nginx_session.yml">NGINX policy</a>.</p>
 <div class="highlight"><pre><span></span><span class="nt">secrets</span><span class="p">:</span>
   <span class="c1"># nginx - fastapi tls</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">FASTAPI_CLIENT_CERT</span>
@@ -2701,7 +2701,7 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 </pre></div>
 <p>In the first section, <code># nginx - fastapi tls</code>, the NGINX session imports the client and the server CA certificates from the FastAPI session. It thereby uses the CA certificate to identify the FastAPI service, and identifies itself to the service using the client certificates.</p>
 <p>In the second section, <code># (...) nginx - client tls</code>, we issue server certificates for the NGINX. For the NGINX Server CA certificate, we set <code>export_public: true</code>. This settings allows users to extract the CA certificate corresponding to this policy, thus enabling them to verify the NGINX server.</p>
-<p>To make the certificates available to the NGINX service, we inject the certificates into the NGINX file system. We specify this injection in the <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/policy-setup/nginx_session.yml">NGINX policy</a> using the previous SCONE policy secrets as follows:</p>
+<p>To make the certificates available to the NGINX service, we inject the certificates into the NGINX file system. We specify this injection in the <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/nginx_session.yml">NGINX policy</a> using the previous SCONE policy secrets as follows:</p>
 <div class="highlight"><pre><span></span><span class="nt">images</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">nginx_image</span>
     <span class="nt">injection_files</span><span class="p">:</span>
@@ -2740,7 +2740,7 @@ http {
 </pre></div></p>
 <h2 id="tls-based-mutual-attestation">TLS-Based Mutual Attestation</h2>
 <p>As we observed in the previous section, we encrypt the communication between the NGINX and the FastAPI using TLS, enabled by SCONE policies. The NGINX and FastAPI policies thereby export the necessary certificates to each other by referencing each other in their policies. They thereby <em>attest</em> each other. They achieve this attestation by verifying the policies that they reference in their own policy. Furthermore, they check that the corresponding service satisfies all requirements specified in the service's policy.</p>
-<p>We can easily enforce mutual attestation using TLS client authentication. We illustrate this attestation with the <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/policy-setup/fastapi_session.yml">FastAPI's policy</a>, which ensures TLS-based attestation between itself and the NGINX service. This FastAPI policy generates a FastAPI CA certificate (<code>FASTAPI_CA_CERT</code>) and a FastAPI server certificate (<code>fastapi</code>) as well as a corresponding FastAPI client certificate (<code>FASTAPI_CLIENT_CERT</code>) and client key (<code>FASTAPI_CLIENT_KEY</code>). The policy exports this certificate and private key to the NGINX policy.</p>
+<p>We can easily enforce mutual attestation using TLS client authentication. We illustrate this attestation with the <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/fastapi_session.yml">FastAPI's policy</a>, which ensures TLS-based attestation between itself and the NGINX service. This FastAPI policy generates a FastAPI CA certificate (<code>FASTAPI_CA_CERT</code>) and a FastAPI server certificate (<code>fastapi</code>) as well as a corresponding FastAPI client certificate (<code>FASTAPI_CLIENT_CERT</code>) and client key (<code>FASTAPI_CLIENT_KEY</code>). The policy exports this certificate and private key to the NGINX policy.</p>
 <div class="highlight"><pre><span></span><span class="nt">secrets</span><span class="p">:</span>
   <span class="l l-Scalar l-Scalar-Plain">...</span>
   <span class="l l-Scalar l-Scalar-Plain"># specific for fastapi - nginx tls</span>
@@ -2865,9 +2865,9 @@ http {
 
 <span class="k">CMD</span> sh -c <span class="s2">&quot;python3 /rest_api.py&quot;</span>
 </pre></div>
-<p>The binary also requires certain <code>/etc/</code> files for networking within the cluster, e.g., <code>/etc/resolv.conf</code>. Currently, we simply inject these files into the confidential service using the FastAPI's <a href="https://gitlab.scontain.com/enterJazz/secure-doc-management/-/blob/master/policy-setup/fastapi_session.yml">policy</a>.</p>
+<p>The binary also requires certain <code>/etc/</code> files for networking within the cluster, e.g., <code>/etc/resolv.conf</code>. Currently, we simply inject these files into the confidential service using the FastAPI's <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/fastapi_session.yml">policy</a>.</p>
 <p>The source code of this example is available on our repository- ask us for permission, and then continue with the following commands:</p>
-<div class="highlight"><pre><span></span>git clone https://gitlab.scontain.com/enterJazz/secure-doc-management.git
+<div class="highlight"><pre><span></span>git clone https://gitlab.scontain.com/community/secure-doc-management.git
 <span class="nb">cd</span> secure-doc-management
 </pre></div>
 <h2 id="execution-on-a-kubernetes-cluster">Execution on a Kubernetes Cluster</h2>
