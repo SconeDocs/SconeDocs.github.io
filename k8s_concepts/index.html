@@ -665,6 +665,20 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#getting-started" title="Getting Started" class="md-nav__link">
+    Getting Started
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow" title="Workflow" class="md-nav__link">
+    Workflow
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scone-confidential-computing-concepts" title="SCONE Confidential Computing Concepts" class="md-nav__link">
     SCONE Confidential Computing Concepts
   </a>
@@ -1266,6 +1280,18 @@
   <li class="md-nav__item">
     <a href="../print-arg-env/" title="Secure Arguments" class="md-nav__link">
       Secure Arguments
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../host_arguments/" title="Host Arguments" class="md-nav__link">
+      Host Arguments
     </a>
   </li>
 
@@ -2412,6 +2438,20 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#getting-started" title="Getting Started" class="md-nav__link">
+    Getting Started
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow" title="Workflow" class="md-nav__link">
+    Workflow
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scone-confidential-computing-concepts" title="SCONE Confidential Computing Concepts" class="md-nav__link">
     SCONE Confidential Computing Concepts
   </a>
@@ -2438,12 +2478,35 @@
                 <h1 id="kubernetes-and-sconeapps">Kubernetes and SconeApps</h1>
 <p>In this section, we describe how we can build confidential applications with the help of <span data-tooltip="SCONE (Secure CONtainer Environment) is a software platform for confidential computing allowing the trustworthy execution of *unmodified* x86 source code within Intel SGX enclaves. It consists of components enabling the execution inside enclaves such as the SCONE runtime and the C, C++, C#, Fortran, Go, and Rust SCONE cross-compilers, components ensuring the trustworthiness of this execution and deployment in clouds such as the CAS and SCONE client.">SCONE</span>. We can deploy these applications to a <span data-tooltip="In computer science,  a system and or a software is called vanilla when there is no need to  customize it for a certain use case.">vanilla</span> <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> cluster. There is no need to modify <span data-tooltip="An open source container orchestration platform. More information at
-https://kubernetes.io/">Kubernetes</span> in any way. Running a modern Linux kernel is sufficient to get access to SGX:</p>
+https://kubernetes.io/">Kubernetes</span> in any way. </p>
+<h2 id="getting-started">Getting Started</h2>
+<ul>
+<li>
+<p>Running a modern Linux kernel is sufficient to get access to SGX (- no need to install any additional drivers):</p>
 <ul>
 <li>Kernels starting 5.11 when running bare metal, and</li>
-<li>Kernels starting 5.11 when running inside of virtual machines.</li>
+<li>Kernels starting 5.13 KVM supports SGX inside of virtual machines.</li>
 </ul>
-<p>To give containers access to SGX, we maintain an <a href="../helm_sgxdevplugin/">SGX plugin</a> that executes on all nodes of a Kubernetes cluster that have an SGX-enabled CPU.</p>
+</li>
+<li>
+<p>Installing SCONE components:</p>
+<ul>
+<li>
+<p><a href="../helm_sgxdevplugin/"><code>helm install sgxdevplugin sconeapps/sgxdevplugin</code></a></p>
+<p>Our <a href="../helm_sgxdevplugin/">SGX plugin</a> gives containers access to SGX on all Kubernode with SGX-enabled CPU.</p>
+</li>
+<li>
+<p><a href="../helm_las/"><code>helm install las sconeapps/las</code></a></p>
+<p>Installs the local attestation service on all Kubernetes nodes that have an SGX-enabled CPU.</p>
+</li>
+<li>
+<p><a href="../helm_cas/"><code>helm install cas sconeapps/cas --set image=$SCONE_CAS_IMAGE</code></a> (optional)</p>
+<p>Installs the SCONE Configuration and Attestation service. Alternative: use a <a href="../public-CAS/">public cas</a> like <code>scone-cas.cf</code>.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="workflow">Workflow</h2>
 <p>We assume that you are already familiar with basic Kubernetes concepts. We first introduce some <a href="#SCONE-Confidential-Computing-Concepts">confidential computing concepts</a>, then we show how to install confidential applications. We also introduce an in-depth <a href="../hello_world_kubernetes/">hello world tutorial</a>.</p>
 <p>Our recommended way to transform a <strong>service</strong> into a <strong>confidential service</strong> is to use a <a href="../sconify/">lift-and-shift</a> (a.k.a. <strong>sconify</strong>) approach. Additionally, we maintain a set of already sconified services which we call <strong>SconeApps</strong>.</p>
 <p><img alt="Sconify Workflow" src="../svg/sconify_service.svg#micro" /></p>
