@@ -739,6 +739,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#running-on-azure-icelake-machines" title="Running on Azure Icelake machines" class="md-nav__link">
+    Running on Azure Icelake machines
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility" title="Compatibility" class="md-nav__link">
+    Compatibility
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#determining-the-platform-ids" title="Determining the Platform IDs" class="md-nav__link">
     Determining the Platform IDs
   </a>
@@ -2459,6 +2473,20 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#running-on-azure-icelake-machines" title="Running on Azure Icelake machines" class="md-nav__link">
+    Running on Azure Icelake machines
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility" title="Compatibility" class="md-nav__link">
+    Compatibility
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#determining-the-platform-ids" title="Determining the Platform IDs" class="md-nav__link">
     Determining the Platform IDs
   </a>
@@ -2515,6 +2543,42 @@ https://kubernetes.io/">Kubernetes</span> namespace. The application is called <
 <p>You can check the status of this <strong>release</strong>, i.e., the instance that you just deployed, by executing:</p>
 <div class="highlight"><pre><span></span>helm status las
 </pre></div>
+<h2 id="running-on-azure-icelake-machines">Running on Azure Icelake machines</h2>
+<p>To run LAS on Azure Icelake machines (standalone VMs or AKS nodepools) and perform the local attestation of SCONE applications, some Azure-specific libraries are required. For that matter, we provide a special image crafted for Azure, that must be used if running on Icelakes 
+(families DCsv3 and DDCsv3): <code>registry.scontain.com:5050/sconecuratedimages/kubernetes:las.microsoft-azure</code></p>
+<p>You can install this version of LAS as follows:</p>
+<div class="highlight"><pre><span></span>helm install las sconeapps/las --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span>azure --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/kubernetes:las.microsoft-azure
+</pre></div>
+<h2 id="compatibility">Compatibility</h2>
+<p>Right now we maintain two LAS images: </p>
+<table>
+<thead>
+<tr>
+<th>Image</th>
+<th>EPID</th>
+<th>DCAP</th>
+<th>Icelakes (not Azure)</th>
+<th>Azure DCsv3 / DCsv3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>...:las</code></td>
+<td><img alt="✔️" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td><img alt="✔️" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td><img alt="✔️" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td><img alt="❌" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/274c.svg" title=":x:" /></td>
+</tr>
+<tr>
+<td><code>...:las-azure</code></td>
+<td><img alt="❌" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/274c.svg" title=":x:" /></td>
+<td><img alt="✔️" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td><img alt="✔️" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+<td><img alt="✔️" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/2714.svg" title=":heavy_check_mark:" /></td>
+</tr>
+</tbody>
+</table>
+<p>In the next SCONE release, we will merge these two images into a single <code>las</code> image.</p>
 <h2 id="determining-the-platform-ids">Determining the Platform IDs</h2>
 <p>SCONE policies can limit the execution of an  services to <a href="../CAS_session_lang_0_2/#platform-based-attestation">certain platforms</a>, i.e., to certain computers. For example, you might need to ensure that your data can only be processed in a certain datacenter. Each platform is identified by a unique public key: This is the public key of its local attestation service.</p>
 <p>When a <code>las</code> instance is restarted on the same platform, it will get the same public key. The public key might, however,  change after a microcode update or an update of the <code>las</code> code base. In these cases, you will have to update the list of permitted platforms in your policies.</p>
