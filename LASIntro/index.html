@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/LASIntro/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.4">
     
     
       
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="../#las-for-development" class="md-skip">
+        <a href="#las-for-development" class="md-skip">
           Skip to content
         </a>
       
@@ -1872,6 +1872,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Starting LAS
@@ -1888,6 +1890,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1896,14 +1900,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#las-for-development" class="md-nav__link">
-    LAS for Development
-  </a>
-  
-    <nav class="md-nav" aria-label="LAS for Development">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#pulling-las-image" class="md-nav__link">
     Pulling LAS Image
   </a>
@@ -1929,16 +1925,11 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#troubleshooting" class="md-nav__link">
     Troubleshooting
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2566,7 +2557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../C++/" class="md-nav__link">
+      <a href="../C%2B%2B/" class="md-nav__link">
         C++
       </a>
     </li>
@@ -3189,6 +3180,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3197,14 +3190,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#las-for-development" class="md-nav__link">
-    LAS for Development
-  </a>
-  
-    <nav class="md-nav" aria-label="LAS for Development">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#pulling-las-image" class="md-nav__link">
     Pulling LAS Image
   </a>
@@ -3230,16 +3215,11 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#troubleshooting" class="md-nav__link">
     Troubleshooting
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3265,11 +3245,11 @@
 <h2 id="pulling-las-image">Pulling LAS Image</h2>
 <p>To start LAS, you first pull LAS to your local registry. To do so, please set the environment variable
 <code>LAS</code> to the image repository that we given you access to. The standard LAS image name is defined as follows:</p>
-<p><code>bash
-export LAS=registry.scontain.com:5050/sconecuratedimages/services:las</code></p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">LAS</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/services:las
+</code></pre></div>
 <p>Pull the image from Docker hub like this:</p>
-<p><code>bash
-docker pull $LAS</code></p>
+<div class="highlight"><pre><span></span><code>docker pull <span class="nv">$LAS</span>
+</code></pre></div>
 <p>If this fails, ensure that you are logged into docker (via <code>docker login</code>) and that we
 granted you access to that image.</p>
 <h3 id="determining-the-sgx-device">Determining the SGX device</h3>
@@ -3278,40 +3258,40 @@ software, you could use the bash function <a href="../sgxinstall/#determine-sgx-
 It sets environment variable <code>SGXDEVICE</code> to the device that needs to be mounted.</p>
 <h3 id="starting-and-stopping-las">Starting and Stopping LAS</h3>
 <p>The easiest way to start LAS is to use a simple Docker compose file. Please create a separate directory for that:</p>
-<p><code>bash
-mkdir -p LAS
-cd LAS</code></p>
+<div class="highlight"><pre><span></span><code>mkdir -p LAS
+<span class="nb">cd</span> LAS
+</code></pre></div>
 <p>Create the following compose file:</p>
-<p><code>bash
-determine_sgx_device
-cat &gt; docker-compose.yml &lt;&lt;EOF
-version: '3.2'
-services:
-    las:
-        image: registry.scontain.com:5050/sconecuratedimages/services:las
-        devices:
-          - "$SGXDEVICE:$SGXDEVICE"
-        ports:
-          - target: 18766
-            published: 18766
-            protocol: tcp
-            mode: host
-EOF</code></p>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
+<span class="s">version: &#39;3.2&#39;</span>
+<span class="s">services:</span>
+<span class="s">    las:</span>
+<span class="s">        image: registry.scontain.com:5050/sconecuratedimages/services:las</span>
+<span class="s">        devices:</span>
+<span class="s">          - &quot;$SGXDEVICE:$SGXDEVICE&quot;</span>
+<span class="s">        ports:</span>
+<span class="s">          - target: 18766</span>
+<span class="s">            published: 18766</span>
+<span class="s">            protocol: tcp</span>
+<span class="s">            mode: host</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <p>Now start LAS in the background as follows:</p>
-<p><code>bash
-docker-compose up -d las</code></p>
+<div class="highlight"><pre><span></span><code>docker-compose up -d las
+</code></pre></div>
 <p>By executing</p>
-<p><code>bash
-docker-compose logs las</code></p>
+<div class="highlight"><pre><span></span><code>docker-compose logs las
+</code></pre></div>
 <p>you will see the output of LAS.</p>
 <p>You can check if LAS is still running by executing:</p>
-<p><code>bash
-docker-compose up -d las</code></p>
+<div class="highlight"><pre><span></span><code>docker-compose up -d las
+</code></pre></div>
 <p>This will result in an output like</p>
 <p><code>las_las_1 is up-to-date</code></p>
 <p>You can stop LAS by executing:</p>
-<p><code>bash
-docker-compose stop</code></p>
+<div class="highlight"><pre><span></span><code>docker-compose stop
+</code></pre></div>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>You might need to run the LAS container <code>--privileged</code> in case the user executing LAS is not member of group <code>sgx_prv</code>. Alternatively, you might need to pass device <code>/dev/sgx_provision</code> into the container.</p>
 
@@ -3383,7 +3363,7 @@ docker-compose stop</code></p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

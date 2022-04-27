@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/sconeapps_tensorflowlite/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.4">
     
     
       
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="../#scone-tensorflowlite-chart" class="md-skip">
+        <a href="#scone-tensorflowlite-chart" class="md-skip">
           Skip to content
         </a>
       
@@ -1594,6 +1594,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           tensorflowlite
@@ -1610,6 +1612,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1618,28 +1622,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scone-tensorflowlite-chart" class="md-nav__link">
-    scone-tensorflowlite chart
-  </a>
-  
-    <nav class="md-nav" aria-label="scone-tensorflowlite chart">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     Prerequisites
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#before-you-begin" class="md-nav__link">
     Before you begin
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#install-the-chart" class="md-nav__link">
     Install the chart
   </a>
@@ -1658,11 +1654,6 @@
   <a href="#sgx-device" class="md-nav__link">
     SGX device
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -2573,7 +2564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../C++/" class="md-nav__link">
+      <a href="../C%2B%2B/" class="md-nav__link">
         C++
       </a>
     </li>
@@ -3196,6 +3187,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3204,28 +3197,20 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scone-tensorflowlite-chart" class="md-nav__link">
-    scone-tensorflowlite chart
-  </a>
-  
-    <nav class="md-nav" aria-label="scone-tensorflowlite chart">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     Prerequisites
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#before-you-begin" class="md-nav__link">
     Before you begin
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#install-the-chart" class="md-nav__link">
     Install the chart
   </a>
@@ -3244,11 +3229,6 @@
   <a href="#sgx-device" class="md-nav__link">
     SGX device
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -3288,30 +3268,30 @@
 <h4 id="add-the-repo">Add the repo</h4>
 <p>If you haven't yet, please add this repo to Helm.</p>
 <p>To deploy TensorFlow Lite with the default parameters to your Kubernetes cluster:</p>
-<p><code>bash
-helm install my-tensorflowlite sconeapps/tensorflowlite</code></p>
+<div class="highlight"><pre><span></span><code>helm install my-tensorflowlite sconeapps/tensorflowlite
+</code></pre></div>
 <p>See your deployed pods by running <code>kubectl get pods | grep my-tensorflowlite</code>.</p>
 <h4 id="sgx-device">SGX device</h4>
 <p>By default, this helm chart uses the <a href="../helm_sgxdevplugin/">SCONE SGX Plugin</a>. Hence, it sets the resource limits of CAS as follows:</p>
-<p><code>yaml
-resources:
-  limits:
-    sgx.k8s.io/sgx: 1</code></p>
+<div class="highlight"><pre><span></span><code><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">sgx.k8s.io/sgx</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
+</code></pre></div>
 <p>Alternatively, set <code>useSGXDevPlugin</code> to <code>azure</code> (e.g., <code>--useSGXDevPlugin=azure</code>) to support Azure's SGX Device Plugin. Since Azure requires the amount of EPC memory allocated to your application to be specified, the parameter <code>sgxEpcMem</code> (SGX EPC memory in MiB) becomes required too (e.g., <code>--set useSGXDevPlugin=azure --set sgxEpcMem=16</code>).</p>
 <p>In case you do not want to use the SGX plugin, you can remove the resource limit and explicitly mount the local SGX device into your container by setting:</p>
-<p>```yaml
-extraVolumes:
-  - name: dev-isgx
-    hostPath:
-      path: /dev/isgx</p>
-<p>extraVolumeMounts:
-  - name: dev-isgx
-    path: /dev/isgx
-```</p>
+<div class="highlight"><pre><span></span><code><span class="nt">extraVolumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-isgx</span><span class="w"></span>
+<span class="w">    </span><span class="nt">hostPath</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span><span class="w"></span>
+
+<span class="nt">extraVolumeMounts</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-isgx</span><span class="w"></span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span><span class="w"></span>
+</code></pre></div>
 <p>Please note that mounting the local SGX device into your container requires privileged mode, which will grant your container access to ALL host devices. To enable privileged mode, set <code>securityContext</code>:</p>
-<p><code>yaml
-securityContext:
-  privileged: true</code></p>
+<div class="highlight"><pre><span></span><code><span class="nt">securityContext</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">privileged</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+</code></pre></div>
 
               
             </article>
@@ -3381,7 +3361,7 @@ securityContext:
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

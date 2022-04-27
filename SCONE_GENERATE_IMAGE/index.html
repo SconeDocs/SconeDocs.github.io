@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/SCONE_GENERATE_IMAGE/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.4">
     
     
       
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="../#generating-container-image-with-scone" class="md-skip">
+        <a href="#generating-container-image-with-scone" class="md-skip">
           Skip to content
         </a>
       
@@ -2485,7 +2485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../C++/" class="md-nav__link">
+      <a href="../C%2B%2B/" class="md-nav__link">
         C++
       </a>
     </li>
@@ -3108,6 +3108,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3116,36 +3118,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#generating-container-image-with-scone" class="md-nav__link">
-    Generating Container Image with SCONE
-  </a>
-  
-    <nav class="md-nav" aria-label="Generating Container Image with SCONE">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     Prerequisites
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#generate-helloworld-image" class="md-nav__link">
     Generate HelloWorld image
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#screencast" class="md-nav__link">
     Screencast
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3170,47 +3159,38 @@
 Clone the SCONE_TUTORIAL before you start creating a <em>hello world</em> image.</p>
 <h2 id="generate-helloworld-image">Generate HelloWorld image</h2>
 <p>We generate a <em>hello world</em> container image. </p>
-<p>```bash</p>
-<blockquote>
-<p>cd SCONE_TUTORIAL/CreateImage
-```</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code>&gt; <span class="nb">cd</span> SCONE_TUTORIAL/CreateImage
+</code></pre></div>
 <p>You can either execute all step manually by copy&amp;pasting all instructions or you can just execute
-```bash</p>
-<blockquote>
-<p>docker login
-sudo ./Dockerfile.sh
-```
+<div class="highlight"><pre><span></span><code>&gt; docker login
+&gt; sudo ./Dockerfile.sh
+</code></pre></div>
 and watch the outputs.</p>
-</blockquote>
 <p>Please change the image name to a repository on docker hub to which you can write:</p>
-<p>```bash</p>
-<blockquote>
-<p>export TAG="latest"
-export IMAGE_NAME="registry.scontain.com:5050/sconecuratedimages/helloworld"
-```</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code>&gt; <span class="nb">export</span> <span class="nv">TAG</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span>
+&gt; <span class="nb">export</span> <span class="nv">IMAGE_NAME</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com:5050/sconecuratedimages/helloworld&quot;</span>
+</code></pre></div>
 <p>We generate container and compile hello world inside of this container with the help of our standard SCONE cross compiler. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<p><code>bash
-determine_sgx_device
-CONTAINER_ID=`docker run -d -it $MOUNT_SGXDEVICE  -v $(pwd):/mnt registry.scontain.com:5050/sconecuratedimages/crosscompilers bash -c "
-set -e
-printf 'Q 1\ne 0 0 0\ns 1 0 0\n' &gt; /etc/sgx-musl.conf
-sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
-"`</code></p>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+<span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker run -d -it <span class="nv">$MOUNT_SGXDEVICE</span>  -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/mnt registry.scontain.com:5050/sconecuratedimages/crosscompilers bash -c <span class="s2">&quot;</span>
+<span class="s2">set -e</span>
+<span class="s2">printf &#39;Q 1\ne 0 0 0\ns 1 0 0\n&#39; &gt; /etc/sgx-musl.conf</span>
+<span class="s2">sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world</span>
+<span class="s2">&quot;</span><span class="sb">`</span>
+</code></pre></div>
 <p>Note that above will fail if you do not have access to the SGX device <em>/dev/isgx</em>.</p>
 <p>Turn the container into an image:</p>
-<p><code>bash
-IMAGE_ID=$(docker commit -p -c 'CMD sgx_hello_world' $CONTAINER_ID $IMAGE_NAME:$TAG)</code></p>
+<div class="highlight"><pre><span></span><code><span class="nv">IMAGE_ID</span><span class="o">=</span><span class="k">$(</span>docker commit -p -c <span class="s1">&#39;CMD sgx_hello_world&#39;</span> <span class="nv">$CONTAINER_ID</span> <span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span><span class="k">)</span>
+</code></pre></div>
 <p>You can run this image by executing:</p>
-<p><code>bash
-sudo docker run $MOUNT_SGXDEVICE $IMAGE_NAME:$TAG</code></p>
+<div class="highlight"><pre><span></span><code>sudo docker run <span class="nv">$MOUNT_SGXDEVICE</span> <span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
+</code></pre></div>
 <p>You can push this image to Docker. However, ensure that you first login to docker:</p>
-<p><code>bash
-sudo docker login</code></p>
+<div class="highlight"><pre><span></span><code>sudo docker login
+</code></pre></div>
 <p>before you push the image to docker hub:</p>
-<p><code>bash
-sudo docker push $IMAGE_NAME:$TAG</code></p>
+<div class="highlight"><pre><span></span><code>sudo docker push <span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
+</code></pre></div>
 <p>Note: this will fail in case you do not have the permission to push to this repository. </p>
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/xM4VAixy6QqsjstCtpW88KIHg"><img alt="asciicast" src="https://asciinema.org/a/xM4VAixy6QqsjstCtpW88KIHg.png" /></a></p>
@@ -3248,7 +3228,7 @@ sudo docker push $IMAGE_NAME:$TAG</code></p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

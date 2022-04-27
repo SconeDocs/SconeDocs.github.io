@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/Rust/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.4">
     
     
       
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="../#rust" class="md-skip">
+        <a href="#rust" class="md-skip">
           Skip to content
         </a>
       
@@ -2491,7 +2491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../C++/" class="md-nav__link">
+      <a href="../C%2B%2B/" class="md-nav__link">
         C++
       </a>
     </li>
@@ -2637,6 +2637,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Rust
@@ -2653,6 +2655,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2661,29 +2665,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rust" class="md-nav__link">
-    Rust
-  </a>
-  
-    <nav class="md-nav" aria-label="Rust">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#scone-rustc-scone-rustc" class="md-nav__link">
     scone-rustc /  scone rustc
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#scone-cargo-and-scone-cargo" class="md-nav__link">
     scone-cargo and scone cargo:
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3171,6 +3162,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3179,29 +3172,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rust" class="md-nav__link">
-    Rust
-  </a>
-  
-    <nav class="md-nav" aria-label="Rust">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#scone-rustc-scone-rustc" class="md-nav__link">
     scone-rustc /  scone rustc
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#scone-cargo-and-scone-cargo" class="md-nav__link">
     scone-cargo and scone cargo:
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3225,61 +3205,58 @@
 <h2 id="scone-rustc-scone-rustc"><strong>scone-rustc</strong> /  <strong>scone rustc</strong></h2>
 <p>Ensure that you have the newest SCONE cross compiler image and determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 You can compile Rust programs but links against the SCONE libc instead of a standard libc. To print the version of Rust execute (inside container <strong>registry.scontain.com:5050/sconecuratedimages/crosscompilers:ubuntu</strong>):</p>
-<p>```bash</p>
-<blockquote>
-<p>determine_sgx_device
-docker run $MOUNT_SGXDEVICE -it registry.scontain.com:5050/sconecuratedimages/crosscompilers:ubuntu
+<div class="highlight"><pre><span></span><code>&gt; determine_sgx_device
+&gt; docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers:ubuntu
 $ scone rustc --version
-rustc 1.57.0 (f1edd0429 2021-11-29)
-```</p>
-</blockquote>
+rustc <span class="m">1</span>.57.0 <span class="o">(</span>f1edd0429 <span class="m">2021</span>-11-29<span class="o">)</span>
+</code></pre></div>
 <p>Let's try a simple hello world program.</p>
-<p><code>bash
-$ mkdir ~/projects
-$ cd ~/projects
+<div class="highlight"><pre><span></span><code>$ mkdir ~/projects
+$ <span class="nb">cd</span> ~/projects
 $ mkdir hello_world
-$ cd hello_world</code></p>
+$ <span class="nb">cd</span> hello_world
+</code></pre></div>
 <p>Let's try our rust program:</p>
-<p><code>bash
-$ cat &gt; main.rs &lt;&lt; EOF
-fn main() {
-    println!("Hello, world!");
-}
-EOF</code></p>
+<div class="highlight"><pre><span></span><code>$ cat &gt; main.rs <span class="s">&lt;&lt; EOF</span>
+<span class="s">fn main() {</span>
+<span class="s">    println!(&quot;Hello, world!&quot;);</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <p>Let's compile the program for running inside of enclaves:</p>
-<p><code>bash
-$ scone rustc main.rs --target=x86_64-scone-linux-musl
+<div class="highlight"><pre><span></span><code>$ scone rustc main.rs --target<span class="o">=</span>x86_64-scone-linux-musl
 $ ls
-main  main.rs</code></p>
+main  main.rs
+</code></pre></div>
 <p>Let's run main inside an enclave and print some debug information:</p>
-<p>```bash
-$ SCONE_MODE=HW SCONE_VERSION=1 ./main
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-export SCONE_SSPINS=100
-export SCONE_SSLEEP=4000
-export SCONE_KERNEL=0
-export SCONE_HEAP=67108864
-export SCONE_CONFIG=/etc/sgx-musl.conf
-export SCONE_MODE=hw
-export SCONE_SGXBOUNDS=no
-export SCONE_VARYS=no
-export SCONE_ALLOW_DLOPEN=no
-export SCONE_ALLOW_DLOPEN2=no</p>
-<p>Hello, world!
-```</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nv">SCONE_MODE</span><span class="o">=</span>HW <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./main
+<span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
+<span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span> <span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
+<span class="nb">export</span> <span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
+<span class="nb">export</span> <span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">67108864</span>
+<span class="nb">export</span> <span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
+<span class="nb">export</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>hw
+<span class="nb">export</span> <span class="nv">SCONE_SGXBOUNDS</span><span class="o">=</span>no
+<span class="nb">export</span> <span class="nv">SCONE_VARYS</span><span class="o">=</span>no
+<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>no
+<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN2</span><span class="o">=</span>no
+
+Hello, world!
+</code></pre></div>
 <h2 id="scone-cargo-and-scone-cargo"><strong>scone-cargo</strong> and <strong>scone cargo</strong>:</h2>
 <p>You can build projects with <strong>scone cargo</strong>:</p>
-<p><code>bash
-$ scone cargo build --target=x86_64-scone-linux-musl</code></p>
+<div class="highlight"><pre><span></span><code>$ scone cargo build --target<span class="o">=</span>x86_64-scone-linux-musl
+</code></pre></div>
 <p>Alternatively, you can use <strong>scone-cargo</strong> if, for example,  you need a command without a space.</p>
 <p><strong>scone cargo</strong>, as well as, <strong>scone rustc</strong> has access to the SCONE-compiled rust standard library and the target file. <strong>--target=x86_64-scone-linux-musl</strong> instructs it to use our target file - essentially triggering a cross-compiler build.</p>
 <p>Due to the cross-compilation, crates that depend on compiled C libraries, such as openssl or error-chain, do not work out of the box. Cargo will not use the system installed libraries because it wrongly assumes that they do not fit the target architecture. To solve this issue, one has to either provide the compiled libraries or deactivate the crate.</p>
 <p>The following is an example of how an executable with <em>openssl</em> can be compiled:</p>
-<p><code>bash
-$ OPENSSL_LIB_DIR=/libressl-2.4.5 OPENSSL_INCLUDE_DIR=/libressl-2.4.5/include/ OPENSSL_STATIC=1 PKG_CONFIG_ALLOW_CROSS=1 scone-cargo build --target=scone</code></p>
+<div class="highlight"><pre><span></span><code>$ <span class="nv">OPENSSL_LIB_DIR</span><span class="o">=</span>/libressl-2.4.5 <span class="nv">OPENSSL_INCLUDE_DIR</span><span class="o">=</span>/libressl-2.4.5/include/ <span class="nv">OPENSSL_STATIC</span><span class="o">=</span><span class="m">1</span> <span class="nv">PKG_CONFIG_ALLOW_CROSS</span><span class="o">=</span><span class="m">1</span> scone-cargo build --target<span class="o">=</span>scone
+</code></pre></div>
 <p>In the case of error-chain, one can just deactivate its optional backtrace feature that actually requires a precompiled library.</p>
 
               
@@ -3350,7 +3327,7 @@ $ OPENSSL_LIB_DIR=/libressl-2.4.5 OPENSSL_INCLUDE_DIR=/libressl-2.4.5/include/ O
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

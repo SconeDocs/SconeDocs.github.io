@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/CAS_for_development/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.4">
     
     
       
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="../#cas-for-development" class="md-skip">
+        <a href="#cas-for-development" class="md-skip">
           Skip to content
         </a>
       
@@ -1830,6 +1830,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Starting CAS
@@ -1846,6 +1848,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1854,14 +1858,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cas-for-development" class="md-nav__link">
-    CAS for Development
-  </a>
-  
-    <nav class="md-nav" aria-label="CAS for Development">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#pulling-cas-image" class="md-nav__link">
     Pulling CAS Image
   </a>
@@ -1880,11 +1876,6 @@
   <a href="#starting-and-stopping-cas" class="md-nav__link">
     Starting and Stopping CAS
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -2559,7 +2550,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../C++/" class="md-nav__link">
+      <a href="../C%2B%2B/" class="md-nav__link">
         C++
       </a>
     </li>
@@ -3182,6 +3173,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3190,14 +3183,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cas-for-development" class="md-nav__link">
-    CAS for Development
-  </a>
-  
-    <nav class="md-nav" aria-label="CAS for Development">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#pulling-cas-image" class="md-nav__link">
     Pulling CAS Image
   </a>
@@ -3216,11 +3201,6 @@
   <a href="#starting-and-stopping-cas" class="md-nav__link">
     Starting and Stopping CAS
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -3254,11 +3234,11 @@ i.e., <strong>do not use this instance for production</strong>.</p>
 <h2 id="pulling-cas-image">Pulling CAS Image</h2>
 <p>To start CAS, you first pull CAS Docker image to your local registry. To be able to do so, please ask us via email for access to CAS. We will give you access to a private Docker repository and we will send you the name of the private repository.</p>
 <p>For this tutorial, please set the environment variable  <code>CAS</code> to the name of the Docker repository - typically this might look something like this:</p>
-<p><code>bash
-export CAS=registry.scontain.com:5050/sconecuratedimages/services:cas</code></p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">CAS</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/services:cas
+</code></pre></div>
 <p>Pull the CAS image like this:</p>
-<p><code>bash
-docker pull $CAS</code></p>
+<div class="highlight"><pre><span></span><code>docker pull <span class="nv">$CAS</span>
+</code></pre></div>
 <p>If this fails, ensure that you are logged into docker (via <code>docker login</code>) and that you set environment variable <code>CAS</code> properly.</p>
 <h3 id="determining-the-sgx-device">Determining the SGX device</h3>
 <p>Depending on the platform, the SGX device is named <code>/dev/isgx</code> or <code>/dev/sgx</code>. To write generic
@@ -3267,48 +3247,48 @@ It sets environment variable <code>SGXDEVICE</code> to the device that needs to 
 <h3 id="starting-and-stopping-cas">Starting and Stopping CAS</h3>
 <p>The easiest way to start CAS is to use a simple Docker compose file. To do so,
 create a new directory for the Docker compose file:</p>
-<p><code>bash
-mkdir -p CAS
-cd CAS</code></p>
+<div class="highlight"><pre><span></span><code>mkdir -p CAS
+<span class="nb">cd</span> CAS
+</code></pre></div>
 <p>Create a compose file that exposes the ports of CAS to the host:</p>
-<p><code>bash
-determine_sgx_device
-cat &gt; docker-compose.yml &lt;&lt;EOF
-version: '3.2'
-services:
-    cas:
-        command: sh -c "SCONE_HEAP=1G cas -c /etc/cas/cas.toml"
-        environment:
-         - SCONE_LOG=7
-         - SCONE_MODE=HW
-        image: $CAS
-        volumes:
-          - "$SGXDEVICE:$SGXDEVICE"
-        ports:
-          - target: 8081
-            published: 8081
-            protocol: tcp
-            mode: host
-          - target: 18765
-            published: 18765
-            protocol: tcp
-            mode: host
-EOF</code></p>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
+<span class="s">version: &#39;3.2&#39;</span>
+<span class="s">services:</span>
+<span class="s">    cas:</span>
+<span class="s">        command: sh -c &quot;SCONE_HEAP=1G cas -c /etc/cas/cas.toml&quot;</span>
+<span class="s">        environment:</span>
+<span class="s">         - SCONE_LOG=7</span>
+<span class="s">         - SCONE_MODE=HW</span>
+<span class="s">        image: $CAS</span>
+<span class="s">        volumes:</span>
+<span class="s">          - &quot;$SGXDEVICE:$SGXDEVICE&quot;</span>
+<span class="s">        ports:</span>
+<span class="s">          - target: 8081</span>
+<span class="s">            published: 8081</span>
+<span class="s">            protocol: tcp</span>
+<span class="s">            mode: host</span>
+<span class="s">          - target: 18765</span>
+<span class="s">            published: 18765</span>
+<span class="s">            protocol: tcp</span>
+<span class="s">            mode: host</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <p>Now start CAS in the background as follows:</p>
-<p><code>bash
-docker-compose up -d cas</code></p>
+<div class="highlight"><pre><span></span><code>docker-compose up -d cas
+</code></pre></div>
 <p>By executing</p>
-<p><code>bash
-docker-compose logs cas</code></p>
+<div class="highlight"><pre><span></span><code>docker-compose logs cas
+</code></pre></div>
 <p>you will see the output of CAS.</p>
 <p>You can check if CAS is still running by executing:</p>
-<p><code>bash
-docker-compose up -d cas</code></p>
+<div class="highlight"><pre><span></span><code>docker-compose up -d cas
+</code></pre></div>
 <p>This will result in an output like</p>
 <p><code>cas_cas_1 is up-to-date</code></p>
 <p>You can stop CAS by executing:</p>
-<p><code>bash
-docker-compose stop cas</code></p>
+<div class="highlight"><pre><span></span><code>docker-compose stop cas
+</code></pre></div>
 
               
             </article>
@@ -3378,7 +3358,7 @@ docker-compose stop cas</code></p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

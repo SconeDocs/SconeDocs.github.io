@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/SCONE_toolchain/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.4">
     
     
       
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="../#scone-sgx-toolchain" class="md-skip">
+        <a href="#scone-sgx-toolchain" class="md-skip">
           Skip to content
         </a>
       
@@ -2485,7 +2485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../C++/" class="md-nav__link">
+      <a href="../C%2B%2B/" class="md-nav__link">
         C++
       </a>
     </li>
@@ -3108,6 +3108,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3116,14 +3118,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scone-sgx-toolchain" class="md-nav__link">
-    SCONE SGX Toolchain
-  </a>
-  
-    <nav class="md-nav" aria-label="SCONE SGX Toolchain">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#compiler-variants" class="md-nav__link">
     Compiler variants
   </a>
@@ -3149,30 +3143,25 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#using-the-cross-compiler-container" class="md-nav__link">
     Using the cross compiler container
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#example" class="md-nav__link">
     Example
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#debugger-support" class="md-nav__link">
     Debugger support
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3228,12 +3217,12 @@ can use a standard compiler (dynamic) or you need to use a cross compiler (stati
 <p>For statically linked binaries, we make available a (private) docker image <em>registry.scontain.com:5050/sconecuratedimages/crosscompilers</em> which can produce statically linked binaries. In the statically linked binaries, we replace the interface to the operating system (i.e., libc) by a variant that enables programs to run inside Intel SGX enclaves.</p>
 <p><img alt="Static Compilation" src="../img/staticcompilation.jpg" /></p>
 <p>Note that a statically linked binaries might look like a dynamically-linked binary. For example, if you look at a statically-linked program <em>web-srv-go</em>, you will still see dynamic dependencies:</p>
-<p><code>bash
-$ ldd web-srv-go 
-    linux-vdso.so.1 =&gt;  (0x00007ffe423fd000)
-    libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007effa344f000)
-    libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007effa3085000)
-    /lib64/ld-linux-x86-64.so.2 (0x00007effa366c000)</code></p>
+<div class="highlight"><pre><span></span><code>$ ldd web-srv-go 
+    linux-vdso.so.1 <span class="o">=</span>&gt;  <span class="o">(</span>0x00007ffe423fd000<span class="o">)</span>
+    libpthread.so.0 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libpthread.so.0 <span class="o">(</span>0x00007effa344f000<span class="o">)</span>
+    libc.so.6 <span class="o">=</span>&gt; /lib/x86_64-linux-gnu/libc.so.6 <span class="o">(</span>0x00007effa3085000<span class="o">)</span>
+    /lib64/ld-linux-x86-64.so.2 <span class="o">(</span>0x00007effa366c000<span class="o">)</span>
+</code></pre></div>
 <p>The reason for that is that the statically linked binary that runs inside of an enclave is wrapped in a dynamically linked <em>loader</em> program. The loader program creates the enclave, moves the program code inside the enclave and starts threads that will enter the enclave. The code that is moved inside the enclave is, however, statically linked.</p>
 <h2 id="using-the-cross-compiler-container">Using the cross compiler container</h2>
 <p>How to use the compiler:</p>
@@ -3248,38 +3237,23 @@ $ ldd web-srv-go
 <p>For an example how to use the crosscompilers, see how to compile a programs written in <a href="../GO/">GO</a>.</p>
 <h2 id="example">Example</h2>
 <p><strong>Note</strong>  on some systems you will need to run <em>docker</em> with root permissions, i.e., in this case you should prefix a </p>
-<p>```bash</p>
-<blockquote>
-<p>docker ...
-```</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code>&gt; docker ...
+</code></pre></div>
 <p>command with <em>sudo</em>, i.e., you execute </p>
-<p>```bash</p>
-<blockquote>
-<p>sudo docker ...
-```</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code>&gt; sudo docker ...
+</code></pre></div>
 <p>One can run the above compiler inside of a container while the compiled files reside outside the container. Say, your code is
 in file <em>myapp.c</em> in your current directory (<em>$PWD</em>). You can compile this code as follows:</p>
-<p>```bash</p>
-<blockquote>
-<p>docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp registry.scontain.com:5050/sconecuratedimages/muslgcc gcc myapp.c
-```</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp registry.scontain.com:5050/sconecuratedimages/muslgcc gcc myapp.c
+</code></pre></div>
 <p>This call will generate a binary <em>a.out</em> in your working directory. This binary is dynamically linked against musl:</p>
-<p>```bash</p>
-<blockquote>
-<p>ldd a.out 
-    /lib/ld-musl-x86_64.so.1 (0x7fb0379f9000)
-    libc.musl-x86_64.so.1 =&gt; /lib/ld-musl-x86_64.so.1 (0x7fb0379f9000)
-```</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code>&gt; ldd a.out 
+    /lib/ld-musl-x86_64.so.1 <span class="o">(</span>0x7fb0379f9000<span class="o">)</span>
+    libc.musl-x86_64.so.1 <span class="o">=</span>&gt; /lib/ld-musl-x86_64.so.1 <span class="o">(</span>0x7fb0379f9000<span class="o">)</span>
+</code></pre></div>
 <p>This binary can run natively only if you have musl installed at the correct position in your development machine (and your development machine runs Linux). Alternatively, you can run the binary in a container:</p>
-<p>```bash</p>
-<blockquote>
-<p>docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp registry.scontain.com:5050/sconecuratedimages/muslgcc ./a.out
-```</p>
-</blockquote>
+<div class="highlight"><pre><span></span><code>&gt; docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp registry.scontain.com:5050/sconecuratedimages/muslgcc ./a.out
+</code></pre></div>
 <p>To run this inside of SGX enclaves with SCONE, you need access to the SCONE runtime systems. For more details, see our <em>hello world</em> in Section <a href="../SCONE_TUTORIAL/">SCONE Tutorial</a>. This is not very convenient and hence, we provide a) a simpler version with the help of <a href="../SCONE_Dockerfile/">Dockerfiles</a>. </p>
 <p>In most cases, you might just set to use one of our crosscompilers in your <em>configure</em> script or <em>Makefile</em>. A simple way is to use the Docker image <em>registry.scontain.com:5050/sconecuratedimages/crosscompilers</em> as a base image and then clone your code inside the container and set one or more of our compilers (<em>scone-gcc, scone-g++, scone-gccgo, scone-gfortran, and scone-rustc</em>) to be used in your build. For Rust, we support also our variant of <em>cargo</em> which is <em>scone-cargo</em>.</p>
 <h2 id="debugger-support">Debugger support</h2>
@@ -3320,7 +3294,7 @@ in debug mode. We describe how to integrate with <a href="../eclipse/">Eclipse</
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

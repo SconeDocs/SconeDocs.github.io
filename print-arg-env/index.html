@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/print-arg-env/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.4">
     
     
       
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="../#secure-arguments-and-environment-variables" class="md-skip">
+        <a href="#secure-arguments-and-environment-variables" class="md-skip">
           Skip to content
         </a>
       
@@ -1942,6 +1942,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Secure Arguments
@@ -1958,6 +1960,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -1966,38 +1970,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#secure-arguments-and-environment-variables" class="md-nav__link">
-    Secure Arguments and Environment Variables
-  </a>
-  
-    <nav class="md-nav" aria-label="Secure Arguments and Environment Variables">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     Prerequisites
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#simple-example" class="md-nav__link">
     Simple Example
   </a>
   
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#include" class="md-nav__link">
-    include 
-  </a>
-  
-    <nav class="md-nav" aria-label="include ">
+    <nav class="md-nav" aria-label="Simple Example">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2573,7 +2557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../C++/" class="md-nav__link">
+      <a href="../C%2B%2B/" class="md-nav__link">
         C++
       </a>
     </li>
@@ -3196,6 +3180,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3204,38 +3190,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#secure-arguments-and-environment-variables" class="md-nav__link">
-    Secure Arguments and Environment Variables
-  </a>
-  
-    <nav class="md-nav" aria-label="Secure Arguments and Environment Variables">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     Prerequisites
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#simple-example" class="md-nav__link">
     Simple Example
   </a>
   
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#include" class="md-nav__link">
-    include 
-  </a>
-  
-    <nav class="md-nav" aria-label="include ">
+    <nav class="md-nav" aria-label="Simple Example">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3286,62 +3252,59 @@
 <p>We also assume that this example is executed in the context of Ubuntu. For other Linux variants, you might need to use a different cross-compiler image. Alternatively, you could execute this example in the crosscompiler container but you need to ensure that the container can establish https connections to CAS and LAS.</p>
 <h2 id="simple-example">Simple Example</h2>
 <p>We create a simple C program to print the arguments as well as the environment variables:</p>
-<p>```bash
-cat &gt; print-arg-env.c &lt;&lt;EOF</p>
-<h1 id="include">include <stdio.h></h1>
-<p>extern char **__environ;</p>
-<p>int main (int argc, char **argv) {
-    printf("argv:");
-    for (int i = 0; i &lt; argc; i++) {
-        printf(" %s", argv[i]);
-    }
-    printf("\n");</p>
-<div class="codehilite"><pre><span></span><span class="nt">char</span><span class="o">**</span> <span class="nt">envp</span> <span class="o">=</span> <span class="nt">__environ</span><span class="o">;</span>
-<span class="nt">printf</span><span class="o">(</span><span class="s2">&quot;environ:\n&quot;</span><span class="o">);</span>
-<span class="nt">while</span> <span class="o">(*</span><span class="nt">envp</span> <span class="o">!=</span> <span class="nt">NULL</span><span class="o">)</span> <span class="p">{</span>
-    <span class="err">printf(&quot;%s\n&quot;,</span> <span class="err">*envp)</span><span class="p">;</span>
-    <span class="err">envp++</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="nt">return</span> <span class="nt">42</span><span class="o">;</span>
-</pre></div>
+<div class="highlight"><pre><span></span><code>cat &gt; print-arg-env.c <span class="s">&lt;&lt;EOF</span>
+<span class="s">#include &lt;stdio.h&gt;</span>
 
-<p>}
-EOF
-```</p>
+<span class="s">extern char **__environ;</span>
+
+<span class="s">int main (int argc, char **argv) {</span>
+<span class="s">    printf(&quot;argv:&quot;);</span>
+<span class="s">    for (int i = 0; i &lt; argc; i++) {</span>
+<span class="s">        printf(&quot; %s&quot;, argv[i]);</span>
+<span class="s">    }</span>
+<span class="s">    printf(&quot;\n&quot;);</span>
+
+<span class="s">    char** envp = __environ;</span>
+<span class="s">    printf(&quot;environ:\n&quot;);</span>
+<span class="s">    while (*envp != NULL) {</span>
+<span class="s">        printf(&quot;%s\n&quot;, *envp);</span>
+<span class="s">        envp++;</span>
+<span class="s">    }</span>
+<span class="s">    return 42;</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <p>We can compile this natively as follows:</p>
-<p>```bash</p>
-<p>gcc print-arg-env.c -g -O3 -o print-arg-env</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code>gcc print-arg-env.c -g -O3 -o print-arg-env
+</code></pre></div>
 <p>And we can now run this with some some arguments and some environment variables:</p>
-<p>```bash</p>
-<p>ENV2=World ENV1=! ./print-arg-env Hello</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code><span class="nv">ENV2</span><span class="o">=</span>World <span class="nv">ENV1</span><span class="o">=</span>! ./print-arg-env Hello
+</code></pre></div>
 <p>This results in an output similar to this:</p>
-<p>```output</p>
-<p>argv: ./print-arg-env Hello
-environ:
-ENV2=World
-ENV1=!
-...</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code><span class="go">argv: ./print-arg-env Hello</span>
+<span class="go">environ:</span>
+<span class="go">ENV2=World</span>
+<span class="go">ENV1=!</span>
+<span class="go">...</span>
+</code></pre></div>
 <p>Let's cross-compile this program to run inside of enclaves as follows. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<p><code>bash
-determine_sgx_device
-docker run $MOUNT_SGXDEVICE -it -v `pwd`:/work registry.scontain.com:5050/sconecuratedimages/crosscompilers scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env</code></p>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/work registry.scontain.com:5050/sconecuratedimages/crosscompilers scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env
+</code></pre></div>
 <p>We can now determine <code>MRENCLAVE</code> as follows:</p>
-<p><code>bash
-export MRENCLAVE=`SCONE_HASH=1 ./scone-print-arg-env`
-echo MRENCLAVE of scone-print-arg-env is $MRENCLAVE</code></p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="sb">`</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./scone-print-arg-env<span class="sb">`</span>
+<span class="nb">echo</span> MRENCLAVE of scone-print-arg-env is <span class="nv">$MRENCLAVE</span>
+</code></pre></div>
 <p>We can now run the program inside of an enclave but not under the control of CAS as follows:</p>
-<p><code>bash
-ENV2=World ENV1=! ./scone-print-arg-env Hello</code></p>
+<div class="highlight"><pre><span></span><code><span class="nv">ENV2</span><span class="o">=</span>World <span class="nv">ENV1</span><span class="o">=</span>! ./scone-print-arg-env Hello
+</code></pre></div>
 <p>This will result in the same output as before:</p>
-<p><code>output
-argv: ./print-arg-env Hello
-environ:
-ENV2=World
-ENV1=!
-...</code></p>
+<div class="highlight"><pre><span></span><code><span class="go">argv: ./print-arg-env Hello</span>
+<span class="go">environ:</span>
+<span class="go">ENV2=World</span>
+<span class="go">ENV1=!</span>
+<span class="go">...</span>
+</code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Without CAS: No Confidentiality and Integrity of Arguments and Environment Variables</p>
 <p>Note that neither the integrity nor the confidentiality of these arguments are protected.
@@ -3358,89 +3321,79 @@ need to run the program in the context of CAS.**</p>
 </div>
 <p>We assume that you already started a <a href="../CAS_for_development/">CAS</a> in the background via <code>docker-compose up -d cas</code>
 on the local machine:</p>
-<p>```bash</p>
-<p>export SCONE_CAS_ADDR=127.0.0.1</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
+</code></pre></div>
 <p>Alternatively, you can use a our <a href="../public-CAS/">public CAS instance</a> at domain <code>scone-cas.cf</code>:</p>
-<p>```bash</p>
-<p>export SCONE_CAS_ADDR=scone-cas.cf</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf
+</code></pre></div>
 <p>We also assume that you already started a <a href="../LASIntro/">LAS</a> in the background via <code>docker-compose up -d las</code>
 on the local machine:</p>
-<p>```bash</p>
-<p>export SCONE_LAS_ADDR=127.0.0.1</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
+</code></pre></div>
 <p>We can now create a new session on cas as follows:</p>
-<p>```bash</p>
-<p>cat &gt; session.yml &lt;&lt;EOF
-name: secure-arguments-example
-digest: somedigest</p>
-<p>services:
-   - name: scone-print-arg-env
-     mrenclaves: [$MRENCLAVE]
-     tags: [thisissometag1]
-     command: ./scone-print-arg-env arg1 arg2 arg3
-     environment:
-        SCONE_MODE: hw
-        env1: running
-        env2: in
-        env3: enclave
-     pwd: /
-EOF
-```</p>
-<p>Let's make sure that we have a client certificate to identify this client:</p>
-<p>```bash</p>
-<div class="codehilite"><pre><span></span>mkdir -p conf
-if [[ ! -f conf/client.crt || ! -f conf/client-key.key  ]] ; then
-  openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key \
-  -days 31 -nodes -sha256 \
-  -subj &quot;/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com&quot; \
-  -reqexts SAN -extensions SAN \
-  -config &lt;(cat /etc/ssl/openssl.cnf &lt;(printf &#39;[SAN]\nsubjectAltName=DNS:www.scontain.com&#39;))
-fi
-</pre></div>
+<div class="highlight"><pre><span></span><code>cat &gt; session.yml <span class="s">&lt;&lt;EOF</span>
+<span class="s">name: secure-arguments-example</span>
+<span class="s">digest: somedigest</span>
 
-<p>```</p>
+<span class="s">services:</span>
+<span class="s">   - name: scone-print-arg-env</span>
+<span class="s">     mrenclaves: [$MRENCLAVE]</span>
+<span class="s">     tags: [thisissometag1]</span>
+<span class="s">     command: ./scone-print-arg-env arg1 arg2 arg3</span>
+<span class="s">     environment:</span>
+<span class="s">        SCONE_MODE: hw</span>
+<span class="s">        env1: running</span>
+<span class="s">        env2: in</span>
+<span class="s">        env3: enclave</span>
+<span class="s">     pwd: /</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<p>Let's make sure that we have a client certificate to identify this client:</p>
+<div class="highlight"><pre><span></span><code>    mkdir -p conf
+    <span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+      openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key <span class="se">\</span>
+      -days <span class="m">31</span> -nodes -sha256 <span class="se">\</span>
+      -subj <span class="s2">&quot;/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com&quot;</span> <span class="se">\</span>
+      -reqexts SAN -extensions SAN <span class="se">\</span>
+      -config &lt;<span class="o">(</span>cat /etc/ssl/openssl.cnf &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;[SAN]\nsubjectAltName=DNS:www.scontain.com&#39;</span><span class="o">))</span>
+    <span class="k">fi</span>
+</code></pre></div>
 <p>Next, we will upload this session to CAS:</p>
-<p>```bash</p>
-<p>curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://$SCONE_CAS_ADDR:8081/session</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code>curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
+</code></pre></div>
 <p>This results in an output similar to this:</p>
-<p>```output</p>
-<p>Created Session[id=ce81e4cd-eed4-4f12-9bfc-c93e3dd4b454, name=secure-arguments, status=Pending]c</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code><span class="go">Created Session[id=ce81e4cd-eed4-4f12-9bfc-c93e3dd4b454, name=secure-arguments, status=Pending]c</span>
+</code></pre></div>
 <p>Note that if you try to upload to a session that already exists, you will get an error code like this:</p>
-<p>```output</p>
-<p>Could not create successor session. Invalid previous session digest: Some("5de101e4980f312527e1c308dfe6c7bc465660c0fea6b98983efa5baf94bf362") != None</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code><span class="go">Could not create successor session. Invalid previous session digest: Some(&quot;5de101e4980f312527e1c308dfe6c7bc465660c0fea6b98983efa5baf94bf362&quot;) != None</span>
+</code></pre></div>
 <p>In other words, if you want to update a session, you need to define a <code>predecessor</code> key in the session that specifies the current session. This is to ensure that a client does not overwrite a just updated session, i.e., it permits to detect write/write conflicts.</p>
 <h3 id="executing-print-arg-env">Executing Print-Arg-Env</h3>
 <p>Let us now execute <code>scone-print-arg-env</code> in the context of session <code>secure-arguments-example</code>. To do so, we need
 to pass in environment variable <code>SCONE_CONFIG_ID</code> which contains the name of the session and we need to set 
 <code>SCONE_CAS_ADDR</code>as well as <code>SCONE_LAS_ADDR</code> as we have shown above.</p>
-<p><code>bash
-SCONE_CONFIG_ID=secure-arguments-example/scone-print-arg-env ./scone-print-arg-env</code></p>
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span>secure-arguments-example/scone-print-arg-env ./scone-print-arg-env
+</code></pre></div>
 <p>This will print the following output:</p>
-<p><code>output
-argv: ./scone-print-arg-env arg1 arg2 arg3
-environ:
-SCONE_MODE=hw
-env2=in
-env1=running
-env3=enclave</code></p>
+<div class="highlight"><pre><span></span><code><span class="go">argv: ./scone-print-arg-env arg1 arg2 arg3</span>
+<span class="go">environ:</span>
+<span class="go">SCONE_MODE=hw</span>
+<span class="go">env2=in</span>
+<span class="go">env1=running</span>
+<span class="go">env3=enclave</span>
+</code></pre></div>
 <p>Note that the environment variables - except those expected by the SCONE runtime to locate LAS, CAS and the session - are ignored. This means
 even if we pass additional arguments and environment variables,  the output does not change. The execution of</p>
-<p>```bash</p>
-<p>IRGNORED_ENV=1 SCONE_CONFIG_ID=secure-arguments-example/scone-print-arg-env ./scone-print-arg-env IGNORED1 IGNORED2</p>
-<p>```</p>
+<div class="highlight"><pre><span></span><code><span class="nv">IRGNORED_ENV</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span>secure-arguments-example/scone-print-arg-env ./scone-print-arg-env IGNORED1 IGNORED2
+</code></pre></div>
 <p>results in the same output:</p>
-<p><code>output
-argv: ./scone-print-arg-env arg1 arg2 arg3
-environ:
-SCONE_MODE=hw
-env2=in
-env1=running
-env3=enclave</code></p>
+<div class="highlight"><pre><span></span><code><span class="go">argv: ./scone-print-arg-env arg1 arg2 arg3</span>
+<span class="go">environ:</span>
+<span class="go">SCONE_MODE=hw</span>
+<span class="go">env2=in</span>
+<span class="go">env1=running</span>
+<span class="go">env3=enclave</span>
+</code></pre></div>
 <p>The SCONE variables provided by the environment are not protected in any way and
 we designed SCONE assuming that an attacker could modify these environment variables. This could
 lead to denial of service attacks but not to the exposure of any secrets.</p>
@@ -3519,7 +3472,7 @@ lead to denial of service attacks but not to the exposure of any secrets.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
