@@ -2308,6 +2308,26 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    include 
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include_1" class="md-nav__link">
+    include 
+  </a>
+  
+    <nav class="md-nav" aria-label="include ">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#simulation-mode" class="md-nav__link">
     Simulation Mode
@@ -3205,6 +3225,26 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    include 
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include_1" class="md-nav__link">
+    include 
+  </a>
+  
+    <nav class="md-nav" aria-label="include ">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#simulation-mode" class="md-nav__link">
     Simulation Mode
@@ -3266,80 +3306,77 @@ SCONE can protect these secrets by permitting to encrypt shared libraries.</p>
 <h2 id="example">Example</h2>
 <p>We use the SCONE crosscompiler image and start an container with access to the
 SGX device. We determine which SGX device to mount with function <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<div class="highlight"><pre><span></span>determine_sgx_device
+<p><code>bash
+determine_sgx_device
 docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
-</pre></div>
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com:5050/sconecuratedimages/crosscompilers</code></p>
 <p>Let's create some program that stores a secret (<strong>MYBIGS</strong>) in a local variable <em>secret</em>:</p>
-<div class="highlight"><pre><span></span>cat &gt; mysecret.c <span class="s">&lt;&lt; EOF</span>
-<span class="s">#include &lt;stdio.h&gt;</span>
-<span class="s">#include &lt;unistd.h&gt;</span>
-
-<span class="s">const char *code_is_not_encrypted=&quot;THIS_IS_NOT_SECRET&quot;;</span>
-
-<span class="s">int main() {</span>
-<span class="s">    char secret[7];</span>
-<span class="s">    secret[0] =&#39;M&#39;;</span>
-<span class="s">    secret[1] =&#39;Y&#39;;</span>
-<span class="s">    secret[2] =&#39;B&#39;;</span>
-<span class="s">    secret[3] =&#39;I&#39;;</span>
-<span class="s">    secret[4] =&#39;G&#39;;</span>
-<span class="s">    secret[5] =&#39;S&#39;;</span>
-<span class="s">    secret[6] =0;</span>
-<span class="s">    printf(&quot;&#39;%s&#39; SECRET at %lx\n&quot;, secret, secret);</span>
-<span class="s">    printf(&quot;Kill with Ctrl-C.\n&quot;);</span>
-<span class="s">    for(;;)</span>
-<span class="s">        sleep(1); // loop forever</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; mysecret.c &lt;&lt; EOF</p>
+<h1 id="include">include <stdio.h></h1>
+<h1 id="include_1">include <unistd.h></h1>
+<p>const char *code_is_not_encrypted="THIS_IS_NOT_SECRET";</p>
+<p>int main() {
+    char secret[7];
+    secret[0] ='M';
+    secret[1] ='Y';
+    secret[2] ='B';
+    secret[3] ='I';
+    secret[4] ='G';
+    secret[5] ='S';
+    secret[6] =0;
+    printf("'%s' SECRET at %lx\n", secret, secret);
+    printf("Kill with Ctrl-C.\n");
+    for(;;)
+        sleep(1); // loop forever
+}
+EOF
+```</p>
 <p>Compile this program with the SCONE crosscompiler (i.e., gcc):</p>
-<div class="highlight"><pre><span></span>gcc -g -o mysecret mysecret.c
-</pre></div>
+<p><code>bash
+gcc -g -o mysecret mysecret.c</code></p>
 <h2 id="simulation-mode">Simulation Mode</h2>
 <p>You can run this program in <strong>SIMULATION MODE</strong>, i.e., this program does not protect your secrets:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>SIM ./mysecret
-</pre></div>
+<p><code>bash
+SCONE_VERSION=1 SCONE_MODE=SIM ./mysecret</code></p>
 <p>Log into a different terminal on your <strong>host</strong>. Let us figure out the process ID of the mysecret program:</p>
-<div class="highlight"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
-</pre></div>
+<p><code>bash
+SPID=$(ps -a | grep -v grep | grep mysecret | awk  '{print $1}')</code></p>
 <p>Now, we can dump the memory of this process via the <em>/proc</em> filesystem. You can determine
 the different memory regions of your process via <code>cat /proc/$SPID/maps</code> and
 the memory is stored in <em>/proc/$SPID/mem</em>. We can use the following
 Python program to write all pages to <em>stdout</em>: </p>
-<div class="highlight"><pre><span></span>cat &gt; dumpmemory.py <span class="s">&lt;&lt; EOF</span>
-<span class="s">import sys,re</span>
-
-<span class="s">pid = sys.argv[1]</span>
-<span class="s">print(&quot;PID = %s \n&quot; % pid)</span>
-<span class="s">maps_file = open(&quot;/proc/%s/maps&quot; % pid, &#39;r&#39;)</span>
-<span class="s">mem_file= open(&quot;/proc/%s/mem&quot; % pid, &#39;rb&#39;)</span>
-
-<span class="s">for line in maps_file.readlines():</span>
-<span class="s">    m = re.match(r&#39;([0-9A-Fa-f]+)-([0-9A-Fa-f]+) ([-r][-w])&#39;, line)</span>
-<span class="s">    if m.group(3) == &quot;rw&quot; or m.group(3) == &quot;r-&quot; :</span>
-<span class="s">        try:</span>
-<span class="s">            start = int(m.group(1), 16)</span>
-<span class="s">            if start &gt; 0xFFFFFFFFFFFF:</span>
-<span class="s">                continue</span>
-<span class="s">            print(&quot;\nOK : \n&quot; + line+&quot;\n&quot;)</span>
-<span class="s">            end = int(m.group(2), 16)</span>
-<span class="s">            mem_file.seek(start) </span>
-<span class="s">            chunk = mem_file.read(end - start)</span>
-<span class="s">            print(chunk)</span>
-<span class="s">            sys.stdout.flush()</span>
-<span class="s">        except Exception as e:</span>
-<span class="s">            print(str(e))  </span>
-<span class="s">    else:</span>
-<span class="s">        print(&quot;\nPASS : \n&quot; + line+&quot;\n&quot;)</span>
-
-<span class="s">print(&quot;END&quot;)</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; dumpmemory.py &lt;&lt; EOF
+import sys,re</p>
+<p>pid = sys.argv[1]
+print("PID = %s \n" % pid)
+maps_file = open("/proc/%s/maps" % pid, 'r')
+mem_file= open("/proc/%s/mem" % pid, 'rb')</p>
+<p>for line in maps_file.readlines():
+    m = re.match(r'([0-9A-Fa-f]+)-([0-9A-Fa-f]+) ([-r][-w])', line)
+    if m.group(3) == "rw" or m.group(3) == "r-" :
+        try:
+            start = int(m.group(1), 16)
+            if start &gt; 0xFFFFFFFFFFFF:
+                continue
+            print("\nOK : \n" + line+"\n")
+            end = int(m.group(2), 16)
+            mem_file.seek(start) 
+            chunk = mem_file.read(end - start)
+            print(chunk)
+            sys.stdout.flush()
+        except Exception as e:
+            print(str(e))<br />
+    else:
+        print("\nPASS : \n" + line+"\n")</p>
+<p>print("END")
+EOF
+```</p>
 <p>Run this program and grep for the prefix of our secret:</p>
-<div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> &gt;<span class="p">&amp;</span> memdump.log
-grep -o MYBIGS memdump.log
-</pre></div>
+<p><code>bash
+sudo python3 dumpmemory.py $SPID &gt;&amp; memdump.log
+grep -o MYBIGS memdump.log</code></p>
 <p>This will take some time but eventually it will print the full secret <strong>MYBIGS</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Enclaves in SIM mode</p>
@@ -3352,15 +3389,15 @@ by typing <em>control-C</em>.</p>
 <img alt="Finding secret in prerelease mode" src="../img/prerelease_finding_secrets.svg" />
 </center></p>
 <p>Let's start mysecret in an enclave, i.e., in hardware mode inside the container:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>HW ./mysecret
-</pre></div>
+<p><code>bash
+SCONE_VERSION=1 SCONE_MODE=HW ./mysecret</code></p>
 <p>Update environment variable <em>SPID</em> in a <strong>second</strong> terminal on your host:</p>
-<div class="highlight"><pre><span></span><span class="nv">SPID</span><span class="o">=</span><span class="k">$(</span>ps -a <span class="p">|</span> grep -v grep <span class="p">|</span> grep mysecret <span class="p">|</span> awk  <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
-</pre></div>
+<p><code>bash
+SPID=$(ps -a | grep -v grep | grep mysecret | awk  '{print $1}')</code></p>
 <p>and then try to find the secret:</p>
-<div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> &gt;<span class="p">&amp;</span> memdump_HW.log
-grep -o MYBIGS memdump_HW.log
-</pre></div>
+<p><code>bash
+sudo python3 dumpmemory.py $SPID &gt;&amp; memdump_HW.log
+grep -o MYBIGS memdump_HW.log</code></p>
 <p>And in few seconds you will see your secret.</p>
 <div class="admonition note">
 <p class="admonition-title">Enclaves in debug mode do not protect your secrets</p>
@@ -3371,23 +3408,23 @@ grep -o MYBIGS memdump_HW.log
 If enclave is signed with a suitable key, it will start in production mode.
 One can simply generate such a key for CPU that supports FLC. 
 To check, if your CPU supports FLC use:
-<div class="highlight"><pre><span></span>cpuid <span class="p">|</span> grep SGX_LC
-</pre></div>
+<code>bash
+cpuid | grep SGX_LC</code>
 or 
-<div class="highlight"><pre><span></span>lscpu <span class="p">|</span> grep sgx_lc
-</pre></div></p>
+<code>bash
+lscpu | grep sgx_lc</code></p>
 <p>You can generate a key with following script:</p>
-<div class="highlight"><pre><span></span>openssl genrsa -3 -out key.pem <span class="m">3072</span>
-</pre></div>
+<p><code>bash
+openssl genrsa -3 -out key.pem 3072</code></p>
 <p>And sign a binary with <a href="../scone-signer/">scone signer</a> like this:
-<div class="highlight"><pre><span></span>scone-signer sign -p --key<span class="o">=</span>key.pem ./mysecret
-</pre></div></p>
+<code>bash
+scone-signer sign -p --key=key.pem ./mysecret</code></p>
 <p>Then, <strong>kill the original program</strong> by typing <em>control-C</em> and start a new one that will run in production mode.
 And one more time, update environment variable <em>SPID</em> in a <strong>second</strong> terminal on your host:</p>
 <p>And then you run:</p>
-<div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> &gt;<span class="p">&amp;</span> memdump_PRD.log
-grep -o MYBIGS memdump_PRD.log
-</pre></div>
+<p><code>bash
+sudo python3 dumpmemory.py $SPID &gt;&amp; memdump_PRD.log
+grep -o MYBIGS memdump_PRD.log</code></p>
 <p>This time <code>grep</code> will not find secretes on stack.
 That is because enclave memory is encrypted and protected from outside access.
 Also, this example shows that if you provide secretes <strong>after</strong> attestation, it can not be extracted from SGX enclave.</p>
@@ -3396,8 +3433,8 @@ not encrypted: a copy of the original binary - which is used to start the enclav
 stays in the main memory outside the enclave. </p>
 <p>Let's look for the string <strong>THIS_IS_NOT_SECRET</strong> in our example application. 
 We can find this secret as follows:</p>
-<div class="highlight"><pre><span></span>sudo python3 dumpmemory.py <span class="nv">$SPID</span> <span class="p">|</span> strings -n <span class="m">5</span> <span class="p">|</span> grep THIS_IS_NOT_SECRET
-</pre></div>
+<p><code>bash
+sudo python3 dumpmemory.py $SPID | strings -n 5 | grep THIS_IS_NOT_SECRET</code></p>
 <p>Always use <a href="../CAS_session_lang_0_3/">SCONE policy</a> to provide secrets to enclaves.</p>
 <div class="footnote">
 <hr />

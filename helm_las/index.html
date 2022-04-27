@@ -1430,6 +1430,26 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#set-instance-to-the-name-of-your-las-instance" class="md-nav__link">
+    set INSTANCE to the name of your LAS instance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#set-namespace-in-case-you-do-not-use-the-default-namespace" class="md-nav__link">
+    set NAMESPACE in case you do not use the default namespace
+  </a>
+  
+    <nav class="md-nav" aria-label="set NAMESPACE in case you do not use the default namespace">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#troubleshooting" class="md-nav__link">
     Troubleshooting
@@ -3247,6 +3267,26 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#set-instance-to-the-name-of-your-las-instance" class="md-nav__link">
+    set INSTANCE to the name of your LAS instance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#set-namespace-in-case-you-do-not-use-the-default-namespace" class="md-nav__link">
+    set NAMESPACE in case you do not use the default namespace
+  </a>
+  
+    <nav class="md-nav" aria-label="set NAMESPACE in case you do not use the default namespace">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#troubleshooting" class="md-nav__link">
     Troubleshooting
@@ -3285,26 +3325,26 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 </div>
 <h2 id="deploying-scone-las_1">Deploying <span data-tooltip="The SCONE Local Attestation Service (LAS) is a per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.">SCONE LAS</span></h2>
 <p>The <code>sconeapps/las</code> chart will deploy <span data-tooltip="The SCONE Local Attestation Service (LAS) is a per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.">SCONE LAS</span>:</p>
-<div class="highlight"><pre><span></span>helm install las sconeapps/las
-</pre></div>
+<p><code>bash
+helm install las sconeapps/las</code></p>
 <p>This starts  <span data-tooltip="The SCONE Local Attestation Service (LAS) is a per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.">SCONE LAS</span> in the default <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> namespace. The application is called <code>las</code>. As an alternative, you can deploy <span data-tooltip="The SCONE Local Attestation Service (LAS) is a per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.">SCONE LAS</span> with <a href="../kubeapps/">Kubeapps</a>.</p>
 <h2 id="configuration-options">Configuration Options</h2>
 <p>You can learn about the configuration options by executing:</p>
-<div class="highlight"><pre><span></span>helm install las sconeapps/las --dry-run
-</pre></div>
+<p><code>bash
+helm install las sconeapps/las --dry-run</code></p>
 <p>One option to set is the <code>image</code> to be deployed. If you want to run in <span data-tooltip="In SGX we distinguish between debug, pre-release and release mode. In release mode, the enclave will be launched in production mode, i.e., any access - including debug access - will be prevented. Moreover, the code is compiled with optimizations switched on and without debug symbols.">release mode</span>, you need to specify a different <span data-tooltip="The SCONE Local Attestation Service (LAS) is a per-platform-service enabling remote attestation of SGX enclaves independently of the framework (i.e., SCONE or Intel SDK) used to create the enclave. It separates the development of SCONE-enabled applications from the Intel SDK by providing a stable interface to the attestation facilities of Intel's SDK and decouples the availability of applications deployed on the SCONE platform from Intel's Attestation Service, in conjunction with the CAS, through the introduction of an independent quoting enclave.">SCONE LAS</span> image by first defining environment variable <code>SCONE_LAS_IMAGE</code> appropriately. You can do this as follows:</p>
-<div class="highlight"><pre><span></span>helm install las sconeapps/las --set <span class="nv">image</span><span class="o">=</span><span class="nv">$SCONE_LAS_IMAGE</span>
-</pre></div>
+<p><code>bash
+helm install las sconeapps/las --set image=$SCONE_LAS_IMAGE</code></p>
 <p>You can check the status of this <strong>release</strong>, i.e., the instance that you just deployed, by executing:</p>
-<div class="highlight"><pre><span></span>helm status las
-</pre></div>
+<p><code>bash
+helm status las</code></p>
 <h2 id="running-on-azure-icelake-machines">Running on Azure Icelake machines</h2>
 <p>To run LAS on Azure Icelake machines (standalone VMs or AKS nodepools) and perform the local attestation of SCONE applications, some Azure-specific libraries are required. For that matter, we provide a special image crafted for Azure, that must be used if running on Icelakes 
 (families DCsv3 and DDCsv3): <code>registry.scontain.com:5050/sconecuratedimages/kubernetes:las.microsoft-azure</code></p>
 <p>You can install this version of LAS as follows:</p>
-<div class="highlight"><pre><span></span>helm install las sconeapps/las --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span>azure --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/kubernetes:las.microsoft-azure
-</pre></div>
+<p><code>bash
+helm install las sconeapps/las --set useSGXDevPlugin=azure --set image=registry.scontain.com:5050/sconecuratedimages/kubernetes:las.microsoft-azure</code></p>
 <h2 id="compatibility">Compatibility</h2>
 <p>Right now we maintain two LAS images: </p>
 <table>
@@ -3339,52 +3379,55 @@ https://kubernetes.io/">Kubernetes</span> namespace. The application is called <
 <p>SCONE policies can limit the execution of an  services to <a href="../CAS_session_lang_0_2/#platform-based-attestation">certain platforms</a>, i.e., to certain computers. For example, you might need to ensure that your data can only be processed in a certain datacenter. Each platform is identified by a unique public key: This is the public key of its local attestation service.</p>
 <p>When a <code>las</code> instance is restarted on the same platform, it will get the same public key. The public key might, however,  change after a microcode update or an update of the <code>las</code> code base. In these cases, you will have to update the list of permitted platforms in your policies.</p>
 <p>In a Kubernetes cluster, you can determine the platform ids with the help of the following bash function that queries the public keys of all <code>las</code> instances:</p>
-<div class="highlight"><pre><span></span><span class="c1"># set INSTANCE to the name of your LAS instance</span>
-<span class="c1"># set NAMESPACE in case you do not use the default namespace</span>
-<span class="k">function</span> get_platform_ids <span class="o">{</span>
-    <span class="nv">NAME</span><span class="o">=</span><span class="si">${</span><span class="nv">INSTANCE</span><span class="k">:-</span><span class="nv">las</span><span class="si">}</span>
-    <span class="nv">NS</span><span class="o">=</span><span class="si">${</span><span class="nv">NAMESPACE</span><span class="k">:-</span><span class="nv">default</span><span class="si">}</span>
-    kubectl get pod --namespace <span class="s2">&quot;</span><span class="nv">$NS</span><span class="s2">&quot;</span> --selector<span class="o">=</span><span class="s2">&quot;app.kubernetes.io/name=</span><span class="nv">$NAME</span><span class="s2">,app.kubernetes.io/instance=</span><span class="nv">$NAME</span><span class="s2">&quot;</span> -o json <span class="se">\</span>
-    <span class="p">|</span> python3   &lt;<span class="o">(</span>cat <span class="s">&lt;&lt;EOF</span>
-<span class="s">import sys, json, subprocess;</span>
-<span class="s">j=json.load(sys.stdin)</span>
-<span class="s">print(&quot;platforms: [&quot;, end=&quot;&quot;)</span>
-<span class="s">comma=&quot;&quot;</span>
-<span class="s">for i in j[&#39;items&#39;]:</span>
-<span class="s">    pubkey=subprocess.check_output(&quot;kubectl logs pod/%s | grep &#39;public key&#39; | tail -n 1 | awk &#39;{print \$8}&#39;&quot; % i[&#39;metadata&#39;][&#39;name&#39;], shell=True, encoding=&#39;ascii&#39;).rstrip(&quot;\n&quot;)</span>
-<span class="s">    print(comma, pubkey, end=&quot;&quot;)</span>
-<span class="s">    comma=&quot;, &quot;</span>
-<span class="s">print(&quot;]&quot;)</span>
-<span class="s">EOF</span>
-<span class="o">)</span>
-<span class="o">}</span>
-</pre></div>
+<p>```bash</p>
+<h1 id="set-instance-to-the-name-of-your-las-instance">set INSTANCE to the name of your LAS instance</h1>
+<h1 id="set-namespace-in-case-you-do-not-use-the-default-namespace">set NAMESPACE in case you do not use the default namespace</h1>
+<p>function get_platform_ids {
+    NAME=<span class="arithmatex"><span class="MathJax_Preview">{INSTANCE:-las}
+    NS=</span><script type="math/tex">{INSTANCE:-las}
+    NS=</script></span>{NAMESPACE:-default}
+    kubectl get pod --namespace "<span class="arithmatex"><span class="MathJax_Preview">NS" --selector="app.kubernetes.io/name=</span><script type="math/tex">NS" --selector="app.kubernetes.io/name=</script></span>NAME,app.kubernetes.io/instance=$NAME" -o json \
+    | python3   &lt;(cat &lt;&lt;EOF
+import sys, json, subprocess;
+j=json.load(sys.stdin)
+print("platforms: [", end="")
+comma=""
+for i in j['items']:
+    pubkey=subprocess.check_output("kubectl logs pod/%s | grep 'public key' | tail -n 1 | awk '{print $8}'" % i['metadata']['name'], shell=True, encoding='ascii').rstrip("\n")
+    print(comma, pubkey, end="")
+    comma=", "
+print("]")
+EOF
+)
+}
+```</p>
 <p>In case you do not execute <code>las</code> in the default Kubernets namespace, set environment variable <code>NAMESPACE</code>. If you do not name your service <code>las</code>, set environment variable <code>INSTANCE</code> accordingly. Then just execute:</p>
-<div class="highlight"><pre><span></span>get_platform_ids
-</pre></div>
+<p><code>bash
+get_platform_ids</code></p>
 <p>The output might look like this:</p>
-<div class="highlight"><pre><span></span><span class="nt">platforms</span><span class="p">:</span> <span class="p p-Indicator">[</span> <span class="nv">126C8098408FEB2002F5EB8B9E6C2AE26197E3617875633C5BD4EB4454278C34</span><span class="p p-Indicator">,</span>  <span class="nv">BCA7B05F55BCA38EA7A0BDEBDC402942BE77BEC7F0D3F37C72F6C1898047B312</span><span class="p p-Indicator">]</span>
-</pre></div>
+<p><code>yaml
+platforms: [ 126C8098408FEB2002F5EB8B9E6C2AE26197E3617875633C5BD4EB4454278C34,  BCA7B05F55BCA38EA7A0BDEBDC402942BE77BEC7F0D3F37C72F6C1898047B312]</code></p>
 <p>You can copy and paste this to your policy to ensure that your application(s) can only run in a certain Kubernetes cluster.</p>
 <p>If you do not even trust your Kubernetes cluster to correctly determine the public keys of the LAS instances, let us know and we can suggest more secure alternatives.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>As we mentioned above, one can check if the helm release <code>las</code> is installed by executing:</p>
-<div class="highlight"><pre><span></span>helm status las
-</pre></div>
+<p><code>bash
+helm status las</code></p>
 <p>You can retrieve the manifest for las as follows:</p>
-<div class="highlight"><pre><span></span>helm get manifest las
-</pre></div>
+<p><code>bash
+helm get manifest las</code></p>
 <p>One can determine the spawned <code>las</code> pods as follows:</p>
-<div class="highlight"><pre><span></span>kubectl get pods <span class="p">|</span> grep las
-</pre></div>
+<p><code>bash
+kubectl get pods | grep las</code></p>
 <p>This might result in an output like follows:</p>
-<div class="highlight"><pre><span></span>las-fbhgn   1/1     Running   0          16m
-</pre></div>
+<p><code>text
+las-fbhgn   1/1     Running   0          16m</code></p>
 <p>We can now look at the logs as follows:</p>
-<div class="highlight"><pre><span></span>kubectl logs las-fbhgn
-</pre></div>
+<p><code>bash
+kubectl logs las-fbhgn</code></p>
 <p>and this will print a log which might look as follows</p>
-<div class="highlight"><pre><span></span>/var/run/aesmd/aesm.socket not found - Starting local in-container AESM service
+<p><code>text
+/var/run/aesmd/aesm.socket not found - Starting local in-container AESM service
 The path of system bundle: System Bundle
 ecdsa_quote_service_bundle_name:2.0.0
 epid_quote_service_bundle_name:2.0.0
@@ -3393,8 +3436,7 @@ linux_network_service_bundle_name:2.0.0
 pce_service_bundle_name:2.0.0
 quote_ex_service_bundle_name:2.0.0
 system_bundle:4.0.0
-...
-</pre></div>
+...</code></p>
 
               
             </article>

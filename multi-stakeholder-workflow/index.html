@@ -3339,12 +3339,12 @@ access <strong>vol 1</strong> and <strong>policy 2</strong> the permission to ac
 <img alt="Development Flow" src="../img/mse_sconify.png#fullwidth" title="Sconifying the multi-stakeholder example." />
 </center></p>
 <p>Running this example, you would need to clone the code:</p>
-<div class="highlight"><pre><span></span>git clone https://github.com/scontain/multi-stakeholder-workflow.git
-</pre></div>
+<p><code>bash
+git clone https://github.com/scontain/multi-stakeholder-workflow.git</code></p>
 <p>Assuming that you defined your credentials already (<a href="../faq_sconify/">setting your credentials</a>), you can create the confidential images
 by executing:</p>
-<div class="highlight"><pre><span></span>./sconify-compute.sh
-</pre></div>
+<p><code>bash
+./sconify-compute.sh</code></p>
 <p>Note that in reality, all stakeholders would sconify their images separately because the stakeholders only want to give
 access to confidential images to other stakeholders. For simplicity, we perform this sconification of the images in a single script.</p>
 <h2 id="deployment-flow">Deployment Flow</h2>
@@ -3352,29 +3352,29 @@ access to confidential images to other stakeholders. For simplicity, we perform 
 <img alt="Deployment Flow" src="../img/mse_deploy.png#fullwidth" title="Deploying the multi-stakeholder example." />
 </center></p>
 <p>One can deploy this workflow to a Kubernetes cluster by executing:</p>
-<div class="highlight"><pre><span></span>./deploy-compute.sh
-</pre></div>
+<p><code>bash
+./deploy-compute.sh</code></p>
 <p>The native Dockerfile passes a value <code>15</code> to the first container. This value is read from an encrypted volume and printed to the log. The tail of the output should therefore look like</p>
-<div class="highlight"><pre><span></span>15
-DONE!
-</pre></div>
+<p><code>text
+15
+DONE!</code></p>
 <p>As a next step, you could change the native Dockerfile (path <code>containers/input-x/Dockerfile</code>) to set a different value by
 passing an option <code>-v VALUE</code> to the Python script. For example, you could set the command in the Dockerfile to</p>
-<div class="highlight"><pre><span></span><span class="k">CMD</span> <span class="p">[</span> <span class="s2">&quot;python3&quot;</span> <span class="p">,</span> <span class="s2">&quot;/code/input-x.py&quot;</span><span class="p">,</span> <span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;20&quot;</span> <span class="p">]</span>
-</pre></div>
+<p><code>Dockerfile
+CMD [ "python3" , "/code/input-x.py", "-v", "20" ]</code></p>
 <p>After running <code>sconify_compute</code> again, the policy of the sconified input container will now specify that we pass option <code>-v 20</code> to the input container: </p>
-<div class="highlight"><pre><span></span>services:
+<p><code>yml
+services:
    - name: input-x-service
      image_name: input-x-service_image
      mrenclaves: [09ed4f279ffa98ab045bde1ffcc2ca75f4f00b68fb8bd0d3ddb5430d1dbd7490]
-     command: &quot;python3 /code/input-x.py -v 20&quot;
+     command: "python3 /code/input-x.py -v 20"
      environment:
          SCONE_MODE: hw
-         SCONE_LOG: &quot;7&quot;
-         LANG: &quot;C.UTF-8&quot;
-         PATH: &quot;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;
-     pwd: /
-</pre></div>
+         SCONE_LOG: "7"
+         LANG: "C.UTF-8"
+         PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+     pwd: /</code></p>
 <p>In this case, the output of the computation will be <code>20</code> instead of <code>15</code>.</p>
 
               

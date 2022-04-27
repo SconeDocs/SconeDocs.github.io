@@ -2592,15 +2592,42 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#breakpoints" class="md-nav__link">
-    Breakpoints
-  </a>
+      </ul>
+    </nav>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gdb" class="md-nav__link">
+    (gdb)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0-0x00007f17870f69dd-in-pthread_join-threadid139739022911232-thread_return0x7ffe1c807928-at-pthread_joinc90" class="md-nav__link">
+    0  0x00007f17870f69dd in pthread_join (threadid=139739022911232, thread_return=0x7ffe1c807928) at pthread_join.c:90
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-0x0000002000004053-in-main-argc1-argv0x7ffe1c807c18-envp0x7ffe1c807c28-at-toolsstarter-execc764" class="md-nav__link">
+    1  0x0000002000004053 in main (argc=1, argv=0x7ffe1c807c18, envp=0x7ffe1c807c28) at ./tools/starter-exec.c:764
+  </a>
+  
+    <nav class="md-nav" aria-label="1  0x0000002000004053 in main (argc=1, argv=0x7ffe1c807c18, envp=0x7ffe1c807c28) at ./tools/starter-exec.c:764">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breakpoints" class="md-nav__link">
+    Breakpoints
+  </a>
   
 </li>
         
@@ -3263,15 +3290,42 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#breakpoints" class="md-nav__link">
-    Breakpoints
-  </a>
+      </ul>
+    </nav>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gdb" class="md-nav__link">
+    (gdb)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#0-0x00007f17870f69dd-in-pthread_join-threadid139739022911232-thread_return0x7ffe1c807928-at-pthread_joinc90" class="md-nav__link">
+    0  0x00007f17870f69dd in pthread_join (threadid=139739022911232, thread_return=0x7ffe1c807928) at pthread_join.c:90
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-0x0000002000004053-in-main-argc1-argv0x7ffe1c807c18-envp0x7ffe1c807c28-at-toolsstarter-execc764" class="md-nav__link">
+    1  0x0000002000004053 in main (argc=1, argv=0x7ffe1c807c18, envp=0x7ffe1c807c28) at ./tools/starter-exec.c:764
+  </a>
+  
+    <nav class="md-nav" aria-label="1  0x0000002000004053 in main (argc=1, argv=0x7ffe1c807c18, envp=0x7ffe1c807c28) at ./tools/starter-exec.c:764">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breakpoints" class="md-nav__link">
+    Breakpoints
+  </a>
   
 </li>
         
@@ -3305,43 +3359,42 @@
 <p>SCONE supports cross-compiling GO programs to run these inside of SGX enclaves. The GO cross-compiler is part of image <strong>registry.scontain.com:5050/sconecuratedimages/crosscompilers</strong>.</p>
 <h1 id="example">Example</h1>
 <p>Ensure that you have the newest SCONE cross compiler image and determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>:</p>
-<div class="highlight"><pre><span></span>docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<p><code>bash
+docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers
 determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
-</pre></div>
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com:5050/sconecuratedimages/crosscompilers</code></p>
 <p>In case you do not have an SGX driver installed, no device will be mounted and
 applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <p>Lets consider a simple GO program (take from a <a href="https://golang.org/doc/articles/wiki/">GO tutorial</a>):</p>
-<div class="highlight"><pre><span></span>cat &gt; web-srv.go <span class="s">&lt;&lt; EOF</span>
-<span class="s">package main</span>
-
-<span class="s">import (</span>
-<span class="s">    &quot;os&quot;</span>
-<span class="s">    &quot;fmt&quot;</span>
-<span class="s">    &quot;net/http&quot;</span>
-<span class="s">)</span>
-
-<span class="s">func handler(w http.ResponseWriter, r *http.Request) {</span>
-<span class="s">    fmt.Fprintf(w, &quot;Hi there, I love %s!\n&quot;, r.URL.Path[1:])</span>
-<span class="s">    if r.URL.Path[1:] == &quot;EXIT&quot; {</span>
-<span class="s">        os.Exit(0)</span>
-<span class="s">    }</span>
-<span class="s">}</span>
-
-<span class="s">func main() {</span>
-<span class="s">    http.HandleFunc(&quot;/&quot;, handler)</span>
-<span class="s">    http.ListenAndServe(&quot;:8080&quot;, nil)</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; web-srv.go &lt;&lt; EOF
+package main</p>
+<p>import (
+    "os"
+    "fmt"
+    "net/http"
+)</p>
+<p>func handler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Hi there, I love %s!\n", r.URL.Path[1:])
+    if r.URL.Path[1:] == "EXIT" {
+        os.Exit(0)
+    }
+}</p>
+<p>func main() {
+    http.HandleFunc("/", handler)
+    http.ListenAndServe(":8080", nil)
+}
+EOF
+```</p>
 <p>You can cross-compile this program as follows:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_HEAP</span><span class="o">=</span>1G scone-gccgo web-srv.go -O3 -o web-srv-go -g
-</pre></div>
+<p><code>bash
+SCONE_HEAP=1G scone-gccgo web-srv.go -O3 -o web-srv-go -g</code></p>
 <p>You can start the compiled program (and enable some debug messages) as follows:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./web-srv-go <span class="p">&amp;</span>
-</pre></div>
+<p><code>bash
+SCONE_VERSION=1 ./web-srv-go &amp;</code></p>
 <p>The output should look as follows:</p>
-<div class="highlight"><pre><span></span>export SCONE_QUEUES=4
+<p>```
+export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -3358,33 +3411,28 @@ export SCONE_ALLOW_DLOPEN=no
 export SCONE_MPROTECT=no
 Revision: b1e014e64b4d332a51802580ec3252370ffe44bb (Wed May 30 15:17:05 2018 +0200)
 Branch: master
-Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl
-
-Enclave hash: dea1dadce2884bbfd642c10f436c1d02db7ac0f4e4f3abe5d2fde031056405dd
-</pre></div>
+Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl</p>
+<p>Enclave hash: dea1dadce2884bbfd642c10f436c1d02db7ac0f4e4f3abe5d2fde031056405dd
+```</p>
 <p>You can now connect to port 8080, for example, with <em>curl</em>:</p>
-<div class="highlight"><pre><span></span>curl localhost:8080/SCONE
-</pre></div>
+<p><code>bash
+curl localhost:8080/SCONE</code></p>
 <p>The output should be as follows:</p>
-<div class="highlight"><pre><span></span>Hi there, I love SCONE!
-</pre></div>
+<p><code>Hi there, I love SCONE!</code></p>
 <p>You can terminate the server with</p>
-<div class="highlight"><pre><span></span>curl localhost:8080/EXIT
-</pre></div>
+<p><code>bash
+curl localhost:8080/EXIT</code></p>
 <p>This will output the following text:</p>
-<div class="highlight"><pre><span></span>curl: (52) Empty reply from server
-</pre></div>
+<p><code>curl: (52) Empty reply from server</code></p>
 <h2 id="building-dependencies">Building Dependencies</h2>
 <p>Building larger applications that include external dependencies can be difficult when using <strong>scone-gccgo</strong> alone.
 To simplify the building of complex applications, we recommend the use of the <strong>go</strong> command.</p>
 <p>First, install <strong>go</strong> inside a 
 <strong>registry.scontain.com:5050/sconecuratedimages/crosscompilers</strong> container as follows:</p>
-<div class="highlight"><pre><span></span>$ apk update
-$ apk add go
-</pre></div>
+<p><code>$ apk update
+$ apk add go</code></p>
 <p>You can then build your dependencies with the help of <strong>go</strong> and the SCONE go crosscompiler:</p>
-<div class="highlight"><pre><span></span>$ go build -compiler gccgo -buildmode=exe
-</pre></div>
+<p><code>$ go build -compiler gccgo -buildmode=exe</code></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>you need to specify <strong>gccgo</strong> not <strong>scone-gccgo</strong>: <strong>gccgo</strong> is an alias of  <strong>scone-gccgo</strong>.</p>
@@ -3394,50 +3442,50 @@ $ apk add go
 <p>SCONE supports debugging of programs running inside of an enclave with the help of gdb.</p>
 <h3 id="debugging-inside-of-a-container">Debugging inside of a container</h3>
 <p>Standard containers have not sufficient rights to use the debugger.  Hence, you must start a container with <em>SYS_PTRACE</em> capability. For example:</p>
-<div class="highlight"><pre><span></span>docker run --cap-add SYS_PTRACE -it -p <span class="m">8080</span>:8080 -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>/EXAMPLE:/usr/src/myapp -w /usr/src/myapp  registry.scontain.com:5050/sconecuratedimages/crosscompilers
-</pre></div>
+<p><code>bash
+docker run --cap-add SYS_PTRACE -it -p 8080:8080 -v "$PWD"/EXAMPLE:/usr/src/myapp -w /usr/src/myapp  registry.scontain.com:5050/sconecuratedimages/crosscompilers</code></p>
 <h3 id="handling-illegal-instructions">Handling Illegal instructions</h3>
 <p>Some instructions, like CPUID, are not permitted inside of enclaves. For some of these instructions, like CPUID, we provide an automatic emulation. However, we recommend not to use any illegal instructions inside of enclaves despite having an automatic emulation of these instructions. For example, we provide static replacements of the CPUID instruction. </p>
-<div class="highlight"><pre><span></span>scone-gdb ./web-srv-go
-</pre></div>
+<p><code>bash
+scone-gdb ./web-srv-go</code></p>
 <p>This will produce the following output:</p>
-<div class="highlight"><pre><span></span>GNU gdb (Ubuntu 7.12.50.20170314-0ubuntu1.1) 7.12.50.20170314-git
+<p><code>GNU gdb (Ubuntu 7.12.50.20170314-0ubuntu1.1) 7.12.50.20170314-git
 Copyright (C) 2017 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;
 This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.  Type &quot;show copying&quot;
-and &quot;show warranty&quot; for details.
-This GDB was configured as &quot;x86_64-linux-gnu&quot;.
-Type &quot;show configuration&quot; for configuration details.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
 For bug reporting instructions, please see:
 &lt;http://www.gnu.org/software/gdb/bugs/&gt;.
 Find the GDB manual and other documentation resources online at:
 &lt;http://www.gnu.org/software/gdb/documentation/&gt;.
-For help, type &quot;help&quot;.
-Type &quot;apropos word&quot; to search for commands related to &quot;word&quot;...
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
 Source directories searched: /opt/scone/scone-gdb/gdb-sgxmusl-plugin:$cdir:$cwd
-Setting environment variable &quot;LD_PRELOAD&quot; to null value.
+Setting environment variable "LD_PRELOAD" to null value.
 Reading symbols from ./web-srv-go...done.
-[SCONE] Initializing...
-</pre></div>
+[SCONE] Initializing...</code></p>
 <p>If your program contains some illegal instructions, you need to ask the debugger to forward the signals,
 that these illegal instructions cause, to the program via <strong>handle SIGILL nostop pass</strong>: </p>
-<div class="highlight"><pre><span></span># (gdb) 
-handle SIGILL nostop pass
-</pre></div>
+<p>```</p>
+<h1 id="gdb">(gdb)</h1>
+<p>handle SIGILL nostop pass
+```</p>
 <p>This will produce the following output:</p>
-<div class="highlight"><pre><span></span>Signal        Stop  Print   Pass to program Description
+<p><code>Signal        Stop  Print   Pass to program Description
 SIGILL        No    Yes     Yes             Illegal instruction
-(gdb)
-</pre></div>
+(gdb)</code></p>
 <p>Since we do not patch the CPUID instructions in this run, </p>
-<div class="highlight"><pre><span></span>run
-</pre></div>
+<p><code>bash
+run</code></p>
 <p>you will see something like this:</p>
-<div class="highlight"><pre><span></span>Starting program: /usr/src/myapp/web-srv-go 
+<p>```
+Starting program: /usr/src/myapp/web-srv-go 
 warning: Error disabling address space randomization: Operation not permitted
 [Thread debugging using libthread_db enabled]
-Using host libthread_db library &quot;/lib/x86_64-linux-gnu/libthread_db.so.1&quot;.
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
 [SCONE] Enclave base: 1000000000
 [SCONE] Loaded debug symbols
 [New Thread 0x7f1786d26700 (LWP 105)]
@@ -3447,86 +3495,76 @@ Using host libthread_db library &quot;/lib/x86_64-linux-gnu/libthread_db.so.1&qu
 [New Thread 0x7f1787502700 (LWP 109)]
 [New Thread 0x7f17874fa700 (LWP 110)]
 [New Thread 0x7f17874f2700 (LWP 111)]
-[New Thread 0x7f17874ea700 (LWP 112)]
-
-Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
-
-Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
-
-Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
-
-Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
-
-Thread 6 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
-
-Thread 8 &quot;web-srv-go&quot; received signal SIGILL, Illegal instruction.
-</pre></div>
+[New Thread 0x7f17874ea700 (LWP 112)]</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 8 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>```</p>
 <p>You could interrupt this execution via control c:</p>
-<div class="highlight"><pre><span></span>^C
-Thread <span class="m">1</span> <span class="s2">&quot;web-srv-go&quot;</span> received signal SIGINT, Interrupt.
-0x00007f17870f69dd in pthread_join <span class="o">(</span><span class="nv">threadid</span><span class="o">=</span><span class="m">139739022911232</span>, <span class="nv">thread_return</span><span class="o">=</span>0x7ffe1c807928<span class="o">)</span> at pthread_join.c:90
-<span class="m">90</span>  pthread_join.c: No such file or directory.
-<span class="o">(</span>gdb<span class="o">)</span> where
-<span class="c1">#0  0x00007f17870f69dd in pthread_join (threadid=139739022911232, thread_return=0x7ffe1c807928) at pthread_join.c:90</span>
-<span class="c1">#1  0x0000002000004053 in main (argc=1, argv=0x7ffe1c807c18, envp=0x7ffe1c807c28) at ./tools/starter-exec.c:764</span>
-<span class="o">(</span>gdb<span class="o">)</span> cont
+<p>```bash
+^C
+Thread 1 "web-srv-go" received signal SIGINT, Interrupt.
+0x00007f17870f69dd in pthread_join (threadid=139739022911232, thread_return=0x7ffe1c807928) at pthread_join.c:90
+90  pthread_join.c: No such file or directory.
+(gdb) where</p>
+<h1 id="0-0x00007f17870f69dd-in-pthread_join-threadid139739022911232-thread_return0x7ffe1c807928-at-pthread_joinc90">0  0x00007f17870f69dd in pthread_join (threadid=139739022911232, thread_return=0x7ffe1c807928) at pthread_join.c:90</h1>
+<h1 id="1-0x0000002000004053-in-main-argc1-argv0x7ffe1c807c18-envp0x7ffe1c807c28-at-toolsstarter-execc764">1  0x0000002000004053 in main (argc=1, argv=0x7ffe1c807c18, envp=0x7ffe1c807c28) at ./tools/starter-exec.c:764</h1>
+<p>(gdb) cont
 Continuing.
-</pre></div>
+```</p>
 <h3 id="breakpoints">Breakpoints</h3>
 <p>scone-gdb support breakpoints. Say, we want to get control in the debugger whenever a request is being
 processed by the handler. We would set a breakpoint at function <strong>main.handler</strong> as follows:</p>
-<div class="highlight"><pre><span></span>scone-gdb ./web-srv-go
+<p>```bash
+scone-gdb ./web-srv-go
 ...
-<span class="o">[</span>SCONE<span class="o">]</span> Initializing...
-<span class="o">(</span>gdb<span class="o">)</span> handle SIGILL nostop pass
+[SCONE] Initializing...
+(gdb) handle SIGILL nostop pass
 Signal        Stop      Print   Pass to program Description
 SIGILL        No        Yes     Yes             Illegal instruction
-<span class="o">(</span>gdb<span class="o">)</span> <span class="nb">break</span> main.handler
-Function <span class="s2">&quot;main.handler&quot;</span> not defined.
-Make breakpoint pending on future shared library load? <span class="o">(</span>y or <span class="o">[</span>n<span class="o">])</span> y
-Breakpoint <span class="m">1</span> <span class="o">(</span>main.handler<span class="o">)</span> pending.
-<span class="o">(</span>gdb<span class="o">)</span> run
+(gdb) break main.handler
+Function "main.handler" not defined.
+Make breakpoint pending on future shared library load? (y or [n]) y
+Breakpoint 1 (main.handler) pending.
+(gdb) run
 Starting program: /usr/src/myapp/web-srv-go 
 warning: Error disabling address space randomization: Operation not permitted
-<span class="o">[</span>Thread debugging using libthread_db enabled<span class="o">]</span>
-Using host libthread_db library <span class="s2">&quot;/lib/x86_64-linux-gnu/libthread_db.so.1&quot;</span>.
-<span class="o">[</span>SCONE<span class="o">]</span> Enclave base: <span class="m">1000000000</span>
-<span class="o">[</span>SCONE<span class="o">]</span> Loaded debug symbols
-<span class="o">[</span>New Thread 0x7fb6cad32700 <span class="o">(</span>LWP <span class="m">243</span><span class="o">)]</span>
-<span class="o">[</span>New Thread 0x7fb6ca531700 <span class="o">(</span>LWP <span class="m">244</span><span class="o">)]</span>
-<span class="o">[</span>New Thread 0x7fb6c9d30700 <span class="o">(</span>LWP <span class="m">245</span><span class="o">)]</span>
-<span class="o">[</span>New Thread 0x7fb6c952f700 <span class="o">(</span>LWP <span class="m">246</span><span class="o">)]</span>
-<span class="o">[</span>New Thread 0x7fb6cb50e700 <span class="o">(</span>LWP <span class="m">247</span><span class="o">)]</span>
-<span class="o">[</span>New Thread 0x7fb6cb506700 <span class="o">(</span>LWP <span class="m">248</span><span class="o">)]</span>
-<span class="o">[</span>New Thread 0x7fb6cb4fe700 <span class="o">(</span>LWP <span class="m">249</span><span class="o">)]</span>
-<span class="o">[</span>New Thread 0x7fb6cb4f6700 <span class="o">(</span>LWP <span class="m">250</span><span class="o">)]</span>
-
-Thread <span class="m">6</span> <span class="s2">&quot;web-srv-go&quot;</span> received signal SIGILL, Illegal instruction.
-
-Thread <span class="m">6</span> <span class="s2">&quot;web-srv-go&quot;</span> received signal SIGILL, Illegal instruction.
-
-Thread <span class="m">6</span> <span class="s2">&quot;web-srv-go&quot;</span> received signal SIGILL, Illegal instruction.
-
-Thread <span class="m">6</span> <span class="s2">&quot;web-srv-go&quot;</span> received signal SIGILL, Illegal instruction.
-
-Thread <span class="m">6</span> <span class="s2">&quot;web-srv-go&quot;</span> received signal SIGILL, Illegal instruction.
-
-Thread <span class="m">6</span> <span class="s2">&quot;web-srv-go&quot;</span> received signal SIGILL, Illegal instruction.
-</pre></div>
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[SCONE] Enclave base: 1000000000
+[SCONE] Loaded debug symbols
+[New Thread 0x7fb6cad32700 (LWP 243)]
+[New Thread 0x7fb6ca531700 (LWP 244)]
+[New Thread 0x7fb6c9d30700 (LWP 245)]
+[New Thread 0x7fb6c952f700 (LWP 246)]
+[New Thread 0x7fb6cb50e700 (LWP 247)]
+[New Thread 0x7fb6cb506700 (LWP 248)]
+[New Thread 0x7fb6cb4fe700 (LWP 249)]
+[New Thread 0x7fb6cb4f6700 (LWP 250)]</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.</p>
+<p>Thread 6 "web-srv-go" received signal SIGILL, Illegal instruction.
+```</p>
 <p>Note that at the time when we are setting the breakpoint, the symbols of the code running inside
 of the enclave are not yet known. Hence, we just let gdb know that the symbol will be defined later on.</p>
 <p>We are now sending a request with the help of <em>curl</em> from a different window. This triggers the breakpoint:</p>
-<div class="highlight"><pre><span></span><span class="o">[</span>Switching to Thread 0x7fb6cb506700 <span class="o">(</span>LWP <span class="m">248</span><span class="o">)]</span>
-
-Thread <span class="m">7</span> <span class="s2">&quot;web-srv-go&quot;</span> hit Breakpoint <span class="m">1</span>, main.handler <span class="o">(</span><span class="nv">w</span><span class="o">=</span>..., <span class="nv">r</span><span class="o">=</span>0x100909e300<span class="o">)</span> at web-srv.go:8
-<span class="m">8</span>       func handler<span class="o">(</span>w http.ResponseWriter, r *http.Request<span class="o">)</span> <span class="o">{</span>
-<span class="o">(</span>gdb<span class="o">)</span> n
-<span class="m">9</span>           fmt.Fprintf<span class="o">(</span>w, <span class="s2">&quot;Hi there, I love %s!&quot;</span>, r.URL.Path<span class="o">[</span><span class="m">1</span>:<span class="o">])</span>
-<span class="o">(</span>gdb<span class="o">)</span> n
-<span class="m">8</span>       func handler<span class="o">(</span>w http.ResponseWriter, r *http.Request<span class="o">)</span> <span class="o">{</span>
-<span class="o">(</span>gdb<span class="o">)</span> c
+<p>```bash
+[Switching to Thread 0x7fb6cb506700 (LWP 248)]</p>
+<p>Thread 7 "web-srv-go" hit Breakpoint 1, main.handler (w=..., r=0x100909e300) at web-srv.go:8
+8       func handler(w http.ResponseWriter, r *http.Request) {
+(gdb) n
+9           fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
+(gdb) n
+8       func handler(w http.ResponseWriter, r *http.Request) {
+(gdb) c
 Continuing.
-</pre></div>
+```</p>
 <h2 id="screencast">Screencast</h2>
 <script id="asciicast-285881" src="https://asciinema.org/a/285881.js" async></script>
 

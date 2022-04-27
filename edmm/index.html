@@ -3313,39 +3313,39 @@
 <h3 id="determining-mrenclave">Determining <strong>MrEnclave</strong></h3>
 <p>The <strong>MrEnclave</strong> changes if one enables <strong>EDMM</strong>. Therefore, when determining <strong>MrEnclave</strong>, we need to specify that we want to determine <strong>MrEnclave</strong> either for <strong>EDMM</strong> enabled or disabled.</p>
 <p>Consider that we want to determine <strong>MrEnclave</strong> of a confidential program <code>./test-c</code>. To determine <strong>MrEnclave</strong> for disabled <strong>EDMM</strong>, we can execute:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">nonedmm_hash</span><span class="o">=</span><span class="k">$(</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./test-c<span class="k">)</span>
-</pre></div>
+<p><code>bash
+export nonedmm_hash=$(SCONE_HASH=1 ./test-c)</code></p>
 <p>Environment variable <code>nonedmm_hash</code> will contain <strong>MrEnclave</strong> of  <code>./test-c</code>. To determine <strong>MrEnclave</strong> for <strong>EDMM</strong> enabled, you can execute:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">edmm_hash</span><span class="o">=</span><span class="k">$(</span><span class="nv">SCONE_EDMM_HASH</span><span class="o">=</span><span class="m">1</span> ./test-c<span class="k">)</span>
-</pre></div>
+<p><code>bash
+export edmm_hash=$(SCONE_EDMM_HASH=1 ./test-c)</code></p>
 <h3 id="enabling-edmm">Enabling EDMM</h3>
 <p>When starting an application, by default <strong>EDMM</strong> is disabled. One can enable EDMM by setting:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_EDMM_MODE</span><span class="o">=</span><span class="nb">enable</span>
-</pre></div>
+<p><code>bash
+export SCONE_EDMM_MODE=enable</code></p>
 <p>Note that the application will fail in case <strong>EDMM</strong> is not supported by the operating system or by the CPU.</p>
 <p>One can explicitly disable EDMM by setting</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_EDMM_MODE</span><span class="o">=</span><span class="nb">enable</span>
-</pre></div>
+<p><code>bash
+export SCONE_EDMM_MODE=enable</code></p>
 <p>SCONE also supports an <em>automatic</em> mode in which <strong>EDMM</strong> is used whenever it is supported by the CPU and the operating system:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_EDMM_MODE</span><span class="o">=</span>auto
-</pre></div>
+<p><code>bash
+export SCONE_EDMM_MODE=auto</code></p>
 <p>Running an application in auto mode, one would list in the SCONE session policy for with and without <strong>EDMM</strong>:</p>
-<div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">test-c</span>
-    <span class="nt">attestation</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">mrenclave</span><span class="p">:</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">$nonedmm_hash</span>
-          <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">$edmm_hash</span>
-</pre></div>
+<p><code>yaml
+services:
+  - name: test-c
+    attestation:
+      - mrenclave:
+          - $nonedmm_hash
+          - $edmm_hash</code></p>
 <h3 id="heap-size">Heap Size</h3>
 <p>When enabling <strong>EDMM</strong>, only a minimal heap is allocated at startup. By default, this is 20 MB. One can change the size of this initial heap with the help of environment variable <code>SCONE_MIN_HEAP</code>.</p>
 <p>For example, we could increase the initial heap to 30MB as follows:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_MIN_HEAP</span><span class="o">=</span>30M
-</pre></div>
+<p><code>bash
+export SCONE_MIN_HEAP=30M</code></p>
 <p>Note that it is typically a little faster to allocate initially at least all the heap pages that are needed for the program to start up.</p>
 <p>When using EDMM, one should set <strong>SCONE_HEAP</strong> sufficiently high such that the application never terminates because it does not have sufficient memory.</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>8G
-</pre></div>
+<p><code>bash
+export SCONE_HEAP=8G</code></p>
 <h3 id="signing">Signing</h3>
 <p>When signing an application with <a href="../scone-signer/"><code>scone-signer</code></a>, there are two signatures added:</p>
 <ul>

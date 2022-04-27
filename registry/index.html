@@ -3374,8 +3374,8 @@
 </center></p>
 <h2 id="docker-login">docker login</h2>
 <p>You can log into the registry as follows:</p>
-<div class="highlight"><pre><span></span>docker login registry.scontain.com:5050
-</pre></div>
+<p><code>bash
+docker login registry.scontain.com:5050</code></p>
 <p>using your</p>
 <ul>
 <li>your ID as <code>username</code>, and</li>
@@ -3384,11 +3384,11 @@
 <h2 id="docker-pull">docker pull</h2>
 <p>When you execute a <code>docker pull</code>, you now need to specify the registry <code>registry.scontain.com:5050</code> in each pull request.</p>
 <p>Instead of pulling the image <code>sconecuratedimages/crosscompilers:alpine</code> like this:</p>
-<div class="highlight"><pre><span></span>docker pull sconecuratedimages/crosscompilers:alpine
-</pre></div>
+<p><code>bash
+docker pull sconecuratedimages/crosscompilers:alpine</code></p>
 <p>you now need to pull this image like this:</p>
-<div class="highlight"><pre><span></span>docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers:alpine
-</pre></div>
+<p><code>bash
+docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers:alpine</code></p>
 <h2 id="password-reset">Password Reset</h2>
 <p>To reset your password, please visit
 <a href="https://gitlab.scontain.com/users/password/new">https://gitlab.scontain.com/users/password/new</a></p>
@@ -3406,51 +3406,51 @@ that one can use to automate the searches. We show how to use this API.</p>
 <li>pressing button <strong>create personal access token</strong>.</li>
 </ul>
 <p>Say, you store this token in an environment variable <code>SCONE_HUB_ACCESS_TOKEN</code>, i.e.,</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span><span class="s2">&quot;YOUR-API-TOKEN-HERE&quot;</span>
-</pre></div>
+<p><code>bash
+export SCONE_HUB_ACCESS_TOKEN="YOUR-API-TOKEN-HERE"</code></p>
 <h3 id="project-ids">Project IDs</h3>
 <p>Each image repository is associated with a project and each project has a unique project ID. To find
 the project ID for a image repository, let's say you want to find the project ID for a repo <code>crosscompiler</code>, you could 
 do this as follows:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">REPO</span><span class="o">=</span>crosscompiler
-curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects?search=</span><span class="nv">$REPO</span><span class="s2">&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].id,.[].name&#39;</span>
-</pre></div>
+<p><code>bash
+export REPO=crosscompiler
+curl -s -H "PRIVATE-TOKEN: $SCONE_HUB_ACCESS_TOKEN" "https://gitlab.scontain.com/api/v4/projects?search=$REPO" | jq '.[].id,.[].name'</code></p>
 <p>This would output something like</p>
-<div class="highlight"><pre><span></span>17
-&quot;crosscompilers&quot;
-</pre></div>
+<p><code>text
+17
+"crosscompilers"</code></p>
 <p>saying that <code>17</code> is the project ID of repo <code>sconecuratedimages/crosscompilers</code>. You could now set 
 the project ID and list all image tags of this repo:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PROJECT_ID</span><span class="o">=</span><span class="k">$(</span>curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects?search=</span><span class="nv">$REPO</span><span class="s2">&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].id&#39;</span><span class="k">)</span>
-curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects/</span><span class="nv">$PROJECT_ID</span><span class="s2">/registry/repositories?tags=1&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].tags[].name&#39;</span>
-</pre></div>
+<p><code>bash
+export PROJECT_ID=$(curl -s -H "PRIVATE-TOKEN: $SCONE_HUB_ACCESS_TOKEN" "https://gitlab.scontain.com/api/v4/projects?search=$REPO" | jq '.[].id')
+curl -s -H "PRIVATE-TOKEN: $SCONE_HUB_ACCESS_TOKEN" "https://gitlab.scontain.com/api/v4/projects/$PROJECT_ID/registry/repositories?tags=1" | jq '.[].tags[].name'</code></p>
 <p>This will output many tags like</p>
-<div class="highlight"><pre><span></span>&quot;alpine&quot;
-&quot;alpine-scone1&quot;
-&quot;alpine-scone1.0&quot;
-&quot;alpine-scone1.0.0&quot;
-&quot;alpine-scone1.0.1&quot;
-&quot;alpine-scone2&quot;
-...
-</pre></div>
+<p><code>text
+"alpine"
+"alpine-scone1"
+"alpine-scone1.0"
+"alpine-scone1.0.0"
+"alpine-scone1.0.1"
+"alpine-scone2"
+...</code></p>
 <p>Now you can use the command line to search for the tags that you are interested in. Say, you want to search for all tags of SCONE version 3.5.0.
 In this case, you could define a patter <code>scone5.3.0</code> and filter the output as follows:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATTERN</span><span class="o">=</span><span class="s2">&quot;scone5.3.0&quot;</span>
-curl -s -H <span class="s2">&quot;PRIVATE-TOKEN: </span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="s2">&quot;</span> <span class="s2">&quot;https://gitlab.scontain.com/api/v4/projects/</span><span class="nv">$PROJECT_ID</span><span class="s2">/registry/repositories?tags=1&quot;</span> <span class="p">|</span> jq <span class="s1">&#39;.[].tags[].name&#39;</span> <span class="p">|</span> grep <span class="s2">&quot;</span><span class="nv">$PATTERN</span><span class="s2">&quot;</span>
-</pre></div>
+<p><code>bash
+export PATTERN="scone5.3.0"
+curl -s -H "PRIVATE-TOKEN: $SCONE_HUB_ACCESS_TOKEN" "https://gitlab.scontain.com/api/v4/projects/$PROJECT_ID/registry/repositories?tags=1" | jq '.[].tags[].name' | grep "$PATTERN"</code></p>
 <p>The output might look as follows:</p>
-<div class="highlight"><pre><span></span>&quot;alpine-scone5.3.0&quot;
-&quot;alpine3.7-scone5.3.0&quot;
-&quot;latest-scone5.3.0&quot;
-&quot;pkg-builder-alpine-3.11-scone5.3.0&quot;
-&quot;pkg-builder-alpine-scone5.3.0&quot;
-&quot;runtime-alpine-scone5.3.0&quot;
-&quot;runtime-alpine3.7-scone5.3.0&quot;
-&quot;runtime-scone5.3.0&quot;
-&quot;ubuntu-scone5.3.0&quot;
-&quot;ubuntu16.04-scone5.3.0&quot;
-&quot;ubuntu18.04-scone5.3.0&quot;
-</pre></div>
+<p><code>text
+"alpine-scone5.3.0"
+"alpine3.7-scone5.3.0"
+"latest-scone5.3.0"
+"pkg-builder-alpine-3.11-scone5.3.0"
+"pkg-builder-alpine-scone5.3.0"
+"runtime-alpine-scone5.3.0"
+"runtime-alpine3.7-scone5.3.0"
+"runtime-scone5.3.0"
+"ubuntu-scone5.3.0"
+"ubuntu16.04-scone5.3.0"
+"ubuntu18.04-scone5.3.0"</code></p>
 <h3 id="common-project-ids">Common Project IDs</h3>
 <p>To simplify the search for tags, here are some common project IDs.</p>
 <table>

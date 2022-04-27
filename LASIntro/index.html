@@ -3265,11 +3265,11 @@
 <h2 id="pulling-las-image">Pulling LAS Image</h2>
 <p>To start LAS, you first pull LAS to your local registry. To do so, please set the environment variable
 <code>LAS</code> to the image repository that we given you access to. The standard LAS image name is defined as follows:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">LAS</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/services:las
-</pre></div>
+<p><code>bash
+export LAS=registry.scontain.com:5050/sconecuratedimages/services:las</code></p>
 <p>Pull the image from Docker hub like this:</p>
-<div class="highlight"><pre><span></span>docker pull <span class="nv">$LAS</span>
-</pre></div>
+<p><code>bash
+docker pull $LAS</code></p>
 <p>If this fails, ensure that you are logged into docker (via <code>docker login</code>) and that we
 granted you access to that image.</p>
 <h3 id="determining-the-sgx-device">Determining the SGX device</h3>
@@ -3278,40 +3278,40 @@ software, you could use the bash function <a href="../sgxinstall/#determine-sgx-
 It sets environment variable <code>SGXDEVICE</code> to the device that needs to be mounted.</p>
 <h3 id="starting-and-stopping-las">Starting and Stopping LAS</h3>
 <p>The easiest way to start LAS is to use a simple Docker compose file. Please create a separate directory for that:</p>
-<div class="highlight"><pre><span></span>mkdir -p LAS
-<span class="nb">cd</span> LAS
-</pre></div>
+<p><code>bash
+mkdir -p LAS
+cd LAS</code></p>
 <p>Create the following compose file:</p>
-<div class="highlight"><pre><span></span>determine_sgx_device
-cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
-<span class="s">version: &#39;3.2&#39;</span>
-<span class="s">services:</span>
-<span class="s">    las:</span>
-<span class="s">        image: registry.scontain.com:5050/sconecuratedimages/services:las</span>
-<span class="s">        devices:</span>
-<span class="s">          - &quot;$SGXDEVICE:$SGXDEVICE&quot;</span>
-<span class="s">        ports:</span>
-<span class="s">          - target: 18766</span>
-<span class="s">            published: 18766</span>
-<span class="s">            protocol: tcp</span>
-<span class="s">            mode: host</span>
-<span class="s">EOF</span>
-</pre></div>
+<p><code>bash
+determine_sgx_device
+cat &gt; docker-compose.yml &lt;&lt;EOF
+version: '3.2'
+services:
+    las:
+        image: registry.scontain.com:5050/sconecuratedimages/services:las
+        devices:
+          - "$SGXDEVICE:$SGXDEVICE"
+        ports:
+          - target: 18766
+            published: 18766
+            protocol: tcp
+            mode: host
+EOF</code></p>
 <p>Now start LAS in the background as follows:</p>
-<div class="highlight"><pre><span></span>docker-compose up -d las
-</pre></div>
+<p><code>bash
+docker-compose up -d las</code></p>
 <p>By executing</p>
-<div class="highlight"><pre><span></span>docker-compose logs las
-</pre></div>
+<p><code>bash
+docker-compose logs las</code></p>
 <p>you will see the output of LAS.</p>
 <p>You can check if LAS is still running by executing:</p>
-<div class="highlight"><pre><span></span>docker-compose up -d las
-</pre></div>
+<p><code>bash
+docker-compose up -d las</code></p>
 <p>This will result in an output like</p>
 <p><code>las_las_1 is up-to-date</code></p>
 <p>You can stop LAS by executing:</p>
-<div class="highlight"><pre><span></span>docker-compose stop
-</pre></div>
+<p><code>bash
+docker-compose stop</code></p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>You might need to run the LAS container <code>--privileged</code> in case the user executing LAS is not member of group <code>sgx_prv</code>. Alternatively, you might need to pass device <code>/dev/sgx_provision</code> into the container.</p>
 

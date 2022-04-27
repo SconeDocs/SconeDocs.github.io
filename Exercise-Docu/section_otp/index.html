@@ -3562,8 +3562,8 @@
 <p>We assume that a user has access to a computer that can - at least temporarily  - be trusted. Still, our objective is that the OTP secret nor the SVG is visible in the terminal log. Instead, it should be written to an output file.</p>
 <p>To ensure that the computer is trusted, the user might use a dedicated computer, check that no other users are logged in, no other programs are running, perform a secure and measured boot, etc.</p>
 <p>After scanning the QR code with their authenticator, the user deletes the file using some secure file delete function like <code>shred</code>:</p>
-<div class="highlight"><pre><span></span>shred -n <span class="m">3</span> -z -u qrcode.svg
-</pre></div>
+<p><code>bash
+shred -n 3 -z -u qrcode.svg</code></p>
 <h3 id="rust-support">Rust Support</h3>
 <p>Create a program - actually, a command-line utility - that generates the QR code for a given secret. In this step, we do native programming. In assignment two, we transform this native program into a confidential program that executes in an enclave.</p>
 <p>Use your favorite programming language to build this program. Therefore, in our reference solution, we write this program in <code>Rust</code>. Rust provides an external crate <code>google_authenticator</code>, which permits generating SVGs - or URLs -  to add accounts to an authenticator.</p>
@@ -3592,37 +3592,37 @@
 <h2 id="assignment-3-generate-a-policy">Assignment 3: Generate a policy</h2>
 <p>Now that we have a container image to deploy a confidential program, the next assignment is to create a <a href="https://sconedocs.github.io/CAS_session_lang_0_3/"><em>SCONE policy</em> (a.k.a., session)</a> for SCONE to be able to attest <code>otpqr</code>.</p>
 <p>To attest <code>otpqr</code>, you need to specify an attestation section that defines how to attest and verify this service. Typically, we use templates for this. In the reference solution, we use <a href="https://handlebarsjs.com/guide/#what-is-handlebars">handlebars</a> that might look like this:</p>
-<div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">otpqr</span>
-      <span class="nt">attestation</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">mrenclave</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="p p-Indicator">{{</span><span class="nv">mrenclave</span><span class="p p-Indicator">}}</span>
-</pre></div>
+<p><code>yaml
+services:
+    - name: otpqr
+      attestation:
+      - mrenclave:
+        - {{mrenclave}}</code></p>
 <p>The <a href="https://sconedocs.github.io/CAS_session_lang_0_3/#attestation">attestation</a> of a service can involve multiple factors. Measurement-based attestation uses <code>MrEnclave</code>, which is the expected initial state of the enclave. One can also verify that the enclave was signed by a certain <code>MrSigner</code>.  </p>
 <p>In this assignment, we want to use measurement-based attestation. Therefore, we need to determine <code>MrEnclave</code> of <code>otpqr</code>. One can achieve this by setting environment variable <a href="https://sconedocs.github.io/MrEnclave/">SCONE_HASH</a> to 1 before executing <code>otpqr</code>. The output might look like this:</p>
-<div class="highlight"><pre><span></span>bb79c2851d6f205694314bc03f91e0acba4fd39ba24aaea7b34fa9a78fe6c531
-</pre></div>
+<p><code>yml
+bb79c2851d6f205694314bc03f91e0acba4fd39ba24aaea7b34fa9a78fe6c531</code></p>
 <h3 id="transparent-encryption-of-a-volume">Transparent Encryption of a Volume</h3>
 <p>To ensure one can execute the QR code generator only once,  <code>otpqr</code> creates a file <code>/root/single_run/once</code>. While this file does not contain any secrets, we need to ensure consistency, i.e., if this file was created and then deleted by an adversary, we will detect this.</p>
 <p>To ensure that <code>/root/single_run/once</code> is persistent, one typically would ensure that this file is stored in some persistent Docker or Kubernetes volume. We activate the <strong>SCONE file system shield</strong> as follows. We define a volume as part of the SCONE policy:</p>
-<div class="highlight"><pre><span></span>volumes:
+<p><code>yml
+volumes:
     - name: single_run
       export:
-        - session: {{session2}}
-</pre></div>
+        - session: {{session2}}</code></p>
 <p>This encrypted volume can be shared with other policies by exporting this volume to other policies. In this example, the volume is shared with the policy referred to by <code>{{session2}}</code>.</p>
 <p>This volume can be mapped at a given path:</p>
-<div class="highlight"><pre><span></span>images:
+<p><code>yml
+images:
     - name: otpqr_image
       volumes:
         - name: single_run
-          path: /root/single_run
-</pre></div>
+          path: /root/single_run</code></p>
 <p>Each service is associated with an image. In this case, we associate  <code>otpqr</code> with image <code>otpqr_image</code> as follows:</p>
-<div class="highlight"><pre><span></span>services:
+<p><code>yml
+services:
     - name: otpqr
-      image_name: otpqr_image
-</pre></div>
+      image_name: otpqr_image</code></p>
 <p>As seen in the last section, we can create and update policies using the SCONE CLI. As part of our reference solution, we provide a Rust crate <code>scone_cli</code> to create and update policies.</p>
 <h2 id="assignment-4-scripting">Assignment 4: Scripting</h2>
 <p>Write a script - in your favorite scripting language - with commands:</p>
@@ -3641,24 +3641,24 @@
 <p>In our reference solution, we define an environment variable <code>OTP_RESET</code>, which is maybe a misnomer. If this is set, <code>otpqr</code> does not check the <code>/root/single_run/once</code> during this execution.</p>
 <p>You need to define a policy such that <code>otpqr</code> with this option <code>OTP_RESET</code> is only defined if the correct OTP was supplied. Note that the OTP can be checked by SCONE during attestation (see <a href="https://sconedocs.github.io/CAS_session_lang_0_3/#2fa-with-time-based-one-time-passwords">2FA with TOTP</a>).</p>
 <p>You need to enable this in a policy's <code>security</code> section. You can define this as follows:</p>
-<div class="highlight"><pre><span></span>security:
+<p><code>yml
+security:
   attestation:
-    one_time_password_shared_secret: {{secret}}
-</pre></div>
+    one_time_password_shared_secret: {{secret}}</code></p>
 <p>The script itself defines the secret. In the future, we will extend the session language such that
 s
 - to permit a shared secret per service, and
 - to use secrets generated by the CAS in the secret section.</p>
 <p>Since currently, all services in a policy will need to provide a valid OTP during startup, command <code>add-authenticator</code> cannot use the same policy as <code>gen_qr_code</code> (which cannot require an OTP since no shared secret does exist yet).  </p>
 <p>One appends the OTP to the <code>SCONE_CONFIG_ID</code>, i.e., to the name of the session and the service name. For example, <code>add-authenticator</code> might execute <code>otpqr</code> inside of a container as follows.</p>
-<div class="highlight"><pre><span></span>docker run -it --rm -w <span class="s2">&quot;/root&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">:/root&quot;</span> -e <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf -e <span class="nv">SCONE_CONFIG_ID</span><span class="o">={{</span>session2<span class="o">}}</span>/otpqr@703357  otpqr:scone /bin/otpqr
-</pre></div>
+<p><code>bash
+docker run -it --rm -w "/root" -v "$PWD:/root" -e SCONE_CAS_ADDR=scone-cas.cf -e SCONE_CONFIG_ID={{session2}}/otpqr@703357  otpqr:scone /bin/otpqr</code></p>
 <p>If one uses the wrong OTP or it takes too long for <code>otpqr</code> - which runs in a docker container - to startup, you will get an error code like this:</p>
-<div class="highlight"><pre><span></span><span class="o">[</span>SCONE<span class="p">|</span>FATAL<span class="o">]</span> src/process/init.c:476:__scone_prepare_secure_config<span class="o">()</span>: Could not initialize enclave state: Attestation failed
+<p><code>bash
+[SCONE|FATAL] src/process/init.c:476:__scone_prepare_secure_config(): Could not initialize enclave state: Attestation failed
   Caused by: CAS sent an attestation/configuration error: Failed to retrieve service attestation configuration
   Caused by: The given One-time Password is invalid. Please try again.
-Note: Connecting to CAS at scone-cas.cf <span class="o">(</span>port <span class="m">18765</span><span class="o">)</span> using service ID mjSKNz1VaDYFFHNJnBmP5/otpqr-reset/otpqr@703357
-</pre></div>
+Note: Connecting to CAS at scone-cas.cf (port 18765) using service ID mjSKNz1VaDYFFHNJnBmP5/otpqr-reset/otpqr@703357</code></p>
 <h3 id="security">Security</h3>
 <p>So why does this approach prevent an adversary from getting the QR code using <code>add-authenticator</code>?</p>
 <ul>
@@ -3695,17 +3695,17 @@ Note: Connecting to CAS at scone-cas.cf <span class="o">(</span>port <span class
 </ul>
 <p>Note that one could also add an option that creates a new volume without creating a new OTP secret. In this case, one might protect this by requiring an OTP to replace the volume.</p>
 <p>To replace a volume with a new one, we can use handlebars in the policy templates:</p>
-<div class="highlight"><pre><span></span>volumes:
+<p>```yml
+volumes:
     - name: single_run_{{volume_version}}
       export:
-        - session: {{session2}}
-
-images:
+        - session: {{session2}}</p>
+<p>images:
     - name: otpqr_image
       volumes:
         - name: single_run_{{volume_version}}
           path: /root/single_run
-</pre></div>
+```</p>
 <h2 id="solution">Solution</h2>
 <p>Note the reference solution is available at <a href="https://github.com/scontain/Exercise/tree/main/Section_OTP">https://github.com/scontain/Exercise/tree/main/Section_OTP</a>.</p>
 <h2 id="screencast">Screencast</h2>

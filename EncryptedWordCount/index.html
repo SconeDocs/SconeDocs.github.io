@@ -2029,6 +2029,19 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usrbinpython" class="md-nav__link">
+    !/usr/bin/python
+  </a>
+  
+    <nav class="md-nav" aria-label="!/usr/bin/python">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#creating-image-with-encrypted-wordcount" class="md-nav__link">
     Creating Image with Encrypted wordcount
@@ -3219,6 +3232,19 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usrbinpython" class="md-nav__link">
+    !/usr/bin/python
+  </a>
+  
+    <nav class="md-nav" aria-label="!/usr/bin/python">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#creating-image-with-encrypted-wordcount" class="md-nav__link">
     Creating Image with Encrypted wordcount
@@ -3278,27 +3304,27 @@ and output files in one or more <strong>encrypted volumes</strong> mapped into t
 </div>
 <h2 id="getting-the-code">Getting the Code</h2>
 <p>After you gotten access to the repos, you can get the code via:</p>
-<div class="highlight"><pre><span></span>git clone https://github.com/scontain/EncryptedWordCount.git
-</pre></div>
+<p><code>bash
+git clone https://github.com/scontain/EncryptedWordCount.git</code></p>
 <p>and then enter directory <code>EncryptedWordCount</code></p>
-<div class="highlight"><pre><span></span><span class="nb">cd</span> EncryptedWordCount
-</pre></div>
+<p><code>bash
+cd EncryptedWordCount</code></p>
 <h2 id="files">Files</h2>
 <p>The Python source code and the input file is stored in directory <code>native-files/</code>. The <code>wordcount.py</code> code is just some very simple
 Python code to count the frequency of words in a given file:</p>
-<div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="nb">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;r+&quot;</span><span class="p">)</span>
-
-<span class="n">wordcount</span><span class="o">=</span><span class="p">{}</span>
-<span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
-    <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wordcount</span><span class="p">:</span>
-        <span class="n">wordcount</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">wordcount</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">wordcount</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-</pre></div>
+<p>```python</p>
+<h1 id="usrbinpython">!/usr/bin/python</h1>
+<p>import sys
+file=open(sys.argv[1],"r+")</p>
+<p>wordcount={}
+for word in file.read().split():
+    if word not in wordcount:
+        wordcount[word] = 1
+    else:
+        wordcount[word] += 1
+for k,v in wordcount.items():
+    print(k, v)
+```</p>
 <h2 id="creating-image-with-encrypted-wordcount">Creating Image with Encrypted <code>wordcount</code></h2>
 <p>The repository includes a script <code>create_image.sh</code> that</p>
 <ul>
@@ -3311,8 +3337,8 @@ Python code to count the frequency of words in a given file:</p>
 <li>access to the security policy is controlled via a self-generated key pair</li>
 </ul>
 <p>Perform all of the above steps by executing the following shell script:</p>
-<div class="highlight"><pre><span></span>./create_image.sh
-</pre></div>
+<p><code>bash
+./create_image.sh</code></p>
 <p>This creates an image <code>encryptedwordcount</code> stored in the local registry and
 a session in a SCONE Configuration and Attestation Service (CAS) running on a remote site.</p>
 <p><em>We assume in this demo that the creation of the <code>wordcount</code> image is performed on a trusted host.</em> 
@@ -3320,13 +3346,14 @@ The execution of the <code>wordcount</code> can be performed on an untrusted hos
 same host.</p>
 <h2 id="running-the-wordcount-image">Running the <code>wordcount</code> image</h2>
 <p>First, read some environment variables set by <code>./create_image.sh</code></p>
-<div class="highlight"><pre><span></span><span class="nb">source</span> myenv
-</pre></div>
+<p><code>bash
+source myenv</code></p>
 <p>and then start the <code>wordcount.py</code> with <code>docker-compose</code>:</p>
-<div class="highlight"><pre><span></span>docker-compose up
-</pre></div>
+<p><code>bash
+docker-compose up</code></p>
 <p>You will see quite some log output ending with</p>
-<div class="highlight"><pre><span></span>...
+<p><code>txt
+...
 python_1  | scone 1
 python_1  | region. 3
 python_1  | Hence, 1
@@ -3339,14 +3366,13 @@ python_1  | region: 1
 python_1  | the 19
 python_1  | path. 1
 python_1  | document. 1
-encryptedwordcount_python_1 exited with code 0
-</pre></div>
+encryptedwordcount_python_1 exited with code 0</code></p>
 <p>Stop the compose file with control-C.</p>
 <p>You can run it again by executing <code>docker-compose up</code> again.</p>
 <h2 id="cleanup">Cleanup</h2>
 <p>Cleanup afterwards by executing:</p>
-<div class="highlight"><pre><span></span>./cleanup.sh
-</pre></div>
+<p><code>bash
+./cleanup.sh</code></p>
 <p>before starting it with <code>./create_image.sh</code> and <code>docker-compose up</code> again.</p>
 <p>Note: Please read <a href="../hello_world_kubernetes/">Hello World tutorial</a> to learn more about the technical details.</p>
 

@@ -3223,42 +3223,42 @@
 <p>Please note that using CAS namespaces requires <a href="../CAS_session_lang_0_3/">SCONE Session Language v0.3</a> or higher.</p>
 <h2 id="namespace-access-policy">Namespace Access Policy</h2>
 <p>SCONE CAS supports <strong>namespaces</strong>, i.e., a scope for session names, since version 5.1. To create a new namespace, one creates a session with the name of the namespace. By creating a namespace, one automatically controls who can create sessions in this namespace. To control access to namespaces, we added a new access policy option:</p>
-<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace</span>
-<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
-
-<span class="nt">access_policy</span><span class="p">:</span>
-  <span class="nt">create_sessions</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">...</span>
-</pre></div>
+<p>```yaml
+name: my-namespace
+version: "0.3"</p>
+<p>access_policy:
+  create_sessions:
+    - CREATOR
+    - 3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1
+    - ...
+```</p>
 <p>To create a new sessions in the namespace <code>my-namespace</code>, one has to provide one of the credentials provided of list <code>create_sessions</code>. If omitted, all entities listed under <code>update</code> will be able to create sessions.</p>
 <h2 id="creating-a-namespace">Creating a namespace</h2>
 <p>To create a new namespace <code>my-namespace</code>, we first create a session description.
 The session description might be stored in a file <code>policy.yml</code> and look like this</p>
-<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace</span>
-<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
-
-<span class="nt">access_policy</span><span class="p">:</span>
-  <span class="nt">read</span><span class="p">:</span>
-   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
-  <span class="nt">update</span><span class="p">:</span>
-   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
-  <span class="nt">create_sessions</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">CREATOR</span>
-</pre></div>
+<p>```yaml
+name: my-namespace
+version: "0.3"</p>
+<p>access_policy:
+  read:
+   - CREATOR
+  update:
+   - CREATOR
+  create_sessions:
+    - CREATOR
+```</p>
 <p>We can upload this session with the SCONE CLI as follows:</p>
-<div class="highlight"><pre><span></span>scone session create policy.yml
-</pre></div>
+<p><code>bash
+scone session create policy.yml</code></p>
 <p>In order to create session <code>hello-world</code> in the namespace <code>my-namespace</code>, set the new session's name to:</p>
-<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace/hello-world</span>
-<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
-</pre></div>
+<p><code>yaml
+name: my-namespace/hello-world
+version: "0.3"</code></p>
 <p>You must have permission to create the session in this namespace.</p>
 <p>Namespaces can be nested. You can use <code>hello-world</code> itself as a namespace.</p>
-<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">my-namespace/hello-world/project-1</span>
-<span class="nt">version</span><span class="p">:</span> <span class="s">&quot;0.3&quot;</span>
-</pre></div>
+<p><code>yaml
+name: my-namespace/hello-world/project-1
+version: "0.3"</code></p>
 
               
             </article>

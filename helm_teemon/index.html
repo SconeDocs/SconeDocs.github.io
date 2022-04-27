@@ -3237,16 +3237,16 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <h2 id="deployment">Deployment</h2>
 <p>The monitoring framework runs in native mode. Hence, we delegate the secret management of TEEMon to Kubernetes.
 Grafana requires an admin password. Hence, we need to set an admin username and password as a Kubernetes secret named <code>teemon</code>. We set <code>MY_PASSWORD</code> to a new random password first and then create a new secret:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">MY_PASSWORD</span><span class="o">=</span><span class="k">$(</span>openssl rand -base64 <span class="m">32</span><span class="k">)</span>
-kubectl create secret generic teemon --from-literal<span class="o">=</span><span class="nv">username</span><span class="o">=</span>admin --from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MY_PASSWORD</span><span class="s2">&quot;</span>
-</pre></div>
+<p><code>bash
+export MY_PASSWORD=$(openssl rand -base64 32)
+kubectl create secret generic teemon --from-literal=username=admin --from-literal=password="$MY_PASSWORD"</code></p>
 <p>The <code>sconeapps/teemon</code> chart will deploy <a href="../teemon/">TEEMon</a>. In most cases, just execute:</p>
-<div class="highlight"><pre><span></span>helm install teemon sconeapps/teemon
-</pre></div>
+<p><code>bash
+helm install teemon sconeapps/teemon</code></p>
 <p>The configuration parameters learn about with the help of <a href="../kubeapps/">KubeApps</a>.</p>
 <p>You can now connect to the <a href="../teemon/">TEEMon</a> dashboard as follows:</p>
-<div class="highlight"><pre><span></span>kubectl port-forward  svc/teemon-grafana <span class="m">8099</span>:80
-</pre></div>
+<p><code>bash
+kubectl port-forward  svc/teemon-grafana 8099:80</code></p>
 <p>The <a href="../teemon/">TEEMon</a> dashboard can now be viewed at:</p>
 <p><a href="http://localhost:8099/">http://localhost:8099/</a></p>
 <h2 id="dashboard">Dashboard</h2>

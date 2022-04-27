@@ -3217,27 +3217,26 @@ Build your <a href="../multistagebuild/">container images with a multi-stage bui
 contain your binaries when you push your images to a public repository.</p>
 </div>
 <p>Here is the dockerfile:</p>
-<div class="highlight"><pre><span></span>cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
-<span class="s">FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers</span>
-
-<span class="s">RUN echo  &quot;#include &lt;stdio.h&gt;&quot; &gt; helloworld.c \</span>
-<span class="s">   &amp;&amp; echo &quot;int main() {&quot; &gt;&gt; helloworld.c \</span>
-<span class="s">   &amp;&amp; echo &quot;printf(\&quot;Hello World!\n\&quot;); }&quot; &gt;&gt; helloworld.c</span>
-
-<span class="s">RUN gcc -o helloworld helloworld.c</span>
-
-<span class="s">CMD bash -c &quot;SCONE_VERSION=1 /helloworld&quot;</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; Dockerfile &lt;&lt; EOF
+FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers</p>
+<p>RUN echo  "#include <stdio.h>" &gt; helloworld.c \
+   &amp;&amp; echo "int main() {" &gt;&gt; helloworld.c \
+   &amp;&amp; echo "printf(\"Hello World!\n\"); }" &gt;&gt; helloworld.c</p>
+<p>RUN gcc -o helloworld helloworld.c</p>
+<p>CMD bash -c "SCONE_VERSION=1 /helloworld"
+EOF
+```</p>
 <p>Let's generate an image (<strong>helloworld</strong>) with this Dockerfile: </p>
-<div class="highlight"><pre><span></span>docker build --pull -t helloworld .
-</pre></div>
+<p><code>bash
+docker build --pull -t helloworld .</code></p>
 <p>Determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>. Let's run the image as follows:</p>
-<div class="highlight"><pre><span></span>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> --rm helloworld
-</pre></div>
+<p><code>bash
+determine_sgx_device
+docker run $MOUNT_SGXDEVICE --rm helloworld</code></p>
 <p>The output will look like this:</p>
-<div class="highlight"><pre><span></span>export SCONE_QUEUES=4
+<p>```text
+export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -3254,11 +3253,10 @@ export SCONE_ALLOW_DLOPEN=no
 export SCONE_MPROTECT=no
 Revision: 73cd5e415623f0947d635cad861d09bf364ce778 (Fri Jun 1 17:57:15 2018 +0200)
 Branch: master
-Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl
-
-Enclave hash: 597cdef086651d46652cab78a89386b790ed058427ce1a5feacc3da7bc731902
+Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl</p>
+<p>Enclave hash: 597cdef086651d46652cab78a89386b790ed058427ce1a5feacc3da7bc731902
 Hello World!
-</pre></div>
+```</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In case you do not have an SGX driver installed, the run will fail. Run the program in <a href="../firstcontainer/">simulation mode</a> by executing <em>docker run --rm helloworld</em></p>

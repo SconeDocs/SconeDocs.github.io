@@ -2521,6 +2521,26 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    include 
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include_1" class="md-nav__link">
+    include 
+  </a>
+  
+    <nav class="md-nav" aria-label="include ">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#debugging" class="md-nav__link">
     Debugging
@@ -3228,6 +3248,26 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    include 
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include_1" class="md-nav__link">
+    include 
+  </a>
+  
+    <nav class="md-nav" aria-label="include ">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#debugging" class="md-nav__link">
     Debugging
@@ -3266,50 +3306,49 @@
 <p>This page focuses on the SCONE cross compiler. This cross compiler is based on gcc and hence, the command line options are the same as gcc.</p>
 <h2 id="image">Image</h2>
 <p>Ensure that you have the newest SCONE cross compiler image and determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>:</p>
-<div class="highlight"><pre><span></span>docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<p><code>bash
+docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers
 determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
-</pre></div>
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com:5050/sconecuratedimages/crosscompilers</code></p>
 <p>In case you do not have an SGX driver installed, no device will be mounted and
 applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <h2 id="help">Help</h2>
 <p>If you need some help, just execute in the container:</p>
-<div class="highlight"><pre><span></span>$ scone gcc --help
-Usage: x86_64-linux-musl-gcc <span class="o">[</span>options<span class="o">]</span> file...
+<p><code>bash
+$ scone gcc --help
+Usage: x86_64-linux-musl-gcc [options] file...
 Options:
-...
-</pre></div>
+...</code></p>
 <h2 id="example">Example</h2>
 <p>Let's try to compile a simple program:</p>
-<div class="highlight"><pre><span></span>cat &gt; fib.c <span class="s">&lt;&lt; EOF</span>
-<span class="s">#include &lt;stdio.h&gt;</span>
-<span class="s">#include &lt;stdlib.h&gt;</span>
-
-<span class="s">int main(int argc, char** argv) {</span>
-<span class="s">   int n=0, first = 0, second = 1, next = 0, c;</span>
-
-<span class="s">   if (argc &gt; 1)</span>
-<span class="s">        n=atoi(argv[1]);</span>
-<span class="s">   printf(&quot;fib(%d)= 1&quot;,n);</span>
-<span class="s">   for ( c = 1 ; c &lt; n ; c++ ) {</span>
-<span class="s">        next = first + second;</span>
-<span class="s">        first = second;</span>
-<span class="s">        second = next;</span>
-<span class="s">        printf(&quot;, %d&quot;,next);</span>
-<span class="s">   }</span>
-<span class="s">   printf(&quot;\n&quot;);</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; fib.c &lt;&lt; EOF</p>
+<h1 id="include">include <stdio.h></h1>
+<h1 id="include_1">include <stdlib.h></h1>
+<p>int main(int argc, char** argv) {
+   int n=0, first = 0, second = 1, next = 0, c;</p>
+<p>if (argc &gt; 1)
+        n=atoi(argv[1]);
+   printf("fib(%d)= 1",n);
+   for ( c = 1 ; c &lt; n ; c++ ) {
+        next = first + second;
+        first = second;
+        second = next;
+        printf(", %d",next);
+   }
+   printf("\n");
+}
+EOF
+```</p>
 <p>We compile the program with <strong>scone gcc</strong> or <strong>scone-gcc</strong> or just <strong>gcc</strong> (all equivalent):</p>
-<div class="highlight"><pre><span></span>scone gcc fib.c -o fib
-</pre></div>
+<p><code>bash
+scone gcc fib.c -o fib</code></p>
 <p>To compute fib(23), execute:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./fib <span class="m">23</span>
-</pre></div>
+<p><code>bash
+SCONE_VERSION=1 ./fib 23</code></p>
 <p>The last line of the output should look as follows:</p>
-<div class="highlight"><pre><span></span>fib(23)= 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657
-</pre></div>
+<p><code>text
+fib(23)= 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657</code></p>
 <h2 id="debugging">Debugging</h2>
 <p>You can use <strong>scone-gdb</strong> to debug your applications when running inside of an enclave. For some more details
 on how to use the debugger, please read how to <a href="../GO/#debugging">debug GO</a> programs.</p>

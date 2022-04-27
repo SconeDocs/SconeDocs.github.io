@@ -3219,36 +3219,36 @@ linked application: we show this for  <a href="../groupcacheUseCase/"><strong>gr
 </div>
 <p>We do want to make sure that the image is as small as possible and in particular,
 that the image must not contain the SCONE crosscompilers. Hence, we use a <a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build</a> during which we copy all dependencies of <strong>groupcache</strong>:</p>
-<div class="highlight"><pre><span></span>cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
-<span class="s">FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers</span>
-<span class="s">RUN apk update \</span>
-<span class="s">&amp;&amp; apk add git curl go \</span>
-<span class="s">&amp;&amp; go get -compiler gccgo -u github.com/golang/groupcache \</span>
-<span class="s">&amp;&amp; curl  -fsSL --output  groupcache.go https://gist.githubusercontent.com/fiorix/816117cfc7573319b72d/raw/797d2ed5b567dcffb8ebd8896a3d7671b1a44b31/groupcache.go \</span>
-<span class="s">&amp;&amp; export SCONE_HEAP=1G \</span>
-<span class="s">&amp;&amp; go build -compiler gccgo -buildmode=exe groupcache.go</span>
-
-<span class="s">FROM alpine:latest</span>
-<span class="s">COPY --from=0 /groupcache /</span>
-<span class="s">COPY --from=0 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libgo.so.13 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libgo.so.13</span>
-<span class="s">COPY --from=0 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libgcc_s.so.1 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libgcc_s.so.1</span>
-<span class="s">COPY --from=0 /opt/scone/lib/ld-scone-x86_64.so.1 /opt/scone/lib/ld-scone-x86_64.so.1</span>
-<span class="s">COPY --from=0 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libc.scone-x86_64.so.1 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libc.scone-x86_64.so.1</span>
-<span class="s">COPY --from=0 /etc/sgx-musl.conf /etc/sgx-musl.conf</span>
-<span class="s">CMD sh -c &quot;SCONE_HEAP=1G /groupcache&quot;</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; Dockerfile &lt;&lt; EOF
+FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers
+RUN apk update \
+&amp;&amp; apk add git curl go \
+&amp;&amp; go get -compiler gccgo -u github.com/golang/groupcache \
+&amp;&amp; curl  -fsSL --output  groupcache.go <a href="https://gist.githubusercontent.com/fiorix/816117cfc7573319b72d/raw/797d2ed5b567dcffb8ebd8896a3d7671b1a44b31/groupcache.go">https://gist.githubusercontent.com/fiorix/816117cfc7573319b72d/raw/797d2ed5b567dcffb8ebd8896a3d7671b1a44b31/groupcache.go</a> \
+&amp;&amp; export SCONE_HEAP=1G \
+&amp;&amp; go build -compiler gccgo -buildmode=exe groupcache.go</p>
+<p>FROM alpine:latest
+COPY --from=0 /groupcache /
+COPY --from=0 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libgo.so.13 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libgo.so.13
+COPY --from=0 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libgcc_s.so.1 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libgcc_s.so.1
+COPY --from=0 /opt/scone/lib/ld-scone-x86_64.so.1 /opt/scone/lib/ld-scone-x86_64.so.1
+COPY --from=0 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libc.scone-x86_64.so.1 /opt/scone/cross-compiler/x86_64-linux-musl/lib/libc.scone-x86_64.so.1
+COPY --from=0 /etc/sgx-musl.conf /etc/sgx-musl.conf
+CMD sh -c "SCONE_HEAP=1G /groupcache"
+EOF
+```</p>
 <p>Note that one can figure out the libraries to copy with command  <em>ldd groupcache</em>.</p>
 <p>Let's generate an image <a href="../groupcacheUseCase/"><strong>groupcache</strong></a> with this Dockerfile: </p>
-<div class="highlight"><pre><span></span>docker build --pull -t groupcache .
-</pre></div>
+<p><code>bash
+docker build --pull -t groupcache .</code></p>
 <p>The size of the <strong>groupcache</strong> image is about 65MB.</p>
 <p>You can run this container by executing:</p>
-<div class="highlight"><pre><span></span>docker run --rm --publish <span class="m">8080</span>:8080  groupcache
-</pre></div>
+<p><code>bash
+docker run --rm --publish 8080:8080  groupcache</code></p>
 <p>You can now query this service from a different terminal on the host this service, e.g.,:</p>
-<div class="highlight"><pre><span></span>curl localhost:8080/color?name<span class="o">=</span>green
-</pre></div>
+<p><code>bash
+curl localhost:8080/color?name=green</code></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p><strong>This service has <a href="groupcacheUseCase#shielding">multiple security issues</a></strong>: we show how to address these with the help of the SCONE shields in a later section.</p>

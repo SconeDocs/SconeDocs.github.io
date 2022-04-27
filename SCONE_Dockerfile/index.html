@@ -3200,90 +3200,101 @@
 <p>We show how to generate a first secure container image with the help of a Dockerfile.</p>
 <h2 id="install-the-tutorial">Install the tutorial</h2>
 <p>Clone the tutorial:</p>
-<div class="highlight"><pre><span></span>git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
-</pre></div>
+<p><code>bash
+git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git</code></p>
 <h2 id="access-to-scone-curated-images">Access to SCONE Curated Images</h2>
 <p>Right now, access to the curated images is still restricted. Please, send email to <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#110;&#102;&#111;&#64;&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#111;&#109;">&#105;&#110;&#102;&#111;&#64;&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#111;&#109;</a> to request access.</p>
 <h2 id="generate-helloagain-image-dynamically-linked">Generate HelloAgain image (dynamically-linked)</h2>
 <p>We first generate a <em>hello again</em> container image with a dynamically-linked secure program:</p>
-<div class="highlight"><pre><span></span><span class="nb">cd</span> SCONE_TUTORIAL/DLDockerFile
-</pre></div>
+<p><code>bash
+cd SCONE_TUTORIAL/DLDockerFile</code></p>
 <p>The Dockerfile to generate the new image looks like this:</p>
-<div class="highlight"><pre><span></span><span class="k">FROM</span><span class="s"> registry.scontain.com:5050/sconecuratedimages/crosscompilers:runtime</span>
-
-<span class="k">RUN</span> mkdir /hello
-
-<span class="k">COPY</span> dyn_hello_again /hello/
-
-
-<span class="k">CMD</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>HW <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> /hello/dyn_hello_again
-</pre></div>
+<p>```Dockerfile
+FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers:runtime</p>
+<p>RUN mkdir /hello</p>
+<p>COPY dyn_hello_again /hello/</p>
+<p>CMD SCONE_MODE=HW SCONE_ALPINE=1 SCONE_VERSION=1 /hello/dyn_hello_again
+```</p>
 <p>This assumes that we already generated the dynamically linked binary with
 an appropriately configured gcc. We generate this with the provided gcc image:</p>
-<div class="highlight"><pre><span></span>docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp registry.scontain.com:5050/sconecuratedimages/muslgcc gcc  hello_again.c -o dyn_hello_again
-</pre></div>
+<p><code>bash
+docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp registry.scontain.com:5050/sconecuratedimages/muslgcc gcc  hello_again.c -o dyn_hello_again</code></p>
 <p>We provide a little script that generates the image and pushes it to Docker hub (which should fail since you should not have the credentials):</p>
-<div class="highlight"><pre><span></span>./generate.sh
-</pre></div>
+<p><code>bash
+./generate.sh</code></p>
 <p>Ensure that you have the newest SCONE cross compiler image and determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 You can run this program inside of enclave (with the output of debug messages):</p>
-<div class="highlight"><pre><span></span>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/helloworld:dynamic
-<span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
-<span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
-<span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
-<span class="nb">export</span> <span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">67108864</span>
-<span class="nb">export</span> <span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
-<span class="nb">export</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>hw
+<p><code>bash
+determine_sgx_device
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com:5050/sconecuratedimages/helloworld:dynamic
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=67108864
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_MODE=hw
 Configure parameters: 
-<span class="m">1</span>.1.15
-Hello Again
-</pre></div>
+1.1.15
+Hello Again</code></p>
 <p>This image is nicely small (only 11MB) since it only contains the runtime environment and no development environment.</p>
 <h3 id="screencast">Screencast</h3>
 <p><a href="https://asciinema.org/a/hg9jwPbAZSFjAIkwagf95z9Sj"><img alt="asciicast" src="https://asciinema.org/a/hg9jwPbAZSFjAIkwagf95z9Sj.png" /></a></p>
 <h2 id="generate-helloagain-image-statically-linked">Generate HelloAgain image (statically-linked)</h2>
 <p>We generate a <em>hello again</em> container image. </p>
-<div class="highlight"><pre><span></span>&gt; <span class="nb">cd</span> SCONE_TUTORIAL/DockerFile
-</pre></div>
+<p>```bash</p>
+<blockquote>
+<p>cd SCONE_TUTORIAL/DockerFile
+```</p>
+</blockquote>
 <p>The Dockerfile is quite straight forward:</p>
-<div class="highlight"><pre><span></span><span class="k">FROM</span><span class="s"> registry.scontain.com:5050/sconecuratedimages/crosscompilers</span>
-
-<span class="k">MAINTAINER</span><span class="s"> Christof Fetzer &quot;christof.fetzer@gmail.com&quot;</span>
-
-<span class="k">RUN</span> mkdir /hello
-
-<span class="k">COPY</span> hello_again.c /hello/
-
-<span class="k">RUN</span> <span class="nb">cd</span> /hello <span class="o">&amp;&amp;</span> scone-gcc hello_again.c -o again
-
-<span class="k">CMD</span> <span class="p">[</span><span class="s2">&quot;/hello/again&quot;</span><span class="p">]</span>
-</pre></div>
+<p>```Dockerfile
+FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers</p>
+<p>MAINTAINER Christof Fetzer "<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#99;&#104;&#114;&#105;&#115;&#116;&#111;&#102;&#46;&#102;&#101;&#116;&#122;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#99;&#104;&#114;&#105;&#115;&#116;&#111;&#102;&#46;&#102;&#101;&#116;&#122;&#101;&#114;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>"</p>
+<p>RUN mkdir /hello</p>
+<p>COPY hello_again.c /hello/</p>
+<p>RUN cd /hello &amp;&amp; scone-gcc hello_again.c -o again</p>
+<p>CMD ["/hello/again"]
+```</p>
 <p>You can either execute all step manually (see below) or you can just execute</p>
-<div class="highlight"><pre><span></span>&gt; docker login
+<p>```bash</p>
+<blockquote>
+<p>docker login
 ./generate.sh
-</pre></div>
+```</p>
+</blockquote>
 <p>and watch the outputs. The push of the image should fail since you should not have the access rights to push the image to Docker hub.</p>
 <p>We define the image name and tag that we want to generate:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">TAG</span><span class="o">=</span><span class="s2">&quot;again&quot;</span>
-<span class="nb">export</span> <span class="nv">FULLTAG</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com:5050/sconecuratedimages/helloworld:</span><span class="nv">$TAG</span><span class="s2">&quot;</span>
-</pre></div>
+<p><code>bash
+export TAG="again"
+export FULLTAG="registry.scontain.com:5050/sconecuratedimages/helloworld:$TAG"</code></p>
 <p>We build the image:</p>
-<div class="highlight"><pre><span></span>&gt; docker build --pull -t <span class="nv">$FULLTAG</span> .
-</pre></div>
-<div class="highlight"><pre><span></span>&gt; docker run  <span class="nv">$MOUNT_SGXDEVICE</span> -it <span class="nv">$FULLTAG</span>
-</pre></div>
+<p>```bash</p>
+<blockquote>
+<p>docker build --pull -t $FULLTAG .
+```</p>
+</blockquote>
+<p>```bash</p>
+<blockquote>
+<p>docker run  $MOUNT_SGXDEVICE -it $FULLTAG
+```</p>
+</blockquote>
 <p>We push it to docker hub (will fail unless you have the right to push <em>$FULLTAG</em>):</p>
-<div class="highlight"><pre><span></span>&gt; docker push <span class="nv">$FULLTAG</span>
-</pre></div>
+<p>```bash</p>
+<blockquote>
+<p>docker push $FULLTAG
+```</p>
+</blockquote>
 <p>Please change the image name to a repository on docker hub to which you can write:</p>
-<div class="highlight"><pre><span></span>&gt; <span class="nb">export</span> <span class="nv">TAG</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span>
-&gt; <span class="nb">export</span> <span class="nv">IMAGE_NAME</span><span class="o">=</span><span class="s2">&quot;myrepository/helloAgain&quot;</span>
-</pre></div>
+<p>```bash</p>
+<blockquote>
+<p>export TAG="latest"
+export IMAGE_NAME="myrepository/helloAgain"
+```</p>
+</blockquote>
 <h3 id="screencast_1">Screencast</h3>
 <p><a href="https://asciinema.org/a/9JhNIJsE4rnwwPdhbae1l41Lr"><img alt="asciicast" src="https://asciinema.org/a/9JhNIJsE4rnwwPdhbae1l41Lr.png" /></a></p>
 

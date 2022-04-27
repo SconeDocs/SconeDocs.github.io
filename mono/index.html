@@ -3237,43 +3237,44 @@
 <p>SCONE supports the <a href="https://www.mono-project.com/">mono platform</a>, i.e., the cross platform, open source .NET framework. Hence, SCONE  now also supports C#.</p>
 <h2 id="image">Image</h2>
 <p>Ensure that you have the newest mono image and determine you <a href="../sgxinstall/#determine-sgx-device">SGX device</a>:</p>
-<div class="highlight"><pre><span></span>docker pull registry.scontain.com:5050/sconecuratedimages/mono
+<p><code>bash
+docker pull registry.scontain.com:5050/sconecuratedimages/mono
 determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/mono
-</pre></div>
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com:5050/sconecuratedimages/mono</code></p>
 <p>In case you do not have an SGX driver installed, no device will be mounted and
 applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <h2 id="example">Example</h2>
 <p>Let's try to compile a simple program:</p>
-<div class="highlight"><pre><span></span>cat &gt; hello.cs <span class="s">&lt;&lt;EOF</span>
-<span class="s">using System;</span>
-
-<span class="s">public class HelloWorld</span>
-<span class="s">{</span>
-<span class="s">    public static void Main(string[] args)</span>
-<span class="s">    {</span>
-<span class="s">        Console.WriteLine (&quot;Hello Mono World&quot;);</span>
-<span class="s">    }</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; hello.cs &lt;&lt;EOF
+using System;</p>
+<p>public class HelloWorld
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine ("Hello Mono World");
+    }
+}
+EOF
+```</p>
 <p>We compile the program with <strong>csc</strong> inside the container:</p>
-<div class="highlight"><pre><span></span>csc hello.cs
-</pre></div>
+<p><code>bash
+csc hello.cs</code></p>
 <p>Note that his compilation already happens inside of SGX enclaves.</p>
 <p>Let's execute the binary and switch on debug outputs:</p>
-<div class="highlight"><pre><span></span>mono hello.exe
-</pre></div>
+<p><code>bash
+mono hello.exe</code></p>
 <p>The output will look like:</p>
-<div class="highlight"><pre><span></span>Hello Mono World
-</pre></div>
+<p><code>text
+Hello Mono World</code></p>
 <h2 id="debug-output">Debug Output</h2>
 <p>You can show the configuration of SCONE by setting <code>SCONE_VERSION=1</code>, i.e.,
 if you execute</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> mono hello.exe
-</pre></div>
+<p><code>bash
+SCONE_VERSION=1 mono hello.exe</code></p>
 <p>the output will look like this:</p>
-<div class="highlight"><pre><span></span>export SCONE_QUEUES=4
+<p>```text
+export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -3289,11 +3290,10 @@ export SCONE_ALLOW_DLOPEN=yes (unprotected)
 export SCONE_MPROTECT=no
 musl version: 1.1.24
 Revision: 6da648645ce29121d24c40c9c18404cc43194f80 (Fri May 29 20:56:17 2020 +0000)
-Branch: master
-
-Enclave hash: fa29f3914117757bbd4e091f90c357ae92b4c4b6b9bfa80b21c32e66fe60ee26
+Branch: master</p>
+<p>Enclave hash: fa29f3914117757bbd4e091f90c357ae92b4c4b6b9bfa80b21c32e66fe60ee26
 Hello Mono World
-</pre></div>
+```</p>
 
               
             </article>

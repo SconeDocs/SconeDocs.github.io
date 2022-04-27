@@ -822,6 +822,19 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    include 
+  </a>
+  
+    <nav class="md-nav" aria-label="include ">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#execution-on-host" class="md-nav__link">
     Execution on host
@@ -3207,6 +3220,19 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    include 
+  </a>
+  
+    <nav class="md-nav" aria-label="include ">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#execution-on-host" class="md-nav__link">
     Execution on host
@@ -3240,26 +3266,28 @@
 <p>In this example, we assume that you run on a host and have <a href="../sgxinstall/">installed the Intel SGX driver</a> and a <a href="../dockerinstall/">docker engine</a>. Driver installation is not strictly necessary: without the driver, the program will be automatically be executed in simulation mode on the host. </p>
 <h2 id="detailed-description">Detailed Description</h2>
 <p>We first need to start a container which includes the SCONE crosscompiler which is based on Ubuntu<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>:</p>
-<div class="highlight"><pre><span></span>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/src registry.scontain.com:5050/sconecuratedimages/crosscompilers:ubuntu
-</pre></div>
+<p><code>bash
+docker run -it -v "$PWD":/src registry.scontain.com:5050/sconecuratedimages/crosscompilers:ubuntu</code></p>
 <p>We map the local directory of the host into the container (via option <em>-v</em>) to be able to executed the generated binary on the host.</p>
 <p>Now execute the following command inside the container to create the hello world program:</p>
-<div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">src</span>
-<span class="n">cat</span> <span class="o">&gt;</span> <span class="n">helloworld</span><span class="p">.</span><span class="n">c</span> <span class="o">&lt;&lt;</span> <span class="n">EOF</span>
-<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-<span class="p">}</span>
-<span class="n">EOF</span>
-</pre></div>
+<p>```C
+cd /src
+cat &gt; helloworld.c &lt;&lt; EOF</p>
+<h1 id="include">include <stdio.h></h1>
+<p>int main() {
+    printf("Hello World\n");
+}
+EOF
+```</p>
 <p>Compile the program with:
-<div class="highlight"><pre><span></span>gcc -o helloworld helloworld.c
-</pre></div></p>
+<code>bash
+gcc -o helloworld helloworld.c</code></p>
 <p>You can run this program with some debug output in the container:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
-</pre></div>
+<p><code>bash
+SCONE_VERSION=1 ./helloworld</code></p>
 <p>This will print something like:</p>
-<div class="highlight"><pre><span></span>export SCONE_QUEUES=4
+<p>```
+export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -3276,11 +3304,10 @@ export SCONE_ALLOW_DLOPEN=no
 export SCONE_MPROTECT=no
 Revision: 73cd5e415623f0947d635cad861d09bf364ce778 (Fri Jun 1 17:57:15 2018 +0200)
 Branch: master
-Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl
-
-Enclave hash: 2805aa551a1019d86f33b6f14774a18792a5a3cc483d002782c9d851d851bf5a
+Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl</p>
+<p>Enclave hash: 2805aa551a1019d86f33b6f14774a18792a5a3cc483d002782c9d851d851bf5a
 Hello World
-</pre></div>
+```</p>
 <p>The output shows that SCONE is running in <strong>simulation mode</strong>: "<em>export SCONE_MODE=sim</em>"</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3288,27 +3315,26 @@ Hello World
 </div>
 <h2 id="execution-on-host">Execution on host</h2>
 <p>Now, exit the container by executing:</p>
-<div class="highlight"><pre><span></span><span class="nb">exit</span>
-</pre></div>
+<p><code>bash
+exit</code></p>
 <p>On the host, you can now execute the generated <strong>helloworld</strong> program<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.
 First, we need to ensure that there exists a <a href="../SCONE_ENV/#scone-configuration-file">SCONE configuration file</a>. We store this in
 the local directory:</p>
-<div class="highlight"><pre><span></span>cat &gt; sgx-musl.conf <span class="s">&lt;&lt; EOF</span>
-<span class="s">Q 1</span>
-<span class="s">e -1 0 0</span>
-<span class="s">s -1 0 0</span>
-<span class="s">EOF</span>
-</pre></div>
+<p><code>bash
+cat &gt; sgx-musl.conf &lt;&lt; EOF
+Q 1
+e -1 0 0
+s -1 0 0
+EOF</code></p>
 <p>Now, we start the program with debug messages and using the configuration file in the local directory:</p>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_CONFIG</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>/sgx-musl.conf <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
-</pre></div>
+<p><code>bash
+SCONE_CONFIG="$PWD"/sgx-musl.conf SCONE_VERSION=1 ./helloworld</code></p>
 <p>In case your host has the Intel sgx driver installed, the output will show that it is executed in hardware mode on the host:</p>
-<div class="highlight"><pre><span></span>...
+<p><code>...
 export SCONE_MODE=hw
 ...
 Enclave hash: 2805aa551a1019d86f33b6f14774a18792a5a3cc483d002782c9d851d851bf5a
-Hello World
-</pre></div>
+Hello World</code></p>
 <p>If you do not have the sgx driver installed, the program runs in simulation mode.</p>
 <div class="footnote">
 <hr />

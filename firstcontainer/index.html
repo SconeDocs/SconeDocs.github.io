@@ -1105,6 +1105,19 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    include 
+  </a>
+  
+    <nav class="md-nav" aria-label="include ">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#background-info" class="md-nav__link">
     Background Info
@@ -3193,6 +3206,19 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    include 
+  </a>
+  
+    <nav class="md-nav" aria-label="include ">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#background-info" class="md-nav__link">
     Background Info
@@ -3226,27 +3252,28 @@
 <p>We first need to start the SCONE crosscompiler. The crosscompiler container image 
 is hosted in a private repository on Docker hub and
 can be started with the help of docker:</p>
-<div class="highlight"><pre><span></span>docker run -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
-</pre></div>
+<p><code>bash
+docker run -it registry.scontain.com:5050/sconecuratedimages/crosscompilers</code></p>
 <div class="admonition warning">
 <p class="admonition-title">A docker engine must be installed and you need access to <strong>registry.scontain.com:5050/sconecuratedimages/crosscompilers</strong></p>
 <p>You need to <a href="../dockerinstall/">install a docker engine</a>. In some docker installations, you might have to replace "docker" by "sudo docker". 
 Just register a free account on <code>gitlab.scontain.com</code>.</p>
 </div>
 <p>Now execute the following command inside the container to create the hello world program:</p>
-<div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">&gt;</span> <span class="n">helloworld</span><span class="p">.</span><span class="n">c</span> <span class="o">&lt;&lt;</span> <span class="n">EOF</span>
-<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-<span class="p">}</span>
-<span class="n">EOF</span>
-</pre></div>
+<p>```C
+cat &gt; helloworld.c &lt;&lt; EOF</p>
+<h1 id="include">include <stdio.h></h1>
+<p>int main() {
+    printf("Hello World\n");
+}
+EOF
+```</p>
 <p>Compile the program with the SCONE crosscompiler (i.e., gcc):</p>
-<div class="highlight"><pre><span></span>gcc -o helloworld helloworld.c
-</pre></div>
+<p><code>bash
+gcc -o helloworld helloworld.c</code></p>
 <p>You can run this program:</p>
-<div class="highlight"><pre><span></span>./helloworld
-</pre></div>
+<p><code>bash
+./helloworld</code></p>
 <p>This will print <em>Hello World</em>. </p>
 <p>Since we did not give the container access to SGX, the program runs in <strong>simulation mode</strong>, i.e.,<br />
 the SCONE software runs but we do not use Intel SGX enclaves.</p>
@@ -3255,10 +3282,11 @@ the SCONE software runs but we do not use Intel SGX enclaves.</p>
 <p>This mode must not be used for production since programs <strong>do not run inside of enclaves</strong>. Simulation mode will run on modern Intel CPUs - even those without
 Intel SGX. It might, however, fail on old CPUs without AES hardware support.</p>
 </div>
-<div class="highlight"><pre><span></span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
-</pre></div>
+<p><code>bash
+SCONE_VERSION=1 ./helloworld</code></p>
 <p>This will print something like:</p>
-<div class="highlight"><pre><span></span>export SCONE_QUEUES=4
+<p>```
+export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -3273,11 +3301,10 @@ export SCONE_SGXBOUNDS=no
 export SCONE_VARYS=no
 export SCONE_ALLOW_DLOPEN=no
 export SCONE_MPROTECT=no
-Revision: 501194b1da9d4e86828353349cc7f9ef310b0dd1
-
-Enclave hash: a01127f2190ed5ecd21f9fd432e4d07f7f250ad1e1808d9c0305e75505383c44
+Revision: 501194b1da9d4e86828353349cc7f9ef310b0dd1</p>
+<p>Enclave hash: a01127f2190ed5ecd21f9fd432e4d07f7f250ad1e1808d9c0305e75505383c44
 Hello World
-</pre></div>
+```</p>
 <p>The output shows that SCONE is running in <strong>simulation mode</strong>: <em>export SCONE_MODE=sim</em></p>
 <h2 id="background-info">Background Info</h2>
 <p>The most convenient way to use SCONE for development is to enable automatic (a.k.a. <strong>AUTO</strong>) mode<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.

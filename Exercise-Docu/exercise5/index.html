@@ -3278,18 +3278,18 @@ This policy should create a public value and a secret. We want to retrieve the p
 </ul>
 <h2 id="background">Background</h2>
 <p>The name of a policy needs to define the absolute path. This means that if a policy <code>PolicyName</code> is defined a namespace <code>MyNameSpace</code>, then we need to define the name of the policy to be:</p>
-<div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MyNameSpace/PolicyName</span>
-</pre></div>
+<p><code>yaml
+name: MyNameSpace/PolicyName</code></p>
 <p>You can define secrets as part of a policy as follows:</p>
-<div class="highlight"><pre><span></span><span class="nt">secrets</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">public_value</span>
-    <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ascii</span>
-    <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;42&quot;</span>
-    <span class="nt">export_public</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">private_value</span>
-    <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ascii</span>
-    <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;007&quot;</span>
-</pre></div>
+<p><code>yaml
+secrets:
+  - name: public_value
+    kind: ascii
+    value: "42"
+    export_public: true
+  - name: private_value
+    kind: ascii
+    value: "007"</code></p>
 <p>Note that <code>export_public</code> is typically used to export certificates - which are public. However, it can also be used to export public values like <code>MRENCLAVE</code> of a confidential service.  </p>
 <p>Right now, secret values cannot be retrieved via the CAS REST API. In a future version of the session language, we might permit this to happen <strong>if</strong> a session explicitly states which clients can access secrets via the REST API. Right now, attempts to read these secrets will fail.</p>
 <h2 id="solution">Solution</h2>

@@ -3247,17 +3247,17 @@
 <p>The availability configuration encompasses file paths and network interfaces - everything that is necessary in order to start a CAS instance. The configuration is read from a <a href="https://en.wikipedia.org/wiki/TOML">TOML</a>-formatted file.</p>
 <p>This part of the configuration is not security-sensitive. It does not take part in remote attestation, is stored unencrypted, and can be changed by the CAS operator at any time.</p>
 <h3 id="example-configuration-file">Example Configuration File</h3>
-<div class="highlight"><pre><span></span>[database]
-path = &quot;/etc/cas/cas.db&quot;
-
-[api]
-api_listen = &quot;0.0.0.0:8081&quot;
-enclave_listen = &quot;0.0.0.0:18765&quot;
-</pre></div>
+<p>```toml
+[database]
+path = "/etc/cas/cas.db"</p>
+<p>[api]
+api_listen = "0.0.0.0:8081"
+enclave_listen = "0.0.0.0:18765"
+```</p>
 <h3 id="database">Database</h3>
 <p>CAS stores its data in an SQLite database, the location of which is determined in by the <code>database.path</code> option of the configuration:</p>
-<div class="highlight"><pre><span></span>database.path = &quot;/etc/cas/database.sqlite&quot;
-</pre></div>
+<p><code>toml
+database.path = "/etc/cas/database.sqlite"</code></p>
 <p>The database is always encrypted to protected the confidentiality of the contained secrets.
 The database encryption key is stored as cipher text in a separate file with the same filename, but ending with <code>.key-store</code>.</p>
 <div class="admonition note">
@@ -3283,10 +3283,10 @@ Any slightly invested attacker could easily extract the key with a debugger.</p>
 <p>These configuration options will determine on which network interfaces and ports CAS will listen for incoming connection.
 Interfaces are defined with values satisfying <a href="https://doc.rust-lang.org/std/net/enum.SocketAddr.html#impl-FromStr"><code>std::net::SocketAddr</code>'s <code>FromStr</code> implementation</a>.</p>
 <p>The client API is configured via the <code>api_listen</code> option while the enclave interface is configured through the <code>enclave_listen</code> option:</p>
-<div class="highlight"><pre><span></span>[api]
-enclave_listen = &quot;0.0.0.0:18765&quot;
-api_listen = &quot;0.0.0.0:8080&quot;
-</pre></div>
+<p><code>toml
+[api]
+enclave_listen = "0.0.0.0:18765"
+api_listen = "0.0.0.0:8080"</code></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>A configuration with an IP address of <code>0.0.0.0</code> will make the CAS listen on any available network interface.</p>
@@ -3301,35 +3301,34 @@ api_listen = &quot;0.0.0.0:8080&quot;
 <p>Please refer to the <a href="../CAS_cli-intro/#cas-provisioning-and-configuration">SCONE CLI documentation</a> for a full description. The configuration file is usually provided in <a href="https://en.wikipedia.org/wiki/TOML">TOML</a> format.</p>
 <h3 id="example-configuration-file_1">Example Configuration File</h3>
 <p>The following file can be used for a development environment:</p>
-<div class="highlight"><pre><span></span>[api_identity]
-common_name = &quot;cas&quot;
-alt_names = [&quot;cas&quot;, &quot;localhost&quot;]
-country_name = &quot;DE&quot;
-org_name = &quot;scontain UG&quot;
-state_or_province = &quot;Saxony&quot;
-locality = &quot;Dresden&quot;
-email = &quot;info@scontain.com&quot;
-
-[ias]
-spid            = &quot;32C2D32CD4F1C873625BBE65D973A702&quot;
+<p>```toml
+[api_identity]
+common_name = "cas"
+alt_names = ["cas", "localhost"]
+country_name = "DE"
+org_name = "scontain UG"
+state_or_province = "Saxony"
+locality = "Dresden"
+email = "<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#110;&#102;&#111;&#64;&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#111;&#109;">&#105;&#110;&#102;&#111;&#64;&#115;&#99;&#111;&#110;&#116;&#97;&#105;&#110;&#46;&#99;&#111;&#109;</a>"</p>
+<p>[ias]
+spid            = "32C2D32CD4F1C873625BBE65D973A702"
 linkable_quotes = true
-sp_key          = &quot;1c8b569cffd94a85ad11342bfad5a3ad&quot;
-base_uri        = &quot;https://api.trustedservices.intel.com/sgx/dev/attestation/v3&quot;
-
-[dcap]
-subscription_key = &quot;aecd5ebb682346028d60c36131eb2d92&quot;
-</pre></div>
+sp_key          = "1c8b569cffd94a85ad11342bfad5a3ad"
+base_uri        = "<a href="https://api.trustedservices.intel.com/sgx/dev/attestation/v3">https://api.trustedservices.intel.com/sgx/dev/attestation/v3</a>"</p>
+<p>[dcap]
+subscription_key = "aecd5ebb682346028d60c36131eb2d92"
+```</p>
 <h3 id="api-identity">API Identity</h3>
 <p>Contents of the TLS end-entity server and client certificate presented by CAS can be configured in the <code>api.identity</code> section:</p>
-<div class="highlight"><pre><span></span>[api.identity]
-common_name = &quot;cas&quot;
-alt_names = [&quot;cas&quot;, &quot;localhost&quot;]
-country_name = &quot;DE&quot;
-org_name = &quot;scontain UG&quot;
-state_or_province = &quot;Saxony&quot;
-locality = &quot;Dresden&quot;
-email = &quot;info@scontain.com&quot;
-</pre></div>
+<p><code>toml
+[api.identity]
+common_name = "cas"
+alt_names = ["cas", "localhost"]
+country_name = "DE"
+org_name = "scontain UG"
+state_or_province = "Saxony"
+locality = "Dresden"
+email = "info@scontain.com"</code></p>
 <p>This section is not mandatory. If not specified, default values listed above will be used.
 In case the section is provided in the configuration file, it must contain at least <code>common_name</code> field.</p>
 <h3 id="ias-client">IAS Client</h3>
@@ -3350,34 +3349,34 @@ CAS supports Rev4 and Rev5 IAS authentication (choose either one, not both):</p>
   Refer to the <a href="#private-keys">section about private keys</a> information regarding private key encoding.</li>
 <li>If you're using a Rev5 subscription key to authenticate your account, specify it under the <code>sp_key</code> option.</li>
 </ul>
-<div class="highlight"><pre><span></span>[ias]
-spid = &quot;2EC5BE64E242BCC9E4670D49E5C7091E&quot;
+<p><code>toml
+[ias]
+spid = "2EC5BE64E242BCC9E4670D49E5C7091E"
 linkable_quotes = true
-base_url = &quot;https://test-as.sgx.trustedservices.intel.com:443/attestation/sgx/v3&quot;
-identity = &quot;&quot;&quot;
+base_url = "https://test-as.sgx.trustedservices.intel.com:443/attestation/sgx/v3"
+identity = """
 -----BEGIN PRIVATE KEY-----
 ...
 -----END PRIVATE KEY-----
 -----BEGIN CERTIFICATE-----
 ...
 -----END CERTIFICATE-----
-&quot;&quot;&quot;
-</pre></div>
+"""</code></p>
 <h3 id="intel-provisioning-certification-service-for-ecdsa-attestation-client-dcap">Intel Provisioning Certification Service for ECDSA Attestation Client (DCAP)</h3>
 <p>The <a href="https://api.portal.trustedservices.intel.com/provisioning-certification">Intel Provisioning Certification Service for ECDSA Attestation Client</a> enables CAS to verify DCAP quotes created by the Intel Quoting Enclave. DCAP quotes can be used as an alternative to EPID quotes for remote attestation of program enclaves. Configuring a DCAP client credential is optional.</p>
 <p>The configuration encompasses a subscription key. This key is provided to you when you enroll with Intel's Provisioning Certification Service.</p>
-<div class="highlight"><pre><span></span>[dcap]
-subscription_key = &quot;aecd5ebb682346028d60c36131eb2d92&quot;
-</pre></div>
+<p><code>toml
+[dcap]
+subscription_key = "aecd5ebb682346028d60c36131eb2d92"</code></p>
 <h3 id="private-keys">Private Keys</h3>
 <p>We support PKCS#8 encoded private keys.
 By default, <code>openssl</code> will encode elliptic curve keys in the incompatible format specified in <a href="http://www.secg.org/">SEC 1: Elliptic Curve Cryptography</a>.
 You can use the <code>openssl</code> cli to convert these keys into <a href="https://tools.ietf.org/html/rfc5208">PKCS#8</a>:</p>
-<div class="highlight"><pre><span></span>openssl pkcs8 -in pkey.pem -topk8 --nocrypt -out pkey.pkcs8.pem
-</pre></div>
+<p><code>bash
+openssl pkcs8 -in pkey.pem -topk8 --nocrypt -out pkey.pkcs8.pem</code></p>
 <p>PKCS#1-encoded private keys, e.g. key with <code>------BEGIN RSA PRIVATE KEY-----</code>, can be converted into PKCS#8 with the following command:</p>
-<div class="highlight"><pre><span></span>openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in pkcs1.key -out pkcs8.key
-</pre></div>
+<p><code>bash
+openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in pkcs1.key -out pkcs8.key</code></p>
 
               
             </article>

@@ -689,6 +689,19 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-sconify-python-servicetemplatesjobyaml" class="md-nav__link">
+    Source: sconify-python-service/templates/job.yaml
+  </a>
+  
+    <nav class="md-nav" aria-label="Source: sconify-python-service/templates/job.yaml">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#next-release" class="md-nav__link">
     Next Release
@@ -3219,6 +3232,19 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-sconify-python-servicetemplatesjobyaml" class="md-nav__link">
+    Source: sconify-python-service/templates/job.yaml
+  </a>
+  
+    <nav class="md-nav" aria-label="Source: sconify-python-service/templates/job.yaml">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#next-release" class="md-nav__link">
     Next Release
@@ -3260,76 +3286,77 @@ In this case, one can use <code>kubectl</code> to deploy confidential container 
 <code>kubectl</code>. </p>
 <h2 id="example">Example</h2>
 <p>For the <a href="../sconify_hw_k8s/">hello world example</a>, we can generate the manifest as follows:</p>
-<div class="highlight"><pre><span></span>helm template python-service charts/python-service  &gt; manifests.yaml
-</pre></div>
+<p><code>bash
+helm template python-service charts/python-service  &gt; manifests.yaml</code></p>
 <p>Now you can deploy this manifest with the help of kubectl:</p>
-<div class="highlight"><pre><span></span>kubectl create -f manifests.yaml
-</pre></div>
+<p><code>bash
+kubectl create -f manifests.yaml</code></p>
 <p>You can of course modify the manifest. The manifest might look as follows:</p>
-<div class="highlight"><pre><span></span><span class="nn">---</span>
-<span class="c1"># Source: sconify-python-service/templates/job.yaml</span>
-<span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
-<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
-<span class="nt">metadata</span><span class="p">:</span>
-  <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python-service-sconify-python-service</span>
-  <span class="nt">labels</span><span class="p">:</span>
-    <span class="nt">helm.sh/chart</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sconify-python-service-0.1.0</span>
-    <span class="nt">app.kubernetes.io/name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sconify-python-service</span>
-    <span class="nt">app.kubernetes.io/instance</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">RELEASE-NAME</span>
-    <span class="nt">app.kubernetes.io/managed-by</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Helm</span>
-<span class="nt">spec</span><span class="p">:</span>
-  <span class="nt">template</span><span class="p">:</span>
-    <span class="nt">metadata</span><span class="p">:</span>
-      <span class="nt">labels</span><span class="p">:</span>
-        <span class="nt">app.kubernetes.io/name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sconify-python-service</span>
-        <span class="nt">app.kubernetes.io/instance</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python-service</span>
-    <span class="nt">spec</span><span class="p">:</span>
-      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="s">&quot;Never&quot;</span>
-      <span class="nt">volumes</span><span class="p">:</span> 
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumev1</span>
-          <span class="nt">emptyDir</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
-      <span class="nt">containers</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">sconify-python-service</span>
-          <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;registry.scontain.com:5050/christof.fetzer/hw-k8s:python-k8-test-22166&quot;</span>
-          <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Always</span>
-          <span class="nt">securityContext</span><span class="p">:</span>
-            <span class="nt">capabilities</span><span class="p">:</span>
-              <span class="nt">add</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&quot;SYS_RAWIO&quot;</span><span class="p p-Indicator">]</span>
-          <span class="nt">env</span><span class="p">:</span>
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SCONE_CONFIG_ID</span>
-              <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ns-20726744429579/python-session/python-service</span>
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SCONE_CAS_ADDR</span>
-              <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5-3-0.scone-cas.cf</span>
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SCONE_LAS_ADDR</span>
-              <span class="nt">valueFrom</span><span class="p">:</span>
-                <span class="nt">fieldRef</span><span class="p">:</span>
-                  <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">status.hostIP</span>
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SCONE_ALLOW_DLOPEN</span>
-              <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;1&quot;</span>
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SCONE_HEAP</span>
-              <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">256m</span>
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SCONE_STACK</span>
-              <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4m</span>
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SCONE_LOG</span>
-              <span class="nt">value</span><span class="p">:</span> <span class="s">&quot;ERROR&quot;</span>
-          <span class="nt">resources</span><span class="p">:</span>
-            <span class="nt">limits</span><span class="p">:</span>
-              <span class="nt">sgx.k8s.io/sgx</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-          <span class="nt">volumeMounts</span><span class="p">:</span> 
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">volumev1</span>
-              <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/V1</span>
-      <span class="nt">initContainers</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">check-attestation</span>
-          <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">registry.scontain.com:5050/clenimar/attestation-check:latest</span>
-          <span class="nt">imagePullPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-          <span class="nt">env</span><span class="p">:</span>
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SCONE_CAS_ADDR</span>
-              <span class="nt">value</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5-3-0.scone-cas.cf</span>
-            <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SCONE_LAS_ADDR</span>
-              <span class="nt">valueFrom</span><span class="p">:</span>
-                <span class="nt">fieldRef</span><span class="p">:</span>
-                  <span class="nt">fieldPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">status.hostIP</span>
-</pre></div>
+<p>```yaml</p>
+<hr />
+<h1 id="source-sconify-python-servicetemplatesjobyaml">Source: sconify-python-service/templates/job.yaml</h1>
+<p>apiVersion: batch/v1
+kind: Job
+metadata:
+  name: python-service-sconify-python-service
+  labels:
+    helm.sh/chart: sconify-python-service-0.1.0
+    app.kubernetes.io/name: sconify-python-service
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/managed-by: Helm
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sconify-python-service
+        app.kubernetes.io/instance: python-service
+    spec:
+      restartPolicy: "Never"
+      volumes: 
+        - name: volumev1
+          emptyDir: {}
+      containers:
+        - name: sconify-python-service
+          image: "registry.scontain.com:5050/christof.fetzer/hw-k8s:python-k8-test-22166"
+          imagePullPolicy: Always
+          securityContext:
+            capabilities:
+              add: ["SYS_RAWIO"]
+          env:
+            - name: SCONE_CONFIG_ID
+              value: ns-20726744429579/python-session/python-service
+            - name: SCONE_CAS_ADDR
+              value: 5-3-0.scone-cas.cf
+            - name: SCONE_LAS_ADDR
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: SCONE_ALLOW_DLOPEN
+              value: "1"
+            - name: SCONE_HEAP
+              value: 256m
+            - name: SCONE_STACK
+              value: 4m
+            - name: SCONE_LOG
+              value: "ERROR"
+          resources:
+            limits:
+              sgx.k8s.io/sgx: 1
+          volumeMounts: 
+            - name: volumev1
+              mountPath: /V1
+      initContainers:
+        - name: check-attestation
+          image: registry.scontain.com:5050/clenimar/attestation-check:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SCONE_CAS_ADDR
+              value: 5-3-0.scone-cas.cf
+            - name: SCONE_LAS_ADDR
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+```</p>
 <h2 id="next-release">Next Release</h2>
 <p>In the next release, we plan to add an option to <code>sconfiy_image</code> to be able to generate a manifest directly. This will reduce the need to install <code>helm</code> on the development machine.</p>
 <p><center>

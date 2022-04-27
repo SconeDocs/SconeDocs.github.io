@@ -3266,58 +3266,58 @@
 <h2 id="demo">Demo</h2>
 <p>This image also contains a demo that you can try out. This demo shows how to set up the configuration of an nginx instance.</p>
 <p>To run this demo, you first need to checkout the demo repostiory:</p>
-<p><div class="highlight"><pre><span></span>git clone https://github.com/scontain/scone-vault
-<span class="nb">cd</span> scone-vault
-</pre></div>
+<p><code>bash
+git clone https://github.com/scontain/scone-vault
+cd scone-vault</code>
 you need to ensure to have a docker compose file with content as follows:</p>
-<div class="highlight"><pre><span></span>cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
-<span class="s">version: &#39;3.2&#39;</span>
-<span class="s">services:</span>
-<span class="s">    vault:</span>
-<span class="s">        image: sconecuratedimages/apps:vault-1.5.3-alpine-scone5</span>
-<span class="s">        command: sh -c &quot;cd build_dir &amp;&amp; ./start_vault.sh&quot;</span>
-<span class="s">        environment:</span>
-<span class="s">         - VAULT_DEV_ROOT_TOKEN_ID=RootToken</span>
-<span class="s">        volumes:</span>
-<span class="s">         - ./:/build_dir</span>
-<span class="s">        cap_add:</span>
-<span class="s">         - IPC_LOCK</span>
-<span class="s">    scone-vault-nginx:</span>
-<span class="s">        image: sconecuratedimages/apps:nginx-1.14.2-alpine-scone5</span>
-<span class="s">        environment:</span>
-<span class="s">         - URL=&quot;http://vault:8200&quot;</span>
-<span class="s">         - INDEX=nginx</span>
-<span class="s">         - VAULT_ADDR=&quot;http://vault:8200&quot;</span>
-<span class="s">         - TOKEN=RootToken</span>
-<span class="s">        command: sh -c &quot;cd build_dir &amp;&amp; ./install-deps.sh &amp;&amp; ./bench.sh&quot;</span>
-<span class="s">        volumes:</span>
-<span class="s">         - ./:/build_dir</span>
-<span class="s">        depends_on:</span>
-<span class="s">         - vault</span>
-<span class="s">EOF</span>
-</pre></div>
+<p><code>bash
+cat &gt; docker-compose.yml &lt;&lt;EOF
+version: '3.2'
+services:
+    vault:
+        image: sconecuratedimages/apps:vault-1.5.3-alpine-scone5
+        command: sh -c "cd build_dir &amp;&amp; ./start_vault.sh"
+        environment:
+         - VAULT_DEV_ROOT_TOKEN_ID=RootToken
+        volumes:
+         - ./:/build_dir
+        cap_add:
+         - IPC_LOCK
+    scone-vault-nginx:
+        image: sconecuratedimages/apps:nginx-1.14.2-alpine-scone5
+        environment:
+         - URL="http://vault:8200"
+         - INDEX=nginx
+         - VAULT_ADDR="http://vault:8200"
+         - TOKEN=RootToken
+        command: sh -c "cd build_dir &amp;&amp; ./install-deps.sh &amp;&amp; ./bench.sh"
+        volumes:
+         - ./:/build_dir
+        depends_on:
+         - vault
+EOF</code></p>
 <p>Next, try it out by executing:</p>
-<div class="highlight"><pre><span></span>docker-compose up
-</pre></div>
+<p><code>bash
+docker-compose up</code></p>
 <p>Please ensure to execute</p>
-<div class="highlight"><pre><span></span>docker-compose down
-</pre></div>
+<p><code>bash
+docker-compose down</code></p>
 <p>before starting it with <em>up</em> again.</p>
 <p>Note that the script <code>start_vault.sh</code> is used to start Vault server and inject some secrets used for Nginx.</p>
 <h2 id="details">Details</h2>
 <p>You can perform the individual steps manually as described below.</p>
 <p>Run the demo container using docker-compose:</p>
-<div class="highlight"><pre><span></span>docker-compose run scone-vault-nginx sh
-</pre></div>
+<p><code>bash
+docker-compose run scone-vault-nginx sh</code></p>
 <p>Go to the deployment directory:</p>
-<div class="highlight"><pre><span></span> <span class="nb">cd</span> /build_dir/
-</pre></div>
+<p><code>bash
+ cd /build_dir/</code></p>
 <p>Install dependencies:</p>
-<div class="highlight"><pre><span></span> ./install-deps.sh
-</pre></div>
+<p><code>bash
+ ./install-deps.sh</code></p>
 <p>Now, run the benchmark to test if SCONE Vault is setting up the configuration for Nginx.</p>
-<div class="highlight"><pre><span></span>./bench.sh
-</pre></div>
+<p><code>bash
+./bench.sh</code></p>
 <h2 id="integration-with-scone-cas">Integration with SCONE CAS</h2>
 <p>For added security, we recommend the following to run Vault in a <strong>release enclave</strong> to prevent attackers from dumping the content of the Vault enclave and to integrate the execution of Vault with SCONE CAS such that</p>
 <ul>

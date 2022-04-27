@@ -3238,32 +3238,32 @@
 <p>To use program arguments given by the operator/user, the policy of a confidential application has to enable this. The <code>command</code> key of the application has to specify host arguments using this format: <code>@@N</code>, where <code>N</code> is the position of the argument within the host arguments.</p>
 <p>Let us use the <code>print-arg-env</code> program to explain <a href="../print-arg-env/">secure arguments</a>, to show the combination of secure and host arguments.</p>
 <p>Consider that the policy of <code>print-arg-env</code> contains the following entry:</p>
-<div class="highlight"><pre><span></span><span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">print-arg-env arg1 @@1 @@2</span>
-</pre></div>
+<p><code>yaml
+command: print-arg-env arg1 @@1 @@2</code></p>
 <p>Consider that the user will specify two arguments:</p>
-<div class="highlight"><pre><span></span>print-arg-env arg2 arg3
-</pre></div>
+<p><code>bash
+print-arg-env arg2 arg3</code></p>
 <p>This will give us the following result:</p>
-<div class="highlight"><pre><span></span>argv: print-arg-env arg1 arg2 arg3
-environ:
-</pre></div>
+<p><code>text
+argv: print-arg-env arg1 arg2 arg3
+environ:</code></p>
 <p>If an operator does <strong>not</strong> specify all arguments specified by a session, this will result in a fatal error. Also, duplicate positions in the policy, (for example <code>@@1 @@1</code>), are fatal errors.</p>
 <h2 id="host-environment-variables">Host Environment Variables</h2>
 <p>The same approach is support for host environment variables. If a session contains <code>\@\@HOST_NAME</code>, like:</p>
-<div class="highlight"><pre><span></span>  <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">print-arg-env arg1 @@1 @@2</span>
-  <span class="nt">environment</span><span class="p">:</span>
-      <span class="nt">\@\@NAME</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">SESSION_VALUE</span>
-</pre></div>
+<p><code>yaml
+  command: print-arg-env arg1 @@1 @@2
+  environment:
+      \@\@NAME: SESSION_VALUE</code></p>
 <p>Any value specified in the session, like <code>SESSION_VALUE</code> will be ignored. An operator has to define the environment variable <code>NAME=VALUE</code>. The SCONE runtime will use this host environment variable. If a host does <strong>not</strong> define this environment variable, the SCONE runtime will define it to be empty <code>NAME=</code> and leave it to the application to handle this situation.</p>
 <p>For example, if the user executes</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NAME</span><span class="o">=</span><span class="m">42</span>
-print-arg-env argA argB
-</pre></div>
+<p><code>bash
+export NAME=42
+print-arg-env argA argB</code></p>
 <p>the output will be as follows:</p>
-<div class="highlight"><pre><span></span>argv: print-arg-env arg1 argA argB
+<p><code>text
+argv: print-arg-env arg1 argA argB
 environ:
-NAME=42
-</pre></div>
+NAME=42</code></p>
 <h2 id="example">Example</h2>
 <p>For another example, please check out our <a href="../otp_demo/">OTP demo</a>.</p>
 

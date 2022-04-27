@@ -3452,18 +3452,18 @@ three numbers. The possible commands currently are:</p>
 <p>The number of <em>sthreads</em> is automatically increased if more <strong>sthreads</strong> are needed to process system calls. An <strong>sthread</strong> will block if it does not have any work left to do. Hence, we recommend to start exactly one <strong>sthread</strong> per <strong>ethread</strong>.</p>
 <p><strong>ethreads</strong> will leave the enclave it there is no more work for them to do. Hence, it makes sense to start one ehthread per core. In some situations, it might even make sense to start one <strong>ethread</strong> per hyper-thread.</p>
 <p>Unless you want to limit the the number of CPU resources an enclave should use,  the following is a good generic configuration file:</p>
-<div class="highlight"><pre><span></span>$ sudo tee  /etc/sgx-musl.conf <span class="s">&lt;&lt; EOF</span>
-<span class="s">Q 4</span>
-<span class="s">e -1 0 0</span>
-<span class="s">s -1 0 0</span>
-<span class="s">e -1 1 0</span>
-<span class="s">s -1 1 0</span>
-<span class="s">e -1 2 0</span>
-<span class="s">s -1 2 0</span>
-<span class="s">e -1 3 0</span>
-<span class="s">s -1 3 0</span>
-<span class="s">EOF</span>
-</pre></div>
+<p><code>bash
+$ sudo tee  /etc/sgx-musl.conf &lt;&lt; EOF
+Q 4
+e -1 0 0
+s -1 0 0
+e -1 1 0
+s -1 1 0
+e -1 2 0
+s -1 2 0
+e -1 3 0
+s -1 3 0
+EOF</code></p>
 <h2 id="run-mode">Run Mode</h2>
 <ul>
 <li><code>SCONE_MODE</code>: defines if application should run inside of an enclave or outside in simulation mode.</li>
@@ -3557,27 +3557,27 @@ For programs like MariaDB, MongoDB, Python, or node, we increase the stack size 
 </li>
 </ul>
 <p>Example output for <code>SCONE_VERSION=1</code>:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
-<span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
-<span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
-<span class="nb">export</span> <span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">2147483648</span>
-<span class="nb">export</span> <span class="nv">SCONE_STACK</span><span class="o">=</span><span class="m">81920</span>
-<span class="nb">export</span> <span class="nv">SCONE_LOG</span><span class="o">=</span>WARNING
-<span class="nb">export</span> <span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
-<span class="nb">export</span> <span class="nv">SCONE_ESPINS</span><span class="o">=</span><span class="m">10000</span>
-<span class="nb">export</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>hw
-<span class="nb">export</span> <span class="nv">SCONE_SGXBOUNDS</span><span class="o">=</span>no
-<span class="nb">export</span> <span class="nv">SCONE_VARYS</span><span class="o">=</span>no
-<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>yes <span class="o">(</span>unprotected<span class="o">)</span>
-<span class="nb">export</span> <span class="nv">SCONE_MPROTECT</span><span class="o">=</span>yes
-Revision: e37dda73a6db435973f2e00347bd4cf462e4e027 <span class="o">(</span>Sat Aug <span class="m">25</span> <span class="m">22</span>:59:30 <span class="m">2018</span> +0200<span class="o">)</span>
+<p><code>bash
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_KERNEL=0
+export SCONE_HEAP=2147483648
+export SCONE_STACK=81920
+export SCONE_LOG=WARNING
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_ESPINS=10000
+export SCONE_MODE=hw
+export SCONE_SGXBOUNDS=no
+export SCONE_VARYS=no
+export SCONE_ALLOW_DLOPEN=yes (unprotected)
+export SCONE_MPROTECT=yes
+Revision: e37dda73a6db435973f2e00347bd4cf462e4e027 (Sat Aug 25 22:59:30 2018 +0200)
 Branch: master
-Configure options: --enable-file-prot --enable-shared --enable-debug --prefix<span class="o">=</span>/scone/src/built/cross-compiler/x86_64-linux-musl
-</pre></div>
+Configure options: --enable-file-prot --enable-shared --enable-debug --prefix=/scone/src/built/cross-compiler/x86_64-linux-musl</code></p>
 <h2 id="dynamic-library-support">Dynamic library support:</h2>
 <ul>
 <li><code>SCONE_ALLOW_DLOPEN="1"</code>: if defined, permit to load <strong>protected</strong> libraries after startup: These libraries must be authenticated or encrypted to be able to load these. Note that all libraries that are loaded during startup are measured and contribute to the hash of the enclave, i.e., they are part of <strong>MRENCLAVE</strong>. The libraries loaded during startup could reside in a file region that is not protect or that is authenticated. These libraries must not be in an encrypted region since the encryption keys are not yet known during startup.</li>

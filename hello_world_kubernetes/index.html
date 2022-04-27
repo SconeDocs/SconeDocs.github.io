@@ -3406,28 +3406,28 @@
 <li><a href="#encrypt-your-source-code">Encrypt your source code</a></li>
 </ol>
 <p>An executable version of this code can be cloned as follows:</p>
-<div class="highlight"><pre><span></span>git clone https://github.com/scontain/hello-world-scone-on-kubernetes.git
-</pre></div>
+<p><code>bash
+git clone https://github.com/scontain/hello-world-scone-on-kubernetes.git</code></p>
 <div class="admonition info">
 <p class="admonition-title">Note that you need to get access to the images<p><a href="mailto:info@scontain.com">Send us an email</a> to get access.</p>
 </p>
 </div>
 <p>You can run this demo by executing:</p>
-<div class="highlight"><pre><span></span><span class="nb">cd</span> hello-world-scone-on-kubernetes
-./run_hello_world.sh
-</pre></div>
+<p><code>bash
+cd hello-world-scone-on-kubernetes
+./run_hello_world.sh</code></p>
 <h3 id="before-you-begin">Before you begin</h3>
 <h5 id="a-kubernetes-cluster-and-a-separate-namespace">A Kubernetes cluster and a separate namespace</h5>
 <p>This tutorial assumes that you have access to a Kubernetes cluster (through <code>kubectl</code>), and that you are deploying everything to a separate namespace, called <code>hello-scone</code>. Namespaces are a good way to separate resources, not to mention how it makes the clean-up process a lot easier at the end:</p>
-<div class="highlight"><pre><span></span>kubectl create namespace hello-scone
-</pre></div>
+<p><code>bash
+kubectl create namespace hello-scone</code></p>
 <p>Don't forget to specify it by adding <code>-n hello-scone</code> to your <code>kubectl</code> commands.</p>
 <h5 id="install-sgx-device-plugin">Install SGX device plugin</h5>
 <p>SGX applications need access to the Intel SGX driver, a char device located at the host machine. The device name might differ depending on the driver implementation, but the most common ones are <code>/dev/sgx</code> (DCAP), <code>/dev/sgx/enclave</code> (in-tree) and <code>/dev/isgx</code> (IAS/out-of-tree). If you are in a cluster context, you need the right device mounted into the container. In Kubernetes, mounting host devices requires your applications to run in privileged mode.</p>
 <p>We provide an SGX device plugin for Kubernetes, which lets you request the SGX driver through the <code>resource.limits</code> field (just like CPU or RAM). The device plugin handles different driver names transparently, and also allows your applications to run unprivileged (which is always good for security).</p>
 <p>The SGX device plugin can be easily installed with the help of Helm:</p>
-<div class="highlight"><pre><span></span>helm install sgxdevplugin sconeapps/sgxdevplugin
-</pre></div>
+<p><code>bash
+helm install sgxdevplugin sconeapps/sgxdevplugin</code></p>
 <p>Please refer to <a href="https://sconedocs.github.io/helm_sgxdevplugin/">Kubernetes SGX plugin documentation</a> for more details and Helm setup instructions.</p>
 <p>This tutorial assumes that you have the SGX device plugin running on your cluster.</p>
 <blockquote>
@@ -3436,525 +3436,513 @@
 </blockquote>
 <h5 id="set-yourself-a-workspace">Set yourself a workspace</h5>
 <p>A lot of files are created through this tutorial, and they have to be somewhere. Choose whatever directory you want to run the commands below, but it might be a good idea to create a temporary one:</p>
-<div class="highlight"><pre><span></span><span class="nb">cd</span> <span class="k">$(</span>mktemp -d<span class="k">)</span>
-</pre></div>
+<p><code>bash
+cd $(mktemp -d)</code></p>
 <p>We use the following base image:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">BASE_IMAGE</span><span class="o">=</span>sconecuratedimages/kubernetes:python-3.7.3-alpine3.10-scone4.2
-</pre></div>
+<p><code>bash
+export BASE_IMAGE=sconecuratedimages/kubernetes:python-3.7.3-alpine3.10-scone4.2</code></p>
 <p>Have fun!</p>
 <h5 id="set-a-configuration-and-attestation-service-cas">Set a Configuration and Attestation Service (CAS)</h5>
 <p>When remote attestation enters the scene, you will need a CAS to provide attestation, configuration and secrets. Export now the address of your CAS. If you don't have your own CAS, use our public one at scone.ml:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">4</span>-2-1.scone-cas.cf
-</pre></div>
+<p><code>bash
+export SCONE_CAS_ADDR=4-2-1.scone-cas.cf</code></p>
 <p>Now, generate client certificates (needed to submit new sessions to CAS):</p>
-<div class="highlight"><pre><span></span>mkdir -p conf
-<span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-    openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key  -days <span class="m">31</span> -nodes -sha256 -subj <span class="s2">&quot;/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com&quot;</span> -reqexts SAN -extensions SAN -config &lt;<span class="o">(</span>cat /etc/ssl/openssl.cnf <span class="se">\</span>
-&lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;[SAN]\nsubjectAltName=DNS:www.scontain.com&#39;</span><span class="o">))</span>
-<span class="k">fi</span>
-</pre></div>
+<p><code>bash
+mkdir -p conf
+if [[ ! -f conf/client.crt || ! -f conf/client-key.key  ]] ; then
+    openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key  -days 31 -nodes -sha256 -subj "/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com" -reqexts SAN -extensions SAN -config &lt;(cat /etc/ssl/openssl.cnf \
+&lt;(printf '[SAN]\nsubjectAltName=DNS:www.scontain.com'))
+fi</code></p>
 <p>Create a <a href="https://sconedocs.github.io/namespace/">CAS namespace</a> for your sessions.</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">NS</span><span class="o">=</span>HelloWorld-<span class="nv">$RANDOM</span>-<span class="nv">$RANDOM</span>
-cat &gt; namespace.yaml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: $NS</span>
-
-<span class="s">access_policy:</span>
-<span class="s">  read:</span>
-<span class="s">   - CREATOR</span>
-<span class="s">  update:</span>
-<span class="s">   - CREATOR</span>
-<span class="s">EOF</span>
-curl -v -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @namespace.yaml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/v1/sessions
-</pre></div>
+<p>```bash
+export NS=HelloWorld-<span class="arithmatex"><span class="MathJax_Preview">RANDOM-</span><script type="math/tex">RANDOM-</script></span>RANDOM
+cat &gt; namespace.yaml &lt;&lt;EOF
+name: $NS</p>
+<p>access_policy:
+  read:
+   - CREATOR
+  update:
+   - CREATOR
+EOF
+curl -v -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @namespace.yaml -X POST https://$SCONE_CAS_ADDR:8081/v1/sessions
+```</p>
 <h3 id="hello-world">Hello World!</h3>
 <p>Let's start by writing a simple Python webserver: it only returns the message <code>Hello World!</code> and the value of the environment variable <code>GREETING</code>.</p>
-<div class="highlight"><pre><span></span>mkdir -p app
-cat &gt; app/server.py <span class="s">&lt;&lt; EOF</span>
-<span class="s">from http.server import HTTPServer</span>
-<span class="s">from http.server import BaseHTTPRequestHandler</span>
-<span class="s">import os</span>
-
-
-<span class="s">class HTTPHelloWorldHandler(BaseHTTPRequestHandler):</span>
-<span class="s">    def do_GET(self):</span>
-<span class="s">        &quot;&quot;&quot;say &quot;Hello World!&quot; and the value of \`GREETING\` env. variable.&quot;&quot;&quot;</span>
-<span class="s">        self.send_response(200)</span>
-<span class="s">        self.end_headers()</span>
-<span class="s">        self.wfile.write(b&#39;Hello World!\n\$GREETING is: %s\n&#39; % (os.getenv(&#39;GREETING&#39;, &#39;no greeting :(&#39;).encode()))</span>
-
-
-<span class="s">httpd = HTTPServer((&#39;0.0.0.0&#39;, 8080), HTTPHelloWorldHandler)</span>
-
-<span class="s">print(&quot;Starting server&quot;)</span>
-
-<span class="s">httpd.serve_forever()</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+mkdir -p app
+cat &gt; app/server.py &lt;&lt; EOF
+from http.server import HTTPServer
+from http.server import BaseHTTPRequestHandler
+import os</p>
+<p>class HTTPHelloWorldHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        """say "Hello World!" and the value of `GREETING` env. variable."""
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b'Hello World!\n$GREETING is: %s\n' % (os.getenv('GREETING', 'no greeting :(').encode()))</p>
+<p>httpd = HTTPServer(('0.0.0.0', 8080), HTTPHelloWorldHandler)</p>
+<p>print("Starting server")</p>
+<p>httpd.serve_forever()
+EOF
+```</p>
 <p>To build this application with SCONE, simply use our Python 3.7 curated image as base. The Python interpreter will run inside of an enclave!</p>
-<div class="highlight"><pre><span></span>cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
-<span class="s">FROM $BASE_IMAGE</span>
-<span class="s">EXPOSE 8080</span>
-<span class="s">COPY app /app</span>
-<span class="s">CMD [ &quot;python3&quot;, &quot;/app/server.py&quot; ]</span>
-<span class="s">EOF</span>
-</pre></div>
+<p><code>bash
+cat &gt; Dockerfile &lt;&lt; EOF
+FROM $BASE_IMAGE
+EXPOSE 8080
+COPY app /app
+CMD [ "python3", "/app/server.py" ]
+EOF</code></p>
 <p>Set the name of the image. If you already have an image, skip the building process.</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span>sconecuratedimages/kubernetes:hello-k8s-scone0.1
-docker build --pull . -t <span class="nv">$IMAGE</span> <span class="o">&amp;&amp;</span> docker push <span class="nv">$IMAGE</span>
-</pre></div>
+<p><code>bash
+export IMAGE=sconecuratedimages/kubernetes:hello-k8s-scone0.1
+docker build --pull . -t $IMAGE &amp;&amp; docker push $IMAGE</code></p>
 <p>Deploying the application with Kubernetes is also simple: we just need a deployment and a service exposing it. </p>
 <p>Write the Kubernetes manifests:</p>
-<div class="highlight"><pre><span></span>cat &gt; app.yaml <span class="s">&lt;&lt; EOF</span>
-<span class="s">apiVersion: apps/v1</span>
-<span class="s">kind: Deployment</span>
-<span class="s">metadata:</span>
-<span class="s">  name: hello-world</span>
-<span class="s">spec:</span>
-<span class="s">  selector:</span>
-<span class="s">    matchLabels:</span>
-<span class="s">      run: hello-world</span>
-<span class="s">  replicas: 1</span>
-<span class="s">  template:</span>
-<span class="s">    metadata:</span>
-<span class="s">      labels:</span>
-<span class="s">        run: hello-world</span>
-<span class="s">    spec:</span>
-<span class="s">      containers:</span>
-<span class="s">      - name: hello-world</span>
-<span class="s">        image: $IMAGE</span>
-<span class="s">        imagePullPolicy: Always</span>
-<span class="s">        ports:</span>
-<span class="s">        - containerPort: 8080</span>
-<span class="s">        env:</span>
-<span class="s">        - name: GREETING</span>
-<span class="s">          value: howdy!</span>
-<span class="s">        resources:</span>
-<span class="s">          limits:</span>
-<span class="s">            sgx.k8s.io/sgx: 1</span>
-<span class="s">---</span>
-<span class="s">apiVersion: v1</span>
-<span class="s">kind: Service</span>
-<span class="s">metadata:</span>
-<span class="s">  name: hello-world</span>
-<span class="s">  labels:</span>
-<span class="s">    run: hello-world</span>
-<span class="s">spec:</span>
-<span class="s">  ports:</span>
-<span class="s">  - port: 8080</span>
-<span class="s">    protocol: TCP</span>
-<span class="s">  selector:</span>
-<span class="s">    run: hello-world</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; app.yaml &lt;&lt; EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+spec:
+  selector:
+    matchLabels:
+      run: hello-world
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: hello-world
+    spec:
+      containers:
+      - name: hello-world
+        image: $IMAGE
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: GREETING
+          value: howdy!
+        resources:
+          limits:
+            sgx.k8s.io/sgx: 1</p>
+<hr />
+<p>apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+  labels:
+    run: hello-world
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    run: hello-world
+EOF
+```</p>
 <p>Now, submit the manifests to the Kubernetes API, using <code>kubectl</code> command:</p>
-<div class="highlight"><pre><span></span>kubectl create -f app.yaml -n hello-scone
-</pre></div>
+<p><code>bash
+kubectl create -f app.yaml -n hello-scone</code></p>
 <p>Now that everything is deployed, you can access your Python app running on your cluster. Forward your local <code>8080</code> port to the service port:</p>
-<div class="highlight"><pre><span></span>kubectl port-forward svc/hello-world <span class="m">8080</span>:8080 -n hello-scone
-</pre></div>
+<p><code>bash
+kubectl port-forward svc/hello-world 8080:8080 -n hello-scone</code></p>
 <p>The application will be available at your <a href="http://localhost:8080">http://localhost:8080</a>:</p>
-<div class="highlight"><pre><span></span>$ curl localhost:8080
+<p><code>bash
+$ curl localhost:8080
 Hello World!
-<span class="nv">$GREETING</span> is: howdy!
-</pre></div>
+$GREETING is: howdy!</code></p>
 <h3 id="run-with-remote-attestation">Run with remote attestation</h3>
 <p>SCONE provides a remote attestation feature, so you make sure your application is running unmodified. It's also possible to have secrets and configuration delivered directly to the attested enclave!</p>
 <p>The remote attestation is provided by two components: LAS (local attestation service, runs on the cluster) and CAS (a trusted service that runs elsewhere. We provide a public one in 4-2-1.scone-cas.cf).</p>
 <p>You can deploy LAS to your cluster through our LAS Helm chart:</p>
-<div class="highlight"><pre><span></span>helm install las sconeapps/las --set <span class="nv">image</span><span class="o">=</span>sconecuratedimages/kubernetes:las-scone4.2
-</pre></div>
+<p><code>bash
+helm install las sconeapps/las --set image=sconecuratedimages/kubernetes:las-scone4.2</code></p>
 <p>Alternatively, you can deploy LAS to your cluster with the help of a DaemonSet, deploying one LAS instance per cluster node. As your application has to contact the LAS container running in the same host, we use the current node IP as our LAS address.</p>
-<div class="highlight"><pre><span></span>cat &gt; las.yaml <span class="s">&lt;&lt; EOF</span>
-<span class="s">apiVersion: apps/v1</span>
-<span class="s">kind: DaemonSet</span>
-<span class="s">metadata:</span>
-<span class="s">  name: local-attestation</span>
-<span class="s">  labels:</span>
-<span class="s">    k8s-app: local-attestation</span>
-<span class="s">spec:</span>
-<span class="s">  selector:</span>
-<span class="s">    matchLabels:</span>
-<span class="s">      k8s-app: local-attestation</span>
-<span class="s">  template:</span>
-<span class="s">    metadata:</span>
-<span class="s">      labels:</span>
-<span class="s">        k8s-app: local-attestation</span>
-<span class="s">    spec:</span>
-<span class="s">      hostNetwork: true</span>
-<span class="s">      containers:</span>
-<span class="s">        - name: local-attestation</span>
-<span class="s">          image: sconecuratedimages/kubernetes:las-scone4.2</span>
-<span class="s">          resources:</span>
-<span class="s">            limits:</span>
-<span class="s">              sgx.k8s.io/sgx: 1</span>
-<span class="s">          ports:</span>
-<span class="s">          - containerPort: 18766</span>
-<span class="s">            hostPort: 18766</span>
-<span class="s">EOF</span>
-</pre></div>
-<div class="highlight"><pre><span></span>kubectl create -f las.yaml -n hello-scone
-</pre></div>
+<p><code>bash
+cat &gt; las.yaml &lt;&lt; EOF
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: local-attestation
+  labels:
+    k8s-app: local-attestation
+spec:
+  selector:
+    matchLabels:
+      k8s-app: local-attestation
+  template:
+    metadata:
+      labels:
+        k8s-app: local-attestation
+    spec:
+      hostNetwork: true
+      containers:
+        - name: local-attestation
+          image: sconecuratedimages/kubernetes:las-scone4.2
+          resources:
+            limits:
+              sgx.k8s.io/sgx: 1
+          ports:
+          - containerPort: 18766
+            hostPort: 18766
+EOF</code></p>
+<p><code>bash
+kubectl create -f las.yaml -n hello-scone</code></p>
 <p>To setup remote attestation, you will need a session file and the <code>MRENCLAVE</code>, which is a unique signature of your application. Extract <code>MRENCLAVE</code> of your application by running its container with the environment variable <code>SCONE_HASH</code> set to <code>1</code>:</p>
-<div class="highlight"><pre><span></span><span class="nv">MRENCLAVE</span><span class="o">=</span><span class="sb">`</span>docker run -i --rm -e <span class="s2">&quot;SCONE_HASH=1&quot;</span> <span class="nv">$IMAGE</span><span class="sb">`</span>
-</pre></div>
+<p><code>bash
+MRENCLAVE=`docker run -i --rm -e "SCONE_HASH=1" $IMAGE`</code></p>
 <p>Then create a session file. Please note that we are also defining a secret <code>GREETING</code>. Only the <code>MRENCLAVES</code> registered in this session file will be allowed to see such secret.</p>
-<div class="highlight"><pre><span></span>cat &gt; session.yaml <span class="s">&lt;&lt; EOF</span>
-<span class="s">name: $NS~hello-k8s-scone</span>
-<span class="s">version: &quot;0.2&quot;</span>
-
-<span class="s">services:</span>
-<span class="s">   - name: application</span>
-<span class="s">     mrenclaves: [$MRENCLAVE]</span>
-<span class="s">     command: python3 /app/server.py</span>
-<span class="s">     pwd: /</span>
-<span class="s">     environment:</span>
-<span class="s">        GREETING: hello from SCONE!!!</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; session.yaml &lt;&lt; EOF
+name: $NS~hello-k8s-scone
+version: "0.2"</p>
+<p>services:
+   - name: application
+     mrenclaves: [$MRENCLAVE]
+     command: python3 /app/server.py
+     pwd: /
+     environment:
+        GREETING: hello from SCONE!!!
+EOF
+```</p>
 <p>Now, <a href="https://sconedocs.github.io/cas_blender_example/">post the session file</a> to your CAS of choice:</p>
-<div class="highlight"><pre><span></span>curl -v -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yaml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/v1/sessions
-</pre></div>
+<p><code>bash
+curl -v -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yaml -X POST https://$SCONE_CAS_ADDR:8081/v1/sessions</code></p>
 <p>Once you submit the session file, you just need to inject the CAS address into your Deployment manifest. To showcase that, we're creating a new Deployment:</p>
-<div class="highlight"><pre><span></span>cat &gt; attested-app.yaml <span class="s">&lt;&lt; EOF</span>
-<span class="s">apiVersion: apps/v1</span>
-<span class="s">kind: Deployment</span>
-<span class="s">metadata:</span>
-<span class="s">  name: attested-hello-world</span>
-<span class="s">spec:</span>
-<span class="s">  selector:</span>
-<span class="s">    matchLabels:</span>
-<span class="s">      run: attested-hello-world</span>
-<span class="s">  replicas: 1</span>
-<span class="s">  template:</span>
-<span class="s">    metadata:</span>
-<span class="s">      labels:</span>
-<span class="s">        run: attested-hello-world</span>
-<span class="s">    spec:</span>
-<span class="s">      containers:</span>
-<span class="s">      - name: attested-hello-world</span>
-<span class="s">        image: $IMAGE</span>
-<span class="s">        imagePullPolicy: Always</span>
-<span class="s">        ports:</span>
-<span class="s">        - containerPort: 8080</span>
-<span class="s">        env:</span>
-<span class="s">        - name: SCONE_CAS_ADDR</span>
-<span class="s">          value: $SCONE_CAS_ADDR</span>
-<span class="s">        - name: SCONE_CONFIG_ID</span>
-<span class="s">          value: $NS~hello-k8s-scone/application</span>
-<span class="s">        - name: SCONE_LAS_ADDR</span>
-<span class="s">          valueFrom:</span>
-<span class="s">            fieldRef:</span>
-<span class="s">              fieldPath: status.hostIP</span>
-<span class="s">        resources:</span>
-<span class="s">          limits:</span>
-<span class="s">            sgx.k8s.io/sgx: 1</span>
-<span class="s">---</span>
-<span class="s">apiVersion: v1</span>
-<span class="s">kind: Service</span>
-<span class="s">metadata:</span>
-<span class="s">  name: attested-hello-world</span>
-<span class="s">  labels:</span>
-<span class="s">    run: attested-hello-world</span>
-<span class="s">spec:</span>
-<span class="s">  ports:</span>
-<span class="s">  - port: 8080</span>
-<span class="s">    protocol: TCP</span>
-<span class="s">  selector:</span>
-<span class="s">    run: attested-hello-world</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; attested-app.yaml &lt;&lt; EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attested-hello-world
+spec:
+  selector:
+    matchLabels:
+      run: attested-hello-world
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: attested-hello-world
+    spec:
+      containers:
+      - name: attested-hello-world
+        image: $IMAGE
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SCONE_CAS_ADDR
+          value: $SCONE_CAS_ADDR
+        - name: SCONE_CONFIG_ID
+          value: $NS~hello-k8s-scone/application
+        - name: SCONE_LAS_ADDR
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        resources:
+          limits:
+            sgx.k8s.io/sgx: 1</p>
+<hr />
+<p>apiVersion: v1
+kind: Service
+metadata:
+  name: attested-hello-world
+  labels:
+    run: attested-hello-world
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    run: attested-hello-world
+EOF
+```</p>
 <p><strong>NOTE</strong>: The environment defined in the Kubernetes manifest won't be considered once your app is attested. The environment will be retrieved from your session file.</p>
 <p>Deploy your attested app:</p>
-<div class="highlight"><pre><span></span>kubectl create -f attested-app.yaml -n hello-scone
-</pre></div>
+<p><code>bash
+kubectl create -f attested-app.yaml -n hello-scone</code></p>
 <p>Once again, forward your local port 8082 to the service port:</p>
-<div class="highlight"><pre><span></span>kubectl port-forward svc/attested-hello-world <span class="m">8082</span>:8080 -n hello-scone
-</pre></div>
+<p><code>bash
+kubectl port-forward svc/attested-hello-world 8082:8080 -n hello-scone</code></p>
 <p>The attested application will be available at your <a href="http://localhost:8082">http://localhost:8082</a>:</p>
-<div class="highlight"><pre><span></span>$ curl localhost:8082
+<p><code>bash
+$ curl localhost:8082
 Hello World!
-<span class="nv">$GREETING</span> is: hello from SCONE!!!
-</pre></div>
+$GREETING is: hello from SCONE!!!</code></p>
 <h3 id="tls-with-certificates-auto-generated-by-cas">TLS with certificates auto-generated by CAS</h3>
 <p>The CAS service can also generate secrets and certificates automatically. Combined with access policies, it means that such auto-generated secrets and certificates will be seen only by certain applications. No human (e.g. a system operator) will ever see them: they only exist inside of SGX enclaves.</p>
 <p>To showcase such feature, let's use the same application as last example. But now, we serve the traffic over TLS, and we let CAS generate the server certificates.</p>
 <p>Start by rewriting our application to serve with TLS:</p>
-<div class="highlight"><pre><span></span>cat &gt; app/server-tls.py <span class="s">&lt;&lt; EOF</span>
-<span class="s">from http.server import HTTPServer</span>
-<span class="s">from http.server import BaseHTTPRequestHandler</span>
-<span class="s">import os</span>
-<span class="s">import socket</span>
-<span class="s">import ssl</span>
-
-
-<span class="s">class HTTPHelloWorldHandler(BaseHTTPRequestHandler):</span>
-<span class="s">    def do_GET(self):</span>
-<span class="s">        &quot;&quot;&quot;say &quot;Hello World!&quot; and the value of \`GREETING\` env. variable.&quot;&quot;&quot;</span>
-<span class="s">        self.send_response(200)</span>
-<span class="s">        self.end_headers()</span>
-<span class="s">        self.wfile.write(b&#39;Hello World!\n\$GREETING is: %s\n&#39; % (os.getenv(&#39;GREETING&#39;, &#39;no greeting :(&#39;).encode()))</span>
-
-
-<span class="s">httpd = HTTPServer((&#39;0.0.0.0&#39;, 4443), HTTPHelloWorldHandler)</span>
-
-
-<span class="s">httpd.socket = ssl.wrap_socket(httpd.socket,</span>
-<span class="s">                               keyfile=&quot;/app/key.pem&quot;,</span>
-<span class="s">                               certfile=&quot;/app/cert.pem&quot;,</span>
-<span class="s">                               server_side=True)</span>
-
-<span class="s">print(&quot;Starting server&quot;)</span>
-
-<span class="s">httpd.serve_forever()</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; app/server-tls.py &lt;&lt; EOF
+from http.server import HTTPServer
+from http.server import BaseHTTPRequestHandler
+import os
+import socket
+import ssl</p>
+<p>class HTTPHelloWorldHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        """say "Hello World!" and the value of `GREETING` env. variable."""
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b'Hello World!\n$GREETING is: %s\n' % (os.getenv('GREETING', 'no greeting :(').encode()))</p>
+<p>httpd = HTTPServer(('0.0.0.0', 4443), HTTPHelloWorldHandler)</p>
+<p>httpd.socket = ssl.wrap_socket(httpd.socket,
+                               keyfile="/app/key.pem",
+                               certfile="/app/cert.pem",
+                               server_side=True)</p>
+<p>print("Starting server")</p>
+<p>httpd.serve_forever()
+EOF
+```</p>
 <p>Our updated Dockerfile looks like this:</p>
-<div class="highlight"><pre><span></span>cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
-<span class="s">FROM $BASE_IMAGE</span>
-<span class="s">EXPOSE 4443</span>
-<span class="s">COPY app /app</span>
-<span class="s">CMD [ &quot;python3&quot; ]</span>
-<span class="s">EOF</span>
-</pre></div>
+<p><code>bash
+cat &gt; Dockerfile &lt;&lt; EOF
+FROM $BASE_IMAGE
+EXPOSE 4443
+COPY app /app
+CMD [ "python3" ]
+EOF</code></p>
 <p>Build the updated image:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span>sconecuratedimages/kubernetes:hello-k8s-scone0.2
-docker build --pull . -t <span class="nv">$IMAGE</span> <span class="o">&amp;&amp;</span> docker push <span class="nv">$IMAGE</span>
-</pre></div>
+<p><code>bash
+export IMAGE=sconecuratedimages/kubernetes:hello-k8s-scone0.2
+docker build --pull . -t $IMAGE &amp;&amp; docker push $IMAGE</code></p>
 <p>The magic is done in the session file. First, extract the <code>MRENCLAVE</code> again:</p>
-<div class="highlight"><pre><span></span><span class="nv">MRENCLAVE</span><span class="o">=</span><span class="k">$(</span>docker run -i --rm -e <span class="s2">&quot;SCONE_HASH=1&quot;</span> <span class="nv">$IMAGE</span><span class="k">)</span>
-</pre></div>
+<p><code>bash
+MRENCLAVE=$(docker run -i --rm -e "SCONE_HASH=1" $IMAGE)</code></p>
 <p>Now, create a Session file to be submitted to CAS. The certificates are defined in the <code>secrets</code> field, and are injected into the filesystem through <code>images.injection_files</code>:</p>
-<div class="highlight"><pre><span></span>cat &gt; session-tls-certs.yaml <span class="s">&lt;&lt; EOF</span>
-<span class="s">name: $NS~hello-k8s-scone-tls-certs</span>
-<span class="s">version: &quot;0.2&quot;</span>
-
-<span class="s">services:</span>
-<span class="s">   - name: application</span>
-<span class="s">     image_name: application_image</span>
-<span class="s">     mrenclaves: [$MRENCLAVE]</span>
-<span class="s">     command: python3 /app/server-tls.py</span>
-<span class="s">     pwd: /</span>
-<span class="s">     environment:</span>
-<span class="s">        GREETING: hello from SCONE with TLS and auto-generated certs!!!</span>
-
-<span class="s">images:</span>
-<span class="s">   - name: application_image</span>
-<span class="s">     injection_files:</span>
-<span class="s">       - path:  /app/cert.pem</span>
-<span class="s">         content: \$\$SCONE::SERVER_CERT.crt\$\$</span>
-<span class="s">       - path: /app/key.pem</span>
-<span class="s">         content: \$\$SCONE::SERVER_CERT.key\$\$</span>
-
-<span class="s">secrets:</span>
-<span class="s">   - name: SERVER_CERT</span>
-<span class="s">     kind: x509</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; session-tls-certs.yaml &lt;&lt; EOF
+name: $NS~hello-k8s-scone-tls-certs
+version: "0.2"</p>
+<p>services:
+   - name: application
+     image_name: application_image
+     mrenclaves: [$MRENCLAVE]
+     command: python3 /app/server-tls.py
+     pwd: /
+     environment:
+        GREETING: hello from SCONE with TLS and auto-generated certs!!!</p>
+<p>images:
+   - name: application_image
+     injection_files:
+       - path:  /app/cert.pem
+         content: $$SCONE::SERVER_CERT.crt$$
+       - path: /app/key.pem
+         content: $$SCONE::SERVER_CERT.key$$</p>
+<p>secrets:
+   - name: SERVER_CERT
+     kind: x509
+EOF
+```</p>
 <p><a href="https://sconedocs.github.io/cas_blender_example/">Post the session file</a> to your CAS of choice:</p>
-<div class="highlight"><pre><span></span>curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session-tls-certs.yaml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
-</pre></div>
+<p><code>bash
+curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session-tls-certs.yaml -X POST https://$SCONE_CAS_ADDR:8081/session</code></p>
 <p>The steps to run your app are similar to before: let's create a Kubernetes manifest and submit it.</p>
-<div class="highlight"><pre><span></span>cat &gt; attested-app-tls-certs.yaml <span class="s">&lt;&lt; EOF</span>
-<span class="s">apiVersion: apps/v1</span>
-<span class="s">kind: Deployment</span>
-<span class="s">metadata:</span>
-<span class="s">  name: attested-hello-world-tls-certs</span>
-<span class="s">spec:</span>
-<span class="s">  selector:</span>
-<span class="s">    matchLabels:</span>
-<span class="s">      run: attested-hello-world-tls-certs</span>
-<span class="s">  replicas: 1</span>
-<span class="s">  template:</span>
-<span class="s">    metadata:</span>
-<span class="s">      labels:</span>
-<span class="s">        run: attested-hello-world-tls-certs</span>
-<span class="s">    spec:</span>
-<span class="s">      containers:</span>
-<span class="s">      - name: attested-hello-world-tls-certs</span>
-<span class="s">        image: $IMAGE</span>
-<span class="s">        imagePullPolicy: Always</span>
-<span class="s">        ports:</span>
-<span class="s">        - containerPort: 4443</span>
-<span class="s">        env:</span>
-<span class="s">        - name: SCONE_CAS_ADDR</span>
-<span class="s">          value: $SCONE_CAS_ADDR</span>
-<span class="s">        - name: SCONE_CONFIG_ID</span>
-<span class="s">          value: $NS~hello-k8s-scone-tls-certs/application</span>
-<span class="s">        - name: SCONE_LAS_ADDR</span>
-<span class="s">          valueFrom:</span>
-<span class="s">            fieldRef:</span>
-<span class="s">              fieldPath: status.hostIP</span>
-<span class="s">        resources:</span>
-<span class="s">          limits:</span>
-<span class="s">            sgx.k8s.io/sgx: 1</span>
-<span class="s">---</span>
-<span class="s">apiVersion: v1</span>
-<span class="s">kind: Service</span>
-<span class="s">metadata:</span>
-<span class="s">  name: attested-hello-world-tls-certs</span>
-<span class="s">  labels:</span>
-<span class="s">    run: attested-hello-world-tls-certs</span>
-<span class="s">spec:</span>
-<span class="s">  ports:</span>
-<span class="s">  - port: 4443</span>
-<span class="s">    protocol: TCP</span>
-<span class="s">  selector:</span>
-<span class="s">    run: attested-hello-world-tls-certs</span>
-<span class="s">EOF</span>
-</pre></div>
-<div class="highlight"><pre><span></span>kubectl create -f attested-app-tls-certs.yaml -n hello-scone
-</pre></div>
+<p>```bash
+cat &gt; attested-app-tls-certs.yaml &lt;&lt; EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attested-hello-world-tls-certs
+spec:
+  selector:
+    matchLabels:
+      run: attested-hello-world-tls-certs
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: attested-hello-world-tls-certs
+    spec:
+      containers:
+      - name: attested-hello-world-tls-certs
+        image: $IMAGE
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 4443
+        env:
+        - name: SCONE_CAS_ADDR
+          value: $SCONE_CAS_ADDR
+        - name: SCONE_CONFIG_ID
+          value: $NS~hello-k8s-scone-tls-certs/application
+        - name: SCONE_LAS_ADDR
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        resources:
+          limits:
+            sgx.k8s.io/sgx: 1</p>
+<hr />
+<p>apiVersion: v1
+kind: Service
+metadata:
+  name: attested-hello-world-tls-certs
+  labels:
+    run: attested-hello-world-tls-certs
+spec:
+  ports:
+  - port: 4443
+    protocol: TCP
+  selector:
+    run: attested-hello-world-tls-certs
+EOF
+```</p>
+<p><code>bash
+kubectl create -f attested-app-tls-certs.yaml -n hello-scone</code></p>
 <p>Now it's time to access your app. Again, forward the traffic to its service:</p>
-<div class="highlight"><pre><span></span>kubectl port-forward svc/attested-hello-world-tls-certs <span class="m">8083</span>:4443 -n hello-scone
-</pre></div>
+<p><code>bash
+kubectl port-forward svc/attested-hello-world-tls-certs 8083:4443 -n hello-scone</code></p>
 <p>And send a request:</p>
-<div class="highlight"><pre><span></span>$ curl -k https://localhost:8083
+<p><code>bash
+$ curl -k https://localhost:8083
 Hello World!
-<span class="nv">$GREETING</span> is: hello from SCONE with TLS and auto-generated certs!!!
-</pre></div>
+$GREETING is: hello from SCONE with TLS and auto-generated certs!!!</code></p>
 <h3 id="encrypt-your-source-code">Encrypt your source code</h3>
 <p>Moving further, you can run the exact same application, but now the server source code will be encrypted using SCONE's <a href="https://sconedocs.github.io/SCONE_Fileshield/">file protection</a> feature, and only the Python interpreter that you register will be able to read them (after being attested by CAS).</p>
 <h5 id="encrypt-the-source-code-and-filesystem">Encrypt the source code and filesystem</h5>
 <p>Let's encrypt the source code using SCONE's Fileshield. Run a SCONE CLI container with access to the files:</p>
-<div class="highlight"><pre><span></span>docker run -it --rm -e <span class="nv">SCONE_MODE</span><span class="o">=</span>sim -v <span class="nv">$PWD</span>:/tutorial <span class="nv">$BASE_IMAGE</span> sh
-</pre></div>
+<p><code>bash
+docker run -it --rm -e SCONE_MODE=sim -v $PWD:/tutorial $BASE_IMAGE sh</code></p>
 <p>Inside the container, create an encrypted region <code>/app</code> and add all the files in <code>/tutorial/app</code> (the plain files) to it. Lastly, encrypt the key itself.</p>
-<div class="highlight"><pre><span></span><span class="nb">cd</span> /tutorial
-rm -rf app_image <span class="o">&amp;&amp;</span> mkdir -p app_image/app
-<span class="nb">cd</span> app_image
+<p><code>bash
+cd /tutorial
+rm -rf app_image &amp;&amp; mkdir -p app_image/app
+cd app_image
 scone fspf create fspf.pb
 scone fspf addr fspf.pb / --not-protected --kernel /
 scone fspf addr fspf.pb /app --encrypted --kernel /app
 scone fspf addf fspf.pb /app /tutorial/app /tutorial/app_image/app
-scone fspf encrypt fspf.pb &gt; /tutorial/app/keytag
-</pre></div>
+scone fspf encrypt fspf.pb &gt; /tutorial/app/keytag</code></p>
 <p>The contents of <code>/tutorial/app_image/app</code> are now encrypted. Try to <code>cat</code> them from inside the container:</p>
-<div class="highlight"><pre><span></span>$ <span class="nb">cd</span> /tutorial/app_image/app <span class="o">&amp;&amp;</span> ls
+<p><code>bash
+$ cd /tutorial/app_image/app &amp;&amp; ls
 server-tls.py
 $ cat server-tls.py
-$�ʇ<span class="o">(</span>E@��
-�����Id�Z���g3uc��mѪ�Z.$�__�!<span class="o">)</span>ҹS��٠���<span class="o">(</span>�� �X�Wϐ�<span class="o">{</span>$���<span class="p">|</span>�זH��Ǔ��!<span class="p">;</span><span class="m">2</span>����&gt;@z4-�h��3iݾs�t�7�&lt;&gt;H4:����<span class="o">(</span><span class="nv">9</span><span class="o">=</span>�a<span class="o">)</span>�j?��p����q�ߧ3�<span class="o">}</span>��Hظa�<span class="p">|</span>���w-�q��96���o�9̃�Ev�v��*$����TU/���Ӕ��v�G���T�1&lt;ڹ��C#p<span class="p">|</span>i��AƢ˅_!6���F���w�@
-                   �C��J���+81�8�
-</pre></div>
+$�ʇ(E@��
+�����Id�Z���g3uc��mѪ�Z.$�__�!)ҹS��٠���(�� �X�Wϐ�{$���|�זH��Ǔ��!;2����&gt;@z4-�h��3iݾs�t�7�&lt;&gt;H4:����(9=�a)�j?��p����q�ߧ3�}��Hظa�|���w-�q��96���o�9̃�Ev�v��*$����TU/���Ӕ��v�G���T�1&lt;ڹ��C#p|i��AƢ˅_!6���F���w�@
+                   �C��J���+81�8�</code></p>
 <h5 id="build-the-new-image">Build the new image</h5>
 <p>You can now exit the container. Let's build the server image with our files, now encrypted:</p>
-<div class="highlight"><pre><span></span>cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
-<span class="s">FROM $BASE_IMAGE</span>
-<span class="s">EXPOSE 4443</span>
-<span class="s">COPY app_image /</span>
-<span class="s">CMD [ &quot;python3&quot; ]</span>
-<span class="s">EOF</span>
-</pre></div>
+<p><code>bash
+cat &gt; Dockerfile &lt;&lt; EOF
+FROM $BASE_IMAGE
+EXPOSE 4443
+COPY app_image /
+CMD [ "python3" ]
+EOF</code></p>
 <p>Choose the new image name and build it:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span>sconecuratedimages/kubernetes:hello-k8s-scone-0.3
-docker build --pull . -t <span class="nv">$IMAGE</span> <span class="o">&amp;&amp;</span> docker push <span class="nv">$IMAGE</span>
-</pre></div>
+<p><code>bash
+export IMAGE=sconecuratedimages/kubernetes:hello-k8s-scone-0.3
+docker build --pull . -t $IMAGE &amp;&amp; docker push $IMAGE</code></p>
 <h5 id="run-in-kubernetes">Run in Kubernetes</h5>
 <p>Time to deploy our server to Kubernetes. Let's setup the attestation first, so we make sure that only our application (identified by its <code>MRENCLAVE</code>) will have access to the secrets to read the encrypted filesystem, as well as our secret greeting.</p>
 <p>Extract the <code>MRENCLAVE</code>:</p>
-<div class="highlight"><pre><span></span><span class="nv">MRENCLAVE</span><span class="o">=</span><span class="k">$(</span>docker run -i --rm -e <span class="s2">&quot;SCONE_HASH=1&quot;</span> <span class="nv">$IMAGE</span><span class="k">)</span>
-</pre></div>
+<p><code>bash
+MRENCLAVE=$(docker run -i --rm -e "SCONE_HASH=1" $IMAGE)</code></p>
 <p>Extract <code>SCONE_FSPF_KEY</code> and <code>SCONE_FSPF_TAG</code>:</p>
-<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span><span class="k">$(</span>cat app/keytag <span class="p">|</span> awk <span class="s1">&#39;{print $11}&#39;</span><span class="k">)</span>
-<span class="nb">export</span> <span class="nv">SCONE_FSPF_TAG</span><span class="o">=</span><span class="k">$(</span>cat app/keytag <span class="p">|</span> awk <span class="s1">&#39;{print $9}&#39;</span><span class="k">)</span>
-<span class="nb">export</span> <span class="nv">SCONE_FSPF</span><span class="o">=</span>/fspf.pb
-</pre></div>
+<p><code>bash
+export SCONE_FSPF_KEY=$(cat app/keytag | awk '{print $11}')
+export SCONE_FSPF_TAG=$(cat app/keytag | awk '{print $9}')
+export SCONE_FSPF=/fspf.pb</code></p>
 <p>Create a session file:</p>
-<div class="highlight"><pre><span></span>cat &gt; session-tls.yaml <span class="s">&lt;&lt; EOF</span>
-<span class="s">name: $NS~hello-k8s-scone-tls</span>
-<span class="s">version: &quot;0.2&quot;</span>
-
-<span class="s">services:</span>
-<span class="s">   - name: application</span>
-<span class="s">     image_name: application_image</span>
-<span class="s">     mrenclaves: [$MRENCLAVE]</span>
-<span class="s">     command: python3 /app/server-tls.py</span>
-<span class="s">     pwd: /</span>
-<span class="s">     environment:</span>
-<span class="s">        GREETING: hello from SCONE with encrypted source code and auto-generated certs!!!</span>
-<span class="s">     fspf_path: $SCONE_FSPF</span>
-<span class="s">     fspf_key: $SCONE_FSPF_KEY</span>
-<span class="s">     fspf_tag: $SCONE_FSPF_TAG</span>
-
-<span class="s">images:</span>
-<span class="s">   - name: application_image</span>
-<span class="s">     injection_files:</span>
-<span class="s">       - path:  /app/cert.pem</span>
-<span class="s">         content: \$\$SCONE::SERVER_CERT.crt\$\$</span>
-<span class="s">       - path: /app/key.pem</span>
-<span class="s">         content: \$\$SCONE::SERVER_CERT.key\$\$</span>
-
-<span class="s">secrets:</span>
-<span class="s">   - name: SERVER_CERT</span>
-<span class="s">     kind: x509</span>
-<span class="s">EOF</span>
-</pre></div>
+<p>```bash
+cat &gt; session-tls.yaml &lt;&lt; EOF
+name: $NS~hello-k8s-scone-tls
+version: "0.2"</p>
+<p>services:
+   - name: application
+     image_name: application_image
+     mrenclaves: [$MRENCLAVE]
+     command: python3 /app/server-tls.py
+     pwd: /
+     environment:
+        GREETING: hello from SCONE with encrypted source code and auto-generated certs!!!
+     fspf_path: $SCONE_FSPF
+     fspf_key: $SCONE_FSPF_KEY
+     fspf_tag: $SCONE_FSPF_TAG</p>
+<p>images:
+   - name: application_image
+     injection_files:
+       - path:  /app/cert.pem
+         content: $$SCONE::SERVER_CERT.crt$$
+       - path: /app/key.pem
+         content: $$SCONE::SERVER_CERT.key$$</p>
+<p>secrets:
+   - name: SERVER_CERT
+     kind: x509
+EOF
+```</p>
 <p><a href="https://sconedocs.github.io/cas_blender_example/">Post the session file</a> to your CAS of choice:</p>
-<div class="highlight"><pre><span></span>curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session-tls.yaml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
-</pre></div>
+<p><code>bash
+curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session-tls.yaml -X POST https://$SCONE_CAS_ADDR:8081/session</code></p>
 <p>Create the manifest and submit it to your Kubernetes cluster:</p>
-<div class="highlight"><pre><span></span>cat &gt; attested-app-tls.yaml <span class="s">&lt;&lt; EOF</span>
-<span class="s">apiVersion: apps/v1</span>
-<span class="s">kind: Deployment</span>
-<span class="s">metadata:</span>
-<span class="s">  name: attested-hello-world-tls</span>
-<span class="s">spec:</span>
-<span class="s">  selector:</span>
-<span class="s">    matchLabels:</span>
-<span class="s">      run: attested-hello-world-tls</span>
-<span class="s">  replicas: 1</span>
-<span class="s">  template:</span>
-<span class="s">    metadata:</span>
-<span class="s">      labels:</span>
-<span class="s">        run: attested-hello-world-tls</span>
-<span class="s">    spec:</span>
-<span class="s">      containers:</span>
-<span class="s">      - name: attested-hello-world-tls</span>
-<span class="s">        image: $IMAGE</span>
-<span class="s">        imagePullPolicy: Always</span>
-<span class="s">        ports:</span>
-<span class="s">        - containerPort: 4443</span>
-<span class="s">        env:</span>
-<span class="s">        - name: SCONE_CAS_ADDR</span>
-<span class="s">          value: $SCONE_CAS_ADDR</span>
-<span class="s">        - name: SCONE_CONFIG_ID</span>
-<span class="s">          value: $NS~hello-k8s-scone-tls/application</span>
-<span class="s">        - name: SCONE_LAS_ADDR</span>
-<span class="s">          valueFrom:</span>
-<span class="s">            fieldRef:</span>
-<span class="s">              fieldPath: status.hostIP</span>
-<span class="s">        resources:</span>
-<span class="s">          limits:</span>
-<span class="s">            sgx.k8s.io/sgx: 1</span>
-<span class="s">---</span>
-<span class="s">apiVersion: v1</span>
-<span class="s">kind: Service</span>
-<span class="s">metadata:</span>
-<span class="s">  name: attested-hello-world-tls</span>
-<span class="s">  labels:</span>
-<span class="s">    run: attested-hello-world-tls</span>
-<span class="s">spec:</span>
-<span class="s">  ports:</span>
-<span class="s">  - port: 4443</span>
-<span class="s">    protocol: TCP</span>
-<span class="s">  selector:</span>
-<span class="s">    run: attested-hello-world-tls</span>
-<span class="s">EOF</span>
-</pre></div>
-<div class="highlight"><pre><span></span>kubectl create -f attested-app-tls.yaml -n hello-scone
-</pre></div>
+<p>```bash
+cat &gt; attested-app-tls.yaml &lt;&lt; EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attested-hello-world-tls
+spec:
+  selector:
+    matchLabels:
+      run: attested-hello-world-tls
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: attested-hello-world-tls
+    spec:
+      containers:
+      - name: attested-hello-world-tls
+        image: $IMAGE
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 4443
+        env:
+        - name: SCONE_CAS_ADDR
+          value: $SCONE_CAS_ADDR
+        - name: SCONE_CONFIG_ID
+          value: $NS~hello-k8s-scone-tls/application
+        - name: SCONE_LAS_ADDR
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        resources:
+          limits:
+            sgx.k8s.io/sgx: 1</p>
+<hr />
+<p>apiVersion: v1
+kind: Service
+metadata:
+  name: attested-hello-world-tls
+  labels:
+    run: attested-hello-world-tls
+spec:
+  ports:
+  - port: 4443
+    protocol: TCP
+  selector:
+    run: attested-hello-world-tls
+EOF
+```</p>
+<p><code>bash
+kubectl create -f attested-app-tls.yaml -n hello-scone</code></p>
 <p>Time to access your app. Forward the traffic to its service:</p>
-<div class="highlight"><pre><span></span>kubectl port-forward svc/attested-hello-world-tls <span class="m">8084</span>:4443 -n hello-scone
-</pre></div>
+<p><code>bash
+kubectl port-forward svc/attested-hello-world-tls 8084:4443 -n hello-scone</code></p>
 <p>And send a request:</p>
-<div class="highlight"><pre><span></span>$ curl -k https://localhost:8084
+<p><code>bash
+$ curl -k https://localhost:8084
 Hello World!
-<span class="nv">$GREETING</span> is: hello from SCONE with encrypted <span class="nb">source</span> code and auto-generated certs!!!
-</pre></div>
+$GREETING is: hello from SCONE with encrypted source code and auto-generated certs!!!</code></p>
 <h3 id="clean-up">Clean up</h3>
 <p>To clean up all the resources created in this tutorial, simply delete the namespace:</p>
-<div class="highlight"><pre><span></span>kubectl delete namespace hello-scone
-</pre></div>
+<p><code>bash
+kubectl delete namespace hello-scone</code></p>
 <p>Author: Clenimar</p>
 <p>&copy; <a href="http://www.scontain.com">scontain.com</a>, 2021-2022. <a href="mailto:info@scontain.com">Questions or Suggestions?</a></p>
 

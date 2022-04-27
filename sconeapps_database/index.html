@@ -3296,10 +3296,11 @@
 <h4 id="add-the-repo">Add the repo</h4>
 <p>If you haven't yet, please add this repo to Helm.</p>
 <p>To deploy the topology with the default parameters to your Kubernetes cluster:</p>
-<div class="highlight"><pre><span></span>helm install my-database sconeapps/database
-</pre></div>
+<p><code>bash
+helm install my-database sconeapps/database</code></p>
 <h3 id="the-topology">The topology</h3>
-<div class="highlight"><pre><span></span>             |
+<p><code>html
+             |
              v
         +---------+
         | HAProxy |
@@ -3316,46 +3317,47 @@
  +----+ +----+ +----+ +----+
  | DB | | DB | | DB | | DB |
  | 0  | | 1  | | 2  | | 3  |
- +----+ +----+ +----+ +----+
-</pre></div>
+ +----+ +----+ +----+ +----+</code></p>
 <p>Each MariaDB instance deployed act as a shard, supporting also dynamic volumes (PVs) to provide persistence. MaxScale routes the incoming requests to the appropriate shard based on which table the operation (either a read or a write) is performed. The HAProxy (optionally) balances the load accross the MaxScale replicas.</p>
 <p>Have a look at the <a href="#parameters">Parameters</a> section for a complete list of parameters this chart supports.</p>
 <h3 id="sgx-device">SGX device</h3>
 <p>By default, MariaDB and MaxScale helm charts use the <a href="../helm_sgxdevplugin/">SGX Plugin</a>. Hence, their respective resource limits are set as follows:</p>
-<div class="highlight"><pre><span></span><span class="nt">resources</span><span class="p">:</span>
-  <span class="nt">limits</span><span class="p">:</span>
-    <span class="nt">sgx.k8s.io/sgx</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
-</pre></div>
+<p><code>yaml
+resources:
+  limits:
+    sgx.k8s.io/sgx: 1</code></p>
 <p>In case you do not want to use the SGX plugin, you can remove the resource limit and explicitly mount the local SGX device by setting:</p>
-<div class="highlight"><pre><span></span><span class="nt">mariadb-scone</span><span class="p">:</span>
-    <span class="nt">extraVolumes</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dev-isgx</span>
-        <span class="l l-Scalar l-Scalar-Plain">hostPath</span><span class="p p-Indicator">:</span>
-        <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span>
-
-    <span class="nt">extraVolumeMounts</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dev-isgx</span>
-        <span class="l l-Scalar l-Scalar-Plain">path</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span>
-
-<span class="nt">maxscale</span><span class="p">:</span>
-    <span class="nt">extraVolumes</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dev-isgx</span>
-        <span class="l l-Scalar l-Scalar-Plain">hostPath</span><span class="p p-Indicator">:</span>
-        <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span>
-
-    <span class="nt">extraVolumeMounts</span><span class="p">:</span>
-    <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dev-isgx</span>
-        <span class="l l-Scalar l-Scalar-Plain">path</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span>
+<p>```yaml
+mariadb-scone:
+    extraVolumes:
+    - name: dev-isgx
+        hostPath:
+        path: /dev/isgx</p>
+<div class="codehilite"><pre><span></span>extraVolumeMounts:
+- name: dev-isgx
+    path: /dev/isgx
 </pre></div>
+
+<p>maxscale:
+    extraVolumes:
+    - name: dev-isgx
+        hostPath:
+        path: /dev/isgx</p>
+<div class="codehilite"><pre><span></span>extraVolumeMounts:
+- name: dev-isgx
+    path: /dev/isgx
+</pre></div>
+
+<p>```</p>
 <p>Please note that mounting the local SGX device into a container requires privileged mode, which will grant the container access to ALL host devices. To enable privileged mode, set <code>securityContext</code> for MariaDB and MaxScale:</p>
-<div class="highlight"><pre><span></span><span class="nt">mariadb-scone</span><span class="p">:</span>
-  <span class="nt">securityContext</span><span class="p">:</span>
-    <span class="nt">privileged</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-
-<span class="nt">maxscale</span><span class="p">:</span>
-  <span class="nt">securityContext</span><span class="p">:</span>
-    <span class="nt">privileged</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-</pre></div>
+<p>```yaml
+mariadb-scone:
+  securityContext:
+    privileged: true</p>
+<p>maxscale:
+  securityContext:
+    privileged: true
+```</p>
 <h3 id="parameters">Parameters</h3>
 <p>This is an umbrella chart composed by subcharts. In fact, the parameters are defined in each subchart (e.g. mariadb, maxscale), but here are a few key parameters. Refer to each subchart in this repo for the complete list of the parameters. Any parameter defined in the umbrella chart will override the subchart value, even those that are not listed below.</p>
 <table>
