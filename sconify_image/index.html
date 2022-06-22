@@ -3247,7 +3247,7 @@
 <p>first, generate a <em>native image</em> that contains a Flask-based application: this image is the result of an existing image generation pipeline</p>
 </li>
 <li>
-<p>second, we <strong>sconify</strong> this native image, i.e., we </p>
+<p>second, we <strong>sconify</strong> this native image, i.e., we</p>
 <ul>
 <li>generate an <strong>encrypted image</strong> in which all Python code and dependencies are encrypted. Note that is required for both integrity as well as confidentiality of the Python code.</li>
 <li>generate a SCONE security policy that ensures that only our application can read the code in clear text</li>
@@ -3259,7 +3259,7 @@
 <p class="admonition-title"><code>sconify_image</code> supports only Alpine Linux-based images</p>
 <p>This 1-step conversion supports native images based on Alpine Linux only. We plan to support Ubuntu-based images in the near future too.</p>
 </div>
-<p>This second step uses a SCONE community version of Python instead of actually sconifying the native Python binary. For the commercial version, we support to <a href="../ee_sconify_image/">convert a binary</a> suh that it runs inside of an SGX enclave. </p>
+<p>This second step uses a SCONE community version of Python instead of actually sconifying the native Python binary. For the commercial version, we support to <a href="../ee_sconify_image/">convert a binary</a> suh that it runs inside of an SGX enclave.</p>
 <div class="admonition note">
 <p class="admonition-title">This community version is only intended for development</p>
 <p>To run the sconified binary in production, the binary must be signed using our <code>scone-signer</code> utility: only signed binaries can be considered sufficiently secure!
@@ -3296,7 +3296,7 @@ curl -k -X GET <span class="si">${</span><span class="nv">URL</span><span class=
 <h3 id="security-policy">Security Policy</h3>
 <p>We provide a default security policy template (see file <code>session-template.yml</code>). In this example, we need to provide the application, i.e., flask, with a certificate and a private key. We added two <code>hooks</code> in the default policy to 1) define secrets in the policy, and 2) <em>inject</em> these files in the filesystem of the application, i.e., they are only visible to the application after successfully attesting the application.</p>
 <p>We define for our application  a TLS certificate (<code>flask</code>) and a private key (<code>flask_key</code>). Note that we specify a <strong>DNS</strong> name <code>api</code>, i.e., clients need to access this service as <code>https://api</code>. To generate
-a certificate, we require a CA (Certification Authority). Hence, we generate a CA (<code>api_ca_cert</code>) and the private key of the CA (<code>api_ca_key</code>). </p>
+a certificate, we require a CA (Certification Authority). Hence, we generate a CA (<code>api_ca_cert</code>) and the private key of the CA (<code>api_ca_key</code>).</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SECRETS</span><span class="o">=</span><span class="k">$(</span>cat <span class="s">&lt;&lt;EOF</span>
 <span class="s">secrets:</span>
 <span class="s">    - name: api_ca_key</span>
@@ -3317,7 +3317,7 @@ a certificate, we require a CA (Certification Authority). Hence, we generate a C
 <span class="k">)</span>
 </code></pre></div>
 <p>The certificate and the private key need to be made available to the program - which expects
-these at paths <code>/tls/flask.crt</code> and <code>/tls/flask.key</code>, respectively. Hence, 
+these at paths <code>/tls/flask.crt</code> and <code>/tls/flask.key</code>, respectively. Hence,
 we inject these secrets into files:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">INJECTED_FILES</span><span class="o">=</span><span class="k">$(</span>cat <span class="s">&lt;&lt;EOF</span>
 <span class="s">     injection_files:</span>
@@ -3343,7 +3343,7 @@ we inject these secrets into files:</p>
 <ul>
 <li>We use a public SCONE CAS to store the session policies</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;4-2-1.scone-cas.cf&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;scone-cas.cf&quot;</span>
 </code></pre></div>
 <ul>
 <li>we define a random namespace for this policy:</li>
@@ -3353,10 +3353,10 @@ we inject these secrets into files:</p>
 <ul>
 <li>we define the binary that needs to be sconified:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">BINARY</span><span class="o">=</span><span class="s2">&quot;/usr/bin/python3&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">BINARY</span><span class="o">=</span><span class="s2">&quot;/usr/local/bin/python&quot;</span>
 </code></pre></div>
 <p>Now, we can create the encrypted image, instantiate policy template and upload the policy in one step:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span><span class="k">$(</span>./sconify_image --namespace<span class="o">=</span><span class="nv">$NAMESPACE</span> --name<span class="o">=</span>flask --from<span class="o">=</span><span class="nv">$NATIVE_IMAGE</span> --to<span class="o">=</span><span class="nv">$IMAGE</span> --cas<span class="o">=</span><span class="nv">$SCONE_CAS_ADDR</span> --dir<span class="o">=</span><span class="s2">&quot;/home&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;/usr/local/lib&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;/app&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;/usr/lib/python3.7&quot;</span>  --binary<span class="o">=</span><span class="nv">$BINARY</span><span class="k">)</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span><span class="k">$(</span>./sconify_image --namespace<span class="o">=</span><span class="nv">$NAMESPACE</span> --name<span class="o">=</span>flask --from<span class="o">=</span><span class="nv">$NATIVE_IMAGE</span> --to<span class="o">=</span><span class="nv">$IMAGE</span> --cas<span class="o">=</span><span class="nv">$SCONE_CAS_ADDR</span> --dir<span class="o">=</span><span class="s2">&quot;/home&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;/usr/local/lib&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;/app&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;/usr/lib/python3.7&quot;</span>  --binary<span class="o">=</span><span class="nv">$BINARY</span> --create-namespace<span class="k">)</span>
 </code></pre></div>
 <p>Environment variable SESSION will contain the name of the session, which in this case would be "$NAMESPACE-flask" because we set the name of the session to be <code>flask</code> by passing argument <code>--name=flask</code>.</p>
 <div class="admonition info">
@@ -3364,8 +3364,11 @@ we inject these secrets into files:</p>
 <p>The community version of <code>sconify_image</code> requires the specification of a <code>--base</code> image that contains the sconified binary. The commercial version can also <code>sconify</code> the binary, i.e., convert it such that it can run automagically inside of SGX enclaves and it can sign the binary to run this in production.</p>
 </div>
 <h3 id="step-3-execute-encrypted-image">STEP 3: Execute Encrypted Image</h3>
-<p>We show how to run this locally by executing. We first determine the SGX device name of the local computer:</p>
+<p>We show how to run this locally by executing. We first determine the SGX device name of the local computer and export a few SCONE environment variables to start the enclave:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">DEVICE</span><span class="o">=</span><span class="k">$(</span>./determine_sgx_device<span class="k">)</span>
+<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>1G
+<span class="nb">export</span> <span class="nv">SCONE_STACK</span><span class="o">=</span>4M
+<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>
 </code></pre></div>
 <p>and then we run the encrypted image using <code>docker-compose</code>:</p>
 <div class="highlight"><pre><span></span><code>docker-compose up
