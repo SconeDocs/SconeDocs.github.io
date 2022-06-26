@@ -1,0 +1,4414 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Scone Documentation - Secure Containers">
+      
+      
+        <meta name="author" content="Christof Fetzer">
+      
+      
+        <link rel="canonical" href="https://sconedocs.github.io/workshop/hands_on_1/">
+      
+      <link rel="icon" href="../../img/scone-favicon.png">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.4">
+    
+    
+      
+        <title>hands on 1 - Confidential Computing</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2d9f7617.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#ffffff">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"PT Sans";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+      <link rel="stylesheet" href="../../css/tooltips.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="white" data-md-color-accent="purple">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#confidential-hello-world" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Confidential Computing" class="md-header__button md-logo" aria-label="Confidential Computing" data-md-component="logo">
+      
+  <img src="../../img/SCONE-logo-white.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              hands on 1
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../news/" class="md-tabs__link">
+        News and Overview
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../workflows/" class="md-tabs__link md-tabs__link--active">
+        Quick Start
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../operations/" class="md-tabs__link">
+        DevOps Workflows
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../k8s_concepts/" class="md-tabs__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../helm/" class="md-tabs__link">
+        SconeApps
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../aks/" class="md-tabs__link">
+        Azure Kubernetes Services
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../CASOverview/" class="md-tabs__link">
+        Configuration & Attestation
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../usecases/" class="md-tabs__link">
+        Use Cases
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../registry/" class="md-tabs__link">
+        Sign up
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../iexec_sconify_image/" class="md-tabs__link">
+        More
+      </a>
+    </li>
+  
+
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Confidential Computing" class="md-nav__button md-logo" aria-label="Confidential Computing" data-md-component="logo">
+      
+  <img src="../../img/SCONE-logo-white.png" alt="logo">
+
+    </a>
+    Confidential Computing
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          News and Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="News and Overview" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          News and Overview
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../news/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cc-telenovela/" class="md-nav__link">
+        CC Soap Opera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cc-university/" class="md-nav__link">
+        CC University
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vm_vs_enclave/" class="md-nav__link">
+        Confidential Computing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advantages/" class="md-nav__link">
+        Advantages of SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../whyscone/" class="md-nav__link">
+        SCONE vs Intel SGX SDK
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical_summary/" class="md-nav__link">
+        Technical summary of SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../buildingApps/" class="md-nav__link">
+        (No) Cross-Compilation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../curated_images/" class="md-nav__link">
+        Curated Images
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../community_version/" class="md-nav__link">
+        Community Version
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Quick Start
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Quick Start" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Quick Start
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../workflows/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconify_hw_k8s/" class="md-nav__link">
+        Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lean_deployment/" class="md-nav__link">
+        kubectl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconify/" class="md-nav__link">
+        Sconify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconify_filetypes/" class="md-nav__link">
+        File Types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ee_sconify_image/" class="md-nav__link">
+        Sconify Image SE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multi-stakeholder-workflow/" class="md-nav__link">
+        Multi-Stakeholder Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../example_policy/" class="md-nav__link">
+        Policy Update
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../microservices-demo/" class="md-nav__link">
+        Boutique Demo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq_sconify/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_11">
+          Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Installation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_11">
+          <span class="md-nav__icon md-icon"></span>
+          Installation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hostexample/" class="md-nav__link">
+        Host Execution
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        Installation overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockerinstall/" class="md-nav__link">
+        Installing docker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sgxinstall/" class="md-nav__link">
+        Installing Intel SGX driver
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeinstall/" class="md-nav__link">
+        Installing SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../microcode/" class="md-nav__link">
+        Updating CPU microcode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../windows10/" class="md-nav__link">
+        Windows 10
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12" type="checkbox" id="__nav_3_12" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_12">
+          Workshop
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Workshop" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_12">
+          <span class="md-nav__icon md-icon"></span>
+          Workshop
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        getting access
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install_sconectl/" class="md-nav__link">
+        install sconectl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../details/" class="md-nav__link">
+        background
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          hands on 1
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        hands on 1
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation-and-use-case-description" class="md-nav__link">
+    Motivation and Use Case Description
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objectives" class="md-nav__link">
+    Objectives
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-guide" class="md-nav__link">
+    Quick Start Guide
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-0-requirements" class="md-nav__link">
+    Step 0: Requirements
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-write-the-services-of-your-application" class="md-nav__link">
+    Step 1: Write the Services of Your Application
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-create-the-manifest-files" class="md-nav__link">
+    Step 2: Create the Manifest Files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-build-and-deploy-your-application" class="md-nav__link">
+    Step 3: Build and Deploy Your Application
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-ensure-the-desired-protection-level" class="md-nav__link">
+    Step 4: Ensure the Desired Protection Level
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Ensure the Desired Protection Level">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ensure-confidentiality-protection" class="md-nav__link">
+    Ensure Confidentiality Protection
+  </a>
+  
+    <nav class="md-nav" aria-label="Ensure Confidentiality Protection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verify-confidentiality-of-api_password" class="md-nav__link">
+    Verify Confidentiality of API_PASSWORD
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-confidentiality-of-api_user" class="md-nav__link">
+    Verify Confidentiality of API_USER
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-confidentiality-of-the-program" class="md-nav__link">
+    Verify Confidentiality of the Program
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure-integrity-protection" class="md-nav__link">
+    Ensure Integrity Protection
+  </a>
+  
+    <nav class="md-nav" aria-label="Ensure Integrity Protection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verify-integrity-protection-of-api_password-and-api_user" class="md-nav__link">
+    Verify Integrity Protection of API_PASSWORD and API_USER
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-integrity-protection-of-the-program" class="md-nav__link">
+    Verify the Integrity Protection of the Program
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure-consistency-protection" class="md-nav__link">
+    Ensure Consistency Protection
+  </a>
+  
+    <nav class="md-nav" aria-label="Ensure Consistency Protection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-consistency-protection-of-api_password" class="md-nav__link">
+    Verify the Consistency Protection of API_PASSWORD
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-consistency-protection-of-api_user" class="md-nav__link">
+    Verify the Consistency Protection of API_USER
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-consistency-protection-of-the-program" class="md-nav__link">
+    Verify the Consistency Protection of the Program
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-of-rust-and-cargo" class="md-nav__link">
+    Installation of Rust and Cargo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-container-registry-access" class="md-nav__link">
+    Docker Container Registry Access
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker Container Registry Access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#not-allowed-to-pull-from-scone-registry" class="md-nav__link">
+    Not allowed to pull from scone registry
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-allowed-to-push-to-your-registry" class="md-nav__link">
+    Not allowed to push to your registry
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inconsistent-kubernetes-deployment-of-application" class="md-nav__link">
+    Inconsistent Kubernetes Deployment of Application
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sconectl-examples" class="md-nav__link">
+    sconectl Examples
+  </a>
+  
+    <nav class="md-nav" aria-label="sconectl Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-a-service-image" class="md-nav__link">
+    Building a Service Image
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#displaying-environment-variables" class="md-nav__link">
+    Displaying Environment Variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hands_on_2/" class="md-nav__link">
+        hands on 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../next_steps/" class="md-nav__link">
+        next steps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13" type="checkbox" id="__nav_3_13" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_13">
+          Tutorial
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorial" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_13">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorial
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Exercise-Docu/exercises/" class="md-nav__link">
+        Assignments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Exercise-Docu/exercise0/" class="md-nav__link">
+        Assignment 0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Exercise-Docu/exercise1/" class="md-nav__link">
+        Assignment 1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Exercise-Docu/exercise2/" class="md-nav__link">
+        Assignment 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Exercise-Docu/exercise3/" class="md-nav__link">
+        Assignment 3
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Exercise-Docu/exercise4/" class="md-nav__link">
+        Assignment 4
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Exercise-Docu/exercise5/" class="md-nav__link">
+        Assignment 5
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Exercise-Docu/section_otp/" class="md-nav__link">
+        Section 2 OTP
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_14" type="checkbox" id="__nav_3_14" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_14">
+          SCONE Execution Modes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SCONE Execution Modes" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_14">
+          <span class="md-nav__icon md-icon"></span>
+          SCONE Execution Modes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../outline/" class="md-nav__link">
+        Execution Modes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../firstcontainer/" class="md-nav__link">
+        Simulation Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hardwaremode/" class="md-nav__link">
+        Hardware Mode
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          DevOps Workflows
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DevOps Workflows" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          DevOps Workflows
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../operations/" class="md-nav__link">
+        Workflows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mitigation/" class="md-nav__link">
+        Attack mitigation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sadvisories/" class="md-nav__link">
+        Security advisories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../software_updates/" class="md-nav__link">
+        Software updates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scone-signer/" class="md-nav__link">
+        Signing of enclaves
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../edmm/" class="md-nav__link">
+        EDMM support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scone_semantic_versioning/" class="md-nav__link">
+        SCONE versioning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../attestation_by_client/" class="md-nav__link">
+        Attestation by client
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technotes/" class="md-nav__link">
+        Technotes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Kubernetes" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Kubernetes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../k8s_concepts/" class="md-nav__link">
+        Concepts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helm_sgxdevplugin/" class="md-nav__link">
+        Kubernetes SGX Plugin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../kubeapps/" class="md-nav__link">
+        Kubeapps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../k8s_dashboard/" class="md-nav__link">
+        Kubernetes Dashboard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helm_cas/" class="md-nav__link">
+        CAS Deploy & Attest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helm_las/" class="md-nav__link">
+        LAS Deploy & Platforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helm_mariadb/" class="md-nav__link">
+        MariaDB Deploy & Attest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helm_teemon/" class="md-nav__link">
+        TEEMon Deployment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../hello_world_kubernetes/" class="md-nav__link">
+        Hello World Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../azure/scone-pyspark/" class="md-nav__link">
+        PySpark on Azure
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          SconeApps
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SconeApps" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          SconeApps
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helm/" class="md-nav__link">
+        SconeApps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_database/" class="md-nav__link">
+        database
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_maxscale/" class="md-nav__link">
+        maxscale
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_memcached/" class="md-nav__link">
+        memcached
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_nginx/" class="md-nav__link">
+        nginx
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_openvino/" class="md-nav__link">
+        openvino
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_pytorch/" class="md-nav__link">
+        pytorch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_spark/" class="md-nav__link">
+        spark
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_tensorflow/" class="md-nav__link">
+        tensorflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_tensorflowlite/" class="md-nav__link">
+        tensorflowlite
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sconeapps_zookeeper/" class="md-nav__link">
+        zookeeper
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Azure Kubernetes Services
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Azure Kubernetes Services" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Azure Kubernetes Services
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aks/" class="md-nav__link">
+        Confidential AKS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../azure/scone-playground/" class="md-nav__link">
+        SCONE Playground on Azure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aks/flask_demo/" class="md-nav__link">
+        Flask Demo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python_images/" class="md-nav__link">
+        Python Images
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aks_integration/" class="md-nav__link">
+        AKS Integration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MicrosoftAzureIntegrations/" class="md-nav__link">
+        AKS Integration Tutorial
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aks_charts/" class="md-nav__link">
+        AKS Applications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aks_setup/" class="md-nav__link">
+        AKS Setup
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          Configuration & Attestation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration & Attestation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration & Attestation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CASOverview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cas_intro/" class="md-nav__link">
+        Concepts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CAS_for_development/" class="md-nav__link">
+        Starting CAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CAS_config/" class="md-nav__link">
+        CAS Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../auditLog/" class="md-nav__link">
+        Audit Log
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../public-CAS/" class="md-nav__link">
+        Public CAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LASIntro/" class="md-nav__link">
+        Starting LAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cas_blender_example/" class="md-nav__link">
+        Posting Sessions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CAS_cli-intro/" class="md-nav__link">
+        CLI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CAS_session_lang_0_2/" class="md-nav__link">
+        Policy Language 0.2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CAS_session_lang_0_3/" class="md-nav__link">
+        Policy Language 0.3
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../print-arg-env/" class="md-nav__link">
+        Secure Arguments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../host_arguments/" class="md-nav__link">
+        Host Arguments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../otp_demo/" class="md-nav__link">
+        One-time Passwords
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../EncryptedWordCount/" class="md-nav__link">
+        Encrypted Code and Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../node-example/" class="md-nav__link">
+        Node
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../namespace/" class="md-nav__link">
+        Namespaces
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" type="checkbox" id="__nav_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9">
+          Use Cases
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Use Cases" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Use Cases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usecases/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../secure_document_management/" class="md-nav__link">
+        Confidential Document Management
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../federated_machine_learning/" class="md-nav__link">
+        Federated Machine Learning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../shared_source_code/" class="md-nav__link">
+        Confidential Code Deployment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blender/" class="md-nav__link">
+        Blender
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pyspark/" class="md-nav__link">
+        PySpark
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tensorflow/" class="md-nav__link">
+        TensorFlow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tensorflowlite/" class="md-nav__link">
+        TensorFlow Lite
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../openvino/" class="md-nav__link">
+        OpenVino
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vault/" class="md-nav__link">
+        Vault
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scone-use-case-overview/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../secure_remote_execution/" class="md-nav__link">
+        Secure Remote Execution
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dockerfileexample/" class="md-nav__link">
+        Dockerfile Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../multistagebuild/" class="md-nav__link">
+        Multi-stage build
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../groupcacheUseCase/" class="md-nav__link">
+        GO example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../memory_dump/" class="md-nav__link">
+        Finding Secrets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dapps/" class="md-nav__link">
+        Trusted DApps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flask_demo/" class="md-nav__link">
+        Flask Demo
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10">
+          Sign up
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Sign up" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          Sign up
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../registry/" class="md-nav__link">
+        Scontain Registy
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          More
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="More" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          More
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_1" type="checkbox" id="__nav_11_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_1">
+          Client Docu
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Client Docu" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_1">
+          <span class="md-nav__icon md-icon"></span>
+          Client Docu
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../iexec_sconify_image/" class="md-nav__link">
+        iExec Sconify Image
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_2" type="checkbox" id="__nav_11_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_2">
+          Language Support
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Language Support" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_2">
+          <span class="md-nav__icon md-icon"></span>
+          Language Support
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../C/" class="md-nav__link">
+        C
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mono/" class="md-nav__link">
+        C#
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../C%2B%2B/" class="md-nav__link">
+        C++
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Fortran/" class="md-nav__link">
+        Fortran
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GO/" class="md-nav__link">
+        GO
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Java/" class="md-nav__link">
+        Java
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Running_Java_Applications_in_Scone_with_remote_attestation/" class="md-nav__link">
+        Java with remote attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Python/" class="md-nav__link">
+        Python
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pypyscone/" class="md-nav__link">
+        PyPy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mono/" class="md-nav__link">
+        Mono
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Nodejs/" class="md-nav__link">
+        Node
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../R/" class="md-nav__link">
+        R
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Rust/" class="md-nav__link">
+        Rust
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_3" type="checkbox" id="__nav_11_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_3">
+          IDE Integration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IDE Integration" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_3">
+          <span class="md-nav__icon md-icon"></span>
+          IDE Integration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../eclipse/" class="md-nav__link">
+        Eclipse
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../helm_vscode/" class="md-nav__link">
+        Visual Studio Code
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_4" type="checkbox" id="__nav_11_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_4">
+          Command Line Interface
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Command Line Interface" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_4">
+          <span class="md-nav__icon md-icon"></span>
+          Command Line Interface
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CAS_cli/" class="md-nav__link">
+        CLI Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SCONE_Fileshield/" class="md-nav__link">
+        scone fspf
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../binary_fs/" class="md-nav__link">
+        scone binary fs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SCONE_ENV/" class="md-nav__link">
+        environment variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MrEnclave/" class="md-nav__link">
+        MrEnclave
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scone_affinity/" class="md-nav__link">
+        affinity
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_5" type="checkbox" id="__nav_11_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_5">
+          Performance
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Performance" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_5">
+          <span class="md-nav__icon md-icon"></span>
+          Performance
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance/" class="md-nav__link">
+        Applications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../teemon/" class="md-nav__link">
+        Monitoring tool
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_6" type="checkbox" id="__nav_11_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_6">
+          Background
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Background" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_6">
+          <span class="md-nav__icon md-icon"></span>
+          Background
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appsecurity/" class="md-nav__link">
+        Application-Oriented Security
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../background/" class="md-nav__link">
+        SCONE Background
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SCONE_Publications/" class="md-nav__link">
+        Publications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../aboutScone/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_10" type="checkbox" id="__nav_11_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_10">
+          Releases
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Releases" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_10">
+          <span class="md-nav__icon md-icon"></span>
+          Releases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release5.7/" class="md-nav__link">
+        SCONE 5.7.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release5.6/" class="md-nav__link">
+        SCONE 5.6.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release5.5/" class="md-nav__link">
+        SCONE 5.5.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release5.4/" class="md-nav__link">
+        SCONE 5.4.0
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation-and-use-case-description" class="md-nav__link">
+    Motivation and Use Case Description
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objectives" class="md-nav__link">
+    Objectives
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start-guide" class="md-nav__link">
+    Quick Start Guide
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-0-requirements" class="md-nav__link">
+    Step 0: Requirements
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-write-the-services-of-your-application" class="md-nav__link">
+    Step 1: Write the Services of Your Application
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-create-the-manifest-files" class="md-nav__link">
+    Step 2: Create the Manifest Files
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-build-and-deploy-your-application" class="md-nav__link">
+    Step 3: Build and Deploy Your Application
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-ensure-the-desired-protection-level" class="md-nav__link">
+    Step 4: Ensure the Desired Protection Level
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Ensure the Desired Protection Level">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ensure-confidentiality-protection" class="md-nav__link">
+    Ensure Confidentiality Protection
+  </a>
+  
+    <nav class="md-nav" aria-label="Ensure Confidentiality Protection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verify-confidentiality-of-api_password" class="md-nav__link">
+    Verify Confidentiality of API_PASSWORD
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-confidentiality-of-api_user" class="md-nav__link">
+    Verify Confidentiality of API_USER
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-confidentiality-of-the-program" class="md-nav__link">
+    Verify Confidentiality of the Program
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure-integrity-protection" class="md-nav__link">
+    Ensure Integrity Protection
+  </a>
+  
+    <nav class="md-nav" aria-label="Ensure Integrity Protection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verify-integrity-protection-of-api_password-and-api_user" class="md-nav__link">
+    Verify Integrity Protection of API_PASSWORD and API_USER
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-integrity-protection-of-the-program" class="md-nav__link">
+    Verify the Integrity Protection of the Program
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ensure-consistency-protection" class="md-nav__link">
+    Ensure Consistency Protection
+  </a>
+  
+    <nav class="md-nav" aria-label="Ensure Consistency Protection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-consistency-protection-of-api_password" class="md-nav__link">
+    Verify the Consistency Protection of API_PASSWORD
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-consistency-protection-of-api_user" class="md-nav__link">
+    Verify the Consistency Protection of API_USER
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-the-consistency-protection-of-the-program" class="md-nav__link">
+    Verify the Consistency Protection of the Program
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation-of-rust-and-cargo" class="md-nav__link">
+    Installation of Rust and Cargo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-container-registry-access" class="md-nav__link">
+    Docker Container Registry Access
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker Container Registry Access">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#not-allowed-to-pull-from-scone-registry" class="md-nav__link">
+    Not allowed to pull from scone registry
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-allowed-to-push-to-your-registry" class="md-nav__link">
+    Not allowed to push to your registry
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inconsistent-kubernetes-deployment-of-application" class="md-nav__link">
+    Inconsistent Kubernetes Deployment of Application
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sconectl-examples" class="md-nav__link">
+    sconectl Examples
+  </a>
+  
+    <nav class="md-nav" aria-label="sconectl Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-a-service-image" class="md-nav__link">
+    Building a Service Image
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#displaying-environment-variables" class="md-nav__link">
+    Displaying Environment Variables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="confidential-hello-world">Confidential Hello World!</h1>
+<p>In this tutorial, we show how to provide a simple cloud-native application with a secret such that <strong>nobody</strong> (except for the program itself) can access the secret. In fact, not even users with root privileges and cloud providers with hardware access can access it or modify the program.</p>
+<blockquote>
+<p><strong>NOTE:</strong> If you want to skip the introductory explanations,
+you can jump right to the <a href="#quick-start-guide"><strong>Quick Start Guide</strong></a>.</p>
+<p><strong>NOTE:</strong> We also have
+<a href="https://sconedocs.github.io/workflows/">other tutorials</a>
+which you can check out at our SCONE documentation website.</p>
+<p><strong>NOTE:</strong> In case you are having problems, you can consult
+<a href="#troubleshooting">our troubleshooting guide</a>.</p>
+</blockquote>
+<h2 id="motivation-and-use-case-description">Motivation and Use Case Description</h2>
+<p>In our simple <code>Hello World</code> example, we pass a user ID and a password to a Python program. This is actually an API user and password, i.e., no human neither needs to nor should know the password. In fact, only <em>authorized</em> applications have access to the password.</p>
+<p>We want to execute this program in a typical environment that is managed by a cloud provider. More concretely, we want to run this program as a process running in a container running in a Kubernetes pod, running on a Kubernetes node, running in a VM running on a server running in some data center. So there are multiple nested layers that one might need to be aware of. These days, one often outsources the management of these layers to an external cloud provider.</p>
+<p>The cloud provider operates the hardware, the cloud stack, the operating system, and Kubernetes. Relying on the cloud provider to do all this decreases the complexity of running a cloud application for us, but it usually also forces us to give a lot of power and trust to the cloud provider. The SCONE platform, however, allows us not to have to trust and give this power to neither the cloud provider nor malicious root users.</p>
+<p>Using SCONE, despite not having full control of neither the hardware nor the software setup, we can ensure that nobody (except for the program itself) can change or read our password or can change the user ID or other parts of the program. We also ensure that we always run the desired version of our program.</p>
+<h2 id="objectives">Objectives</h2>
+<p>The desired level of protection is a <strong>design choice</strong> made by the application owner. Even if this choice changes, the program does not need to be changed.</p>
+<p>Our objectives in this tutorial are to provide:</p>
+<ol>
+<li><strong>confidentiality</strong>, <strong>integrity</strong> and <strong>consistency</strong> protection of our secret,</li>
+<li><strong>integrity</strong> and <strong>consistency</strong> protection of the program and user ID.</li>
+</ol>
+<blockquote>
+<p><strong>NOTE:</strong> <em>Confidentiality protected</em> means that the protected resource
+cannot be read by entities not authorized by the security policy of the
+application.</p>
+<p><strong>NOTE:</strong> <em>Integrity protected</em> means that the protected resource
+can only be modified by entities authorized by the security policy of the
+application. All other changes are automatically be detected and cause the
+program to terminate.</p>
+<p><strong>NOTE:</strong> <em>Consistency protected</em> means that changing the version of the protected 
+resource will be detected and cause the program to terminate, unless the 
+software update was authorized by the application owner.</p>
+</blockquote>
+<p>This means that in this tutorial, we choose to let the program and the user ID to be
+readable but not changeable, and the password to be neither. These properties hold even for people with <strong>root access</strong> and/or <strong>physical access</strong> to the hardware.</p>
+<blockquote>
+<p><strong>NOTE:</strong> Using SCONE, it is also possible to protect the confidentiality of
+the code so that nobody can view the program, but we do not include this
+feature in this example.</p>
+</blockquote>
+<h2 id="quick-start-guide">Quick Start Guide</h2>
+<h3 id="step-0-requirements">Step 0: Requirements</h3>
+<p>Many development systems will already have most of the necessary
+software installed. We provide a <code>bash</code> shell script to verify this,
+and install what is missing. Run:</p>
+<div class="highlight"><pre><span></span><code>./check_prerequisites.sh
+</code></pre></div>
+<p>to automatically perform the following actions:</p>
+<ol>
+<li>Update and/or <a href="https://doc.rust-lang.org/cargo/getting-started/installation.html">install rust and cargo</a>.</li>
+<li>Install the SCONE command line tool <code>sconectl</code>, if not already present.</li>
+<li>Check whether <a href="https://docs.docker.com/get-docker/">docker</a>,
+<a href="https://helm.sh/docs/intro/install/">helm</a> and
+<a href="https://kubernetes.io/docs/tasks/tools/#kubectl">kubectl</a> are installed.</li>
+</ol>
+<blockquote>
+<p><strong>NOTE:</strong> In case <code>rust</code> or <code>cargo</code> are missing, <code>check_prerequisites.sh</code>
+installs them, which relies on <code>curl</code> being installed on your system.</p>
+<p><strong>NOTE:</strong> Alternatively to using the <code>check_prerequisites.sh</code>
+script, you can install <code>sconectl</code> manually by executing
+<code>cargo install sconectl</code>.</p>
+<p><strong>NOTE:</strong> For information on how to use <code>sconectl</code>, run <code>sconectl --help</code></p>
+</blockquote>
+<p>Apart from installing the software handled by the <code>check_prerequisites.sh</code> script,
+you also need:</p>
+<ul>
+<li>read and write access to a container registry, where you want to store
+your container image with the Hello World service.</li>
+<li>Access to a <a href="https://kubernetes.io">Kubernetes</a> cluster, 
+to which you want to deploy your Hello World application.</li>
+<li>
+<p>On this cluster, you need to install the <a href="https://sconedocs.github.io/helm_sgxdevplugin/">SCONE SGX Plugin</a> 
+      service and the <a href="https://sconedocs.github.io/helm_las/">SCONE LAS</a>
+      service. Assuming you have the desired kubeconfig file at
+      <code>~/.kube/config</code> or pointed to by your <code>$KUBECONFIG</code> environment
+      variable, run the following command to do so:</p>
+<div class="highlight"><pre><span></span><code>sconectl init
+</code></pre></div>
+<p>Check to make sure the two DaemonSets were created on the cluster:</p>
+<div class="highlight"><pre><span></span><code>kubectl get daemonsets las -n default
+kubectl get daemonsets scone-plugin-sgxdevplugin -n default
+</code></pre></div>
+</li>
+</ul>
+<h3 id="step-1-write-the-services-of-your-application">Step 1: Write the Services of Your Application</h3>
+<p>Our <code>Hello World</code> program looks like follows and is available in <code>print_env.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+
+<span class="c1"># Get the environment variables. </span>
+<span class="c1"># The value of API_USER is set in the meshfile and therefore </span>
+<span class="c1"># visible to the sysadmin of the application owner.</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;API_USER&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="c1"># The value of API_PASSWORD is generated by CAS and therefore </span>
+<span class="c1"># not visible even to the sysadmin of the application owner.</span>
+<span class="n">pw</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;API_PASSWORD&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># Exit with error if either one is not defined in service.yaml.</span>
+<span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not all required environment variables are defined.&quot;</span><span class="p">)</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># We can print API_USER, since it, unlike the API_PASSWORD, is not </span>
+<span class="c1"># meant to be confidential.</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello, &#39;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">&#39; - thanks for passing along the API_PASSWORD&quot;</span><span class="p">,</span> 
+      <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># We print a checksum of API_PASSWORD, since we want to see</span>
+<span class="c1"># if and when it changes. </span>
+<span class="n">pw_checksum</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">pw</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The checksum of the original API_PASSWORD is &#39;</span><span class="si">{</span><span class="n">pw_checksum</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+  <span class="n">new_user</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;API_USER&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello, user &#39;</span><span class="si">{</span><span class="n">new_user</span><span class="si">}</span><span class="s2">&#39;!&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">new_user</span> <span class="o">!=</span> <span class="n">user</span><span class="p">:</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Integrity violation:&quot;</span> 
+           <span class="sa">f</span><span class="s2">&quot;The value of API_USER changed from &#39;</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">new_user</span><span class="si">}</span><span class="s2">&#39;!&quot;</span><span class="p">)</span>
+     <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+  <span class="n">new_pw</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;API_PASSWORD&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="n">new_pw_checksum</span> <span class="o">=</span> <span class="kc">None</span>
+  <span class="k">if</span> <span class="n">new_pw</span><span class="p">:</span>
+     <span class="n">new_pw_checksum</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">new_pw</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The checksum of the current password is &#39;</span><span class="si">{</span><span class="n">new_pw_checksum</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">,</span> 
+        <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">new_pw_checksum</span> <span class="o">!=</span> <span class="n">pw_checksum</span><span class="p">:</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Integrity violation:&quot;</span> 
+           <span class="sa">f</span><span class="s2">&quot;The checksum of API_PASSWORD changed from &#39;</span><span class="si">{</span><span class="n">pw_checksum</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">new_pw_checksum</span><span class="si">}</span><span class="s2">&#39;!&quot;</span><span class="p">)</span>
+     <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stop me by executing &#39;helm uninstall pythonapp&#39;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
+<p>We read the environment variables periodically to be able to show below that these variables are properly protected: any change of the environment variables would result in an error exit.</p>
+<h3 id="step-2-create-the-manifest-files">Step 2: Create the Manifest Files</h3>
+<p>To convert an application into a confidential application,
+one needs to create a <em>service manifest file</em> per service,
+and a <em>mesh manifest file</em> (a.k.a. <em>meshfile</em>) for your application.
+In this <code>Hello World</code> example, this amounts to just two files which
+have already been created for you. You just need to:</p>
+<ol>
+<li>Change the <code>build.to</code> tag in the provided <code>service.yaml</code> file to point to
+the repository and image name and tag, to which you want to upload the generated
+container image containing the service.</li>
+<li>Change the <code>services.image</code> tag in the <code>mesh.yaml</code> file to point to the same
+image, which you chose to use in the <code>service.yaml</code> file in the previous step.</li>
+<li>Change the <code>policy.namespace</code> tag in the <code>mesh.yaml</code> file to a unique
+<a href="https://sconedocs.github.io/namespace/">SCONE CAS namespace</a> of your choice.</li>
+</ol>
+<blockquote>
+<p><strong>NOTE:</strong> A <em>service manifest file</em> is a <code>yaml</code> file, in which you describe the
+service by specifying different properties. These include but are not limited to:</p>
+<ul>
+<li>Secrets the service imports and exports. </li>
+<li>A secret can be exported either<ul>
+<li>to all other services (e.g., to export a public key),</li>
+<li>to a specific service, or</li>
+<li>to all services in a CAS namespace (e.g., share secrets within an application).</li>
+</ul>
+</li>
+<li>The container image and repository to be used to run the service</li>
+<li>Environment variables</li>
+<li>local environment variables are kept confidential, i.e., 
+  they are only visible to the service itself.</li>
+<li>global environment variables are visible to all services in a mesh.</li>
+<li>Arguments</li>
+</ul>
+<p><strong>NOTE:</strong> The <em>mesh manifest file</em> of an application is a <code>yaml</code> file, in which
+you describe the application by specifying different properties. These include
+but are not limited to:
+- Global variables
+- Services and their images
+- <a href="https://sconedocs.github.io/public-CAS/">SCONE CAS</a> instance and namespace. 
+  - The SCONE CAS instance can be either public or private and potentially run 
+inside the Kubernetes cluster.</p>
+</blockquote>
+<h3 id="step-3-build-and-deploy-your-application">Step 3: Build and Deploy Your Application</h3>
+<p>Once you have created your manifest files, you only need to run:</p>
+<p><div class="highlight"><pre><span></span><code>./run.sh
+</code></pre></div>
+to build and run your confidential application on Kubernetes.</p>
+<blockquote>
+<p><strong>NOTE:</strong> Under the hood <code>run.sh</code> executes the following three commands:
+1. Build the OCI container images containing your services and push it to your 
+repository by executing the following command (once per service):</p>
+<p><div class="highlight"><pre><span></span><code>sconectl apply -f service.yaml
+</code></pre></div>
+2. Build the application mesh: 
+  <div class="highlight"><pre><span></span><code>sconectl apply -f mesh.yaml
+</code></pre></div>
+  Building the application mesh will
+    - connect the services together and generate a helm chart into <code>target/helm</code> 
+  in the current directory on your local machine.
+    - generate the security policies and global variables and upload them to the 
+  SCONE CAS instance specified in the <code>mesh.yaml</code> file.
+3. Deploy the application using the generated helm chart:
+  <div class="highlight"><pre><span></span><code>helm install pythonapp target/helm
+</code></pre></div></p>
+<p><strong>NOTE:</strong> <code>run.sh</code> also installs
+any missing requirements (see <a href="#step-0-requirements">Step 0</a>) by 
+calling <code>check_prerequisites.sh</code> and checks whether you have 
+access rights to the SCONE docker image 
+<code>registry.scontain.com:5050/cicd/sconecli:latest</code>.
+If the latter fails, check the
+<a href="#not-allowed-to-pull-from-scone-registry">troubleshooting section</a>
+on what to do.</p>
+</blockquote>
+<p><strong>Congratulations! You made it!</strong> You now have the confidential <code>Hello World</code> application running on your Kubernetes cluster.</p>
+<p>You can look at the log of the pod of your service by executing the following commands:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># List all pods in the default namespace:</span>
+kubectl get pods
+<span class="c1"># The name of the pod we are looking for, starts with &#39;pythonapp-python-hello-user&#39;.</span>
+<span class="c1"># View the log of the pod:</span>
+kubectl logs &lt;pod name&gt;
+</code></pre></div>
+<p>The log should look something like the following:</p>
+<div class="highlight"><pre><span></span><code>export SCONE_QUEUES=8
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_TCS=8
+export SCONE_LOG=ERROR
+export SCONE_HEAP=796917760
+export SCONE_STACK=2097152
+export SCONE_CONFIG=autogenerated
+export SCONE_ESPINS=10000
+export SCONE_MODE=hw
+export SCONE_ALLOW_DLOPEN=yes (protected)
+export SCONE_MPROTECT=no
+export SCONE_FORK=no
+export SCONE_FORK_OS=0
+export SCONE_EXTENSIONS_PATH=/lib/libbinary-fs.so
+musl version: 1.1.24
+SCONE version: 5.7.0 (Tue Jan 18 08:45:24 2022 +0100) 
+Enclave hash: dc01dee58a2283e150b7cb39d87fa2113ed83ff3fdce3ebfc0599c7bdbf7d3f0
+Hello &#39;myself&#39; - thanks for passing along the API_PASSWORD
+The checksum of API_PASSWORD is &#39;b1225d17ae2d4ac762f8838f35c39962&#39;
+Stop me by executing &#39;helm uninstall pythonapp&#39;
+...
+</code></pre></div>
+<p>In the next step, we will show you how you can verify that the password, user ID and program indeed are protected according to our <a href="#objectives">objectives</a>.</p>
+<h3 id="step-4-ensure-the-desired-protection-level">Step 4: Ensure the Desired Protection Level</h3>
+<p>In the section <a href="#objectives">Objectives</a>, we stated how we wanted to protect our data and program in this tutorial. In this section, we will show you how to verify that these objectives were achieved, one by one.</p>
+<blockquote>
+<p><strong>NOTE:</strong> To check the protection of the password, username and program,
+we will need to examine the logs of the container running
+the <code>Hello World</code> service,
+and/or execute some commands inside the container itself.
+To perform those actions, you can use the following commands:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># List all pods in the default namespace:</span>
+kubectl get pods
+<span class="c1"># The name of the pod we are looking for, starts with &#39;pythonapp-python-hello-user&#39;.</span>
+<span class="c1"># View the log of the pod:</span>
+kubectl logs &lt;pod name&gt;
+<span class="c1"># Log-in to the container of the pod:</span>
+kubectl <span class="nb">exec</span> -it &lt;pod name&gt; -- sh
+</code></pre></div>
+<p><strong>NOTE:</strong> It is out of scope of this tutorial to show why a malicious user,
+even if authorized as the system administrator of the CAS,
+will fail in attacking the protected resources.</p>
+</blockquote>
+<h4 id="ensure-confidentiality-protection">Ensure Confidentiality Protection</h4>
+<p>One of our objectives in this tutorial, is to ensure the confidentiality of our password stored in the environment variable <code>API_PASSWORD</code>, whereas both the program itself and the username stored in <code>API_USER</code> are allowed to be visible.</p>
+<p>To execute the following attacks on the <code>hello world</code> program, log into the container as follows:</p>
+<div class="highlight"><pre><span></span><code>   <span class="c1"># Log-in to the container</span>
+   kubectl <span class="nb">exec</span> -it &lt;pod name&gt; -- sh
+</code></pre></div>
+<h5 id="verify-confidentiality-of-api_password">Verify Confidentiality of <code>API_PASSWORD</code></h5>
+<p>On the command line prompt inside the container,verify that you <strong><em>cannot</em></strong> read the value of the password environment variable:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="nv">$API_PASSWORD</span>
+</code></pre></div>
+<p>To make sure the value of <code>API_PASSWORD</code> is not visible somewhere else inside the container we also execute, although it will take a while to complete:</p>
+<div class="highlight"><pre><span></span><code>grep -r API_PASSWORD /
+</code></pre></div>
+<p>Furthermore, you can look through the generated files in the repository to see if you can find the value of <code>API_PASSWORD</code>, by executing the following locally in your development environment, i.e. outside of the container:</p>
+<div class="highlight"><pre><span></span><code>grep -r API_PASSWORD ./target
+</code></pre></div>
+<h5 id="verify-confidentiality-of-api_user">Verify Confidentiality of <code>API_USER</code></h5>
+<p>You can check whether you can read the value of the <code>API_USER</code> environment variable inside the container:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="nv">$API_USER</span>
+</code></pre></div>
+<p>As you can see, it is not visible here. However, when looking in <code>mesh.yaml</code> (in the repository outside of the container) the application owner sysadmin will find the value of <code>API_USER</code> quite easily:</p>
+<div class="highlight"><pre><span></span><code>...
+<span class="c1"># define environment variables</span>
+env:
+  - name: API_USER
+    value: myself
+...
+</code></pre></div>
+<p>This means the <code>API_USER</code> environment variable is not confidential. This is not a problem since it does not violate the desired confidentiality protection level.</p>
+<h5 id="verify-confidentiality-of-the-program">Verify Confidentiality of the Program</h5>
+<p>Inside the container, check whether you can read the program:</p>
+<div class="highlight"><pre><span></span><code>grep -r <span class="s2">&quot;thanks for passing along&quot;</span> /lib -A <span class="m">10</span> -B <span class="m">20</span>
+</code></pre></div>
+<p>The output will be the program you wrote in <a href="#step-1-write-the-services-of-your-application">Step 1</a> of this tutorial, i.e. the content of the repository file <code>print_env.py</code>.</p>
+<p>This means the program is not confidential, but this is not a problem, since it does not violate the desired confidentiality protection level.</p>
+<blockquote>
+<p><strong>NOTE:</strong> Using SCONE it is also possible to protect the confidentiality of 
+the code so that nobody can view the program, but we do not include this 
+feature in this example.</p>
+<p><strong>NOTE:</strong> Using SCONE it is also possible to protect the confidentiality of 
+the code so that nobody can view the program, but we do not include this 
+feature in this example.</p>
+</blockquote>
+<h4 id="ensure-integrity-protection">Ensure Integrity Protection</h4>
+<p>One of our objectives in this tutorial, is to ensure the integrity of our program as well as our username and password, that are stored in the environment variables <code>API_USER</code> and <code>API_PASSWORD</code>, respectively.</p>
+<p>To verify that the desired level of integrity protection is achieved, we therefore have to verify that one cannot change those resources without the change being detected.</p>
+<h5 id="verify-integrity-protection-of-api_password-and-api_user">Verify Integrity Protection of <code>API_PASSWORD</code> and <code>API_USER</code></h5>
+<p>To check the integrity of the password and username, we perform the following steps:</p>
+<ol>
+<li>Look in the log of the container and remember the current username and the hash of the current password:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>kubectl logs &lt;pod name&gt;
+</code></pre></div>
+<ol>
+<li>Try to modify the environment variables <code>API_PASSWORD</code> and 
+<code>API_USER</code> inside the container:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1"># Log-in to the container</span>
+kubectl <span class="nb">exec</span> -it &lt;pod name&gt; -- sh
+<span class="c1"># Set the API_PASSWORD environment variable</span>
+<span class="nb">export</span> <span class="nv">API_PASSWORD</span><span class="o">=</span>incorrect_pw
+<span class="c1"># Set the API_USER environment variable</span>
+<span class="nb">export</span> <span class="nv">API_USER</span><span class="o">=</span>incorrect_user
+</code></pre></div>
+<p>Although we succeed to set both environment variables,
+   when examining the logs
+   we see that both the username and the hash of the password
+   are identical to the ones we remember from the previous step.</p>
+<ol>
+<li>We also want to try to modify the environment variables and 
+restart the container. To do so, execute:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>kubectl edit deployment pythonapp-python-hello-user
+</code></pre></div>
+<p>and in the editor that opens up, add the password and username
+   variables to the list of environment variables of the container:</p>
+<div class="highlight"><pre><span></span><code>...
+spec:
+  ...
+  template:
+    ...
+    spec:
+      ...
+      containers:
+        ...
+        env:
+          ...
+        - name: API_PASSWORD
+          value: incorrect_pw
+        - name: API_USER
+          value: incorrect_user
+...
+</code></pre></div>
+<p>Save and exit the editor. This will create a new pod and container.
+4. Verify that the username and hash of the password in the logs
+   of the new pod are the same as the ones we remembered from the first step:</p>
+<div class="highlight"><pre><span></span><code>kubectl logs &lt;new pod name&gt;
+</code></pre></div>
+<h5 id="verify-the-integrity-protection-of-the-program">Verify the Integrity Protection of the Program</h5>
+<p>To verify that we cannot run a modified program without it being detected, we try two approaches.
+First, we modify the program inside the container, and then we rebuild the image with a modified program and restart the container using this image. In both cases, we see that the modification is detected.</p>
+<ol>
+<li>Find the program file inside the container:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>grep -re <span class="s2">&quot;thanks for passing along&quot;</span> /lib 
+</code></pre></div>
+<ol>
+<li>Edit the program file, by changing a message printed out in the loop.</li>
+<li>Verify that the log message of the currently running program did not change.</li>
+<li>Execute the edited program in the current container, by executing the command specified in <code>service.yaml</code>:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>python3 print_env.py
+</code></pre></div>
+<p>This fails due to a signature failure.
+5. To rebuild the image, modify the <code>print_env.py</code> outside of the container, in the same fashion as you just did inside the container.
+6. Execute:</p>
+<div class="highlight"><pre><span></span><code>sconectl apply -f service.yaml
+</code></pre></div>
+<p>This rebuilds a signed image of the modified code and overwrites the original image with the modified one.
+7. Log-in into the container again and reboot it:</p>
+<div class="highlight"><pre><span></span><code>reboot
+</code></pre></div>
+<ol>
+<li>Check the logs of the newly rebooted container, and notice an attestation failure:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="o">[</span>SCONE<span class="p">|</span>FATAL<span class="o">]</span> src/process/init.c:476:__scone_prepare_secure_config<span class="o">()</span>: Could not initialize enclave state: Attestation failed
+  Caused by: CAS sent an attestation/configuration error: DCAP quote verification failed
+  Caused by: Failed to verify DCAP report
+  Caused by: The program enclave is not trustworthy
+    Caused by: None of the required enclave properties are met by the enclave
+    Caused by: Not all of the required enclave properties are met by the enclave
+    Caused by: None of the required enclave properties are met by the enclave
+    Error <span class="m">1</span> of <span class="m">2</span>: Unexpected enclave measurement <span class="o">(</span>MRENCLAVE, 0e62020589972fba3ae70225cf6cd958897bbdd5eee878c5badf5928d95cfaae<span class="o">)</span> - Expected 5e753b24ae9c62c5d86f0fc6e1acb663f0debdcee99f6c327de66cbf3ce3ef66
+    Error <span class="m">2</span> of <span class="m">2</span>: Unexpected enclave measurement <span class="o">(</span>MRENCLAVE, 0e62020589972fba3ae70225cf6cd958897bbdd5eee878c5badf5928d95cfaae<span class="o">)</span> - Expected 2b16b78fc54fa13ce038a9abbdc7fbc4b87f12e42ca6ae07654d7d4c387ea13a
+Note: Connecting to CAS at edge.scone-cas.cf <span class="o">(</span>port <span class="m">18765</span><span class="o">)</span> using service ID myPythonApp/pythonapp/python3
+</code></pre></div>
+<h4 id="ensure-consistency-protection">Ensure Consistency Protection</h4>
+<p>One of our objective in this tutorial, is to ensure the consistency of our program, username and password. To verifiy that these objectives are achieved we therefore need to show that, as soon as the process of the service starts up, we detect if somebody tried to revert to an older version of the application.</p>
+<blockquote>
+<p><strong>NOTE:</strong> Changing the values of the username, password and/or program
+in any other way than running an unintended, previously valid, version
+is prevented by the integrity protection, as opposed to the consistency
+protection.</p>
+</blockquote>
+<p>To simulate an attack on the consistency protection of one of the three resources, i.e., username, password or program code, we first deploy the application with a new version of the resource, and then maliciously try and deploy the application with the old version of the resource.</p>
+<h5 id="verify-the-consistency-protection-of-api_password">Verify the Consistency Protection of <code>API_PASSWORD</code></h5>
+<p>To verify the consistency protection of the <strong>password</strong>, we would have to create and deploy a new version of the application, i.e., version 2, which only differs from version 1 in its password.
+The malicious attack would try to revert to use the password of version 1.</p>
+<p>Since the password needs to be confidential, even to the sysadmin of the application owner, it is generated by CAS.</p>
+<blockquote>
+<p><strong>NOTE:</strong> CAS does not regenerate the password
+with each new version of the application.
+To trigger the regeneration of the password in a new application
+version, we need to change the way we want it generated, for example
+by changing the length of the password.</p>
+</blockquote>
+<p>However, as soon as the password is regenerated to be used in version 2, the old password is no longer present, neither in CAS nor anywhere else, and we therefore have nothing to which we can revert. But let us anyway assume that the attacker in some way had indeed gotten a hold of a copy of the version 1 password, they would have to upload it to CAS, in order for it to be the correct password. As soon as the upload to CAS has taken place, however,
+this is considered to be a new, authorized version, i.e., version 3.</p>
+<p>Hence, since we didn't succeed in reverting to the password of version 1 without the change being detected, the attack on the consistency protection of the password failed.</p>
+<h5 id="verify-the-consistency-protection-of-api_user">Verify the Consistency Protection of <code>API_USER</code></h5>
+<p>To verify the consistency protection of the <strong>username</strong>, we would have to create and deploy a new version of the application, i.e., version 2, which only differs from version 1 in its username.vThe malicious attack would try to revert to use the username of version 1.</p>
+<p>The value of the username is specified in <code>mesh.yaml</code> and needs to be uploaded to CAS for it to be considered to be the correct username. To revert to the username of version 1, the attacker would thus have to upload it to CAS. As soon as the upload to CAS has taken place, however, this is considered to be a new, authorized version, i.e., version 3.</p>
+<p>Hence, since we didn't succeed in reverting to the username of version 1 without the change being detected, the attack on the consistency protection of the username failed.</p>
+<h5 id="verify-the-consistency-protection-of-the-program">Verify the Consistency Protection of the Program</h5>
+<p>To verify the consistency protection of the <strong>program</strong>, we would have to create and deploy a new version of the application, i.e., version 2, which differs from version 1 in its program code. The malicious attack would try to revert to use the program code of version 1:</p>
+<ol>
+<li>Build and deploy version 2:</li>
+<li>Create a new version, i.e., version 2, of the program by changing
+   a log message printed in the loop in <code>print_env.py</code> in the repository.</li>
+<li>Change the image tag in <code>service.yaml</code> under <code>build.to</code> to <code>2</code>.</li>
+<li>Change the image tag in <code>mesh.yaml</code> under <code>services.image</code> to <code>2</code>.</li>
+<li>
+<p>Build and deploy the new version, version 2, of the application:</p>
+<div class="highlight"><pre><span></span><code>./run.sh
+</code></pre></div>
+</li>
+<li>
+<p>Verify that version 2 is running, by making sure the new log message is printed in the logs:</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code>kubectl logs &lt;pod name&gt;
+</code></pre></div>
+<ol>
+<li>Maliciously try to deploy version 1 without it being detected:</li>
+<li>
+<p>Push the image of version 1 to the registry under the tag <code>2</code>: </p>
+<div class="highlight"><pre><span></span><code>docker tag &lt;image registry&gt;/&lt;image name&gt;:1 &lt;image registry&gt;/&lt;image name&gt;:2
+docker push &lt;image registry&gt;/&lt;image name&gt;:2
+</code></pre></div>
+</li>
+<li>
+<p>Deploy the fake version 2:</p>
+<div class="highlight"><pre><span></span><code>helm uninstall pythonapp 
+helm install pythonapp target/helm 
+</code></pre></div>
+</li>
+<li>
+<p>Verify that the program fails:</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code>kubectl get pods
+kubectl logs &lt;pod name&gt;
+</code></pre></div>
+<p>The pod is in <code>Error</code> state and its logs show an attestation failure:</p>
+<div class="highlight"><pre><span></span><code>...
+<span class="o">[</span>SCONE<span class="p">|</span>FATAL<span class="o">]</span> src/process/init.c:476:__scone_prepare_secure_config<span class="o">()</span>: Could not initialize enclave state: Attestation failed
+  Caused by: CAS sent an attestation/configuration error: DCAP quote verification failed
+  Caused by: Failed to verify DCAP report
+  Caused by: The program enclave is not trustworthy
+    Caused by: None of the required enclave properties are met by the enclave
+    Caused by: Not all of the required enclave properties are met by the enclave
+    Caused by: None of the required enclave properties are met by the enclave
+    Error <span class="m">1</span> of <span class="m">2</span>: Unexpected enclave measurement <span class="o">(</span>MRENCLAVE, 51c22fa42b6970af6c44eceaab1ce7ef77385e0ddd8cb31cc4f018bcfb04d818<span class="o">)</span> - Expected 8e51357d6424cf8b20c36f567ebbd4afa07c9e58912107c0beda436602c1d342
+    Error <span class="m">2</span> of <span class="m">2</span>: Unexpected enclave measurement <span class="o">(</span>MRENCLAVE, 51c22fa42b6970af6c44eceaab1ce7ef77385e0ddd8cb31cc4f018bcfb04d818<span class="o">)</span> - Expected 0e62020589972fba3ae70225cf6cd958897bbdd5eee878c5badf5928d95cfaae
+Note: Connecting to CAS at edge.scone-cas.cf <span class="o">(</span>port <span class="m">18765</span><span class="o">)</span> using service ID myPythonApp/pythonapp/python3
+</code></pre></div>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="installation-of-rust-and-cargo">Installation of Rust and Cargo</h3>
+<blockquote>
+<p><strong>Note</strong>: You can run script <code>run.sh</code> to set up / update your rust environment and to  install <code>sconectl</code> with the help of Rust. 
+It will however also execute the build and deploy steps of this tutorial.</p>
+</blockquote>
+<p>In case you install manually, errors might appear since Rust is not installed or out-of-date. 
+If this is the case and <code>cargo</code> fails, ensure that</p>
+<ul>
+<li>you have <code>Rust</code> installed on your system. and </li>
+<li>it is up-to-date (you might get syntax errors if your Rust installation is old).</li>
+</ul>
+<p>If Rust is not yet installed or too old, you can use <a href="https://www.rust-lang.org/tools/install"><code>rustup</code></a> to install <code>Rust</code>.</p>
+<h3 id="docker-container-registry-access">Docker Container Registry Access</h3>
+<h4 id="not-allowed-to-pull-from-scone-registry">Not allowed to pull from scone registry</h4>
+<p>This could fail for the following two reasons:</p>
+<ol>
+<li>You have not yet requested access to the SCONE registry, 
+which you can do by sending an email to <code>info@scontain.com</code> 
+and ask for access to the 
+<code>registry.scontain.com:5050/cicd/sconcli</code> image.  </li>
+<li>You not have logged in to docker using <code>docker login</code> with 
+the correct <a href="https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html">gitlab access token</a>. 
+<a href="https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#create-a-personal-access-token">Generate an access token</a> 
+and pass it to <code>docker login</code> using the <code>--password-stdin</code> argument.</li>
+</ol>
+<h4 id="not-allowed-to-push-to-your-registry">Not allowed to push to your registry</h4>
+<p>In our experience if the line <code>"credsStore": "desktop"</code> is present in your 
+<code>~/.docker/config.json</code> file you might not be able to push to your registry,
+although you are logged in to docker and have the correct access rights.</p>
+<h4 id="inconsistent-kubernetes-deployment-of-application">Inconsistent Kubernetes Deployment of Application</h4>
+<p>Some Kubernetes services are configured to automatically deploy 
+new images as soon as thye are pushed to the repository. 
+If this is the case, you need to run 
+<code>sconectl apply -f service.yaml --no-push</code> when building 
+the images of your services.
+This ensures that the container image 
+that is generated is not pushed until after you have build the 
+application mesh. 
+Then, after applying the Meshfile, you can manually push the images for 
+your services using <code>docker push</code>.</p>
+<h2 id="sconectl-examples"><code>sconectl</code> Examples</h2>
+<p>Depending what Manifest you apply, different command line options might be available. To get a list of options, for a given manifest, you can execute:</p>
+<div class="highlight"><pre><span></span><code>sconectl apply -f service.yaml --help
+</code></pre></div>
+<p>You can print which environment variables you can define and also their default values by executing:</p>
+<div class="highlight"><pre><span></span><code>sconectl apply -f service.yaml -p
+</code></pre></div>
+<h3 id="building-a-service-image">Building a Service Image</h3>
+<p>We can now apply a manifest as follows (and we do not want to push to the repo just yet):</p>
+<div class="highlight"><pre><span></span><code>sconectl apply -f service.yaml --no-push
+</code></pre></div>
+<h3 id="displaying-environment-variables">Displaying Environment Variables</h3>
+<p>We can show which variables must be defined in a <code>meshfile</code> using option <code>-p</code>:</p>
+<div class="highlight"><pre><span></span><code>sconectl apply -f mesh.yaml -p
+</code></pre></div>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../details/" class="md-footer__link md-footer__link--prev" aria-label="Previous: background" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              background
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../hands_on_2/" class="md-footer__link md-footer__link--next" aria-label="Next: hands on 2" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              hands on 2
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright Scontain &copy; 2018-2022
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.5413a266.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+      
+        <script src="../../css/extra.js"></script>
+      
+        <script src="../../search/main.js"></script>
+      
+    
+  </body>
+</html>

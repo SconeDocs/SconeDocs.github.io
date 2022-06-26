@@ -953,14 +953,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_12">
-          sconectl
+          Workshop
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="sconectl" data-md-level="2">
+      <nav class="md-nav" aria-label="Workshop" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_12">
           <span class="md-nav__icon md-icon"></span>
-          sconectl
+          Workshop
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -970,8 +970,78 @@
   
   
     <li class="md-nav__item">
+      <a href="../workshop/setup/" class="md-nav__link">
+        getting access
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../install_sconectl/" class="md-nav__link">
-        install
+        install sconectl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/details/" class="md-nav__link">
+        background
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/hands_on_1/" class="md-nav__link">
+        hands on 1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/hands_on_2/" class="md-nav__link">
+        hands on 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/next_steps/" class="md-nav__link">
+        next steps
       </a>
     </li>
   
@@ -3454,15 +3524,19 @@ Check on the host as well as inside your containers that the SGX device is visib
 <p>Depending if you have DCAP or a non-DCAP driver installed, you need to use a different
 SGX device. We can try to determine this with a little bash function:</p>
 <div class="highlight"><pre><span></span><code><span class="k">function</span> determine_sgx_device <span class="o">{</span>
-    <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/sgx&quot;</span>
-    <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;--device=/dev/sgx&quot;</span>
+    <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/sgx_enclave&quot;</span>
+    <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;--device=/dev/sgx_enclave&quot;</span>
     <span class="k">if</span> <span class="o">[[</span> ! -e <span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-        <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/isgx&quot;</span>
-        <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;--device=/dev/isgx&quot;</span>
-        <span class="k">if</span> <span class="o">[[</span> ! -c <span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-            <span class="nb">echo</span> <span class="s2">&quot;Warning: No SGX device found! Will run in SIM mode.&quot;</span> &gt; /dev/stderr
-            <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
-            <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/sgx&quot;</span>
+        <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;--device=/dev/sgx&quot;</span>
+        <span class="k">if</span> <span class="o">[[</span> ! -e <span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+            <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;/dev/isgx&quot;</span>
+            <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;--device=/dev/isgx&quot;</span>
+            <span class="k">if</span> <span class="o">[[</span> ! -c <span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+                <span class="nb">echo</span> <span class="s2">&quot;Warning: No SGX device found! Will run in SIM mode.&quot;</span> &gt; /dev/stderr
+                <span class="nb">export</span> <span class="nv">MOUNT_SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+                <span class="nb">export</span> <span class="nv">SGXDEVICE</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+            <span class="k">fi</span>
         <span class="k">fi</span>
     <span class="k">fi</span>
 <span class="o">}</span>
