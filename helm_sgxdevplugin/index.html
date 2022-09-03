@@ -1541,6 +1541,27 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#exposed-resources" class="md-nav__link">
+    Exposed resources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#labeling-sgx-capable-nodes" class="md-nav__link">
+    Labeling SGX-capable nodes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3459,6 +3480,27 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#exposed-resources" class="md-nav__link">
+    Exposed resources
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#labeling-sgx-capable-nodes" class="md-nav__link">
+    Labeling SGX-capable nodes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3546,6 +3588,70 @@ https://kubernetes.io/">Kubernetes</span> cluster as follows:</p>
 <span class="k">for</span> N <span class="k">in</span> <span class="nv">$NODES</span><span class="p">;</span> <span class="k">do</span>  <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$N</span><span class="s2">:&quot;</span> <span class="p">;</span> kubectl get <span class="nv">$N</span> -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.allocatable}&#39;</span> <span class="p">;</span> <span class="nb">echo</span> <span class="p">;</span>  <span class="k">done</span>
 </code></pre></div>
 <p>If the number of SGX devices is too small, increase the number of allocatable SGX devices as explained above.</p>
+<h2 id="exposed-resources">Exposed resources</h2>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>What you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sgx.intel.com/enclave</code>, <code>sgx.k8s.io/sgx</code></td>
+<td>Any available SGX device: IAS (/dev/isgx) or DCAP (/dev/sgx or /dev/sgx_enclave)</td>
+</tr>
+<tr>
+<td><code>sgx.k8s.io/ias</code></td>
+<td>IAS devices: /dev/isgx</td>
+</tr>
+<tr>
+<td><code>sgx.k8s.io/dcap</code></td>
+<td>DCAP devices: /dev/sgx or /dev/sgx_enclave. Provisioning devices are also mapped</td>
+</tr>
+</tbody>
+</table>
+<h2 id="labeling-sgx-capable-nodes">Labeling SGX-capable nodes</h2>
+<p>If <code>labelNodes</code> is set to <code>true</code> (default), the SGX plugin will label the SGX-capable nodes with the label <code>sgx.intel.com/capable="true"</code>. This allows the SGX-capable nodes to be selected through the label.</p>
+<p>For example: <a href="../las">SCONE LAS</a>, which is a DaemonSet, will be deployed to all cluster nodes, as it is the default DaemonSet behavior. However, since LAS relies on SGX devices to run, if you have a cluster with SGX and non-SGX nodes, it makes no sense to deploy it to non-SGX nodes. We could leverage the label <code>sgx.intel.com/capable="true"</code> to select the right nodes for LAS:</p>
+<h2 id="parameters">Parameters</h2>
+<p>A complete list of parameters this chart supports.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>maxSGXPods</code></td>
+<td>Maximum allocatable SGX devices per node</td>
+<td><code>110</code></td>
+</tr>
+<tr>
+<td><code>labelNodes</code></td>
+<td>Whether the plugin should label SGX-capable nodes with <code>sgx.intel.com/capable="true"</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td>SGX device plugin image</td>
+<td><code>registry.scontain.com:5050/sconecuratedimages/kubernetes:k8s-sgx-plugin</code></td>
+</tr>
+<tr>
+<td><code>imagePullPolicy</code></td>
+<td>SGX device plugin image pull policy</td>
+<td><code>Always</code></td>
+</tr>
+<tr>
+<td><code>nodeSelector</code></td>
+<td>Node labels for pod assignment (this value is evaluated as a template)</td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
 
               
             </article>
