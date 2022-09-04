@@ -794,9 +794,60 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          sconectl cli
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         sconectl cli
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#command-apply" class="md-nav__link">
+    COMMAND apply
+  </a>
+  
+    <nav class="md-nav" aria-label="COMMAND apply">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-manifests" class="md-nav__link">
+    Service Manifests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mesh-manifests-aka-meshfiles" class="md-nav__link">
+    Mesh Manifests (a.k.a. Meshfiles)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -3403,6 +3454,41 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#command-apply" class="md-nav__link">
+    COMMAND apply
+  </a>
+  
+    <nav class="md-nav" aria-label="COMMAND apply">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-manifests" class="md-nav__link">
+    Service Manifests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mesh-manifests-aka-meshfiles" class="md-nav__link">
+    Mesh Manifests (a.k.a. Meshfiles)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -3423,9 +3509,26 @@
 <p><code>sconectl</code> runs on macOS and Linux, and if there is some demand, on Windows. Try out</p>
 <p><a href="https://github.com/scontain/scone_mesh_tutorial">https://github.com/scontain/scone_mesh_tutorial</a> </p>
 <p>to test your <code>sconectl</code> setup. In particular, it will test that all prerequisites are satisfied
-and gives some examples on how to use <code>sconectl</code>.</p>
-<div class="highlight"><pre><span></span><code>COMMAND:
-  `apply`   apply manifest. Execute `sconectl apply --help` for more info.
+and gives some examples on how to use <code>sconectl</code>:</p>
+<div class="highlight"><pre><span></span><code>sconectl [COMMAND] [OPTIONS]
+
+sconectl helps to transform cloud-native applications into cloud-confidential applications. It supports converting native services into confidential services and services meshes into confidential service meshes. 
+
+sconectl is a CLI that runs on your development machine and executes scone commands in a local container: [scone](https://sconedocs.github.io/) is a platform to convert native applications into confidential applications. sconectl uses docker or podman to run the commands. 
+
+Ensure all files you want to pass along are in the current working directory or subdirectories. This is needed since we pass the current working directory to the docker image that executes the command.
+
+If you want to use podman instead, please set the environment variable DOCKER_HOST to your podman API (printed by podman during startup). Currently, podman still has some open issues that need to be solved.
+
+sconectl runs on macOS and Linux, and if there is some demand, on Windows. Try out
+
+   https://github.com/scontain/scone_mesh_tutorial 
+
+to test your sconectl setup. In particular, it will test that all prerequisites are satisfied
+and gives some examples on how to use sconectl.
+
+COMMAND:
+  apply   apply manifest. Execute sconectl apply --help for more info.
 
 
 OPTIONS:
@@ -3442,8 +3545,170 @@ ENVIRONMENT:
 
 
   SCONECTL_NOPULL
-           By default, `sconectl` pulls the CLI image &#39;cicd/sconecli:latest&#39; first. If this environment 
-           variable is defined, `sconectl` does not pull the image. 
+           By default, sconectl pulls the CLI image &#39;sconecli:latest&#39; first. If this environment 
+           variable is defined, sconectl does not pull the image. 
+
+VERSION: sconectl 0.2.11
+</code></pre></div>
+<h2 id="command-apply">COMMAND <code>apply</code></h2>
+<p>The options of <code>apply</code>  depends on the type of manifest one applies. It supports</p>
+<ul>
+<li><em>service manifest</em> (i.e., manifests of <code>kind: genservice</code>): <code>apply</code> executes a command <code>scone_genservice</code>. </li>
+<li><em>mesh manifest</em> (i.e., manifests of <code>kind: mesh</code>): we call these manifests also <em>meshfiles</em>. Command <code>apply</code> executes a command <code>scone_mesh</code>.</li>
+</ul>
+<h3 id="service-manifests">Service Manifests</h3>
+<p>For service manifests, we have access to the following options:</p>
+<div class="highlight"><pre><span></span><code>scone_genservice 0.1.2
+SCONE Team
+Scone scone_genservice creates a confidential application image. The choices are
+
+USAGE:
+    scone_genservice [OPTIONS]
+
+OPTIONS:
+    -d, --dry-run
+            Specify &#39;dry_run&#39; in case you do not want to upload the sessions
+
+    -f, --filename &lt;FILENAME&gt;
+            The manifest describes what wrapper needs to be generated
+
+            [default: Manifest.yaml]
+
+    -h, --helm-template &lt;HELM_TEMPLATE&gt;
+            Set a path for a directory containing generic helm templates. By default, we use an
+            generic template files included with the binary. One can customize these template files
+            and define a path to these customized template files
+
+            [default: templates-genservice]
+
+        --help
+            Print help information
+
+        --mode &lt;MODE&gt;
+            Define the mode, i.e., if the application should run in &quot;production&quot; or in &quot;debug&quot; mode.
+            By default, we use &quot;production&quot; mode
+
+            [default: production]
+
+    -n, --no-push
+            by default, we push the image to the repo. Use the --no-push option to avoid pushing
+            images
+
+    -p, --print-defaults
+            Print the environment variables and their default values for this image. This can be
+            used to determine which values one a) can configure, i.e., those with a default value,
+            and b) one must configure, i.e., values that do not have a default value
+
+    -q, --quiet
+            Less output per occurrence
+
+    -t, --target-directory &lt;TARGET_DIRECTORY&gt;
+            The directory in which the policies will be stored
+
+            [default: ./target]
+
+    -v, --verbose
+            More output per occurrence
+
+    -V, --version
+            Print version information
+</code></pre></div>
+<p>For example, we might execute</p>
+<div class="highlight"><pre><span></span><code>sconectl apply -f service.yaml -vvvvvvv
+</code></pre></div>
+<h3 id="mesh-manifests-aka-meshfiles">Mesh Manifests (a.k.a. Meshfiles)</h3>
+<p>Meshfiles are processed by a command named <code>scone_mesh</code>. This command supports a variety of options:</p>
+<div class="highlight"><pre><span></span><code>scone_mesh 0.2.0
+SCONE Team
+Scone Mesh creates SCONE policies for an application mesh.
+
+USAGE:
+    scone_mesh [OPTIONS]
+
+OPTIONS:
+    -d, --dry-run
+            Specify &#39;dry_run&#39; in case you do not want to upload the sessions
+
+    -f, --filename &lt;FILENAME&gt;
+            The manifest describes what wrapper needs to be generated
+
+            [default: Meshfile.yaml]
+
+    -h, --help
+            Print help information
+
+        --host-pwd &lt;HOST_PWD&gt;
+            define the PWD of the laptop - needed when running nested in container we set this
+            automatically when using scone apply. when running on host, we use the real OS
+
+            [default: $PWD]
+
+    -m, --maa &lt;MAA&gt;
+            By default we use dcap-based attestation using Intel&#39;s attestation service.
+            Alternatively, we can use Azure MAA to attest the services. Please specify the MAA URL
+            here to switch on MAA-based attestation
+
+        --mode &lt;MODE&gt;
+            Define the mode, i.e., if the application should run in &quot;production&quot; or in &quot;debug&quot; mode.
+            By default, we use &quot;production&quot; mode
+
+            [default: production]
+
+    -n, --no-pull
+            No pull option implies that this tool does NOT pull the service image(s) first. This can
+            be useful in case you have built the container images on the local server with the
+            --no-push option. One might only push the images in a later step, e.g., after signing
+            the images
+
+    -o, --output &lt;OUTPUT&gt;
+            The output format to be used: &quot;helm_chart&quot; or &quot;yaml&quot;. If yaml format is selected, a
+            &quot;manifests&quot; directory will be created within the target directory. A HELM chart is
+            always issued
+
+            [default: helm_chart]
+            [possible values: helm_chart, yaml]
+
+        --otp &lt;OTP&gt;
+            define the OTP for signing container images this is used for access control to the
+            cosign signing key
+
+            shall we sign the images before pushing using native/confidential cosign?
+            build.repo.config_id: - if defined, we sign confidentially and this is is the config_id
+            of cosign - if not defined, we sign with native cosign
+
+            build.repo.key_file: - if confidential cosign and key_file is defined, this file
+            contains the secret of the the generate OTP key - if confidential cosign and key_file is
+            not defined, we use this OTP passed via command line argument to sign an image. This
+            works only for one image only! - if native cosign, this file contains the key and OTP
+            contains the password for this key_file, i.e., COSIGN_PASSWORD
+
+            Limitation: implementation is not complete
+
+    -p, --print-defaults
+            Print the environment variables and their default values for each of the images
+
+        --policy-namespace &lt;POLICY_NAMESPACE&gt;
+            [default: ]
+
+    -q, --quiet
+            Less output per occurrence
+
+    -t, --target-directory &lt;TARGET_DIRECTORY&gt;
+            The directory to which the policies are stored
+
+            [default: ./target]
+
+    -v, --verbose
+            More output per occurrence
+
+    -V, --version
+            Print version information
+</code></pre></div>
+<p>For example, we might execute</p>
+<div class="highlight"><pre><span></span><code>sconectl apply -f mesh.yaml -vvvvvvv
+</code></pre></div>
+<p>To use the Microsoft Attestation Service instead of Intel DCAP attestation,  you might build your service as follows:</p>
+<div class="highlight"><pre><span></span><code>sconectl apply -f Meshfile.yaml -vvvvv --maa<span class="o">=</span>https://sharedweu.weu.attest.azure.ne
 </code></pre></div>
 
               
