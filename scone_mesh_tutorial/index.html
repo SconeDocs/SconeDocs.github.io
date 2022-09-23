@@ -4002,7 +4002,7 @@
 <img alt="sconectl" src="../img/use-case-description.svg#medium" />
 </center></p>
 <p>We want to execute this program in a typical environment that a cloud provider manages. More concretely, we want to run this program as a process running in a container running in a Kubernetes pod, running on a Kubernetes node, running in a VM running on a server running in some data center. So there are multiple nested layers one might need to be aware of. These days, one often outsources the management of these layers to an external cloud provider.</p>
-<p>The cloud provider operates the hardware, the cloud stack, the operating system, and Kubernetes. Relying on the cloud provider to do all this decreases the complexity of running a cloud application. Still, it usually also forces us to give a lot of power and trust to the cloud provider. The SCONE platform, however, allows us not to have to trust and give this power to neither the cloud provider nor malicious root users.</p>
+<p>The cloud provider operates the hardware, the cloud stack, the operating system, and Kubernetes. Relying on the cloud provider to do all this decreases the complexity of running a cloud application. Still, it usually also forces us to give a lot of power and trust to the cloud provider. The SCONE platform, however, allows us not to have to trust and provide this power to neither the cloud provider nor malicious root users.</p>
 <p>Using SCONE, despite not having complete control of neither the hardware nor the software setup, we can ensure that nobody (except for the program itself) can change or read our password or can change the user ID or other parts of the program. We also ensure that we always run the desired version of our program.</p>
 <h2 id="objectives">Objectives</h2>
 <p>The desired level of protection is a <strong>design choice</strong> made by the application owner. Even if this choice changes, the program does not need to be changed.</p>
@@ -4046,7 +4046,7 @@ and install what is missing. Run:</p>
 <p>to automatically perform the following actions:</p>
 <ol>
 <li>Update and/or <a href="https://doc.rust-lang.org/cargo/getting-started/installation.html">install rust and cargo</a>.</li>
-<li>Install the SCONE command line tool <code>sconectl</code>, if not already present.</li>
+<li>Install the SCONE command line tool <code>sconectl</code> if not already present.</li>
 <li>Check whether <a href="https://docs.docker.com/get-docker/">docker</a>,
 <a href="https://helm.sh/docs/intro/install/">helm</a> and
 <a href="https://kubernetes.io/docs/tasks/tools/#kubectl">kubectl</a> are installed.</li>
@@ -4209,7 +4209,7 @@ repository by executing the following command (once per service):</p>
   <div class="highlight"><pre><span></span><code>sconectl apply -f mesh.yaml
 </code></pre></div>
   Building the application mesh will
-    - connect the services together and generate a helm chart into <code>target/helm</code> 
+    - connect the services and generate a helm chart into <code>target/helm</code> 
   in the current directory on your local machine.
     - generate the security policies and global variables and upload them to the 
   SCONE CAS instance specified in the <code>mesh.yaml</code> file.
@@ -4279,7 +4279,7 @@ kubectl <span class="nb">exec</span> -it &lt;pod name&gt; -- sh
 </blockquote>
 <div class="admonition info">
 <p class="admonition-title">Protecting Confidential Resources</p>
-<p>It is out of the scope of this tutorial to show why a malicious user, even if authorized as the system administrator of the CAS, will fail in attacking the protected resources.</p>
+<p>It is out of the scope of this tutorial to show why a malicious user, even if authorized as the system administrator of the CAS, will fail to attack the protected resources.</p>
 </div>
 <h3 id="verify-confidentiality-protection">Verify Confidentiality Protection</h3>
 <p><center>
@@ -4382,7 +4382,7 @@ spec:
 <div class="highlight"><pre><span></span><code>kubectl logs &lt;new pod name&gt;
 </code></pre></div>
 <h4 id="verify-the-integrity-protection-of-the-program">Verify the Integrity Protection of the Program</h4>
-<p>To verify that we cannot run a modified program without it being detected, we try two approaches.
+<p>We try two approaches to verify that we cannot run a modified program without it being detected:
 First, we modify the program inside the container, and then we rebuild the image with a modified program and restart the container using this image. In both cases, we see that the modification is detected.</p>
 <ol>
 <li>Find the program file inside the container:</li>
@@ -4457,7 +4457,7 @@ The malicious attack would try to revert to using the password of version 1.</p>
 </code></pre></div>
 </li>
 <li>
-<p>Verify that version 2 is running, by making sure the new log message is printed in the logs:</p>
+<p>Verify that version 2 is running by making sure the new log message is printed in the logs:</p>
 </li>
 </ol>
 <div class="highlight"><pre><span></span><code>kubectl logs &lt;pod name&gt;
