@@ -3776,7 +3776,7 @@
 
 
 <h1 id="section-2-otp">Section 2: OTP</h1>
-<p>We address the issue of how to authorize the execution of confidential applications by a user: a user triggers the execution of a confidential program. <em>How can we ensure that the **user*</em> is authorized to do so?*</p>
+<p>We address the issue of how to authorize the execution of confidential applications by a user: a user triggers the execution of a confidential program. <em>How can we ensure that the</em> <strong><em>user</em></strong> <em>is authorized to do so?</em></p>
 <p>Of course, one uses standard mechanisms to authenticate users (e.g., <a href="https://en.wikipedia.org/wiki/Single_sign-on">SSO</a>) and authorize the start of a confidential application. Adversaries with root access might impersonate users and circumvent this standard authentication and authorization. We want to prevent an adversary with root access from starting a confidential application. We give some motivation why this might be required below.</p>
 <p>We use SCONE policies to require additional authorization. In our reference solution of this section, we assume that we can set up the policies using a trusted computer. For example, we use a newly installed, on-premise computer that is only used to create or update policies. If one uses the computer for other tasks, one might want to run this code in an enclave. We come back to this in a later section.</p>
 <h2 id="background-info">Background Info</h2>
@@ -3790,15 +3790,15 @@
 <p>To simplify the execution of our solution inside enclaves and to use some more modern scripting (i.e., which means we exclude <code>bash</code>), we use 'rust-script' in this section for our reference solution. One can convert this code to run as compiled program.</p>
 <p>If you do not want to automate the solution, you might simply use the <a href="../../CAS_cli/">Scone CLI</a> to solve the assignments. For learning how to automate confidential workflows, it should be sufficient to study the <code>rust scripts</code>. These scripts use Scone-related <code>Rust</code> crates. For a deep dive, you could study how these crates are implemented.</p>
 <h2 id="motivation">Motivation</h2>
-<p>We focus on using <strong>OTPs</strong> (One Time Passwords) to authorize the start of confidential applications. You can look at a <a href="../../otp_demo/">OTP demo</a> for an example of how to use OTPs in the context of SCONE.</p>
+<p>We focus on using <strong>OTPs</strong> (One Time Passwords) to authorize the start of confidential applications. You can look at an <a href="../../otp_demo/">OTP demo</a> for an example of how to use OTPs in the context of SCONE.</p>
 <p>To motivate the use of OTPs, let us look at a use case. We want to sign a container image with the help of private/public key pair. To protect the private key pair, we want to generate the key pair inside an enclave and keep the private key inside the enclaves.</p>
 <p>The first approach would be to run a confidential <em>signer</em> program, which signs container images inside an enclave and always encrypts the private key. SCONE CAS generates the key pair. Its SCONE CAS policy grants the signer program access to the key pair: After a successful attestation, the signer can read the private key from an <em>injected file</em>.</p>
 <p>Starting the confidential <em>signer</em> CLI program is limited to certain users. Note that an adversary with root access can impersonate any user. For example, sometimes using the <code>su</code> command is sufficient. Therefore, an adversary might use <em>signer</em> to sign any image. Therefore, there is no need to know the private key.</p>
 <p>We cannot only rely on the operating system's access control mechanisms to restrict access to authorized users. To limit the use of <strong>signer</strong> by adversaries, we can use <strong>OTPs</strong>. Each authorized user has access to authenticators. An adversary could log the OTPs but cannot use the OTPs since it is for single use only. To generate the OTP, an authorized user can use a vanilla authenticator.</p>
 <p>In this section, we will focus on authenticating users with the help of OTPs. You will see that we assume to have a trusted computer to bootstrap. For example, a laptop that you only use for performing critical tasks. If you worry about this assumption, we will generalize this solution in later sections. Later, we will address the following aspects:</p>
 <ul>
-<li><em>How to use this approach to protect a **signer*</em> program*:</li>
-<li>we show how to protect an existing program and convert it to a confidential program,</li>
+<li><em>How to use this approach to protect a</em> <strong><em>signer</em></strong> <em>program</em>:</li>
+<li>we show how to protect an existing program and convert it into a confidential program,</li>
 <li>that protects its keys, and</li>
 <li>
 <p>that provides access control via OTPs.</p>
@@ -3811,7 +3811,7 @@
 <p><strong>confidentiality of keys</strong>: to run the SCONE CLI inside of enclaves to protect the CLI private key,</p>
 </li>
 <li>
-<p><em>How to add a **Role-Based Access Control*</em> (RBAC) using OTPs*:</p>
+<p><em>How to add a</em> <strong><em>Role-Based Access Control</em></strong> <em>(RBAC) using OTPs</em>:</p>
 </li>
 <li>
 <p>RBAC can be independent of the operating system and entirely under the control of an application owner,</p>
@@ -3941,11 +3941,12 @@
   attestation:
     one_time_password_shared_secret: {{secret}}
 </code></pre></div>
-<p>The script itself defines the secret. In the future, we will extend the session language such that
-s
-- to permit a shared secret per service, and
-- to use secrets generated by the CAS in the secret section.</p>
-<p>Since currently, all services in a policy will need to provide a valid OTP during startup, command <code>add-authenticator</code> cannot use the same policy as <code>gen_qr_code</code> (which cannot require an OTP since no shared secret does exist yet).  </p>
+<p>The script itself defines the secret. In the future, we will extend the session language such that s</p>
+<ul>
+<li>to permit a shared secret per service, and</li>
+<li>to use secrets generated by the CAS in the secret section.</li>
+</ul>
+<p>Currently, all services in a policy will need to provide a valid OTP during startup, command <code>add-authenticator</code> cannot use the same policy as <code>gen_qr_code</code> (which cannot require an OTP since no shared secret does exist yet).  </p>
 <p>One appends the OTP to the <code>SCONE_CONFIG_ID</code>, i.e., to the name of the session and the service name. For example, <code>add-authenticator</code> might execute <code>otpqr</code> inside of a container as follows.</p>
 <div class="highlight"><pre><span></span><code>docker run -it --rm -w <span class="s2">&quot;/root&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">:/root&quot;</span> -e <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf -e <span class="nv">SCONE_CONFIG_ID</span><span class="o">={{</span>session2<span class="o">}}</span>/otpqr@703357  otpqr:scone /bin/otpqr
 </code></pre></div>
@@ -3974,7 +3975,7 @@ Note: Connecting to CAS at scone-cas.cf <span class="o">(</span>port <span class
 <li>the script is not confidential, i.e., an adversary could steal secrets during the execution,</li>
 <li>the scone CLI is not sufficiently protected against unauthorized use, and it does not protect its secrets.</li>
 </ul>
-<p>To solve these open issues, one runs the script and the Scone CLI inside the enclaves. A more difficult problem is establishing trust in our script when running on a host that we do not trust?</p>
+<p>To solve these open issues, one runs the script and the Scone CLI inside the enclaves. A more difficult problem is establishing trust in our script when running on a host that we do not trust.</p>
 <h2 id="assignment-6-roll-forward">Assignment 6: Roll Forward</h2>
 <p>The task of this assignment is to implement a <code>roll-forward</code> command. It replaces the OTP secret with a new one. After executing this command, one needs to update, i.e., remove and then add the OTP accounts previously added with the QR code generated by 'gen-qr-code' or 'add-authenticator'.</p>
 <p>Command <code>roll-forward</code> addresses two issues. First, let us consider that an authenticator was lost or is inaccessible. We might not have set up a spare authenticator. Therefore, we cannot use <code>add-authenticator</code> to add a new authenticator. We need a method</p>

@@ -3559,8 +3559,8 @@
 <p><strong>Confidential computing</strong> focuses on the protection of applications. We require that <strong>confidential computing</strong> protects an application's</p>
 <ul>
 <li><strong>confidentiality</strong>, i.e., no other entity, like a root user, can read the data, the code, or the secrets of the application <strong>in memory</strong>, <strong>on disk</strong> or <strong>on the network</strong>,</li>
-<li><strong>integrity</strong>, i.e., no other entity, like the hypervisor, can modify the data, or at least any modifications are detected in the memory, on disk or on the network, and</li>
-<li><strong>consistency</strong>, i.e., the application reads always the value that was written last - both in memory as well as on disk and on the network.</li>
+<li><strong>integrity</strong>, i.e., no other entity, like the hypervisor, can modify the data, or at least any modifications are detected in the memory, on disk or the network, and</li>
+<li><strong>consistency</strong>, i.e., the application reads always the value that was written last - both in memory as well as on disk and the network.</li>
 </ul>
 <p>Modern <strong>cloud-native applications</strong> consist of multiple <strong>services</strong> that communicate via the network with each other and with external clients. These services are deployed with the help of containers. In this section, we focus on confidential, cloud-native applications.</p>
 <h2 id="hardware-support">Hardware Support</h2>
@@ -3569,8 +3569,8 @@
 <li>one can encrypt the <strong>VM</strong> (Virtual Machine) in which the application is executing, and</li>
 <li>one can encrypt each individual service inside of an <strong>enclave</strong> - with the help of SCONE.</li>
 </ul>
-<p>One has to be careful regarding the security guarantees because the use of an encrypted VMs does not necessarily mean that a root user of the host does not have access to the VM. In current AMD CPUs without Secure Nested Pages (SNP), the hypervisor could break the confidentiality and integrity of an application. In our discussion we assume that we already be able to use SNPs. </p>
-<p>Note that the <strong>consistency</strong> of memory pages is not protected by AMD CPUs, i.e., one could replace a memory page by an older version: this would be properly encrypted but would break the consistency. In Intel SGX enclaves, it is guaranteed that an application always reads the most recent data that was written.</p>
+<p>One has to be careful regarding the security guarantees because the use of encrypted VMs does not necessarily mean that a root user of the host does not have access to the VM. In current AMD CPUs without Secure Nested Pages (SNP), the hypervisor could break the confidentiality and integrity of an application. In our discussion, we assume that we already are able to use SNPs. </p>
+<p>Note that the <strong>consistency</strong> of memory pages is not protected by AMD CPUs, i.e., one could replace a memory page with an older version: this would be properly encrypted but would break the consistency. In Intel SGX enclaves, it is guaranteed that an application always reads the most recent data that was written.</p>
 <h2 id="encrypted-vms">Encrypted VMs</h2>
 <p>When running cloud-native applications, multiple stakeholders are involved. This includes: </p>
 <ul>
@@ -3584,16 +3584,16 @@
 <li>Kubernetes and the Kubernetes admin,  </li>
 <li>the container/service admin.</li>
 </ul>
-<p><img alt="Encrypted VMS" src="../svg/Roles.svg#fullwidth" /></p>
-<p>One could try to execute each container in a separate encrypted VM. This would reduce the size of the trusted computing base (TCB) since the Kubernetes admin could - if one does this correctly - be not part of the trusted computing base anymore. Still the container/service admin, the operating system in the VM and its OS admin would still be part of the TCB.</p>
+<p><img alt="Encrypted VMS" src="../svg/Roles.svg#medium" /></p>
+<p>One could try to execute each container in a separate encrypted VM. This would reduce the size of the trusted computing base (TCB) since the Kubernetes admin could - if one does this correctly - be not part of the trusted computing base anymore. Still, the container/service admin, the operating system in the VM and its OS admin would still be part of the TCB.</p>
 <h2 id="enclaves">Enclaves</h2>
-<p>Enclaves permit to reduce the size of trusted computing base to the application itself: we can remove all admins and all code outside of the application from the trusted computing base. Note that SCONE will help to protect the files of an application and also the network if needed, i.e., a service admin will only see encrypted files and will not know any application secrets.</p>
-<p><img alt="Enclaves" src="../svg/sgx.svg#fullwidth" /></p>
+<p>Enclaves permit to reduce the size of the trusted computing base to the application itself: we can remove all admins and all code outside of the application from the trusted computing base. Note that SCONE will help to protect the files of an application and also the network if needed, i.e., a service admin will only see encrypted files and will not know any application secrets.</p>
+<p><img alt="Enclaves" src="../svg/sgx.svg#medium" /></p>
 <h2 id="isolation-and-cooperation">Isolation and Cooperation</h2>
 <p>The advantage of enclaves together with SCONE is that one can protect services from each other. A service has only access to its own enclave and to its files but not to the data/files of other enclaves.</p>
-<p><img alt="Isolation" src="../svg/isolation_of_enclaves.svg#fullwidth" /></p>
+<p><img alt="Isolation" src="../svg/isolation_of_enclaves.svg#medium" /></p>
 <p>Using encrypted VMs, one would need to run each service in a separate VM with its own operating system - which increases the TCB as we explained above. This also increases the resource usage since each container would come with its own operating system.</p>
-<p><img alt="Isolation" src="../svg/cooperation.svg#fullwidth" /></p>
+<p><img alt="Isolation" src="../svg/cooperation.svg#medium" /></p>
 <p>With the help of SCONE, services of an application can cooperate and implicitly <strong>attest</strong> each other via TLS: a service can only establish a TLS connection with another service of the application if that service executes inside of an enclave, its code was not modified and the filesystem is in the correct state.</p>
 <h2 id="simplicity">Simplicity</h2>
 <p>One of the arguments for using encrypted VMs (instead of enclaves) is that it simplifies the protection of existing applications. In reality, this is of course not that simple since one</p>
@@ -3603,10 +3603,10 @@
 <li>one has to ensure that the service in the different VMs do attest each other, and</li>
 <li>one has to provision secrets etc</li>
 </ul>
-<p>With the help of SCONE, one can transform existing container image into confidential container image in <strong>a single step</strong>  (see <a href="../ee_sconify_image/">sconify images</a>). SCONE provides a policy language that permits to define on how to provision secrets and how to attest applications, i.e.,
+<p>With the help of SCONE, one can transform an existing container image into a confidential container image in <strong>a single step</strong>  (see <a href="../ee_sconify_image/">sconify images</a>). SCONE provides a policy language that permits to define how to provision secrets and how to attest applications, i.e.,
 address all these issues using a simple, Yaml-based policy language.</p>
 <p><img alt="Sconify Image Workflow" src="../img/scone_workflow.svg#fullwidth" /></p>
-<p>We argue that the use of enclaves is with the help of SCONE not only more secure than encrypted VMs but also more convenient since the transformation is automated and the policy-support allows both <strong>cooperation</strong> between services as well as <strong>isolation</strong> without the need to change the services.</p>
+<p>We argue that the use of enclaves is with the help of SCONE not only more secure than encrypted VMs but also more convenient since the transformation is automated and the policy support allows both <strong>cooperation</strong> between services as well as <strong>isolation</strong> without the need to change the services.</p>
 
               
             </article>

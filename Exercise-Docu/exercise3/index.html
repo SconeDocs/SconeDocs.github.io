@@ -3574,7 +3574,7 @@
 <h1 id="determine-the-hash-value-of-a-policy">Determine the hash value of a policy</h1>
 <p>We have seen in the last assignment, that each policy (a.k.a. session) has a hash value. This hash value is returned when one creates or updates a policy. We will see that one needs the hash value to update a policy. Sometimes one might forget to store the hash value, or due to an error, the hash value is lost, or somebody else has changed the policy.</p>
 <p>The reason that one has to declare a <code>predecessor</code> in a policy is to be able to track and synchronize changes of a policy. With the help of the predecessor field, one can determine <strong>a linear history</strong> of all previous policies with the same name. This is important in case one wants to check if other policies had been granted access to a secret in the past or which <code>MRENCLAVE</code>s had access to secrets. Via the CAS REST API, one can then query the past policies - if one has read access to the policies.</p>
-<p>The <code>predecessor</code> field is also used to synchronize updates to a policy. If multiple entities might concurrently update a policy, the <code>predecessor</code> field can be used to ensure that no other entity has modified the policy in mean time. A typical workflow is as follows:</p>
+<p>The <code>predecessor</code> field is also used to synchronize updates to a policy. If multiple entities might concurrently update a policy, the <code>predecessor</code> field can be used to ensure that no other entity has modified the policy in the meantime. A typical workflow is as follows:</p>
 <ol>
 <li>read the current policy,</li>
 <li>determine the hash of the current policy, say, it is <code>$PREDECESSOR</code>,</li>
@@ -3591,21 +3591,21 @@
 <ul>
 <li>Retrieve the namespace policy that you created in the last assignment</li>
 <li>Compute the hash of this policy using <a href="https://sconedocs.github.io/CAS_cli/#scone-session-verify"><code>scone session verify</code></a>.</li>
-<li>Write out an updated state file <code>state.env</code> that contains the name of the namespace an its current hash of the policy.</li>
+<li>Write out an updated state file <code>state.env</code> that contains the name of the namespace and its current hash of the policy.</li>
 </ul>
 <h2 id="task-2">Task 2</h2>
-<p>Verify that you computed the correct hash value by reading a policy using the policy name and the hash of the policy. In this case, the policy name is the name of you namespace. The hash is the value that you retrieved in task 1.</p>
+<p>Verify that you computed the correct hash value by reading a policy using the policy name and the hash of the policy. In this case, the policy name is the name of your namespace. The hash is the value that you retrieved in task 1.</p>
 <h2 id="background">Background</h2>
 <p>To compute the hash of an existing policy, we can first retrieve the policy using <code>scone session read</code> and store this in a file. We pass this file to <a href="https://sconedocs.github.io/CAS_cli/#scone-session-verify"><code>scone session verify</code></a>. The command <code>scone session verify</code> computes the hash value of the given policy file. </p>
-<p>To retrieve a session via the SCONE CAS REST API, you need a client certificate that permits you read access to the session. Using the standard  <code>curl</code> tool, one can specify a client certificate with option <code>--cert &lt;FILE&gt;</code>. Since we created the session with <code>scone</code> CLI, by default only the key pair of the <code>scone</code> CLI can be used to retrieve the session content. In case, the <code>scone</code> CLI itself is not protected,  we can extract the CLI as follows:</p>
+<p>To retrieve a session via the SCONE CAS REST API, you need a client certificate that permits you read access to the session. Using the standard <code>curl</code> tool, one can specify a client certificate with the option <code>--cert &lt;FILE&gt;</code>. Since we created the session with <code>scone</code> CLI, by default only the key pair of the <code>scone</code> CLI can be used to retrieve the session content. In case, the <code>scone</code> CLI itself is not protected,  we can extract the CLI as follows:</p>
 <ul>
-<li>Read the <code>scone</code> configuration file stored in <code>$HOME/.cas/config.json</code></li>
-<li>Extract the value of the key <code>identity</code>. You might want to use a tool like <code>jq</code> to do extract the value of this key.</li>
+<li>Read the <code>scone</code> configuration file stored in <code>$HOME/.cas/config.json</code>.</li>
+<li>Extract the value of the key <code>identity</code>. You might want to use a tool like <code>jq</code> to extract the value of this key.</li>
 </ul>
 <p>To retrieve the policy from CAS, we need the certificate of the CAS instance and a client certificate. We can retrieve this certificate using <code>scone cas show-certificate</code> as we have already seen in assignment 1.</p>
 <p>The URL that we need to retrieve the session is as follows: <code>https://cas:8081/v1/sessions/${NS}?hash=${COMPUTED_NAMESPACE_HASH}</code>. Where <code>$NS</code> contains the name of the policy and <code>$COMPUTED_NAMESPACE_HASH</code> its hash.</p>
 <h2 id="solution">Solution</h2>
-<p>A solution for this task for <code>bash</code> is available at <a href="https://github.com/scontain/Exercise/tree/main/Exercise3">assignment 3</a>.</p>
+<p>A solution for this task for <code>bash</code> is available in <a href="https://github.com/scontain/Exercise/tree/main/Exercise3">assignment 3</a>](<a href="https://github.com/scontain/Exercise/tree/main/Exercise3">https://github.com/scontain/Exercise/tree/main/Exercise3</a>).</p>
 <h2 id="screencast">Screencast</h2>
 <script id="asciicast-eFTA5JoHkSPGYmMDqBQAIoZLq" src="https://asciinema.org/a/eFTA5JoHkSPGYmMDqBQAIoZLq.js" async></script>
 

@@ -3603,14 +3603,14 @@
 <p>This is a simple example of how to <strong>sconify</strong> a <strong>stateful service</strong> into a <strong>confidential, stateful service</strong>. The service is already
 containerized. To sconify the service, we transform its container image into a confidential container image and in the same step, we
 generate a <strong>security policy</strong> as well as a <strong>helm chart</strong> to be able to deploy the confidential container image in a Kubernetes cluster.</p>
-<p><img alt="Sconification" src="../svg/Sconify_image_0.svg" /></p>
+<p><img alt="Sconification" src="../svg/Sconify_image_0.svg#medium" /></p>
 <h2 id="prerequisites">Prerequisites</h2>
 <p>To be able to use these workflows, we need to grant you access:</p>
 <ul>
 <li>please <a href="../registry/">register a free account</a>,</li>
 <li>send an <a href="mailto:info@scontain.com">email to info@scontain.com</a> </li>
 <li>to get access to <code>sconify_image</code>, and</li>
-<li>to github repos containing the <code>helm</code> charts to deploy SCONE LAS, SCONE CAS, and optionally, the SCONE SGX Plugin.</li>
+<li>to Github repos containing the <code>helm</code> charts to deploy SCONE LAS, SCONE CAS, and optionally, the SCONE SGX Plugin.</li>
 </ul>
 <details class="success" open="open">
 <summary>You can clone this example:</summary>
@@ -3620,10 +3620,10 @@ generate a <strong>security policy</strong> as well as a <strong>helm chart</str
 <h2 id="standard-image-generation">Standard Image Generation</h2>
 <p>To generate the standard container image, we use a simple Dockerfile-based flow:</p>
 <p><center>
-<img alt="Production Setup" src="../img/standard_image_flow.png#fullwidth" title="We created a standard container image with the help of docker build." />
+<img alt="Production Setup" src="../img/standard_image_flow.png#medium" title="We created a standard container image with the help of docker build." />
 </center></p>
 <p>The native service consists of a very simple Python program (see <a href="https://github.com/scontain/hello-world-kubernetes/blob/master/native-image/code/app.py">https://github.com/scontain/hello-world-kubernetes/blob/master/native-image/code/app.py</a>)
-that implements a counter. The counter is stored in a file. It creates this file and initializes it with value "0" - in case the file does not yet exist. The path of this file can be changed via option <code>-v PATH</code>. Next, it reads the integer stored in the file, increments it by 1, and writes back the new content of the file.</p>
+that implements a counter. The counter is stored in a file. It creates this file and initializes it with the value "0" - in case the file does not yet exist. The path of this file can be changed via option <code>-v PATH</code>. Next, it reads the integer stored in the file, increments it by 1, and writes back the new content of the file.</p>
 <div class="highlight"><pre><span></span><code><span class="o">...</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span>  <span class="n">default</span><span class="o">=</span><span class="s1">&#39;/V1/num&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;file number of executions.&#39;</span><span class="p">)</span>
@@ -3649,7 +3649,7 @@ of times this program has been executed. We want to ensure that this counter can
 <li>the adversary changes the content of the file <code>/V1/num</code></li>
 <li>the adversary overwrites the content of the file <code>/V1/num</code> with an old value</li>
 <li>the adversary deletes file <code>/V1/num</code></li>
-<li>the adversary changes the argument of program to another file, say, <code>-v /tmp/num</code></li>
+<li>the adversary changes the argument of the program to another file, say, <code>-v /tmp/num</code></li>
 <li>...</li>
 </ul>
 <p>To protect the counter, we sconify the container image.</p>
@@ -3687,7 +3687,7 @@ of times this program has been executed. We want to ensure that this counter can
 <p>For more details on how to run this, please check <a href="https://github.com/scontain/hello-world-kubernetes">https://github.com/scontain/hello-world-kubernetes</a>.</p>
 <h2 id="attacking-the-execution">Attacking the execution</h2>
 <p>You can log onto the Kubernetes node that executes this example. The volume is stored at path <code>/mnt/test-pvc</code> and you can copy the
-content of the file <code>num</code> and later restore this content before running next instance of the code. In this case, the log
+content of the file <code>num</code> and later restore this content before running the next instance of the code. In this case, the log
 will show an error (something like this):</p>
 <div class="highlight"><pre><span></span><code>SCONE version: <span class="m">5</span>.4.0-25-g25a661e71-master <span class="o">(</span>Thu May <span class="m">27</span> <span class="m">18</span>:04:17 <span class="m">2021</span> +0200<span class="o">)</span>
 Enclave hash: e2f7cb1c13fa16d2a48f1727ebf1c20ac8185e72e14f647e876072e1f006377d
@@ -3699,7 +3699,7 @@ Enclave hash: e2f7cb1c13fa16d2a48f1727ebf1c20ac8185e72e14f647e876072e1f006377d
 </center></p>
 <p>The sconification creates a policy for this Python program. This defines</p>
 <ul>
-<li>defines a name space (<code>ns-8991241572316</code>) and a session name (<code>python-session</code>)</li>
+<li>defines a namespace (<code>ns-8991241572316</code>) and a session name (<code>python-session</code>)</li>
 <li>defines that only the creator of this policy can access the policy (note that there is no root admin that could overwrite this access right)</li>
 <li>define how the name of the service (<code>python-service</code>)</li>
 <li>how to attest the program (<code>mrenclaves</code>)</li>
@@ -3752,8 +3752,7 @@ Enclave hash: e2f7cb1c13fa16d2a48f1727ebf1c20ac8185e72e14f647e876072e1f006377d
 <span class="w">    </span><span class="nt">ignore_advisories</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="w"></span>
 </code></pre></div>
 <h2 id="generated-helm-chart">Generated Helm Chart</h2>
-<p>The generated helm chart is located in directory <code>charts/python-service</code>. Files <code>values.yml</code> defines a set of arguments that can be set
-when deploy the chart via <code>helm install</code>. Moreover, we also generate a <code>README.md</code> that describes the arguments of the charts.</p>
+<p>The generated helm chart is located in the directory <code>charts/python-service</code>. The file <code>values.yml</code> defines a set of arguments that can be set when deploying the chart via <code>helm install</code>. Moreover, we also generate a <code>README.md</code> that describes the arguments of the charts.</p>
 
               
             </article>
