@@ -3994,7 +3994,7 @@
 <p>If you have problems, you can consult <a href="#troubleshooting">our troubleshooting guide</a>.</p>
 </div>
 <p><center>
-<img alt="sconectl" src="../img/1-2-3-steps.png" title="With sconectl we can build and deploy confidential applications in three simple steps." />
+<img alt="sconectl" src="../img/1-2-3-steps.png#medium" title="With sconectl we can build and deploy confidential applications in three simple steps." />
 </center></p>
 <h2 id="motivation-and-use-case-description">Motivation and Use Case Description</h2>
 <p>In our simple <code>Hello World</code> example, we pass a user ID and a password to a Python program. This is an API user and password, i.e., no human needs to or should know the password. Only <em>authorized</em> applications must have access to the password.</p>
@@ -4004,7 +4004,7 @@
 <h2 id="objectives">Objectives</h2>
 <p>The desired level of protection is a <strong>design choice</strong> made by the application owner. Even if this choice changes, the program does not need to be changed.</p>
 <p><center>
-<img alt="sconectl" src="../img/confidentiality.png" title="Confidentiality is the property, that information (data, code, secrets) is not made available or disclosed to unauthorized individuals, entities, or processes." />
+<img alt="sconectl" src="../img/objectives.svg#smaller" title="Confidentiality is the property, that information (data, code, secrets) is not made available or disclosed to unauthorized individuals, entities, or processes." />
 </center></p>
 <p>Our objectives in this tutorial are to provide:</p>
 <ol>
@@ -4161,28 +4161,35 @@ have already been created for you. You just need to:</p>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">service manifest</p>
-<p>A <em>service manifest file</em> is a <code>yaml</code> file, in which you describe the</p>
+<p>A <em>service manifest file</em> is a <code>yaml</code> file, in which you describe the service by specifying different properties. These include but are not limited to:</p>
+<ul>
+<li>Secrets the service imports and exports. </li>
+<li>A secret can be exported either<ul>
+<li>to all other services (e.g., to export a public key),</li>
+<li>to a specific service, or</li>
+<li>to all services in a CAS namespace (e.g., share secrets within an application).</li>
+</ul>
+</li>
+<li>The container image and repository to be used to run the service</li>
+<li>Environment variables<ul>
+<li>local environment variables are kept confidential, i.e., only visible to the service itself.</li>
+<li>global environment variables are visible to all services in a mesh.</li>
+</ul>
+</li>
+<li>Arguments</li>
+</ul>
 </div>
-<p>service by specifying different properties. These include but are not limited to:
-    - Secrets the service imports and exports. 
-    - A secret can be exported either
-       - to all other services (e.g., to export a public key),
-       - to a specific service, or
-       - to all services in a CAS namespace (e.g., share secrets within an application).
-    - The container image and repository to be used to run the service
-    - Environment variables
-      - local environment variables are kept confidential, i.e., only visible to the service itself.
-      - global environment variables are visible to all services in a mesh.
-    - Arguments</p>
 <div class="admonition note">
 <p class="admonition-title">mesh manifest</p>
 <p>An application's <em>mesh manifest file</em> is a <code>yaml</code> file, in which
 you describe the application by specifying different properties. These include
-but are not limited to:
-- Global variables
-- Services and their images
-- <a href="https://sconedocs.github.io/public-CAS/">SCONE CAS</a> instance and namespace. 
-- The SCONE CAS instance can be either public or private and potentially run inside the Kubernetes cluster.</p>
+but are not limited to:</p>
+<ul>
+<li>Global variables</li>
+<li>Services and their images</li>
+<li><a href="https://sconedocs.github.io/public-CAS/">SCONE CAS</a> instance and namespace. </li>
+<li>The SCONE CAS instance can be either public or private and potentially run inside the Kubernetes cluster.</li>
+</ul>
 </div>
 <h3 id="step-3-build-and-deploy-your-application">Step 3: Build and Deploy Your Application</h3>
 <p>Once you have created your manifest files, you only need to run:</p>
@@ -4272,6 +4279,9 @@ kubectl <span class="nb">exec</span> -it &lt;pod name&gt; -- sh
 <p>It is out of the scope of this tutorial to show why a malicious user, even if authorized as the system administrator of the CAS, will fail in attacking the protected resources.</p>
 </div>
 <h3 id="verify-confidentiality-protection">Verify Confidentiality Protection</h3>
+<p><center>
+<img alt="sconectl" src="../img/confidentiality_hellow.png#micro#left" />
+</center></p>
 <p>One of our objectives in this tutorial is to ensure the confidentiality of our password stored in the environment variable <code>API_PASSWORD</code>. In contrast, both the program itself and the username stored in <code>API_USER</code> are allowed to be visible.</p>
 <p>To execute the following attacks on the <code>hello world</code> program, log into the container as follows:</p>
 <div class="highlight"><pre><span></span><code>   <span class="c1"># Log-in to the container</span>
@@ -4311,6 +4321,9 @@ env:
 <p>Using SCONE, it is also possible to protect the confidentiality of the code so that nobody can view the program, but we do not include this feature in this example.</p>
 </div>
 <h3 id="verify-integrity-protection">Verify Integrity Protection</h3>
+<p><center>
+<img alt="sconectl" src="../img/integrity_hellow.png#micro#left" />
+</center></p>
 <p>One of our objectives in this tutorial is to ensure the integrity of our program and our username and password, which are stored in the environment variables <code>API_USER</code> and <code>API_PASSWORD</code>, respectively.</p>
 <p>To verify that the desired level of integrity protection is achieved, we must confirm that one cannot change those resources without the change being detected.</p>
 <h4 id="verify-integrity-protection-of-api_password-and-api_user">Verify Integrity Protection of <code>API_PASSWORD</code> and <code>API_USER</code></h4>
@@ -4404,6 +4417,9 @@ First, we modify the program inside the container, and then we rebuild the image
 Note: Connecting to CAS at edge.scone-cas.cf <span class="o">(</span>port <span class="m">18765</span><span class="o">)</span> using service ID myPythonApp/pythonapp/python3
 </code></pre></div>
 <h3 id="verify-consistency-protection">Verify Consistency Protection</h3>
+<p><center>
+<img alt="sconectl" src="../img/consistency_hellow.png#micro#left" />
+</center></p>
 <p>One of our objectives in this tutorial is to ensure the consistency of our program, username, and password. To verify that these objectives are achieved, we need to show that we detect if somebody has tried to revert to an older version of the application as soon as the service process starts up.</p>
 <div class="admonition note">
 <p class="admonition-title">Integrity vs. Consistency</p>
