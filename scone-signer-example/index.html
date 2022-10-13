@@ -12,14 +12,14 @@
         <meta name="author" content="Christof Fetzer">
       
       
-        <link rel="canonical" href="https://sconedocs.github.io/host_arguments/">
+        <link rel="canonical" href="https://sconedocs.github.io/scone-signer-example/">
       
       <link rel="icon" href="../img/scone-favicon.png">
       <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
     
     
       
-        <title>Host Arguments - Confidential Computing</title>
+        <title>Binary Translation - Confidential Computing</title>
       
     
     
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#host-program-arguments-and-environment-variables" class="md-skip">
+        <a href="#scone-signer-example" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Host Arguments
+              Binary Translation
             
           </span>
         </div>
@@ -2222,20 +2222,6 @@
               
   
   
-  
-    <li class="md-nav__item">
-      <a href="../scone-signer-example/" class="md-nav__link">
-        Binary Translation
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
     
   
   
@@ -2248,12 +2234,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Host Arguments
+          Binary Translation
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Host Arguments
+        Binary Translation
       </a>
       
         
@@ -2272,22 +2258,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#host-program-arguments" class="md-nav__link">
-    Host Program Arguments
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#host-environment-variables" class="md-nav__link">
-    Host Environment Variables
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
+  <a href="#example-program" class="md-nav__link">
+    Example Program
   </a>
   
 </li>
@@ -2296,6 +2268,20 @@
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../host_arguments/" class="md-nav__link">
+        Host Arguments
+      </a>
     </li>
   
 
@@ -3521,22 +3507,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#host-program-arguments" class="md-nav__link">
-    Host Program Arguments
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#host-environment-variables" class="md-nav__link">
-    Host Environment Variables
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
+  <a href="#example-program" class="md-nav__link">
+    Example Program
   </a>
   
 </li>
@@ -3555,41 +3527,215 @@
                 
 
 
-<h1 id="host-program-arguments-and-environment-variables">Host Program Arguments and Environment Variables</h1>
-<p>The SCONE runtime can pass insecure <code>host</code> arguments to a confidential application. Host arguments need to be specified in the application's policy (a.k.a., session). This host argument mechanism supports to <em>mix</em> secure and insecure arguments. That allows us to use variable values only known at runtime and hence, not known when the policy is created.</p>
-<p>Note that one needs to be careful using this feature! One must ensure that these host arguments will not pass any confidential values to the program. Moreover, they must not be able to change the application's behavior. For example, one needs to ensure that host arguments cannot be used to pass scripts or change flags that change the behavior of the confidential application. Again, it is essential to use this feature with care.</p>
-<h2 id="host-program-arguments">Host Program Arguments</h2>
-<p>To use program arguments given by the operator/user, the policy of a confidential application has to enable this. The <code>command</code> key of the application has to specify host arguments using this format: <code>@@N</code>, where <code>N</code> is the position of the argument within the host arguments.</p>
-<p>Let us use the <code>print-arg-env</code> program to explain <a href="../print-arg-env/">secure arguments</a>, to show the combination of secure and host arguments.</p>
-<p>Consider that the policy of <code>print-arg-env</code> contains the following entry:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">print-arg-env arg1 @@1 @@2</span><span class="w"></span>
+<h1 id="scone-signer-example">Scone Signer Example</h1>
+<p>We show how to <em>sconify</em> a <strong>native</strong>, dynamically linked program into a <strong>confidential</strong> program. With term <em>native</em> we refer to the fact that the program was compiled to run in vanilla Linux environment. A <em>confidential</em> program is built to run in a <strong>trusted execution environment</strong>  (TEE) like Intel SGX.</p>
+<p>A confidential program can run in</p>
+<ul>
+<li><strong>debug mode</strong>: during development one can use debug mode to be able to attach with the help of a debugger to the program and inspect the content of the program while running inside a TEE</li>
+<li><strong>production mode</strong>: in production mode, the CPU prevents all access to the program's TEE.</li>
+</ul>
+<p>In this section, we show how to transform an existing native program in a confidential program.</p>
+<ul>
+<li>Given the native program, we transform (aka <strong>sconify</strong>) this program into a confidential application using <strong>binary transformation</strong>,</li>
+<li>we generate a <strong>signer</strong> key (see <code>identity.pem</code>) to sign the enclave</li>
+<li>we sign the program to be able to run in <strong>debug</strong> (alternatively, one could enable <strong>production</strong>) mode</li>
+<li>We create a policy to attest the confidential program and provide the program with secrets:</li>
+<li>in this example, we provide some environment variables and arguments only</li>
+</ul>
+<h2 id="example-program">Example Program</h2>
+<p>We create a simple, native C program.</p>
+<div class="highlight"><pre><span></span><code>cat &gt; print-arg-env.c <span class="s">&lt;&lt;EOF</span>
+<span class="s">#include &lt;stdio.h&gt;</span>
+
+<span class="s">extern char **__environ;</span>
+
+<span class="s">int main (int argc, char **argv) {</span>
+<span class="s">    printf(&quot;argv:&quot;);</span>
+<span class="s">    for (int i = 0; i &lt; argc; i++) {</span>
+<span class="s">        printf(&quot; %s&quot;, argv[i]);</span>
+<span class="s">    }</span>
+<span class="s">    printf(&quot;\n&quot;);</span>
+
+<span class="s">    char** envp = __environ;</span>
+<span class="s">    printf(&quot;environ:\n&quot;);</span>
+<span class="s">    while (*envp != NULL) {</span>
+<span class="s">        printf(&quot;%s\n&quot;, *envp);</span>
+<span class="s">        envp++;</span>
+<span class="s">    }</span>
+<span class="s">    return 0;</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
 </code></pre></div>
-<p>Consider that the user will specify two arguments:</p>
-<div class="highlight"><pre><span></span><code>print-arg-env arg2 arg3
+<p>We also create a new signer key for signing the confidential applications as follows:</p>
+<div class="highlight"><pre><span></span><code>openssl genrsa -3 -out <span class="s2">&quot;identity.pem&quot;</span> <span class="m">3072</span>
 </code></pre></div>
-<p>This will give us the following result:</p>
-<div class="highlight"><pre><span></span><code>argv: print-arg-env arg1 arg2 arg3
-environ:
+<p>We create a policy template for debug mode as follows (see also <a href="../print-arg-env/">Example</a>].</p>
+<div class="highlight"><pre><span></span><code>cat &gt; session.yaml <span class="s">&lt;&lt;EOF</span>
+<span class="s">name: \$SESSION</span>
+<span class="s">version: 0.3</span>
+
+<span class="s">security:</span>
+<span class="s">  attestation:</span>
+<span class="s">    tolerate: [debug-mode,hyperthreading, outdated-tcb]</span>
+<span class="s">    ignore_advisories: &quot;*&quot;</span>
+<span class="s">    one_time_password_shared_secret: \$OTPSECRET</span>
+
+<span class="s">volumes:</span>
+<span class="s">  - name: my_encrypted_volume</span>
+
+<span class="s">images:</span>
+<span class="s">  - name: my_image</span>
+<span class="s">    volumes:</span>
+<span class="s">      - name: my_encrypted_volume</span>
+<span class="s">        path: /volume</span>
+
+<span class="s">services:</span>
+<span class="s">   - name: print-arg-env</span>
+<span class="s">     image_name: my_image</span>
+<span class="s">     mrenclaves: [\$MRENCLAVE]</span>
+<span class="s">     command: ./print-arg-env need to pass your OTP</span>
+<span class="s">     environment:</span>
+<span class="s">        SCONE_MODE: hw</span>
+<span class="s">        env1: version</span>
+<span class="s">        env2: 3</span>
+<span class="s">        env3: otp-variant</span>
+<span class="s">     pwd: /</span>
+<span class="s">EOF</span>
 </code></pre></div>
-<p>If an operator does <strong>not</strong> specify all arguments specified by a session, this will result in a fatal error. Also, duplicate positions in the policy, (for example <code>@@1 @@1</code>), are fatal errors.</p>
-<h2 id="host-environment-variables">Host Environment Variables</h2>
-<p>The same approach is support for host environment variables. If a session contains <code>\@\@HOST_NAME</code>, like:</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">print-arg-env arg1 @@1 @@2</span><span class="w"></span>
-<span class="w">  </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">\@\@NAME</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SESSION_VALUE</span><span class="w"></span>
+<p>We create a script to upload this policy as part of a Dockerfile:</p>
+<div class="highlight"><pre><span></span><code>cat &gt; upload_policy.sh <span class="s">&lt;&lt;EOF</span>
+<span class="s">#!/usr/bin/env bash</span>
+
+<span class="s"># </span>
+<span class="s">export SCONE_HEAP=200M</span>
+<span class="s">export SCONE_STACK=1M</span>
+<span class="s">export SCONE_ALLOW_DLOPEN=0</span>
+<span class="s">export SCONE_MODE=hw</span>
+<span class="s">export SCONE_SYSLIBS=1</span>
+<span class="s">export SCONE_FSPF_MUTABLE=0</span>
+<span class="s">export SCONE_LOG=debug</span>
+<span class="s">export SCONE_MIN_HEAP=20M</span>
+<span class="s">export SCONE_TCS=8</span>
+<span class="s">export SCONE_MPROTECT=0</span>
+<span class="s">export SCONE_XFRM=3</span>
+<span class="s">export SCONE_ISVSVN=0</span>
+<span class="s">export SCONE_ISVPRODID=0</span>
+<span class="s">export SCONE_EXTENSIONS_PATH=&quot;&quot;</span>
+
+<span class="s">export MRENCLAVE=\$(SCONE_HASH=1 print-arg-env)</span>
+<span class="s">echo MRENCLAVE=\$MRENCLAVE</span>
+<span class="s">envsubst &lt; session.yaml &gt; session2.yaml</span>
+<span class="s">export SCONE_CAS_ADDR=scone-cas.cf</span>
+<span class="s">scone cas attest \$SCONE_CAS_ADDR --only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S</span>
+<span class="s">export PREDECESSOR2=\$(scone session create session2.yaml)</span>
+<span class="s">cat session2.yaml</span>
+<span class="s">EOF</span>
+chmod a+x upload_policy.sh
 </code></pre></div>
-<p>Any value specified in the session, like <code>SESSION_VALUE</code> will be ignored. An operator has to define the environment variable <code>NAME=VALUE</code>. The SCONE runtime will use this host environment variable. If a host does <strong>not</strong> define this environment variable, the SCONE runtime will define it to be empty <code>NAME=</code> and leave it to the application to handle this situation.</p>
-<p>For example, if the user executes</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">NAME</span><span class="o">=</span><span class="m">42</span>
-print-arg-env argA argB
+<p>We create a random session name as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span>sconified_program_<span class="nv">$RANDOM_$RANDOM</span>
+<span class="nb">echo</span> <span class="nv">Session</span><span class="o">=</span><span class="nv">$SESSION</span>
 </code></pre></div>
-<p>the output will be as follows:</p>
-<div class="highlight"><pre><span></span><code>argv: print-arg-env arg1 argA argB
-environ:
-NAME=42
+<p>We protect the execution of this program with a OTP (One Time Password). We store the secret in environment variable <code>OTP</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTPSECRET</span><span class="o">=</span>... <span class="c1"># base32 encoded without trailing =</span>
+<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">172</span>.30.0.1 <span class="c1"># define the address of the LAS</span>
 </code></pre></div>
-<h2 id="example">Example</h2>
-<p>For another example, please check out our <a href="../otp_demo/">OTP demo</a>.</p>
+<p>Let us build everything with the help of a multi-stage Dockerfile, i.e.,</p>
+<ul>
+<li>the native program inside a container using a vanilla Alpine Linux container image</li>
+<li>sconifying the program, i.e. performing a binary transformation of the program to run inside an enclave and signing the image</li>
+<li>upload the policy for the image to a public CAS</li>
+</ul>
+<div class="highlight"><pre><span></span><code>cat &gt; Dockerfile <span class="s">&lt;&lt;EOF</span>
+<span class="s">FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers:alpine3.15 as crosscompiler</span>
+
+<span class="s">FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers:alpine3.15 as signer</span>
+
+<span class="s">FROM alpine as builder</span>
+
+<span class="s">COPY --from=signer /usr/local/bin/scone-signer /bin/scone-signer</span>
+<span class="s">COPY --from=crosscompiler /opt/scone/lib /opt/scone/lib</span>
+<span class="s">COPY identity.pem /identity.pem</span>
+<span class="s">COPY print-arg-env.c /work/print-arg-env.c</span>
+<span class="s">COPY upload_policy.sh /work/upload_policy.sh</span>
+
+<span class="s">ENV SCONE_HEAP=200M</span>
+<span class="s">ENV SCONE_STACK=1M</span>
+<span class="s">ENV SCONE_ALLOW_DLOPEN=0</span>
+<span class="s">ENV SCONE_MODE=hw</span>
+<span class="s">ENV SCONE_SYSLIBS=1</span>
+<span class="s">ENV SCONE_VERSION=1</span>
+<span class="s">ENV SCONE_FSPF_MUTABLE=0</span>
+<span class="s">ENV SCONE_LOG=debug</span>
+<span class="s">ENV SCONE_MIN_HEAP=20M</span>
+<span class="s">ENV SCONE_TCS=8</span>
+<span class="s">ENV SCONE_MPROTECT=0</span>
+<span class="s">ENV SCONE_XFRM=3</span>
+<span class="s">ENV SCONE_ISVSVN=0</span>
+<span class="s">ENV SCONE_ISVPRODID=0</span>
+<span class="s">ENV SCONE_EXTENSIONS_PATH=&quot;&quot;</span>
+
+<span class="s">RUN apk update &amp;&amp; apk upgrade \</span>
+<span class="s"> &amp;&amp; apk add build-base \</span>
+<span class="s"> &amp;&amp; cd /work \</span>
+<span class="s"> &amp;&amp; gcc print-arg-env.c -o print-arg-env \</span>
+<span class="s"> &amp;&amp; scone-signer sign --sconify --verbose --key /identity.pem --env /work/print-arg-env \</span>
+<span class="s"> &amp;&amp; scone-signer info /work/print-arg-env</span>
+<span class="s"># &amp;&amp; scone-signer sign --sconify --production  --key /identity.pem --env /work/print-arg-env</span>
+
+<span class="s">FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers as policy_uploader</span>
+<span class="s">ARG OTPSECRET</span>
+<span class="s">ARG SESSION</span>
+<span class="s">ARG SCONE_CAS_ADDR</span>
+
+<span class="s">COPY --from=builder /work/print-arg-env /bin/print-arg-env</span>
+<span class="s">COPY upload_policy.sh /work/upload_policy.sh</span>
+<span class="s">COPY session.yaml /work/session.yaml</span>
+
+<span class="s">RUN cd /work &amp;&amp; ./upload_policy.sh</span>
+
+<span class="s">FROM alpine as app</span>
+<span class="s">ARG SESSION</span>
+<span class="s">ARG SCONE_LAS_ADDR</span>
+
+<span class="s">COPY --from=builder /work/print-arg-env /bin/print-arg-env</span>
+<span class="s">COPY --from=crosscompiler /opt/scone/lib /opt/scone/lib</span>
+
+<span class="s">ENV SCONE_CONFIG_ID=\$SESSION/print-arg-env</span>
+<span class="s">ENV SCONE_CAS_ADDR=scone-cas.cf</span>
+<span class="s">ENV SCONE_LAS_ADDR=\$SCONE_LAS_ADDR</span>
+
+<span class="s">ENV SCONE_HEAP=200M</span>
+<span class="s">ENV SCONE_STACK=1M</span>
+<span class="s">ENV SCONE_ALLOW_DLOPEN=0</span>
+<span class="s">ENV SCONE_MODE=hw</span>
+<span class="s">ENV SCONE_SYSLIBS=1</span>
+<span class="s">ENV SCONE_VERSION=1</span>
+<span class="s">ENV SCONE_FSPF_MUTABLE=0</span>
+<span class="s">ENV SCONE_LOG=debug</span>
+<span class="s">ENV SCONE_MIN_HEAP=20M</span>
+<span class="s">ENV SCONE_TCS=8</span>
+<span class="s">ENV SCONE_MPROTECT=0</span>
+<span class="s">ENV SCONE_XFRM=3</span>
+<span class="s">ENV SCONE_ISVSVN=0</span>
+<span class="s">ENV SCONE_ISVPRODID=0</span>
+<span class="s">ENV SCONE_EXTENSIONS_PATH=&quot;&quot;</span>
+
+<span class="s">CMD sh -c &quot;SCONE_CONFIG_ID=\$SCONE_CONFIG_ID@\$OTP /bin/print-arg-env&quot;</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<p>We can now build our image as follows</p>
+<div class="highlight"><pre><span></span><code>docker build --build-arg <span class="nv">SESSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SESSION</span><span class="s2">&quot;</span> --build-arg <span class="nv">OTPSECRET</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OTPSECRET</span><span class="s2">&quot;</span> --build-arg <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_LAS_ADDR</span><span class="s2">&quot;</span> -t sconify_example .
+</code></pre></div>
+<p>We  determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+</code></pre></div>
+<p>To run the generated image, we need to first set the correct OTP using an authenticator:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTP</span><span class="o">=</span>...
+</code></pre></div>
+<p>and then run the container:</p>
+<div class="highlight"><pre><span></span><code>docker run <span class="nv">$MOUNT_SGXDEVICE</span> --network<span class="o">=</span>host -it --rm -e <span class="nv">OTP</span><span class="o">=</span><span class="nv">$OTP</span> sconify_example:latest
+</code></pre></div>
 
               
             </article>
@@ -3603,7 +3749,7 @@ NAME=42
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../scone-signer-example/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Binary Translation" rel="prev">
+        <a href="../encrypted_vol/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Encrypted Volume" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -3612,20 +3758,20 @@ NAME=42
               <span class="md-footer__direction">
                 Previous
               </span>
-              Binary Translation
+              Encrypted Volume
             </div>
           </div>
         </a>
       
       
         
-        <a href="../otp_demo/" class="md-footer__link md-footer__link--next" aria-label="Next: One-time Passwords" rel="next">
+        <a href="../host_arguments/" class="md-footer__link md-footer__link--next" aria-label="Next: Host Arguments" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              One-time Passwords
+              Host Arguments
             </div>
           </div>
           <div class="md-footer__button md-icon">
