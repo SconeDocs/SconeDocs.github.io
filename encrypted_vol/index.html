@@ -2278,6 +2278,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running-without-attestation" class="md-nav__link">
+    Running without attestation
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3569,6 +3576,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#running-without-attestation" class="md-nav__link">
+    Running without attestation
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3588,7 +3602,7 @@
 <p><center>
 <img alt="SCONE CAS Overview" src="../img/CASOverview-1.svg#medium" title="SCONE CAS manages the keys of an applications. The keys are under complete control of the application: only services given explicit control by the application get access to the keys." />
 </center></p>
-<p><strong>SCONE CAS</strong> manages the keys of an application. The keys are unter <strong>complete control</strong> of the application: only services given explicit control by the application get access to the keys.</p>
+<p><strong>SCONE CAS</strong> manages the keys of an application. The keys are under <strong>complete control</strong> of the application: only services given explicit control by the application get access to the keys.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <p>We assume that you already</p>
 <ul>
@@ -3687,6 +3701,7 @@ We need to enable this via a policy.</p>
 </code></pre></div>
 <p>Set the CAS and LAS host names / IP addresses:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf
+<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">172</span>.30.0.1
 </code></pre></div>
 <p>We first need to attest CAS:</p>
 <div class="highlight"><pre><span></span><code>scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> --only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S
@@ -3697,7 +3712,10 @@ We need to enable this via a policy.</p>
 </code></pre></div>
 <p>We can now execute the program as follows - note this requires access to an authenticator to compute the OTP:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTP</span><span class="o">=</span>...
-<span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/fprint-arg-env@<span class="nv">$OTP</span> ./fprint-arg-env 
+</code></pre></div>
+<p>before we can actually start the program. We need to set the policy name that guides this execution. This is specified with
+environment variable <code>SCONE_CONFIG_ID</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/fprint-arg-env@<span class="nv">$OTP</span> ./fprint-arg-env 
 </code></pre></div>
 <p>The output will contain some warnings</p>
 <div class="highlight"><pre><span></span><code>[SCONE|WARN] src/enclave/dispatch.c:197:print_version(): Application runs in SGX debug mode.
@@ -3799,6 +3817,51 @@ env3=otp-variant
 SCONE_MODE=hw
 env1=version
 env2=3
+</code></pre></div>
+<h2 id="running-without-attestation">Running without attestation</h2>
+<p>In case you do not have access to a SGX-capable CPU, you can run this code also in <em>simulation</em> mode. For this to work, we need to change our policy to say that we do not want to perform the attestation of the CPU and the code:</p>
+<div class="highlight"><pre><span></span><code>cat &gt; session3.yaml <span class="s">&lt;&lt;EOF</span>
+<span class="s">name: $SESSION</span>
+<span class="s">version: 0.3</span>
+<span class="s">predecessor: $PREDECESSOR2</span>
+
+<span class="s">security:</span>
+<span class="s">  attestation:</span>
+<span class="s">    mode: none</span>
+<span class="s">    one_time_password_shared_secret: $OTPSECRET</span>
+
+<span class="s">volumes:</span>
+<span class="s">  - name: my_encrypted_volume</span>
+
+<span class="s">images:</span>
+<span class="s">  - name: my_image</span>
+<span class="s">    volumes:</span>
+<span class="s">      - name: my_encrypted_volume</span>
+<span class="s">        path: /volume</span>
+
+<span class="s">services:</span>
+<span class="s">   - name: fprint-arg-env</span>
+<span class="s">     image_name: my_image</span>
+<span class="s">     command: ./fprint-arg-env need to pass your OTP</span>
+<span class="s">     environment:</span>
+<span class="s">        SCONE_MODE: hw</span>
+<span class="s">        env1: version</span>
+<span class="s">        env2: 3</span>
+<span class="s">        env3: otp-variant</span>
+<span class="s">     pwd: /</span>
+<span class="s">   - name: print_file</span>
+<span class="s">     image_name: my_image</span>
+<span class="s">     command: ./print_file</span>
+<span class="s">     pwd: /</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<p>We update the session:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR3</span><span class="o">=</span><span class="k">$(</span>scone session update session2.yaml<span class="k">)</span>
+<span class="nb">echo</span> <span class="nv">$PREDECESSOR3</span>
+</code></pre></div>
+<p>And we can now run the code in simulation mode:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTP</span><span class="o">=</span>...
+<span class="nv">SCONE_MODE</span><span class="o">=</span>SIM <span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/print_file@<span class="nv">$OTP</span> ./print_file 
 </code></pre></div>
 
               
