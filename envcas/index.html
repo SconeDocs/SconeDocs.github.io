@@ -2243,6 +2243,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#using-otps" class="md-nav__link">
+    Using OTPs
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3541,6 +3548,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#using-otps" class="md-nav__link">
+    Using OTPs
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3586,9 +3600,14 @@
 <li>sets one environment variable <code>SECRET_ENV</code>, and</li>
 <li>executes <code>bash</code> with arguments <code>-c 'cat /work/out1'</code></li>
 </ul>
+<p>We show once how to configure a native application with and without an OTP (One Time Password:</p>
+<ul>
+<li>see service <code>envcas</code> in the policy for how to configure without an OTP</li>
+<li>see service <code>with_otp</code> to see how to configure with an OTP. The OTP secret can be defined as a secret. We explicitly define it in the session. Typically, we would import this secret from another session to limit who can see the secret in the clear.</li>
+</ul>
 <p>Our policy (<code>session.yaml</code>) could look as follows:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$SESSION</span><span class="w"></span>
-<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.3&quot;</span><span class="w"></span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.3.10&quot;</span><span class="w"></span>
 
 <span class="nt">security</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
@@ -3612,13 +3631,25 @@
 <span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/envcas/injected_file2</span><span class="w"></span>
 <span class="w">       </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
 <span class="w">          </span><span class="no">Secret=$$SCONE::example2_secret$$</span><span class="w"></span>
+
 <span class="nt">services</span><span class="p">:</span><span class="w"></span>
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas</span><span class="w"></span>
 <span class="w">     </span><span class="nt">image_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas_image</span><span class="w"></span>
 <span class="w">     </span><span class="nt">mrenclaves</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">$MRENCLAVE</span><span class="p p-Indicator">]</span><span class="w"></span>
 <span class="w">     </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas -c &#39;cat /work/out1&#39;</span><span class="w"></span>
 <span class="w">     </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">SECRET_ENV</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_secret</span><span class="w"></span>
+<span class="w">        </span><span class="nt">SCONE_MODE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hw</span><span class="w"></span>
+<span class="w">        </span><span class="nt">SCONE_LOG</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ERROR</span><span class="w"></span>
+<span class="w">     </span><span class="nt">pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w"></span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">with_otp</span><span class="w"></span>
+<span class="w">     </span><span class="nt">image_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas_image</span><span class="w"></span>
+<span class="w">     </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;$MRENCLAVE&quot;</span><span class="w"></span>
+<span class="w">     </span><span class="nt">one_time_password_shared_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::otp_secret$$</span><span class="w"></span>
+<span class="w">     </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas -c &#39;cat /work/out1&#39;</span><span class="w"></span>
+<span class="w">     </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">SCONE_MODE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hw</span><span class="w"></span>
+<span class="w">        </span><span class="nt">SCONE_LOG</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ERROR</span><span class="w"></span>
 <span class="w">     </span><span class="nt">pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w"></span>
 
 <span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
@@ -3628,6 +3659,9 @@
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example2_secret</span><span class="w"></span>
 <span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span><span class="w"></span>
 <span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">otp_secret</span><span class="w"></span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ascii</span><span class="w"></span>
+<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">JJBFGV2ZGNCFARKIKBFTGUCYKBNFKVQK</span><span class="w"></span>
 </code></pre></div>
 <p>One can instantiate the environment variables in <code>session.yaml</code> and then upload this policy as follows:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span> /work
@@ -3647,6 +3681,27 @@ scone session create -e <span class="nv">SESSION</span><span class="o">=</span><
 </code></pre></div>
 <p>In this example, we would output the generated secret, i.e., the output could look as follows:</p>
 <div class="highlight"><pre><span></span><code>Secret=&quot;`Y&#39;/c&#39;fV],=G9JJHdJz9(6HaZ&gt;&gt;t}x}Y&quot;
+</code></pre></div>
+<h2 id="using-otps">Using OTPs</h2>
+<p>To require an OTP, you would define a service like <code>with_otp</code>. Note. In this case, you would not define service <code>envcas</code> to avoid that one can circumvent using an OTP.</p>
+<p>The OTP is enabled by defining the key <code>one_time_password_shared_secret</code> in the service description:</p>
+<div class="highlight"><pre><span></span><code><span class="w">     </span><span class="nt">one_time_password_shared_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::otp_secret$$</span><span class="w"></span>
+</code></pre></div>
+<p>The OTP secret is defined in the secret section. In this example, we define with an explicit value. As we mentioned above, our recommendation is to import this from another session to limit visibility of this secret.</p>
+<p>To run binary <code>envcas</code> as service <code>with_otp</code>, we need to add an OTP to the `SCONE_CONFIG_ID':</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTP</span><span class="o">=</span>... <span class="c1"># define OTP using an authenticator</span>
+<span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/with_otp@<span class="nv">$OTP</span> /bin/envcas
+</code></pre></div>
+<p>If the OTP is correct, the output might look as follows:</p>
+<div class="highlight"><pre><span></span><code>Secret=&quot;=0r|GdtX9lGS*HtR/U&#39;^U&#39;PPH)H^\T&lt;{&quot;
+</code></pre></div>
+<p>If the OTP would be incorrect or already used, the output might look as follows:</p>
+<div class="highlight"><pre><span></span><code>[SCONE|FATAL] src/process/init.c:302:__scone_prepare_secure_config(): Could not initialize enclave state: Attestation failed
+  Caused by: CAS sent an attestation/configuration error: Failed to retrieve service attestation configuration
+  Caused by: A One-time Password was already used within this time-step. Please try again in the next time-step
+Note: Connecting to CAS at edge.scone-cas.cf (port 18765) using service ID envcas-example-31925-25152/with_otp@964428
+[SCONE|ERROR] tools/starter/signal.c:70:die_by_signal(): Enclave terminated due to signal: Aborted
+Aborted (core dumped)
 </code></pre></div>
 
               
