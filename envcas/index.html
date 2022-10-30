@@ -3630,15 +3630,17 @@
 <span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span><span class="w"></span>
 </code></pre></div>
 <p>One can instantiate the environment variables in <code>session.yaml</code> and then upload this policy as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>edge.scone-cas.cf
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /work
+
+<span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>edge.scone-cas.cf
 <span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">172</span>.17.0.1
 <span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span>envcas-example-<span class="nv">$RANDOM</span>-<span class="nv">$RANDOM</span>
 <span class="nb">export</span> <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="k">$(</span>docker run --rm -v <span class="nv">$PWD</span>:/work registry.scontain.com:5050/edge/envcas sh -c <span class="s2">&quot;SCONE_HASH=1 /bin/envcas&quot;</span><span class="k">)</span>
 
 scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> --only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S
+scone session create -e <span class="nv">SESSION</span><span class="o">=</span><span class="nv">$SESSION</span> -e <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="nv">$MRENCLAVE</span> session.yaml
 
-<span class="nv">SCONE</span><span class="o">=</span><span class="s2">&quot;\$SCONE&quot;</span> envsubst &lt; session.yaml &gt; session2.yaml
-<span class="nb">export</span> <span class="nv">PREDECESSOR</span><span class="o">=</span><span class="k">$(</span>scone session create session2.yaml<span class="k">)</span>
+<span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/envcas /bin/envcas
 </code></pre></div>
 <p>The binary <code>envcas</code> is part of image <code>registry.scontain.com/edge/envcas</code>. You can run it as follows:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/envcas /bin/envcas
