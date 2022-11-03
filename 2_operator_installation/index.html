@@ -1507,6 +1507,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#automatically-injecting-pullsecrets" class="md-nav__link">
+    Automatically injecting PullSecrets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#using-helm-to-install-the-cert-manager" class="md-nav__link">
     Using helm to install the cert-manager
   </a>
@@ -3809,6 +3816,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#automatically-injecting-pullsecrets" class="md-nav__link">
+    Automatically injecting PullSecrets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#using-helm-to-install-the-cert-manager" class="md-nav__link">
     Using helm to install the cert-manager
   </a>
@@ -3869,11 +3883,13 @@
 <p>We assume you can access your Kubernetes cluster through your <code>$HOME/.kube/config</code> file or the <code>KUBECONFIG</code> environment variable.</p>
 </div>
 <h3 id="operator-namespace">Operator Namespace</h3>
-<p>Now you are ready to deploy the SCONE operator using the image you just created. Deploying the operator can be done using <code>make</code> or <code>helm</code>. <code>make</code> will deploy the operator into the default namespace <code>scone</code>. With <code>helm</code>, you can specify the desired namespace on the command line.</p>
+<p>Now you are ready to deploy the SCONE operator using the image you just created. Deploying the operator can be done using <code>make</code> or <code>helm</code>. <code>make</code> will deploy the operator into the default namespace <code>scone-system</code>. With <code>helm</code>, you can specify the desired namespace on the command line.</p>
 <div class="admonition note">
 <p class="admonition-title">Operator Namespace</p>
-<p>We refer to the namespace where you choose to deploy the operator as <code>$OPERATOR_NAMESPACE</code>. The default namespace of the SCONE operator is <code>scone</code>.</p>
+<p>We refer to the namespace where you choose to deploy the operator as <code>$OPERATOR_NAMESPACE</code>. The default namespace of the SCONE operator is <code>scone-system</code>.</p>
 </div>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OPERATOR_NAMESPACE</span><span class="o">=</span>scone-system <span class="c1"># change namespace if needed</span>
+</code></pre></div>
 <h3 id="pull-secret">Pull Secret</h3>
 <div class="admonition note">
 <p class="admonition-title">Pull Secret</p>
@@ -3881,12 +3897,16 @@
 </div>
 <p>The SCONE operator image is stored in a private Docker Hub repo. Hence, to deploy this image, one needs to pass the image pull credentials to Kubernetes. To do so, you must create the Kubernetes secret <code>scone-operator-pull</code>.</p>
 <p>You could first define your credentials which include the generation of an access token to <code>read_registry</code> and set environment variables:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>...
-<span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>...
-<span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>...
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># is your Docker username</span>
+<span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-pword&gt; <span class="c1"># is your Docker password</span>
+<span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># is your Docker email</span>
 </code></pre></div>
 <p>And then create a Kubernetes secret as follows:</p>
-<div class="highlight"><pre><span></span><code>kubectl create secret docker-registry scone-operator-pull --docker-server<span class="o">=</span>registry.scontain.com --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
+<div class="highlight"><pre><span></span><code>kubectl create secret docker-registry scone-operator-pull <span class="se">\</span>
+   --docker-server<span class="o">=</span>registry.scontain.com <span class="se">\</span>
+   --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> <span class="se">\</span>
+   --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> <span class="se">\</span>
+   --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
 </code></pre></div>
 <h3 id="deploy-the-scone-operator">Deploy the SCONE Operator</h3>
 <div class="admonition note scone operator releases">
@@ -3897,6 +3917,15 @@
 <div class="highlight"><pre><span></span><code><span class="c1"># Install the helm chart</span>
 <span class="nb">export</span> <span class="nv">OPERATOR_NAMESPACE</span><span class="o">=</span>scone
 helm install scone-operator https://github.com/scontain/operator/archive/refs/tags/v0.0.3.tar.gz --namespace <span class="nv">$OPERATOR_NAMESPACE</span>
+</code></pre></div>
+<h3 id="automatically-injecting-pullsecrets">Automatically injecting PullSecrets</h3>
+<p>The SCONE images require to define a pull secret. This can be inconvenient since a user would need to add the correct pull secret in each namespace that needs access to one of these images.
+Since the operator already defines this pull secret, we can automate the distribution to other namespaces with the help of a secrets operator.</p>
+<div class="highlight"><pre><span></span><code>helm repo add banzaicloud-stable https://kubernetes-charts.banzaicloud.com
+helm install imps banzaicloud-stable/imagepullsecrets
+</code></pre></div>
+<p>Creating a secret injector for secret <code>sconeapps</code>, i.e., injecting into all namespaces that request this secret:</p>
+<div class="highlight"><pre><span></span><code>kubectl create -f https://raw.githubusercontent.com/scontain/operator-samples/main/secrets_operator.yaml
 </code></pre></div>
 <h3 id="using-helm-to-install-the-cert-manager">Using <code>helm</code> to install the cert-manager</h3>
 <div class="admonition note">
