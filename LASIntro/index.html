@@ -3784,24 +3784,23 @@
 
 
 <h1 id="las-for-development">LAS for Development</h1>
-<p>We explain how to start a Local Attestation Service (LAS) instance for development. LAS is need to perform a local attestation (i.e., this creates a <strong>quote</strong> that can be verified by CAS). Note that this LAS runs inside a debug enclave, i.e., <strong>do not use this LAS instance in production</strong>. For setting up a production mode LAS, send us an email.</p>
+<p>We explain how to start a Local Attestation Service (LAS) instance for development or production in case you do not use Kubernetes. </p>
+<p>LAS performs the local attestation, i.e., this creates a <strong>quote</strong> that can be verified by CAS. </p>
 <div class="admonition info">
-<p class="admonition-title">For running LAS in a Kubernetes Cluster, please set up <a href="../helm_las/">LAS with helm</a>.</p>
+<p class="admonition-title">For running LAS in a Kubernetes Cluster, please set up <a href="../4_quickstart/">SCONE Operator</a>.</p>
 </div>
 <h2 id="pulling-las-image">Pulling LAS Image</h2>
-<p>To start LAS, you first pull LAS to your local registry. To do so, please set the environment variable
-<code>LAS</code> to the image repository that we given you access to. The standard LAS image name is defined as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">LAS</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/services:las
+<p>To start LAS, you first pull LAS to your local registry. To do so, please set the environment variable <code>LAS</code> to the image repository to which we have given you access. The standard LAS image name is defined as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">LAS</span><span class="o">=</span>registry.scontain.com/scone.cloud/las:no-epid-production
 </code></pre></div>
-<p>Pull the image from Docker hub like this:</p>
+<p>Pull the image from the Scontain registry like this:</p>
 <div class="highlight"><pre><span></span><code>docker pull <span class="nv">$LAS</span>
 </code></pre></div>
 <p>If this fails, ensure that you are logged into docker (via <code>docker login</code>) and that we
 granted you access to that image.</p>
 <h3 id="determining-the-sgx-device">Determining the SGX device</h3>
 <p>Depending on the platform, the SGX device is named <code>/dev/sgx_enclave</code>, <code>/dev/sgx/sgx_enclave</code>  (legacy), <code>/dev/isgx</code> (legacy) or <code>/dev/sgx</code> (legacy). To write generic
-software, you could use the bash function <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
-It sets environment variable <code>SGXDEVICE</code> to the device that needs to be mounted.</p>
+software, you could use the bash function <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>. It sets the environment variable <code>SGXDEVICE</code> to the device that needs to be mounted.</p>
 <h3 id="starting-and-stopping-las">Starting and Stopping LAS</h3>
 <p>The easiest way to start LAS is to use a simple Docker compose file. Please create a separate directory for that:</p>
 <div class="highlight"><pre><span></span><code>mkdir -p LAS
@@ -3829,17 +3828,17 @@ cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
 <p>By executing</p>
 <div class="highlight"><pre><span></span><code>docker-compose logs las
 </code></pre></div>
-<p>you will see the output of LAS.</p>
-<p>You can check if LAS is still running by executing:</p>
+<p>You will see the output of LAS.</p>
+<p>You can check if LAS is still running by executing the following:</p>
 <div class="highlight"><pre><span></span><code>docker-compose up -d las
 </code></pre></div>
 <p>This will result in an output like</p>
 <p><code>las_las_1 is up-to-date</code></p>
-<p>You can stop LAS by executing:</p>
+<p>You can stop LAS by executing the following:</p>
 <div class="highlight"><pre><span></span><code>docker-compose stop
 </code></pre></div>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<p>You might need to run the LAS container <code>--privileged</code> in case the user executing LAS is not member of group <code>sgx_prv</code>. Alternatively, you might need to pass device <code>/dev/sgx_provision</code> into the container.</p>
+<p>You might need to run the LAS container <code>--privileged</code> if the user executing LAS is not a member of group <code>sgx_prv</code>. Alternatively, you might need to pass device <code>/dev/sgx_provision</code> into the container.</p>
 
               
             </article>
