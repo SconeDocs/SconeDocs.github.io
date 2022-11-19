@@ -1982,6 +1982,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../platform_attestation/" class="md-nav__link">
+        platform-based attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../print-arg-env/" class="md-nav__link">
         Secure Arguments
       </a>
@@ -3881,15 +3895,13 @@ https://kubernetes.io/">Kubernetes</span> namespace. The application is called <
   <span class="k">done</span>
 <span class="o">}</span>
 </code></pre></div>
-<p>If you do not execute <code>las</code> in the default Kubernetes namespace, set the environment variable <code>NAMESPACE</code>. If you do not name your service <code>las</code>, set the environment variable <code>INSTANCE</code> accordingly. Then execute:</p>
-<div class="highlight"><pre><span></span><code>get_platform_ids
+<p>If you do not execute <code>las</code> in the default Kubernetes namespace, set the environment variable <code>NAMESPACE</code>. If you do not name your service <code>las</code>, set the environment variable <code>INSTANCE</code> accordingly. Then execute the following:</p>
+<div class="highlight"><pre><span></span><code>get_platform_ids <span class="p">|</span> sort  <span class="p">|</span> uniq <span class="p">|</span> tr <span class="s1">&#39;\n&#39;</span> <span class="s1">&#39;,&#39;</span>  <span class="p">|</span> sed <span class="s1">&#39;s/,$//&#39;</span> <span class="p">|</span>  awk <span class="s1">&#39;{ print &quot;platforms: [&quot; $1 &quot;]&quot; }&#39;</span>
 </code></pre></div>
 <p>The output might look like this:</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">126C8098408FEB2002F5EB8B9E6C2AE26197E3617875633C5BD4EB4454278C34  BCA7B05F55BCA38EA7A0BDEBDC402942BE77BEC7F0D3F37C72F6C1898047B312</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">platforms</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">126C8098408FEB2002F5EB8B9E6C2AE26197E3617875633C5BD4EB4454278C34</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">BCA7B05F55BCA38EA7A0BDEBDC402942BE77BEC7F0D3F37C72F6C1898047B312</span><span class="p p-Indicator">]</span><span class="w"></span>
 </code></pre></div>
 <p>You can copy and paste this to your policy to ensure that your application(s) can only run in a specific Kubernetes cluster:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">platforms</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">126C8098408FEB2002F5EB8B9E6C2AE26197E3617875633C5BD4EB4454278C34</span><span class="p p-Indicator">,</span><span class="w">  </span><span class="nv">BCA7B05F55BCA38EA7A0BDEBDC402942BE77BEC7F0D3F37C72F6C1898047B312</span><span class="p p-Indicator">]</span><span class="w"></span>
-</code></pre></div>
 <p>If you do not even trust your Kubernetes cluster to determine the public keys of the LAS instances correctly, let us know, and we can suggest more secure alternatives.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>As we mentioned above, one can check if the helm release <code>las</code> is installed by executing this:</p>
