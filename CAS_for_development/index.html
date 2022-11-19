@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cas-for-development" class="md-skip">
+        <a href="#cas-for-development-and-production" class="md-skip">
           Skip to content
         </a>
       
@@ -3769,18 +3769,21 @@
                 
 
 
-<h1 id="cas-for-development">CAS for Development</h1>
-<p>We explain how to start a SCONE CAS instance for development on your local machine. This CAS instance runs inside a debug enclave, i.e., <strong>do not use this in production</strong>. For setting up a production mode CAS, send us an email.</p>
-<p>For running CAS in a Kubernetes Cluster, please set up <a href="../helm_cas/">CAS with helm</a>.</p>
+<h1 id="cas-for-development-and-production">CAS for Development and Production</h1>
+<p>We explain how to start a SCONE CAS instance. </p>
+<ul>
+<li>for development on your local machine, and</li>
+<li>production in case you do not use Kubernetes. </li>
+</ul>
+<p>For running CAS in a Kubernetes Cluster, please set up <a href="../4_quickstart/">SCONE Operator</a>.</p>
 <div class="admonition info">
 <p class="admonition-title">Public CAS for development</p>
-<p>We have setup a <a href="../public-CAS/">public CAS instance</a> at domain <code>scone-cas.cf</code> for testing and development. This instance runs in pre-release mode,
-i.e., <strong>do not use this instance for production</strong>.</p>
+<p>We have set up a <a href="../public-CAS/">public CAS instance</a> at domain <code>scone-cas.cf</code> for testing and development. This public CASinstance runs in pre-release mode, i.e., <strong>do not use the public instance for production</strong>.</p>
 </div>
 <h2 id="pulling-cas-image">Pulling CAS Image</h2>
-<p>To start CAS, you first pull CAS Docker image to your local registry. To be able to do so, please ask us via email for access to CAS. We will give you access to a private Docker repository and we will send you the name of the private repository.</p>
-<p>For this tutorial, please set the environment variable  <code>CAS</code> to the name of the Docker repository - typically this might look something like this:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">CAS</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/services:cas
+<p>To start CAS, you first pull the CAS Docker image to your local registry. To be able to do so, please ask us via email for access to CAS. We will give you access to a private Docker repository, and we will send you the name of the private repository
+For this tutorial, please set the environment variable  <code>CAS</code> to the name of the Docker repository - typically, this might look something like this:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">CAS</span><span class="o">=</span>registry.scontain.com/scone.cloud/cas
 </code></pre></div>
 <p>Pull the CAS image like this:</p>
 <div class="highlight"><pre><span></span><code>docker pull <span class="nv">$CAS</span>
@@ -3789,7 +3792,7 @@ i.e., <strong>do not use this instance for production</strong>.</p>
 <h3 id="determining-the-sgx-device">Determining the SGX device</h3>
 <p>Depending on the platform, the SGX device is named <code>/dev/sgx_enclave</code>, <code>/dev/sgx/sgx_enclave</code>  (legacy), <code>/dev/isgx</code> (legacy) or <code>/dev/sgx</code> (legacy). To write generic
 software, you could use the bash function <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
-It sets environment variable <code>SGXDEVICE</code> to the device that needs to be mounted.</p>
+It sets the environment variable <code>SGXDEVICE</code> to the device that needs to be mounted.</p>
 <h3 id="starting-and-stopping-cas">Starting and Stopping CAS</h3>
 <p>The easiest way to start CAS is to use a simple Docker compose file. To do so,
 create a new directory for the Docker compose file:</p>
@@ -3802,13 +3805,19 @@ cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">version: &#39;3.2&#39;</span>
 <span class="s">services:</span>
 <span class="s">    cas:</span>
-<span class="s">        command: sh -c &quot;SCONE_HEAP=1G cas -c /etc/cas/cas.toml&quot;</span>
+<span class="s">        command: cas -c /etc/cas/cas.toml</span>
 <span class="s">        environment:</span>
-<span class="s">         - SCONE_LOG=7</span>
+<span class="s">         - SCONE_LOG=info</span>
 <span class="s">         - SCONE_MODE=HW</span>
+<span class="s">         - SCONE_LAS_ADDR=172.17.0.1</span>
 <span class="s">        image: $CAS</span>
-<span class="s">        volumes:</span>
+<span class="s">        privileged: true</span>
+<span class="s">        working_dir: /etc/cas</span>
+<span class="s">        devices:</span>
 <span class="s">          - &quot;$SGXDEVICE:$SGXDEVICE&quot;</span>
+<span class="s">        volumes:</span>
+<span class="s">          - &quot;$PWD/cas:/etc/cas/&quot;</span>
+<span class="s">        restart: on-failure</span>
 <span class="s">        ports:</span>
 <span class="s">          - target: 8081</span>
 <span class="s">            published: 8081</span>
@@ -3820,19 +3829,43 @@ cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
 <span class="s">            mode: host</span>
 <span class="s">EOF</span>
 </code></pre></div>
+<p>We need a default configuration file - please set your work subscription keys for EPID or DCAP. You can retrieve these keys from the <a href="https://api.portal.trustedservices.intel.com/">Intel website</a>.</p>
+<div class="highlight"><pre><span></span><code>mkdir cas
+cat &gt; cas/cas-default-owner-config.toml <span class="s">&lt;&lt;EOF</span>
+<span class="s">[ias]</span>
+<span class="s">spid            = &quot;00000000000000000000000000000000&quot;</span>
+<span class="s">linkable_quotes = true</span>
+<span class="s">sp_key          = &quot;00000000000000000000000000000000&quot;</span>
+
+<span class="s">[dcap]</span>
+<span class="s">subscription_key = &quot;00000000000000000000000000000000&quot;</span>
+<span class="s">EOF</span>
+
+cat &gt; cas/cas.toml <span class="s">&lt;&lt;EOF</span>
+<span class="s">[database]</span>
+<span class="s">path = &quot;/etc/cas/cas.db&quot;</span>
+
+<span class="s">[api]</span>
+<span class="s">api_listen = &quot;0.0.0.0:8081&quot;</span>
+<span class="s">enclave_listen = &quot;0.0.0.0:18765&quot;</span>
+<span class="s">EOF</span>
+</code></pre></div>
+<p>You need to <code>provision</code> the CAS first:</p>
+<div class="highlight"><pre><span></span><code>docker run -v <span class="nv">$PWD</span>/cas:/etc/cas -it --network host --rm --device <span class="nv">$SGXDEVICE</span>  registry.scontain.com/scone.cloud/cas sh -c <span class="s2">&quot;set -m ; cd /etc/cas; export SCONE_LAS_ADDR=127.0.0.1:18766 ;  cas provision --owner-config /etc/cas/cas-default-owner-config.toml &quot;</span>
+</code></pre></div>
 <p>Now start CAS in the background as follows:</p>
 <div class="highlight"><pre><span></span><code>docker-compose up -d cas
 </code></pre></div>
 <p>By executing</p>
 <div class="highlight"><pre><span></span><code>docker-compose logs cas
 </code></pre></div>
-<p>you will see the output of CAS.</p>
-<p>You can check if CAS is still running by executing:</p>
+<p>You will see the output of CAS.</p>
+<p>You can check if CAS is still running by executing the following:</p>
 <div class="highlight"><pre><span></span><code>docker-compose up -d cas
 </code></pre></div>
 <p>This will result in an output like</p>
 <p><code>cas_cas_1 is up-to-date</code></p>
-<p>You can stop CAS by executing:</p>
+<p>You can stop CAS by executing the following:</p>
 <div class="highlight"><pre><span></span><code>docker-compose stop cas
 </code></pre></div>
 
