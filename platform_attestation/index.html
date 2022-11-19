@@ -3779,7 +3779,7 @@ docker run <span class="nv">$MOUNT_SGXDEVICE</span> --network<span class="o">=</
 
 <span class="nb">cd</span> /work
 </code></pre></div>
-<p>You need to create a file <code>identity.pem</code> with the signer key outside of this container:  see Section <a href="scone-signer-example">scone-signer-example</a> for details. After copying <code>identity.pem</code> into the container, we sign the program for production as follows:</p>
+<p>You need to create a file <code>identity.pem</code> with the signer key outside of this container:  see Section <a href="../scone-signer-example/">scone-signer-example</a> for details. After copying <code>identity.pem</code> into the container, we sign the program for production as follows:</p>
 <div class="highlight"><pre><span></span><code>scone-signer sign --production scone-print-arg-env -k identity.pem 
 </code></pre></div>
 <p>We determine <code>MRENCLAVE</code> of the program:</p>
@@ -3793,10 +3793,10 @@ We assume we have a <span class="nb">local</span> CAS that we need to attest fir
 <span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">172</span>.17.0.1
 scone cas attest <span class="nv">$SCONE_CAS_ADDR</span>
 </code></pre></div>
-<p>We need to determine the public keys of the SCONE QEs. We explain in Section <a href="helm_las/#determining-the-platform-ids">Determining the Platform IDs</a> how to determine these in the context of Kubernetes clusters:</p>
+<p>We need to determine the public keys of the SCONE QEs. We explain in Section <a href="helm_las.md/#determining-the-platform-ids">Determining the Platform IDs</a> how to determine these in the context of Kubernetes clusters:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PLATFORM</span><span class="o">=</span>...
 </code></pre></div>
-<p>We can now create a SCONE policy that uses the platform-based attestation. We </p>
+<p>We can now create a SCONE policy that uses the platform-based attestation. We need to declare that we trust the SCONE QEs. Moreover, we only permit the enclave to run on one of the platforms of these trusted QEs:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR</span><span class="o">=</span><span class="s2">&quot;~&quot;</span>
 <span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span>secure-arguments-example-<span class="nv">$RANDOM</span>-<span class="nv">$RANDOM</span>
 <span class="nb">echo</span> <span class="nv">$SESSION</span>
