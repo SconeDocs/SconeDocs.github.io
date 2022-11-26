@@ -3940,10 +3940,10 @@
 <p>The SCONE images require defining a pull secret. This can be inconvenient since a user would need to add the correct pull secret in each namespace that needs access to one of these images.
 Since the operator already defines this pull secret, one can automate the distribution of this secret to other namespaces with the help of a secrets operator.</p>
 <div class="highlight"><pre><span></span><code>helm repo add banzaicloud-stable https://kubernetes-charts.banzaicloud.com
-helm install imps banzaicloud-stable/imagepullsecrets
+helm install imps banzaicloud-stable/imagepullsecrets -n scone-system
 </code></pre></div>
 <p>Creating a secret injector for secret <code>sconeapps</code>, i.e., injecting into all namespaces that request this secret by copying form namespace <code>scone-system</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl create -f https://raw.githubusercontent.com/scontain/operator-samples/main/secrets_operator.yaml
+<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/secrets_operator.yaml
 </code></pre></div>
 <h3 id="using-helm-to-install-the-cert-manager">Using <code>helm</code> to install the cert-manager</h3>
 <div class="admonition note">
@@ -3956,7 +3956,8 @@ kubectl get deployments -n scone-system scone-controller-manager
 <span class="c1"># Check the state of the pod of the deployment</span>
 kubectl get pods -n scone-system -l control-plane<span class="o">=</span>controller-manager
 <span class="c1"># Check the log of the pod (use the name of the pod from the previous command)</span>
-kubectl logs -n scone-system scone-controller-manager-&lt;PRESS TAB&gt;
+<span class="nb">export</span> <span class="nv">CONTROLLERPOD</span><span class="o">=</span><span class="k">$(</span>kubectl get pods -n scone-system -l control-plane<span class="o">=</span>controller-manager <span class="p">|</span> grep scone-controller-manager <span class="p">|</span> awk <span class="s1">&#39;{ print $1 }&#39;</span><span class="k">)</span>
+kubectl logs -n scone-system <span class="nv">$CONTROLLERPOD</span>
 </code></pre></div>
 <h3 id="default-images">Default Images</h3>
 <p>The SCONE Operator uses the following default images:</p>
