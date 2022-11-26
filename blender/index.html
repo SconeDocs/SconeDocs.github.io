@@ -3832,7 +3832,7 @@
 <img alt="Workflow of Blender Example" src="../img/blender_python.svg#smaller" />
 </center></p>
 <p>Assuming the Python scripts are located in the <strong>INPUTS</strong> directory, we can compute the output image on host <strong>faye</strong> as follows:</p>
-<div class="highlight"><pre><span></span><code>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli execute --application registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python --host faye
+<div class="highlight"><pre><span></span><code>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com/sconecuratedimages/iexecsgx:cli execute --application registry.scontain.com/sconecuratedimages/iexecsgx:blender_python --host faye
 </code></pre></div>
 <p>The output of this script is stored in file <em>simple_sphere.png</em> directory <strong>OUTPUTS</strong>. 
 Opening this file  - <strong>which was computed inside an enclave with all inputs, outputs, the scripts, and the processing being always encrypted</strong>, results in the following output.</p>
@@ -3880,7 +3880,7 @@ digest: create
 
 services:
    - name: blender
-     image_name: registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python
+     image_name: registry.scontain.com/sconecuratedimages/iexecsgx:blender_python
      mrenclaves: [$MRENCLAVE]
      tags: [demo]
      pwd: /
@@ -3893,7 +3893,7 @@ services:
         SCONE_ALLOW_DLOPEN: 1
 
 images:
-   - name: registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python
+   - name: registry.scontain.com/sconecuratedimages/iexecsgx:blender_python
      mrenclaves: [$MRENCLAVE]
      tags: [demo]
      volumes:
@@ -3907,7 +3907,7 @@ exports:
     name: blender
     export: &quot;*&quot;
   - namespace: image
-    name: registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python
+    name: registry.scontain.com/sconecuratedimages/iexecsgx:blender_python
     export: &quot;*&quot;
 </code></pre></div>
 <p>In this case, the volumes themselves are defined by the user. To simplify this process of defining the session, creating encrypted volumes and pushing these to the site at which the image is executed, we provide a simple CLI (Command Line Interface).</p>
@@ -3918,7 +3918,7 @@ digest: create
 services:
    - name: blender
      import: scone:blender
-     image_name: registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python
+     image_name: registry.scontain.com/sconecuratedimages/iexecsgx:blender_python
      command: blender -b -P /encryptedInputs/application.py
      pwd: /
 
@@ -3931,7 +3931,7 @@ volumes:
      fspf_key: $OUTPUT_FSPF_KEY
 
 images:
-   - name: registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python
+   - name: registry.scontain.com/sconecuratedimages/iexecsgx:blender_python
      import: scone:blender
 </code></pre></div>
 <h2 id="cli">CLI</h2>
@@ -3948,7 +3948,7 @@ images:
 </ul>
 <p>To remotely start a container with the help of <strong>ssh</strong>, we need to give the CLI container access via command <strong>add-host</strong>. After giving ssh access, we can start the blend applications. To do so, we can
 give it </p>
-<div class="highlight"><pre><span></span><code>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli execute --application registry.scontain.com:5050/sconecuratedimages/iexecsgx:blender_python --host faye
+<div class="highlight"><pre><span></span><code>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com/sconecuratedimages/iexecsgx:cli execute --application registry.scontain.com/sconecuratedimages/iexecsgx:blender_python --host faye
 </code></pre></div>
 <h3 id="blender-scripting">Blender Scripting</h3>
 <p>Let us show an example with an encrypted Python program that is executed on the remote site along with blender to

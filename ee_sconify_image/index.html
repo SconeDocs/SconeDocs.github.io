@@ -4353,7 +4353,7 @@ Typically, we use the <a href="../CAS_cli/">SCONE CLI</a> to attest the CAS and 
 <p>With all this information, we can run the Sconify Image tool:
 <div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
     -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
     sconify_image --from<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NATIVE_IMAGE</span><span class="s2">&quot;</span> --to<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ENCRYPTED_IMAGE</span><span class="s2">&quot;</span> --cas-debug <span class="se">\</span>
     --dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_1</span><span class="s2">&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_2</span><span class="s2">&quot;</span> <span class="se">\ </span><span class="c1"># includes all subdirs as well</span>
     --binary<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BINARY</span><span class="s2">&quot;</span> <span class="se">\</span>
@@ -4377,7 +4377,7 @@ As such, the usage of binary-fs changes the process of Sconify Image sconificati
 We may require access to files containing system specific data, which are not avaible at the time of binary-fs creation. These files may include networking files, such as <code>/etc/resolv.conf</code> or <code>/etc/hosts</code>. To access such files which reside outside of the binary-fs on the host, we may use the <code>--host-path</code> option. Note that files included with this option are <strong>not protected</strong>. The modified Sconify Image command could look as follows:</p>
 <div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
     -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
     sconify_image --from<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NATIVE_IMAGE</span><span class="s2">&quot;</span> --to<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ENCRYPTED_IMAGE</span><span class="s2">&quot;</span> --cas-debug <span class="se">\</span>
     --fs-dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_1</span><span class="s2">&quot;</span> --fs-dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_2</span><span class="s2">&quot;</span> --binary<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BINARY</span><span class="s2">&quot;</span> <span class="se">\</span>
     --cas<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ADDR</span><span class="s2">&quot;</span> --las<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$LAS_ADDR</span><span class="s2">&quot;</span> <span class="se">\</span>
@@ -4389,7 +4389,7 @@ We may require access to files containing system specific data, which are not av
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Service Library Inclusion</p>
-<p>For supported services, we include service libraries into the binary file system by default. To view supported service, run <code>docker run --rm registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image sconify_image --help</code></p>
+<p>For supported services, we include service libraries into the binary file system by default. To view supported service, run <code>docker run --rm registry.scontain.com/sconecuratedimages/sconecli:sconify-image sconify_image --help</code></p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Binary-FS only compatible with PIE compiled binaries</p>
@@ -4401,7 +4401,7 @@ We may require access to files containing system specific data, which are not av
 <div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
     -v <span class="nv">$PWD</span>/private-sconify-image-key:/root/.cas <span class="se">\ </span><span class="c1"># PRIVATE KEY VOLUME</span>
     -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
     sconify_image ...
 </code></pre></div>
 We can then use the <code>config.json</code> in other containers to read and update the session:
@@ -4413,7 +4413,7 @@ We can then use the <code>config.json</code> in other containers to read and upd
 <div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
     -v <span class="nv">$PWD</span>/sconify-image-resources:/build-resources <span class="se">\ </span><span class="c1"># RESOURCE COLLECTION VOLUME</span>
     -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
     sconify_image ...
 </code></pre></div>
 With these resources, we may rebuild the image ourselves. These resources are invaluable for debugging images created by Sconify Image.</p>
@@ -4503,7 +4503,7 @@ TODO:
     -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
     -v <span class="nv">$HOME</span>/.docker/config.json:/root/.docker/config.json <span class="se">\</span>
     -v <span class="nv">$PWD</span>/charts:/sconify-helm <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
     sconify_image --from<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NATIVE_IMAGE</span><span class="s2">&quot;</span> --to<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ENCRYPTED_IMAGE</span><span class="s2">&quot;</span> --cas-debug <span class="se">\</span>
     --dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_1</span><span class="s2">&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_2</span><span class="s2">&quot;</span> --binary<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BINARY</span><span class="s2">&quot;</span> <span class="se">\</span>
     --cas<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ADDR</span><span class="s2">&quot;</span> --las<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$LAS_ADDR</span><span class="s2">&quot;</span> <span class="se">\</span>
@@ -4533,7 +4533,7 @@ TODO:
 <div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
     -v <span class="nv">$PWD</span>/my-private-key.pem:/my-private-key.pem <span class="se">\ </span><span class="c1"># SUPPLY CONTAINER THE KEY</span>
     -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
     sconify_image ... --scone-signer<span class="o">=</span>/my-private-key.pem
 </code></pre></div></p>
 <p>We squash the image after building, such that the Docker build history does not expose information of the key. The key itself is never <code>COPY</code>ed into the image. We use it with the <code>DOCKER_BUILDKIT</code> <code>--secret</code> option.</p>
@@ -4558,7 +4558,7 @@ cat identity.crt.pem &gt;&gt; identity.pem
 <div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
     -v <span class="nv">$PWD</span>/identity.pem:/identity.pem <span class="se">\ </span><span class="c1"># SUPPLY THE IDENTITY TO CONTAINER</span>
     -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
     sconify_image ... --identity<span class="o">=</span>identity.pem
 </code></pre></div></p>
 <h3 id="disable-default-session-upload-behavior">Disable Default Session Upload Behavior</h3>
@@ -4588,7 +4588,7 @@ OPTIONAL:
                              (default: ENTRYPOINT + CMD of native image)
   --env=&quot;KEY=VALUE&quot;    set additional env variables to include in the 
                              session, in addition to env vars from native image
-  --cli=CLI_IMAGE          set the SCONE CLI image (default=registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image)
+  --cli=CLI_IMAGE          set the SCONE CLI image (default=registry.scontain.com/sconecuratedimages/sconecli:sconify-image)
   --service-name=SERVICE_NAME      set the name of the service within the
                               SESSION (default: service). Is used for
                               SCONE_CONFIG_ID=SESSION/service
@@ -4707,7 +4707,7 @@ BINARY FILE SYSTEM (binary fs):
   --crosscompiler=CROSSCOMPILER_IMAGE    scone crosscompiler image for compiling
                              binary-fs of executable. Only used when binary-fs
                              is enabled.
-                             (default=registry.scontain.com:5050/sconecuratedimages/sconecli:sconify-image)
+                             (default=registry.scontain.com/sconecuratedimages/sconecli:sconify-image)
   --disable-binary-fs-defaults     disables default inclusion of shared object
                              libraries and service related libraries in the binary fs
 

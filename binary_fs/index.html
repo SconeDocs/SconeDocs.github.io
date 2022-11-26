@@ -3801,7 +3801,7 @@ You can utilize SCONE volumes to persistently store data on the host's file syst
 <h2 id="tldr">TL;DR</h2>
 <p>A fully functioning single Dockerfile which runs a Python <code>hello_world.py</code> program using the <code>binary-fs</code> could look like this:</p>
 <div class="highlight"><pre><span></span><code><span class="c"># First stage: apply the binary-fs</span>
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com:5050/sconecuratedimages/apps:python-3.7.3-alpine3.10</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">binary-fs</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/apps:python-3.7.3-alpine3.10</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">binary-fs</span>
 
 <span class="k">RUN</span><span class="w"> </span><span class="nb">echo</span> <span class="s2">&quot;print(&#39;Hello World!&#39;)&quot;</span> &gt; /hello-world.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
     mkdir /binary-fs
@@ -3815,7 +3815,7 @@ You can utilize SCONE volumes to persistently store data on the host's file syst
         --host-path<span class="o">=</span>/etc/hosts
 
 <span class="c"># Second stage: compile the binary fs</span>
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com:5050/sconecuratedimages/crosscompilers:alpine</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">crosscompiler</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/crosscompilers:alpine</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">crosscompiler</span>
 
 <span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>binary-fs /binary-fs-dir /.
 
@@ -3823,7 +3823,7 @@ You can utilize SCONE volumes to persistently store data on the host's file syst
 
 
 <span class="c"># Third stage: patch the binaryfs into the enclave executable</span>
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com:5050/sconecuratedimages/apps:python-3.7.3-alpine3.10</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/apps:python-3.7.3-alpine3.10</span>
 
 <span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>crosscompiler /libbinary-fs.so /lib/libbinary-fs.so
 
@@ -3835,7 +3835,7 @@ You can utilize SCONE volumes to persistently store data on the host's file syst
 </code></pre></div>
 <h2 id="generating-binary-fs-images-from-existing-file-systems">Generating Binary FS Images from existing File Systems</h2>
 <p>The SCONE CLI provides the <code>binaryfs</code> command with which an existing directory tree can be turned into a binary fs source code file.</p>
-<p>We illustrate the usage of this command by creating a binary fs source code image for Barbican (a python application). Within the SCONE Python image <code>registry.scontain.com:5050/sconecuratedimages/apps:barbican-11-alpine</code> we execute:</p>
+<p>We illustrate the usage of this command by creating a binary fs source code image for Barbican (a python application). Within the SCONE Python image <code>registry.scontain.com/sconecuratedimages/apps:barbican-11-alpine</code> we execute:</p>
 <div class="highlight"><pre><span></span><code>scone binaryfs / /binary-fs.c <span class="se">\</span>
     --include <span class="s1">&#39;/etc/barbican/*&#39;</span> <span class="se">\</span>
     --include <span class="s1">&#39;/usr/lib/python3.7/*&#39;</span> <span class="se">\</span>
@@ -3866,7 +3866,7 @@ cp -r /my-app /my-libs /my-binaryfs-root-dir/.
 <span class="c1"># generate the binary-fs files</span>
 <span class="nv">SCONE_MODE</span><span class="o">=</span>sim scone binaryfs /my-binaryfs-root-dir .
 </code></pre></div>
-<p>We must then compile the files created by <code>binaryfs</code> (<code>binary_fs.blob</code>, <code>binary_fs_blob.s</code>, <code>libbinary_fs_template.a</code>) using the <code>registry.scontain.com:5050/sconecuratedimages/crosscompilers</code> image, as it contains the <code>scone gcc</code>:</p>
+<p>We must then compile the files created by <code>binaryfs</code> (<code>binary_fs.blob</code>, <code>binary_fs_blob.s</code>, <code>libbinary_fs_template.a</code>) using the <code>registry.scontain.com/sconecuratedimages/crosscompilers</code> image, as it contains the <code>scone gcc</code>:</p>
 <div class="highlight"><pre><span></span><code>scone gcc ./binary_fs_blob.s ./libbinary_fs_template.a -shared -o /libbinary-fs.so
 </code></pre></div>
 <p>Moving on, we move the generated <code>libbinary-fs.so</code> back to our original Python image. In this image, we set the <code>.so</code> file to be included in the enclave upon execution using the environment variable <code>SCONE_EXTENSIONS_PATH</code>:</p>

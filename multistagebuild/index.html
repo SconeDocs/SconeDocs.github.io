@@ -3748,19 +3748,19 @@
 not include the SCONE platform in the images you build - at least if you intent to push you images
 to public repositories. The easiest way to achieve this, is to use multi-stage builds.</p>
 <p><img alt="SCONE Hardware Mode" src="../img/multistagebuild.svg" /></p>
-<p>The idea is to build you application with the scone cross-compiler image (i.e., <strong>registry.scontain.com:5050/sconecuratedimages/crosscompilers</strong>)
+<p>The idea is to build you application with the scone cross-compiler image (i.e., <strong>registry.scontain.com/sconecuratedimages/crosscompilers</strong>)
 image and then copy the application to another container with a different base image.</p>
 <p>You must ensure that you copy all parts of your application are included. If you use <a href="SCONE_toolchain/">static linking</a>, 
 this can be easier than using dynamic linking. We show how to generate a Docker image of a dynamically
 linked application: we show this for  <a href="../groupcacheUseCase/"><strong>groupcache</strong></a>.</p>
 <div class="admonition hint">
 <p class="admonition-title">Getting access</p>
-<p>You need access to a private docker hub repository <strong>registry.scontain.com:5050/sconecuratedimages/crosscompilers</strong> to execute this example. Just register a free account on <code>gitlab.scontain.com</code>.</p>
+<p>You need access to a private docker hub repository <strong>registry.scontain.com/sconecuratedimages/crosscompilers</strong> to execute this example. Just register a free account on <code>gitlab.scontain.com</code>.</p>
 </div>
 <p>We do want to make sure that the image is as small as possible and in particular,
 that the image must not contain the SCONE crosscompilers. Hence, we use a <a href="https://docs.docker.com/develop/develop-images/multistage-build/">multi-stage build</a> during which we copy all dependencies of <strong>groupcache</strong>:</p>
 <div class="highlight"><pre><span></span><code>cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
-<span class="s">FROM registry.scontain.com:5050/sconecuratedimages/crosscompilers</span>
+<span class="s">FROM registry.scontain.com/sconecuratedimages/crosscompilers</span>
 <span class="s">RUN apk update \</span>
 <span class="s">&amp;&amp; apk add git curl go \</span>
 <span class="s">&amp;&amp; go get -compiler gccgo -u github.com/golang/groupcache \</span>

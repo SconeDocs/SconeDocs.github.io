@@ -3905,7 +3905,7 @@ a simple <strong>CLI</strong> (Command Line Interface). The CLI runs inside a co
 <p>You need to install the <a href="../installation/">SGX driver and Docker engine</a>.</p>
 </div>
 <p>So far, we support the execution on remote hosts / VMs via <strong>ssh</strong> and via the iExec platform. To start a container on a remote host via this <strong>CLI</strong>, you need to give the CLI the credentials of this hosts. These credentials are stored in a volume stored on the client's computer. In this example, we use directory <strong>$PWD/conf/</strong> to store the credentials. Ensure that only you have access to this directory to protect the credentials. This directory must be mapped in the container at location <strong>/conf</strong>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">eval</span> docker run -it --rm -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli add-host --alias caroline --hostname <span class="m">1</span>.2.3.4
+<div class="highlight"><pre><span></span><code><span class="nb">eval</span> docker run -it --rm -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com/sconecuratedimages/iexecsgx:cli add-host --alias caroline --hostname <span class="m">1</span>.2.3.4
 </code></pre></div>
 <p>This adds an alias (<strong>caroline</strong>) for the host identified by option <strong>--hostname</strong>. The argument <strong>--hostname</strong> can either be a hostname or an IP address. The CLI generates a key pair inside the container and stores it in <strong>/conf</strong>. The public key is used to grant access to the container on the remote host.  </p>
 <p>The output of <strong>add-host</strong> will look something like this:</p>
@@ -3930,8 +3930,8 @@ We show how to execute the simple <strong>copy application</strong> that we intr
 <li>the shell script pushes the encrypted output files to the <strong>remote file service</strong></li>
 <li>the CLI pulls the output files from the <strong>remote file service</strong> and decrypts the files and stores the files inside the OUTPUT directory.</li>
 </ul>
-<p>The copy application is stored in image <strong>registry.scontain.com:5050/sconecuratedimages/iexecsgx:copy_demo</strong> on <strong>registry.scontain.com</strong>. You can execute this image as follows:</p>
-<div class="highlight"><pre><span></span><code>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:copy_demo --host caroline
+<p>The copy application is stored in image <strong>registry.scontain.com/sconecuratedimages/iexecsgx:copy_demo</strong> on <strong>registry.scontain.com</strong>. You can execute this image as follows:</p>
+<div class="highlight"><pre><span></span><code>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com/sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:copy_demo --host caroline
 </code></pre></div>
 <h3 id="example-copy-demo">Example: Copy Demo</h3>
 <p>You could perform the following steps to see the <strong>copy_demo</strong> in action. Create some directory and a file to copy.</p>
@@ -3939,7 +3939,7 @@ We show how to execute the simple <strong>copy application</strong> that we intr
 <span class="nb">echo</span> <span class="s2">&quot;Hello World&quot;</span> &gt; INPUTS/f1.txt
 </code></pre></div>
 <p>Now execute the copy application (as shown above):</p>
-<div class="highlight"><pre><span></span><code>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:copy_demo --host caroline
+<div class="highlight"><pre><span></span><code>docker run -it --rm -v <span class="nv">$PWD</span>/INPUTS:/inputs -v  <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs  -v <span class="nv">$PWD</span>/conf/:/conf registry.scontain.com/sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:copy_demo --host caroline
 </code></pre></div>
 <p>The file <strong>f1.txt</strong> was copied to directory <strong>OUTPUTS</strong>.
 You can check the output, by executing:</p>
@@ -3968,7 +3968,7 @@ We also need to specify </p>
 mkdir -p conf INPUTS OUTPUTS
 </code></pre></div>
 <p>To reduce the typing, let's define an <em>alias</em> for the secure remote execution of blender:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">alias</span> <span class="nv">aeblender</span><span class="o">=</span><span class="s2">&quot;docker run -it --rm -v </span><span class="nv">$PWD</span><span class="s2">/INPUTS:/inputs -v  </span><span class="nv">$PWD</span><span class="s2">/OUTPUTS:/decryptedOutputs  -v </span><span class="nv">$PWD</span><span class="s2">/conf/:/conf registry.scontain.com:5050/sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender --host caroline  -r </span><span class="nv">$TRANSFER</span><span class="s2">  -s </span><span class="nv">$CAS</span><span class="s2">&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nb">alias</span> <span class="nv">aeblender</span><span class="o">=</span><span class="s2">&quot;docker run -it --rm -v </span><span class="nv">$PWD</span><span class="s2">/INPUTS:/inputs -v  </span><span class="nv">$PWD</span><span class="s2">/OUTPUTS:/decryptedOutputs  -v </span><span class="nv">$PWD</span><span class="s2">/conf/:/conf registry.scontain.com/sconecuratedimages/iexecsgx:cli execute --application sconecuratedimages/iexecsgx:blender --host caroline  -r </span><span class="nv">$TRANSFER</span><span class="s2">  -s </span><span class="nv">$CAS</span><span class="s2">&quot;</span>
 </code></pre></div>
 <p>We assume that you added the host (in this case <strong>caroline</strong>) already via <strong>add-host</strong> (see above).</p>
 <h3 id="render-image">Render Image</h3>

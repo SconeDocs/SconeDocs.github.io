@@ -4083,7 +4083,7 @@ version: &quot;0.3&quot;
 
 services:
    - name: application
-     image_name: registry.scontain.com:5050/sconecuratedimages/dapps:copy_demo
+     image_name: registry.scontain.com/sconecuratedimages/dapps:copy_demo
      mrenclaves: [68112f06718fc390fb4a56e9d1f019b63285b6b6383ed73e1a5d2fa0b66e57c0]
      command: /application
      pwd: /
@@ -4099,7 +4099,7 @@ volumes:
      fspf_key: $OUTPUT_FSPF_KEY
 
 images:
-   - name: registry.scontain.com:5050/sconecuratedimages/dapps:copy_demo
+   - name: registry.scontain.com/sconecuratedimages/dapps:copy_demo
      volumes:
         - name: encrypted-input-files
           path: /encryptedInputs
@@ -4127,15 +4127,15 @@ The three differences are that</p>
 <p>The source code of the trusted copy DApp is file <a href="https://github.com/scontain/copy_dapp/blob/master/copy_files.c"><em>copy_files.c</em></a>.</p>
 <p>We build this program with the help of the standard
 <strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile below). For convenience,
-we provide an Alpine image (i.e., registry.scontain.com:5050/sconecuratedimages/muslgcc) that has <strong>gcc</strong> preinstalled.</p>
-<p><div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com:5050/sconecuratedimages/muslgcc</span>
+we provide an Alpine image (i.e., registry.scontain.com/sconecuratedimages/muslgcc) that has <strong>gcc</strong> preinstalled.</p>
+<p><div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/muslgcc</span>
 
 <span class="k">COPY</span><span class="w"> </span>copy_files.c  /
 
 <span class="c"># compile with vanilla gcc</span>
 <span class="k">RUN</span><span class="w"> </span>gcc -Wall copy_files.c -o /copy_files
 
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com:5050/sconecuratedimages/dapps:copy_dapp_runtime</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime</span>
 
 <span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span><span class="m">0</span> /copy_files /application
 
@@ -4144,11 +4144,11 @@ we provide an Alpine image (i.e., registry.scontain.com:5050/sconecuratedimages/
 <span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/application.sh&quot;</span><span class="p">]</span>
 </code></pre></div>
 To run the application inside of an enclave, we need the SCONE
-runtime environment. This runtime is part of image <strong>registry.scontain.com:5050/sconecuratedimages/dapps:copy_dapp_runtime</strong>.
+runtime environment. This runtime is part of image <strong>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime</strong>.
 Moreover, this image contains a script <strong>/application.sh</strong> that pulls
 the encrypted input and output volumes from some transfer service, 
 executes the application inside of an enclave. For testing, the script can push the encrypted output volume to a specified transfer service (see CLI options in <a href="./#clis">CLIs</a>).  </p>
-<p>The image <strong>registry.scontain.com:5050/sconecuratedimages/dapps:copy_demo</strong>
+<p>The image <strong>registry.scontain.com/sconecuratedimages/dapps:copy_demo</strong>
 is built by the script <code>build-image.sh</code>. This script also determines
 <strong>MrEnclave</strong> of the application and writes a <strong>session template</strong> <em>copy_dapp.yml</em>.</p>
 <h2 id="testing">Testing</h2>
@@ -4178,7 +4178,7 @@ cp ../copy_dapp.yml KEYS/
 <h3 id="step-1">Step 1</h3>
 <p>We encrypt these files and push the zipped up files for now to <strong>free.keep.sh</strong>.</p>
 <p>Let's execute the first step of encrypting the files and pushing these to the transfer service:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs registry.scontain.com:5050/sconecuratedimages/dapps:copy_dapp_cli encryptedpush --application registry.scontain.com:5050/sconecuratedimages/dapps:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
+<div class="highlight"><pre><span></span><code><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli encryptedpush --application registry.scontain.com/sconecuratedimages/dapps:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
 </code></pre></div>
 <p>Let's look at the output:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="nv">$CMD</span>
@@ -4192,13 +4192,13 @@ cp ../copy_dapp.yml KEYS/
 want to test it on some SGX-capable host.</p>
 <p>Ensure that the newest image is loaded on <strong>host</strong>. This step is only needed if it is expected that the image has changed
 since <strong>docker run</strong> does not pull/update the image.</p>
-<div class="highlight"><pre><span></span><code>ssh <span class="nv">$host</span> docker pull registry.scontain.com:5050/sconecuratedimages/dapps:copy_demo
+<div class="highlight"><pre><span></span><code>ssh <span class="nv">$host</span> docker pull registry.scontain.com/sconecuratedimages/dapps:copy_demo
 </code></pre></div>
 <p>Ensure that you are executing a bash shell (execute <code>bash</code>).
 We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 Now, execute the command on <strong>host</strong> and we ask it to be pushed to <strong>free.keep.sh</strong>:</p>
 <div class="highlight"><pre><span></span><code>determine_sgx_device
-<span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t <span class="nv">$MOUNT_SGXDEVICE</span> --network host --rm registry.scontain.com:5050/sconecuratedimages/dapps:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>  --push free.keep.sh<span class="k">)</span>
+<span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t <span class="nv">$MOUNT_SGXDEVICE</span> --network host --rm registry.scontain.com/sconecuratedimages/dapps:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>  --push free.keep.sh<span class="k">)</span>
 </code></pre></div>
 <p>Let's look at the output:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="nv">$URL</span>
@@ -4210,7 +4210,7 @@ Now, execute the command on <strong>host</strong> and we ask it to be pushed to 
 <div class="highlight"><pre><span></span><code>curl -L --output ZIP/encryptedOutputFiles.zip <span class="si">${</span><span class="nv">URL</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>
 </code></pre></div>
 <h3 id="step-3">Step 3</h3>
-<div class="highlight"><pre><span></span><code>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/ZIP:/encryptedOutputs -v <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs registry.scontain.com:5050/sconecuratedimages/dapps:copy_dapp_cli decrypt
+<div class="highlight"><pre><span></span><code>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/ZIP:/encryptedOutputs -v <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli decrypt
 </code></pre></div>
 <p>We can now look at the files in OUTPUTS directory:</p>
 <div class="highlight"><pre><span></span><code>cat OUTPUTS/f1.txt
@@ -4221,7 +4221,7 @@ Now, execute the command on <strong>host</strong> and we ask it to be pushed to 
 <p>results in  <code>Hello together</code>.</p>
 <h2 id="clis">CLIs</h2>
 <p>Now that you know how our example works, it is time to present you CLIs that we ship with our images. These CLIs have enough options that you can configure them in according to your needs.</p>
-<p>A CLI included into <strong>registry.scontain.com:5050/sconecuratedimages/dapps:copy_dapp_cli</strong>
+<p>A CLI included into <strong>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli</strong>
 <div class="highlight"><pre><span></span><code>scone.sh: a utility to either push encrypted files or decrypt result files
 <span class="o">(</span>C<span class="o">)</span> Scontain.com, <span class="m">2022</span>. See https://sconedocs.github.io
 
@@ -4254,7 +4254,7 @@ Decrypt mode:
 
   Example: decrypt
 </code></pre></div></p>
-<p>And a CLI included into <strong>registry.scontain.com:5050/sconecuratedimages/dapps:copy_dapp_runtime</strong></p>
+<p>And a CLI included into <strong>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime</strong></p>
 <div class="highlight"><pre><span></span><code>application.sh a utility to demonstrate how to push volumes to remote applications
 <span class="o">(</span>C<span class="o">)</span> Scontain.com, <span class="m">2021</span>. See https://sconedocs.github.io
 

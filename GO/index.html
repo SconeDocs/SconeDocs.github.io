@@ -3700,12 +3700,12 @@
 
 
 <h1 id="go">GO</h1>
-<p>SCONE supports cross-compiling GO programs to run these inside of SGX enclaves. The GO cross-compiler is part of image <strong>registry.scontain.com:5050/sconecuratedimages/crosscompilers</strong>.</p>
+<p>SCONE supports cross-compiling GO programs to run these inside of SGX enclaves. The GO cross-compiler is part of image <strong>registry.scontain.com/sconecuratedimages/crosscompilers</strong>.</p>
 <h1 id="example">Example</h1>
 <p>Ensure that you have the newest SCONE cross compiler image and determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>:</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/crosscompilers
 determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/crosscompilers
 </code></pre></div>
 <p>In case you do not have an SGX driver installed, no device will be mounted and
 applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
@@ -3776,7 +3776,7 @@ Enclave hash: dea1dadce2884bbfd642c10f436c1d02db7ac0f4e4f3abe5d2fde031056405dd
 <p>Building larger applications that include external dependencies can be difficult when using <strong>scone-gccgo</strong> alone.
 To simplify the building of complex applications, we recommend the use of the <strong>go</strong> command.</p>
 <p>First, install <strong>go</strong> inside a 
-<strong>registry.scontain.com:5050/sconecuratedimages/crosscompilers</strong> container as follows:</p>
+<strong>registry.scontain.com/sconecuratedimages/crosscompilers</strong> container as follows:</p>
 <div class="highlight"><pre><span></span><code>$ apk update
 $ apk add go
 </code></pre></div>
@@ -3792,7 +3792,7 @@ $ apk add go
 <p>SCONE supports debugging of programs running inside of an enclave with the help of gdb.</p>
 <h3 id="debugging-inside-of-a-container">Debugging inside of a container</h3>
 <p>Standard containers have not sufficient rights to use the debugger.  Hence, you must start a container with <em>SYS_PTRACE</em> capability. For example:</p>
-<div class="highlight"><pre><span></span><code>docker run --cap-add SYS_PTRACE -it -p <span class="m">8080</span>:8080 -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>/EXAMPLE:/usr/src/myapp -w /usr/src/myapp  registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span><code>docker run --cap-add SYS_PTRACE -it -p <span class="m">8080</span>:8080 -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>/EXAMPLE:/usr/src/myapp -w /usr/src/myapp  registry.scontain.com/sconecuratedimages/crosscompilers
 </code></pre></div>
 <h3 id="handling-illegal-instructions">Handling Illegal instructions</h3>
 <p>Some instructions, like CPUID, are not permitted inside of enclaves. For some of these instructions, like CPUID, we provide an automatic emulation. However, we recommend not to use any illegal instructions inside of enclaves despite having an automatic emulation of these instructions. For example, we provide static replacements of the CPUID instruction. </p>

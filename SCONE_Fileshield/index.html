@@ -3916,7 +3916,7 @@ cat &gt; data-original/world.py <span class="s">&lt;&lt; EOF</span>
 deda99d44e880ea8f2250f45c5c20c15d568d84c  data-original/world.py
 </code></pre></div>
 <p>Now, we start the SCONE crosscompiler in a container to create the encrypted volume:</p>
-<div class="highlight"><pre><span></span><code>&gt; docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data-original:/data-original&quot;</span> registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span><code>&gt; docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data-original:/data-original&quot;</span> registry.scontain.com/sconecuratedimages/crosscompilers
 </code></pre></div>
 <h3 id="file-system-protection-file">File System Protection File</h3>
 <p>All the metadata required for checking the consistency of the files is stored in a <em>file system protection file</em>, or, short <em>fspf</em>. SCONE supports multiple *fspf*s. </p>
@@ -4019,7 +4019,7 @@ print str<span class="o">(</span>f.read<span class="o">())</span>
 <h2 id="python">Python</h2>
 <p>Let's try a similar approach for Python. 
 In the above example, we encrypted a Python program. Let's try to execute this encrypted program that accesses an encrypted file:</p>
-<div class="highlight"><pre><span></span><code>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> registry.scontain.com:5050/sconecuratedimages/apps:python-2.7-alpine3.6 bash
+<div class="highlight"><pre><span></span><code>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6 bash
 </code></pre></div>
 <p>The files <em>/data/world.py</em> and  <em>/data/hello.txt</em> are encrypted:</p>
 <div class="highlight"><pre><span></span><code>$ cat /data/world.py
@@ -4043,22 +4043,22 @@ Hello World
 </code></pre></div>
 <p>We need to add all files that our application might access. Often, these files in the root region might be defined in some container image. Let's see how we can add these files to our region <strong>/</strong>.</p>
 <h3 id="adding-files-from-an-existing-container-image">Adding files from an existing container image</h3>
-<p>We show how to add a subset of the files of container image <strong>registry.scontain.com:5050/sconecuratedimages/apps:python-2.7-alpine3.6</strong> to our root region.
+<p>We show how to add a subset of the files of container image <strong>registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6</strong> to our root region.
 To do so, we ensure that we have the newest images:</p>
-<div class="highlight"><pre><span></span><code>&gt; docker pull registry.scontain.com:5050/sconecuratedimages/apps:python-2.7-alpine3.6
-&gt; docker pull registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span><code>&gt; docker pull registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6
+&gt; docker pull registry.scontain.com/sconecuratedimages/crosscompilers
 </code></pre></div>
 <p>How can we add all files in a container to the <em>fspf</em>? One way to do so requires to run Docker inside of a Docker container. To be able to do so, we need to permit our outermost docker container to have access to  <em>/var/run/docker.sock</em>:</p>
-<div class="highlight"><pre><span></span><code>&gt; docker run -it -v /var/run/docker.sock:/var/run/docker.sock -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data-original:/data-original&quot;</span> registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span><code>&gt; docker run -it -v /var/run/docker.sock:/var/run/docker.sock -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/volume:/data&quot;</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">/data-original:/data-original&quot;</span> registry.scontain.com/sconecuratedimages/crosscompilers
 </code></pre></div>
 <p>Let us ensure that Docker is installed in this container:</p>
 <div class="highlight"><pre><span></span><code>apt-get update
 apt-get install -y docker.io
 </code></pre></div>
 <p>Now, we want to add all files of some target container. In our example,
-this is an instance of image <em>registry.scontain.com:5050/sconecuratedimages/apps:python-2.7-alpine3.6</em>.
+this is an instance of image <em>registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6</em>.
 We ensure that we pulled the latest image before we start the container:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker run -d registry.scontain.com:5050/sconecuratedimages/apps:python-2.7-alpine3.6 <span class="nb">printf</span> OK<span class="sb">`</span> 
+<div class="highlight"><pre><span></span><code><span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker run -d registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6 <span class="nb">printf</span> OK<span class="sb">`</span> 
 </code></pre></div>
 <p>We can now copy all files from this container into a new directory <strong>rootvol</strong>:</p>
 <div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span>
@@ -4080,13 +4080,13 @@ $ scone fspf encrypt fspf.pb &gt; keytag
 <p>We can now create a new container image with this file system protection file
 using this Dockerfile</p>
 <div class="highlight"><pre><span></span><code>$ cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
-<span class="s">FROM registry.scontain.com:5050/sconecuratedimages/apps:python-2.7-alpine3.6</span>
+<span class="s">FROM registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6</span>
 <span class="s">COPY fspf.pb /</span>
 <span class="s">EOF</span>
-$ docker build -t registry.scontain.com:5050/sconecuratedimages/apps:python-2.7-alpine3.6-authenticated .
+$ docker build -t registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6-authenticated .
 </code></pre></div>
 <p>We can run a container as follows:
-<div class="highlight"><pre><span></span><code>$ docker run -it registry.scontain.com:5050/sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
+<div class="highlight"><pre><span></span><code>$ docker run -it registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
 </code></pre></div></p>
 <p>Let us activate the file shield:</p>
 <div class="highlight"><pre><span></span><code>$ <span class="nb">export</span> <span class="nv">SCONE_FSPF_KEY</span><span class="o">=</span>... extract from data-original/keytag ...
@@ -4099,7 +4099,7 @@ $ <span class="nb">export</span> <span class="nv">SCONE_FSPF</span><span class="
 <h2 id="checking-the-file-system-shield">Checking the File System Shield</h2>
 <p>Let's us check the file shield by creating a new python program (<em>helloworld-manual.py</em>) in
 side of a python container:</p>
-<div class="highlight"><pre><span></span><code>&gt; docker run -i registry.scontain.com:5050/sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
+<div class="highlight"><pre><span></span><code>&gt; docker run -i registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6-authenticated sh
 $ cat &gt; helloworld-manual.py <span class="s">&lt;&lt; EOF</span>
 <span class="s">print &quot;Hello World&quot;</span>
 <span class="s">EOF</span>
@@ -4133,7 +4133,7 @@ please have a look at the following screencast.</p>
 <script id="asciicast-285843" src="https://asciinema.org/a/285843.js" async></script>
 
 <p>Below is the script that is executed in the screencast:</p>
-<div class="highlight"><pre><span></span><code>docker run -it -v <span class="nv">$PWD</span>:/mnt registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span><code>docker run -it -v <span class="nv">$PWD</span>:/mnt registry.scontain.com/sconecuratedimages/crosscompilers
 
 mkdir -p /example
 mkdir -p /mnt/authenticated/

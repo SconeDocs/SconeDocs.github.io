@@ -4108,20 +4108,20 @@ helm repo update
 <span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>...
 <span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>...
 
-kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com:5050 --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
+kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
 </code></pre></div>
 <p>Start LAS:</p>
-<div class="highlight"><pre><span></span><code>helm install las sconeapps/las  --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/kubernetes:las-scone4.2.1 --set service.hostPort<span class="o">=</span><span class="nb">true</span>
+<div class="highlight"><pre><span></span><code>helm install las sconeapps/las  --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com/sconecuratedimages/kubernetes:las-scone4.2.1 --set service.hostPort<span class="o">=</span><span class="nb">true</span>
 </code></pre></div>
 <p>If you use a local cas, you can start this cas service as follows:</p>
-<div class="highlight"><pre><span></span><code>helm install cas sconeapps/cas --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/services:cas-scone4.2.1
+<div class="highlight"><pre><span></span><code>helm install cas sconeapps/cas --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com/sconecuratedimages/services:cas-scone4.2.1
 </code></pre></div>
 <p>Install the SGX device plugin for Kubernetes:</p>
 <div class="highlight"><pre><span></span><code>helm install sgxdevplugin sconeapps/sgxdevplugin
 </code></pre></div>
 <h3 id="run-the-application">Run the application</h3>
 <p>Start by creating a Docker image and setting its name. Remember to specify a repository to which you are allowed to push:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/application:v0.4 <span class="c1"># please change to an image that you can push</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span>registry.scontain.com/sconecuratedimages/application:v0.4 <span class="c1"># please change to an image that you can push</span>
 ./create_image.sh
 <span class="nb">source</span> myenv
 docker push <span class="nv">$IMAGE</span>
@@ -4133,7 +4133,7 @@ docker push <span class="nv">$IMAGE</span>
    --set scone.flask_session<span class="o">=</span><span class="nv">$FLASK_SESSION</span>/flask_restapi <span class="se">\</span>
    --set scone.redis_session<span class="o">=</span><span class="nv">$REDIS_SESSION</span>/redis <span class="se">\</span>
    --set service.type<span class="o">=</span>NodePort <span class="se">\</span>
-   --set redis.image<span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/apps:redis-6-alpine-scone4.2.1
+   --set redis.image<span class="o">=</span>registry.scontain.com/sconecuratedimages/apps:redis-6-alpine-scone4.2.1
 </code></pre></div>
 <p><strong>NOTE</strong>: Setting <code>service.type=LoadBalancer</code> will allow the application to get traffic from the internet (through a managed LoadBalancer).</p>
 <h3 id="test-the-application">Test the application</h3>

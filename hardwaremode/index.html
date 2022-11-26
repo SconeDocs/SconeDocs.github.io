@@ -3768,7 +3768,7 @@ Actually, the only change is to <strong>give the container access to the SGX dev
 <p>We first need to start a container which includes the SCONE crosscompiler and
 give the container access to the Intel SGX driver. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>:</p>
 <div class="highlight"><pre><span></span><code>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/crosscompilers
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">The docker engine and the Intel SGX driver must be installed.</p>
@@ -3826,10 +3826,10 @@ Hello World
 <p>The output shows that SCONE is running in <strong>hardware mode</strong>: <em>export SCONE_MODE=hw</em></p>
 <h2 id="background-info">Background Info</h2>
 <p>For ease of use, we create all Docker images such that applications run inside of enclaves if enclaves are available (<a href="../SCONE_ENV/#run-mode"><strong>AUTO</strong> mode</a>). If SGX is not available, they run in simulation mode, i.e., outside of an enclave but all SCONE software is running. To disable simulation mode, you can set environment variable <strong>SCONE_MODE=HW</strong>:</p>
-<div class="highlight"><pre><span></span><code>docker run <span class="nv">$MOUNT_SGXDEVICE</span> -e <span class="s2">&quot;SCONE_MODE=HW&quot;</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span><code>docker run <span class="nv">$MOUNT_SGXDEVICE</span> -e <span class="s2">&quot;SCONE_MODE=HW&quot;</span> -it registry.scontain.com/sconecuratedimages/crosscompilers
 </code></pre></div>
 <p>If you would start your container in hardware mode but forget to give it access to the sgx device, i.e.,</p>
-<div class="highlight"><pre><span></span><code>docker run -e <span class="s2">&quot;SCONE_MODE=HW&quot;</span> -it registry.scontain.com:5050/sconecuratedimages/crosscompilers
+<div class="highlight"><pre><span></span><code>docker run -e <span class="s2">&quot;SCONE_MODE=HW&quot;</span> -it registry.scontain.com/sconecuratedimages/crosscompilers
 </code></pre></div>
 <p>compilation of the <em>helloworld</em> will succeed  but running the <em>helloworld</em> program will fail:</p>
 <div class="highlight"><pre><span></span><code>bash-4.4# echo $SCONE_MODE

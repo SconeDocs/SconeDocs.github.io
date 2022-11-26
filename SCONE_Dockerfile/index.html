@@ -3758,7 +3758,7 @@
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span> SCONE_TUTORIAL/DLDockerFile
 </code></pre></div>
 <p>The Dockerfile to generate the new image looks like this:</p>
-<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com:5050/sconecuratedimages/crosscompilers:runtime</span>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/crosscompilers:runtime</span>
 
 <span class="k">RUN</span><span class="w"> </span>mkdir /hello
 
@@ -3769,7 +3769,7 @@
 </code></pre></div>
 <p>This assumes that we already generated the dynamically linked binary with
 an appropriately configured gcc. We generate this with the provided gcc image:</p>
-<div class="highlight"><pre><span></span><code>docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp registry.scontain.com:5050/sconecuratedimages/muslgcc gcc  hello_again.c -o dyn_hello_again
+<div class="highlight"><pre><span></span><code>docker run --rm  -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp registry.scontain.com/sconecuratedimages/muslgcc gcc  hello_again.c -o dyn_hello_again
 </code></pre></div>
 <p>We provide a little script that generates the image and pushes it to Docker hub (which should fail since you should not have the credentials):</p>
 <div class="highlight"><pre><span></span><code>./generate.sh
@@ -3777,7 +3777,7 @@ an appropriately configured gcc. We generate this with the provided gcc image:</
 <p>Ensure that you have the newest SCONE cross compiler image and determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 You can run this program inside of enclave (with the output of debug messages):</p>
 <div class="highlight"><pre><span></span><code>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com:5050/sconecuratedimages/helloworld:dynamic
+docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/helloworld:dynamic
 <span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
 <span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
 <span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
@@ -3800,7 +3800,7 @@ Hello Again
 <div class="highlight"><pre><span></span><code>&gt; <span class="nb">cd</span> SCONE_TUTORIAL/DockerFile
 </code></pre></div>
 <p>The Dockerfile is quite straight forward:</p>
-<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com:5050/sconecuratedimages/crosscompilers</span>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/crosscompilers</span>
 
 <span class="k">MAINTAINER</span><span class="w"> </span><span class="s">Christof Fetzer &quot;christof.fetzer@gmail.com&quot;</span>
 
@@ -3819,7 +3819,7 @@ Hello Again
 <p>and watch the outputs. The push of the image should fail since you should not have the access rights to push the image to Docker hub.</p>
 <p>We define the image name and tag that we want to generate:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">TAG</span><span class="o">=</span><span class="s2">&quot;again&quot;</span>
-<span class="nb">export</span> <span class="nv">FULLTAG</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com:5050/sconecuratedimages/helloworld:</span><span class="nv">$TAG</span><span class="s2">&quot;</span>
+<span class="nb">export</span> <span class="nv">FULLTAG</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/sconecuratedimages/helloworld:</span><span class="nv">$TAG</span><span class="s2">&quot;</span>
 </code></pre></div>
 <p>We build the image:</p>
 <div class="highlight"><pre><span></span><code>&gt; docker build --pull -t <span class="nv">$FULLTAG</span> .

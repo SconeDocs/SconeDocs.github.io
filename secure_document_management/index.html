@@ -4010,7 +4010,7 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <div class="highlight"><pre><span></span><code>helm install las sconeapps/las <span class="se">\</span>
         --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span>azure <span class="se">\</span>
         --set <span class="nv">sgxEpcMem</span><span class="o">=</span><span class="m">8</span> <span class="se">\</span>
-        --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/kubernetes:las <span class="se">\</span>
+        --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com/sconecuratedimages/kubernetes:las <span class="se">\</span>
         --set nodeSelector.agentpool<span class="o">=</span><span class="s2">&quot;confcompool1&quot;</span>
 </code></pre></div>
 <h2 id="tldr">TL;DR</h2>
@@ -4226,7 +4226,7 @@ http {
 
 
 <span class="c"># Second stage: compile the binary fs</span>
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com:5050/sconecuratedimages/crosscompilers:alpine-scone5</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s">crosscompiler</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/crosscompilers:alpine-scone5</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s">crosscompiler</span>
 
 <span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>binary-fs /binary-fs.c /.
 
@@ -4234,7 +4234,7 @@ http {
 
 
 <span class="c"># Third stage: patch the binary-fs into the enclave executable</span>
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com:5050/sconecuratedimages/apps:python-3.7.3-alpine3.10</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/apps:python-3.7.3-alpine3.10</span>
 
 <span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>crosscompiler /libbinary-fs.so /.
 
@@ -4267,14 +4267,14 @@ helm repo update
 <span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>...
 <span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>...
 
-kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com:5050 --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
+kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
 </code></pre></div>
 <p>Start Local Attestation Service (LAS) on Azure (we use a remote CAS in this case):</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># nodeSelector may have to be adjusted according to your nodes</span>
 helm install las sconeapps/las <span class="se">\</span>
         --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span>azure <span class="se">\</span>
         --set <span class="nv">sgxEpcMem</span><span class="o">=</span><span class="m">8</span> <span class="se">\</span>
-        --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com:5050/sconecuratedimages/kubernetes:las-scone5 <span class="se">\</span>
+        --set <span class="nv">image</span><span class="o">=</span>registry.scontain.com/sconecuratedimages/kubernetes:las-scone5 <span class="se">\</span>
         --set nodeSelector.agentpool<span class="o">=</span><span class="s2">&quot;confcompool1&quot;</span>
 </code></pre></div>
 <p>To setup on a vanilla Kubernetes cluster:</p>

@@ -3986,11 +3986,11 @@ helm repo update
 <span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span><span class="s2">&quot;&lt;GitLab username&gt;&quot;</span>
 <span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span><span class="s2">&quot;&lt;GitLab token&gt;&quot;</span>
 <span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span><span class="s2">&quot;&lt;GitLab email&gt;&quot;</span>
-kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com:5050 --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
+kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
 
 <span class="c1"># Install LAS for Azure.</span>
 helm install las sconeapps/las <span class="se">\</span>
-    --set <span class="nv">image</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com:5050/sconecuratedimages/kubernetes:las.microsoft-azure-scone5.7.0&quot;</span> <span class="se">\</span>
+    --set <span class="nv">image</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/sconecuratedimages/kubernetes:las.microsoft-azure-scone5.7.0&quot;</span> <span class="se">\</span>
     --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span>
 
 <span class="c1"># Set the CAS image.</span>
@@ -4062,7 +4062,7 @@ openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in identity/keypair.pem 
     -e <span class="nv">CAS_ISVSVN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVSVN</span><span class="s2">&quot;</span> <span class="se">\</span>
     -e <span class="nv">CAS_ISVPRODID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVPRODID</span><span class="s2">&quot;</span> <span class="se">\</span>
     -e <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span> <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:alpine3.10-scone5
+    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5
 </code></pre></div>
 <ul>
 <li>Inside of the SCONE CLI container, provision CAS. The owner identity and CLI configuration will be persisted to your local machine (at <code>./identity/config.json</code>).</li>
@@ -4095,7 +4095,7 @@ Done, CAS configuration was successfully provisioned. You are now owner of the C
 <ul>
 <li>Retrieve the MrEnclave of the application.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com:5050/examples/quickstart/hello-world-python:scone5.7.0&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/examples/quickstart/hello-world-python:scone5.7.0&quot;</span>
 <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>docker run -it --rm -e <span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> <span class="nv">$IMAGE</span> <span class="p">|</span> grep -oe <span class="s2">&quot;[0-9a-f]\{64\}&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
 </code></pre></div>
 <ul>
@@ -4134,7 +4134,7 @@ cat &gt; policies/hello-world.yaml <span class="s">&lt;&lt;EOF</span>
     -e <span class="nv">CAS_MRSIGNER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_MRSIGNER</span><span class="s2">&quot;</span> <span class="se">\</span>
     -e <span class="nv">CAS_ISVPRODID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVPRODID</span><span class="s2">&quot;</span> <span class="se">\</span>
     -e <span class="nv">CAS_ISVSVN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVSVN</span><span class="s2">&quot;</span> <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:alpine3.10-scone5
+    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5
 </code></pre></div>
 <p>Inside of the SCONE CLI container, run:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Attest CAS.</span>
@@ -4194,7 +4194,7 @@ The value of the env. var. SECRET is: <span class="s1">&#39;s3cr3t-from-policy&#
 <ul>
 <li>Retrieve the MrEnclave of the application.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com:5050/cicd/redis:latest&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/cicd/redis:latest&quot;</span>
 <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>docker run -it --rm -e <span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> <span class="nv">$IMAGE</span> <span class="p">|</span> grep -oe <span class="s2">&quot;[0-9a-f]\{64\}&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
 </code></pre></div>
 <ul>
@@ -4231,7 +4231,7 @@ cat &gt; policies/redis.yaml <span class="s">&lt;&lt;EOF</span>
     -e <span class="nv">CAS_MRSIGNER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_MRSIGNER</span><span class="s2">&quot;</span> <span class="se">\</span>
     -e <span class="nv">CAS_ISVPRODID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVPRODID</span><span class="s2">&quot;</span> <span class="se">\</span>
     -e <span class="nv">CAS_ISVSVN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVSVN</span><span class="s2">&quot;</span> <span class="se">\</span>
-    registry.scontain.com:5050/sconecuratedimages/sconecli:alpine3.10-scone5
+    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5
 </code></pre></div>
 <p>Inside of the SCONE CLI container, run:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Attest CAS.</span>
