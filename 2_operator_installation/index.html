@@ -3877,7 +3877,7 @@
 <li>a custom resource definition (CRD) of a custom resource (CR), and</li>
 <li>a controller.</li>
 </ul>
-<p>When the operator is deployed, its CRDs, controllers, and other Kubernetes objects are deployed, and the controller manager is started. The controller manager is running as a Kubernetes Deployment and deploys mutating and validating webhooks at start-up. Once they have started, a custom resource of each kind can (CAS is optional) be deployed. This is made possible by the previous deployment of the corresponding CRDs.</p>
+<p>When the operator is deployed, its CRDs, controllers, and other Kubernetes objects are deployed, and the controller manager is started. The controller manager is running as a Kubernetes Deployment and deploys mutating and validating webhooks at start-up. Once they have started up, a custom resource of each kind can (CAS is optional) be deployed. This is made possible by the previous deployment of the corresponding CRDs.</p>
 <p>Once a CR is created, deleted, or updated, the corresponding controller is notified, and reconciling the CR is started. To summarize, the reconciler, i.e., the controller, checks the current state of the CR, compares it to the desired state (i.e., its configuration), and takes the necessary action to change the current state into the desired state. This action either automatically (for example, if it was an update of the CR) or explicitly results in the reconciliation being triggered again. This process continues until the two states are equal.</p>
 <h2 id="installing-the-operator">Installing the Operator</h2>
 <p>We need to install a set of prerequisites to install the SCONE Operator. After the SCONE operator is up and running, each of the custom resources <code>SGXPlugin</code>, <code>LAS</code>, and <code>CAS</code> can be installed separately by deploying and creating a custom resource.</p>
@@ -3895,19 +3895,16 @@
 <div class="highlight"><pre><span></span><code>kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.0/cert-manager.yaml
 </code></pre></div>
 <p>Please refer to the <a href="https://cert-manager.io/docs/installation/">official installation instructions</a> for up-to-date version information.</p>
-<p>Alternatively, you can install it together with the SCONE operator <a href="#cert-manager">using <code>helm</code></a>: it can be installed using command line flags of the <code>helm install</code> command.</p>
+<p>Alternatively, you can install it with the SCONE operator <a href="#cert-manager">using <code>helm</code></a>: it can be installed using command line flags of the <code>helm install</code> command.</p>
 <h3 id="operator-namespace">Operator Namespace</h3>
 <p>Now you are ready to deploy the SCONE operator using the image you just created. Deploying the operator can be done using <code>helm</code>.  With <code>helm</code>, you can specify the desired namespace on the command line.</p>
-<div class="admonition note">
-<p class="admonition-title">Operator Namespace</p>
-<p>We refer to the namespace where you choose to deploy the operator as <code>$OPERATOR_NAMESPACE</code>.</p>
-</div>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OPERATOR_NAMESPACE</span><span class="o">=</span>scone-system <span class="c1"># change namespace if needed</span>
+<p>By default, we use the namespace <code>scone-system</code>. You can create the namespace by executing the following:</p>
+<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/namespace.yaml
 </code></pre></div>
 <h3 id="pull-secret">Pull Secret</h3>
 <div class="admonition note">
 <p class="admonition-title">Pull Secret</p>
-<p>Typically, authorization is required to pull the operator image. You should <a href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/" title="Kubernetes documentation">create a secret</a> called <code>scone-operator-pull</code> with the required credentials in the namespace <code>$OPERATOR_NAMESPACE</code>.</p>
+<p>Typically, authorization is required to pull the operator image. You should <a href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/" title="Kubernetes documentation">create secrets</a> called <code>scone-operator-pull</code> and <code>sconeapps</code> with the required credentials in the namespace <code>scone-system</code>.</p>
 </div>
 <p>The SCONE operator image is stored in a private Docker Hub repo. Hence, to deploy this image, one needs to pass the image pull credentials to Kubernetes. To do so, you must create the Kubernetes secret <code>scone-operator-pull</code>.</p>
 <p>You could first define your credentials which include the generation of an access token to <code>read_registry</code> and set environment variables:</p>
@@ -3915,13 +3912,21 @@
 <span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-pword&gt; <span class="c1"># is your Docker password</span>
 <span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># is your Docker email</span>
 </code></pre></div>
-<p>And then create a Kubernetes secret as follows:</p>
+<p>And then, create a Kubernetes secrets <code>scone-operator-pull</code> and <code>sconeapps</code>. In a simple setup, these secrets contain the same token. You need to define a secret per registry if you use multiple registries. Often one might use a different registry for the base SCONE images (Plugin, LAS, CAS) and the application images (e.g., MariaDB, Nginx, etc.) </p>
 <div class="highlight"><pre><span></span><code>kubectl create secret docker-registry scone-operator-pull <span class="se">\</span>
    --docker-server<span class="o">=</span>registry.scontain.com <span class="se">\</span>
    --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> <span class="se">\</span>
    --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> <span class="se">\</span>
    --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span> <span class="se">\</span>
-   --namespace <span class="nv">$OPERATOR_NAMESPACE</span>
+   --namespace scone-system
+</code></pre></div>
+<p>and</p>
+<div class="highlight"><pre><span></span><code>kubectl create secret docker-registry sconeapps <span class="se">\</span>
+   --docker-server<span class="o">=</span>registry.scontain.com <span class="se">\</span>
+   --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> <span class="se">\</span>
+   --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> <span class="se">\</span>
+   --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span> <span class="se">\</span>
+   --namespace scone-system
 </code></pre></div>
 <h3 id="deploy-the-scone-operator">Deploy the SCONE Operator</h3>
 <div class="admonition note scone operator releases">
@@ -3929,8 +3934,7 @@
 <p>You can find the up-to-date list of SCONE operator releases here: <a href="https://github.com/scontain/operator/releases">SCONE operator releases</a>.</p>
 </div>
 <p>Now deploy your SCONE operator either using <code>helm</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OPERATOR_NAMESPACE</span><span class="o">=</span><span class="si">${</span><span class="nv">OPERATOR_NAMESPACE</span><span class="k">:-</span><span class="nv">scone</span><span class="p">-system</span><span class="si">}</span>
-helm install scone-operator https://github.com/scontain/operator/archive/refs/tags/v0.0.6.tar.gz --namespace <span class="nv">$OPERATOR_NAMESPACE</span>
+<div class="highlight"><pre><span></span><code>helm install scone-operator https://github.com/scontain/operator/archive/refs/tags/v0.0.6.tar.gz --namespace scone-system
 </code></pre></div>
 <h3 id="automatically-injecting-pull-secrets">Automatically injecting Pull Secrets</h3>
 <p>The SCONE images require defining a pull secret. This can be inconvenient since a user would need to add the correct pull secret in each namespace that needs access to one of these images.
@@ -3948,11 +3952,11 @@ helm install imps banzaicloud-stable/imagepullsecrets
 </div>
 <p>You can verify that the operator is running as it should using the following commands:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Check the state of the deployment of the operator</span>
-kubectl get deployments -n <span class="nv">$OPERATOR_NAMESPACE</span> scone-controller-manager
+kubectl get deployments -n scone-system scone-controller-manager
 <span class="c1"># Check the state of the pod of the deployment</span>
-kubectl get pods -n <span class="nv">$OPERATOR_NAMESPACE</span> -l control-plane<span class="o">=</span>controller-manager
+kubectl get pods -n scone-system -l control-plane<span class="o">=</span>controller-manager
 <span class="c1"># Check the log of the pod (use the name of the pod from the previous command)</span>
-kubectl logs -n <span class="nv">$OPERATOR_NAMESPACE</span> <span class="nv">$OPERATOR_POD_NAME</span>
+kubectl logs -n scone-system scone-controller-manager-&lt;PRESS TAB&gt;
 </code></pre></div>
 <h3 id="default-images">Default Images</h3>
 <p>The SCONE Operator uses the following default images:</p>
