@@ -19,7 +19,7 @@
     
     
       
-        <title>Quickstart - Confidential Computing</title>
+        <title>Examples - Confidential Computing</title>
       
     
     
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Quickstart
+              Examples
             
           </span>
         </div>
@@ -1431,7 +1431,35 @@
   
     <li class="md-nav__item">
       <a href="../2_operator_installation/" class="md-nav__link">
-        Installation
+        Reconciliation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5_kubectl.md" class="md-nav__link">
+        Deploying CAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3_resource_definitions/" class="md-nav__link">
+        Custom Resource Definitions
       </a>
     </li>
   
@@ -1454,12 +1482,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Quickstart
+          Examples
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Quickstart
+        Examples
       </a>
       
         
@@ -1486,22 +1514,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#create-base-custom-resources-sgxplugin-and-las-and-cas" class="md-nav__link">
-    Create Base Custom Resources: SGXPlugin and LAS, and CAS
+  <a href="#create-custom-resources-sgxplugin-and-las" class="md-nav__link">
+    Create Custom Resources: SGXPlugin and LAS
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-base-custom-resources-sgxplugin-and-las" class="md-nav__link">
-    Create Base Custom Resources: SGXPlugin and LAS
+  <a href="#independent-deployment-of-sgx-plugin-and-las" class="md-nav__link">
+    Independent Deployment of SGX Plugin and LAS
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-cas-resource" class="md-nav__link">
-    Create CAS resource
+  <a href="#create-cas-for-development" class="md-nav__link">
+    Create CAS for Development
   </a>
   
 </li>
@@ -1515,20 +1543,6 @@
   
 </nav>
       
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../3_resource_definitions/" class="md-nav__link">
-        Custom Resource Definitions
-      </a>
     </li>
   
 
@@ -3760,22 +3774,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#create-base-custom-resources-sgxplugin-and-las-and-cas" class="md-nav__link">
-    Create Base Custom Resources: SGXPlugin and LAS, and CAS
+  <a href="#create-custom-resources-sgxplugin-and-las" class="md-nav__link">
+    Create Custom Resources: SGXPlugin and LAS
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-base-custom-resources-sgxplugin-and-las" class="md-nav__link">
-    Create Base Custom Resources: SGXPlugin and LAS
+  <a href="#independent-deployment-of-sgx-plugin-and-las" class="md-nav__link">
+    Independent Deployment of SGX Plugin and LAS
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#create-cas-resource" class="md-nav__link">
-    Create CAS resource
+  <a href="#create-cas-for-development" class="md-nav__link">
+    Create CAS for Development
   </a>
   
 </li>
@@ -3801,35 +3815,41 @@
 
 <h1 id="scone-custom-resources-quickstart">SCONE Custom Resources Quickstart</h1>
 <h2 id="prerequisites">Prerequisites</h2>
-<p>We assume that</p>
+<p>We assume that you have <a href="../2_operator_installation/">installed the SCONE Operator</a> and in the process, also the image pull secrets <a href="https://sconedocs.github.io/registry/#create-an-access-token"><code>sconeapps</code> and <code>scone-operator-pull</code></a>.</p>
+<p>You can check and <code>--reconcile</code> the state as follows:</p>
+<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - <span class="se">\</span>
+--reconcile --verbose
+</code></pre></div>
+<p>This will deploy the <code>SGXPlugin</code> and the <code>LAS</code>.</p>
+<h3 id="create-custom-resources-sgxplugin-and-las">Create Custom Resources: SGXPlugin and LAS</h3>
+<p>!!! note "The <code>operator_controller</code> will overwrite any changes to custom resource <code>LAS LAS</code> or <code>SGXPlugin SGXPlugin</code> the next time it is called with <code>--reconcile</code> or <code>--update</code>. Consider to change the   </p>
+<p>To run SCONE-based confidential services and applications in a Kubernetes cluster, we need </p>
 <ul>
-<li>you have <a href="../2_operator_installation/">installed the SCONE Operator</a> and in the process, also the image pull secrets <a href="https://sconedocs.github.io/registry/#create-an-access-token"><code>sconeapps</code> and <code>scone-operator-pull</code></a> .</li>
+<li><code>SCONE SGX Plugin</code> to grant access to the SGX device</li>
+<li><code>SCONE LAS</code> (Local Attestation Service) to perform local attestation</li>
 </ul>
-<h3 id="create-base-custom-resources-sgxplugin-and-las-and-cas">Create Base Custom Resources: SGXPlugin and LAS, and CAS</h3>
-<p>You can install SGX Plugin, LAS, and a CAS instance with one command:</p>
+<p>You can create the Kubernetes namespace <code>scone-systems</code> and deploy the SCONE SGX Plugin and SCONE LAS in this namespace with one command:</p>
 <div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/base_and_cas.yaml
 </code></pre></div>
-<p>This deploys a production CAS and all necessary SCONE base services. The CAS database is persistent.</p>
-<div class="admonition note">
-<p class="admonition-title">No Fail-Over to other nodes</p>
-<p>This CAS instance does support fail-over to another Kubernetes node. Such a fail-over requires the backup controller to be enabled.</p>
-</div>
-<h3 id="create-base-custom-resources-sgxplugin-and-las">Create Base Custom Resources: SGXPlugin and LAS</h3>
-<p>You can install SGX Plugin with <code>kubectl</code>:</p>
+<p>The SCONE operator will ensure that the SGX plugin and LAS are kept running and are automatically updated. The SCONE operator itself would need to be updated via its helm chart.   </p>
+<h3 id="independent-deployment-of-sgx-plugin-and-las">Independent Deployment of SGX Plugin and LAS</h3>
+<p>If you want to decouple the deployment of the SGX Plugin and LAS, we provide some basic manifest for each resource. One can install the SGX Plugin with <code>kubectl</code>:</p>
 <div class="highlight"><pre><span></span><code>kubectl create -f https://raw.githubusercontent.com/scontain/operator-samples/main/base_v1beta1_sgxplugin.yaml
 </code></pre></div>
 <p>LAS from the included sample manifests:</p>
 <div class="highlight"><pre><span></span><code>kubectl create -f https://raw.githubusercontent.com/scontain/operator-samples/main/base_v1beta1_las.yaml
 </code></pre></div>
-<p>These two manifests have reasonable defaults and should work without any modifications for most deployments. The default Kubernetes namespace for the SGX Plugin and LAS is the namespace of the SCONE Operator. The default Kubernetes namespace of the SCONE Operator is <code>scone</code>.</p>
-<p>If the defaults do not fit your requirements, you can customize the manifests described in the <a href="../3_resource_definitions/">SCONE Custom Resource Definitions</a>.</p>
-<h3 id="create-cas-resource">Create CAS resource</h3>
-<ul>
-<li>Install SCONE CAS to your cluster in production mode as follows:</li>
-</ul>
-<div class="highlight"><pre><span></span><code>kubectl -f create https://raw.githubusercontent.com/scontain/operator-samples/main/services_v1beta1_cas.yaml
+<p>These two manifests contain reasonable defaults and should work without any modifications for most deployments. This setup can be used in production. </p>
+<p>The default Kubernetes namespace for the SGX Plugin and LAS is the namespace of the SCONE Operator. The default Kubernetes namespace of the SCONE Operator is <code>scone-systems</code>. If the defaults do not fit your requirements, you can customize the manifests described in the <a href="../3_resource_definitions/">SCONE Custom Resource Definitions</a>.</p>
+<h3 id="create-cas-for-development">Create CAS for Development</h3>
+<p>To install SCONE CAS for development, you can :</p>
+<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/services_v1beta1_cas.yaml
 </code></pre></div>
-<p>This CAS will use a persistent volume for its database but does not support a fail-over to a different host.</p>
+<p>This CAS will run in production mode and use a persistent volume for its database but does not support a fail-over to a different host.</p>
+<div class="admonition note">
+<p class="admonition-title">No Fail-Over to other nodes</p>
+<p>To enable fail-over of a CAS to a different node, the CAS backup controller needs to be enabled. To simplify this setup of a fail-over CAS, we maintain a <code>kubectl</code> plugin. <a href="5_kubectl.md">Install a production CAS</a>, </p>
+</div>
 
               
             </article>
@@ -3843,7 +3863,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../2_operator_installation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Installation" rel="prev">
+        <a href="../3_resource_definitions/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Custom Resource Definitions" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -3852,20 +3872,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              Installation
+              Custom Resource Definitions
             </div>
           </div>
         </a>
       
       
         
-        <a href="../3_resource_definitions/" class="md-footer__link md-footer__link--next" aria-label="Next: Custom Resource Definitions" rel="next">
+        <a href="../helm_sgxdevplugin/" class="md-footer__link md-footer__link--next" aria-label="Next: Kubernetes SGX Plugin" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Custom Resource Definitions
+              Kubernetes SGX Plugin
             </div>
           </div>
           <div class="md-footer__button md-icon">

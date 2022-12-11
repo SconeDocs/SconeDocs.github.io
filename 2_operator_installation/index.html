@@ -19,7 +19,7 @@
     
     
       
-        <title>Installation - Confidential Computing</title>
+        <title>Reconciliation - Confidential Computing</title>
       
     
     
@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#scone-operator" class="md-skip">
+        <a href="#deploying-reconciling-the-scone-operator" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installation
+              Reconciliation
             
           </span>
         </div>
@@ -1440,12 +1440,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Installation
+          Reconciliation
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Installation
+        Reconciliation
       </a>
       
         
@@ -1464,11 +1464,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installing-the-operator" class="md-nav__link">
-    Installing the Operator
+  <a href="#tldr" class="md-nav__link">
+    TL'DR
   </a>
   
-    <nav class="md-nav" aria-label="Installing the Operator">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-deployment-of-the-operator" class="md-nav__link">
+    Manual Deployment of the Operator
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Deployment of the Operator">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1547,8 +1554,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../4_quickstart/" class="md-nav__link">
-        Quickstart
+      <a href="../5_kubectl.md" class="md-nav__link">
+        Deploying CAS
       </a>
     </li>
   
@@ -1563,6 +1570,20 @@
     <li class="md-nav__item">
       <a href="../3_resource_definitions/" class="md-nav__link">
         Custom Resource Definitions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4_quickstart/" class="md-nav__link">
+        Examples
       </a>
     </li>
   
@@ -3787,11 +3808,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installing-the-operator" class="md-nav__link">
-    Installing the Operator
+  <a href="#tldr" class="md-nav__link">
+    TL'DR
   </a>
   
-    <nav class="md-nav" aria-label="Installing the Operator">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-deployment-of-the-operator" class="md-nav__link">
+    Manual Deployment of the Operator
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Deployment of the Operator">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3869,7 +3897,7 @@
                 
 
 
-<h1 id="scone-operator">SCONE Operator</h1>
+<h1 id="deploying-reconciling-the-scone-operator">Deploying &amp; Reconciling the SCONE Operator</h1>
 <p>The SCONE operator consists of</p>
 <ul>
 <li>a controller manager, and</li>
@@ -3877,9 +3905,34 @@
 <li>a custom resource definition (CRD) of a custom resource (CR), and</li>
 <li>a controller.</li>
 </ul>
-<p>When the operator is deployed, its CRDs, controllers, and other Kubernetes objects are deployed, and the controller manager is started. The controller manager is running as a Kubernetes Deployment and deploys mutating and validating webhooks at start-up. Once they have started up, a custom resource of each kind can (CAS is optional) be deployed. This is made possible by the previous deployment of the corresponding CRDs.</p>
+<p>When the operator is deployed, its CRDs, controllers, and other Kubernetes objects are deployed, and the controller manager is started. The controller manager runs as a Kubernetes deployment and deploys mutating and validating webhooks at start-up. Once they have started up, a custom resource of each kind can be deployed. This is made possible by the previous deployment of the corresponding CRDs.</p>
 <p>Once a CR is created, deleted, or updated, the corresponding controller is notified, and reconciling the CR is started. To summarize, the reconciler, i.e., the controller, checks the current state of the CR, compares it to the desired state (i.e., its configuration), and takes the necessary action to change the current state into the desired state. This action either automatically (for example, if it was an update of the CR) or explicitly results in the reconciliation being triggered again. This process continues until the two states are equal.</p>
-<h2 id="installing-the-operator">Installing the Operator</h2>
+<h2 id="tldr">TL'DR</h2>
+<p>A simple <code>operator_controller</code> script deploys and updates the SCONE Operator. In case you want to deploy or update the pull secrets, set environment variables:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">REGISTRY_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># username of the registry service account</span>
+<span class="nb">export</span> <span class="nv">REGISTRY_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-access-toke&gt; <span class="c1"># read access token</span>
+<span class="nb">export</span> <span class="nv">REGISTRY_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># email address of the service account</span>
+</code></pre></div>
+<p>Your access token needs to be able to read the registry: for more details, please see the section <a href="https://sconedocs.github.io/registry/#create-an-access-token">Create an Access Token</a>. </p>
+<p>You can now deploy or update the SCONE operator as follows:</p>
+<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - <span class="se">\</span>
+ --reconcile --update --secret-operator  --plugin --verbose <span class="se">\</span>
+ --username <span class="nv">$REGISTRY_USERNAME</span> --access-token <span class="nv">$REGISTRY_ACCESS_TOKEN</span> --email <span class="nv">$REGISTRY_EMAIL</span>
+</code></pre></div>
+<ul>
+<li><code>--reconcile</code>: deploys and reconciles the SCONE operator in a Kubernetes cluster. </li>
+<li><code>--update</code>: redeploys the operator and updates its image. </li>
+<li><code>--secret-operator</code>:  deploy a <strong>secrets operator</strong> (see below) that injects the SCONE Operator, and CAS pull secrets in all namespaces.</li>
+<li><code>--username</code>, <code>--access-token</code>, <code>--email</code>: define if you want to <code>--reconcile</code> or to <code>--update</code> the pull secrets.</li>
+<li><code>--plugin</code>: deploy the SCONE <code>kubectl</code> on your local machine.</li>
+<li><code>--verbose</code>: display progress information.</li>
+<li>The <code>operator_controller</code>, even without any of the above flags, will output <strong>warnings</strong> if the operator or any of its dependencies is not in the desired state.</li>
+</ul>
+<h2 id="manual-deployment-of-the-operator">Manual Deployment of the Operator</h2>
+<div class="admonition note">
+<p class="admonition-title">Use the Operator Controller to deploy the SCONE Operator</p>
+<p>We do not recommend installing the SCONE Operator manually. This description explains the individual steps that need to be performed in case you want to customize the Operator Controller.</p>
+</div>
 <p>We need to install a set of prerequisites to install the SCONE Operator. After the SCONE operator is up and running, each of the custom resources <code>SGXPlugin</code>, <code>LAS</code>, and <code>CAS</code> can be installed separately by deploying and creating a custom resource.</p>
 <h3 id="kubernetes-config">Kubernetes Config</h3>
 <p>The first step is to ensure you have access to your Kubernetes cluster.</p>
@@ -3892,7 +3945,7 @@
 <div class="highlight"><pre><span></span><code>kubectl get pods -A <span class="p">|</span> grep cert-manager
 </code></pre></div>
 <p>If no <code>cert-manager</code> pod is running,  you can install <code>cert-manager</code> using <code>kubectl</code> or <code>helm</code>. Our recommendation, however, is to install the latest release using <code>kubectl</code> as follows:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.0/cert-manager.yaml
+<div class="highlight"><pre><span></span><code>kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.yaml
 </code></pre></div>
 <p>Please refer to the <a href="https://cert-manager.io/docs/installation/">official installation instructions</a> for up-to-date version information.</p>
 <p>Alternatively, you can install it with the SCONE operator <a href="#cert-manager">using <code>helm</code></a>: it can be installed using command line flags of the <code>helm install</code> command.</p>
@@ -3904,28 +3957,28 @@
 <h3 id="pull-secret">Pull Secret</h3>
 <div class="admonition note">
 <p class="admonition-title">Pull Secret</p>
-<p>Authorization is required to pull container images from private registries. You should create the <a href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/" title="Kubernetes documentation">Kubernetes secrets</a> <code>scone-operator-pull</code> and <code>sconeapps</code> with the <a href="https://sconedocs.github.io/registry/#create-an-access-token">required credentials</a> in the namespace <code>scone-system</code>.</p>
+<p>Authorization is required to pull container images from private registries. It would be best if you created the <a href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/" title="Kubernetes documentation">Kubernetes secrets</a> <code>scone-operator-pull</code> and <code>sconeapps</code> with the <a href="https://sconedocs.github.io/registry/#create-an-access-token">required credentials</a> in the namespace <code>scone-system</code>.</p>
 </div>
 <p>The SCONE operator image is stored in a private Docker Hub repo. Hence, to deploy this image, one needs to pass the image pull credentials to Kubernetes. To do so, you must create the Kubernetes secret <code>scone-operator-pull</code>.</p>
 <p>You could first define your credentials which include the generation of an access token to  <a href="https://sconedocs.github.io/registry/#create-an-access-token"><code>read_registry</code></a> and set environment variables:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># is your Docker username</span>
-<span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-pword&gt; <span class="c1"># is your Docker password</span>
-<span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># is your Docker email</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">REGISTRY_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># username of the registry service account</span>
+<span class="nb">export</span> <span class="nv">REGISTRY_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-access-toke&gt; <span class="c1"># read access token</span>
+<span class="nb">export</span> <span class="nv">REGISTRY_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># email address of the service account</span>
 </code></pre></div>
 <p>And then, create a Kubernetes secrets <code>scone-operator-pull</code> and <code>sconeapps</code>. In a simple setup, these secrets contain the same token. You need to define a secret per registry if you use multiple registries. Often one might use a different registry for the base SCONE images (Plugin, LAS, CAS) and the application images (e.g., MariaDB, Nginx, etc.) </p>
 <div class="highlight"><pre><span></span><code>kubectl create secret docker-registry scone-operator-pull <span class="se">\</span>
    --docker-server<span class="o">=</span>registry.scontain.com <span class="se">\</span>
-   --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> <span class="se">\</span>
-   --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> <span class="se">\</span>
-   --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span> <span class="se">\</span>
+   --docker-username<span class="o">=</span><span class="nv">$REGISTRY_USERNAME</span> <span class="se">\</span>
+   --docker-password<span class="o">=</span><span class="nv">$REGISTRY_ACCESS_TOKEN</span> <span class="se">\</span>
+   --docker-email<span class="o">=</span><span class="nv">$REGISTRY_EMAIL</span> <span class="se">\</span>
    --namespace scone-system
 </code></pre></div>
 <p>and</p>
 <div class="highlight"><pre><span></span><code>kubectl create secret docker-registry sconeapps <span class="se">\</span>
    --docker-server<span class="o">=</span>registry.scontain.com <span class="se">\</span>
-   --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> <span class="se">\</span>
-   --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> <span class="se">\</span>
-   --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span> <span class="se">\</span>
+   --docker-username<span class="o">=</span><span class="nv">$REGISTRY_USERNAME</span> <span class="se">\</span>
+   --docker-password<span class="o">=</span><span class="nv">$REGISTRY_ACCESS_TOKEN</span> <span class="se">\</span>
+   --docker-email<span class="o">=</span><span class="nv">$REGISTRY_EMAIL</span> <span class="se">\</span>
    --namespace scone-system
 </code></pre></div>
 <h3 id="deploy-the-scone-operator">Deploy the SCONE Operator</h3>
@@ -4026,13 +4079,13 @@ kubectl logs -n scone-system <span class="nv">$CONTROLLERPOD</span>
       
       
         
-        <a href="../4_quickstart/" class="md-footer__link md-footer__link--next" aria-label="Next: Quickstart" rel="next">
+        <a href="../3_resource_definitions/" class="md-footer__link md-footer__link--next" aria-label="Next: Custom Resource Definitions" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Quickstart
+              Custom Resource Definitions
             </div>
           </div>
           <div class="md-footer__button md-icon">
