@@ -1478,23 +1478,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#deploying-scone-cas" class="md-nav__link">
-    Deploying SCONE CAS
-  </a>
-  
-    <nav class="md-nav" aria-label="Deploying SCONE CAS">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#tldr" class="md-nav__link">
     TL;DR
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="TL;DR">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#details" class="md-nav__link">
-    Details
+  <a href="#deploying-scone-cas" class="md-nav__link">
+    Deploying SCONE CAS
   </a>
   
 </li>
@@ -1508,13 +1501,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deployment-of-the-kubectl-plugin" class="md-nav__link">
-    Deployment of the kubectl Plugin
-  </a>
   
 </li>
       
@@ -3780,23 +3766,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#deploying-scone-cas" class="md-nav__link">
-    Deploying SCONE CAS
-  </a>
-  
-    <nav class="md-nav" aria-label="Deploying SCONE CAS">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#tldr" class="md-nav__link">
     TL;DR
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="TL;DR">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#details" class="md-nav__link">
-    Details
+  <a href="#deploying-scone-cas" class="md-nav__link">
+    Deploying SCONE CAS
   </a>
   
 </li>
@@ -3810,13 +3789,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deployment-of-the-kubectl-plugin" class="md-nav__link">
-    Deployment of the kubectl Plugin
-  </a>
   
 </li>
       
@@ -3845,13 +3817,15 @@
 <p>We automated the steps to deploy <code>CAS</code> and <code>Vault</code> in production mode using a <code>kubectl</code> plugin.  </p>
 <p><strong>Outline</strong></p>
 <ul>
-<li>First, we describe how to deploy <code>CAS</code> with the <code>kubectl</code> plugin. </li>
+<li>First, we describe how to deploy <code>CAS</code> with the <code>kubectl</code> plugin.</li>
 <li>Second, we describe some background regarding <code>CAS</code> provisioning.</li>
-<li>Third, we show how to deploy the <code>kubectl</code> plugin as part of the operator deployment.</li>
 </ul>
-<h2 id="deploying-scone-cas">Deploying <code>SCONE CAS</code></h2>
-<h3 id="tldr">TL;DR</h3>
-<p>To deploy a CAS in production mode in the default namespace, execute the following:</p>
+<h2 id="tldr">TL;DR</h2>
+<p>The <code>provision</code> of CAS is performed using a <code>kubectl</code> plugin. This script is deployed or reconciled as part of the SCONE <code>operator_controller</code> deployment. You can ensure that it is deployed by executing:</p>
+<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - <span class="se">\</span>
+--reconcile --plugin --verbose
+</code></pre></div>
+<p>To deploy a CAS instance named <code>mycas</code> in production mode in the default namespace, execute the following:</p>
 <div class="highlight"><pre><span></span><code>kubectl provision cas mycas --verbose
 </code></pre></div>
 <p>This will deploy a CAS release in the default Kubernetes namespace. It starts</p>
@@ -3862,7 +3836,7 @@
 <li><strong>snapshots</strong> of the CAS database are periodically created and stored in a separate persistent volume <code>/var/mnt/cas-database-snapshots-mycas-0</code>,</li>
 <li><strong>audit log</strong> to verify all CAS transaction is stored in <code>/var/log/cas/audit/cas_audit.log</code>.</li>
 </ul>
-<h3 id="details">Details</h3>
+<h3 id="deploying-scone-cas">Deploying <code>SCONE CAS</code></h3>
 <p><code>SCONE CAS</code> is a Configuration and Attestation Service, i.e., it attests and verifies a service before it provides the service with its configuration information.</p>
 <p>If you do not specify a manifest, the plugin will create a manifest</p>
 <ul>
@@ -3906,11 +3880,6 @@ Database snapshots are a safer option than copying the database files directly, 
 <p class="admonition-title">Note</p>
 <p>If snapshot creation fails, CAS will be stopped with an error and return a non-zero exit code.</p>
 </div>
-<h2 id="deployment-of-the-kubectl-plugin">Deployment of the <code>kubectl</code> Plugin</h2>
-<p>The <code>provision</code> of CAS is performed using a script <code>kubectl-provision</code>. This script is deployed or reconciled as part of the SCONE <code>operator_controller</code>:</p>
-<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - <span class="se">\</span>
---reconcile --plugin --verbose
-</code></pre></div>
 <h2 id="deployment-of-vault">Deployment of Vault</h2>
 <p>..coming soon..</p>
 
