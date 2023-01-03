@@ -1622,8 +1622,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../kubeapps/" class="md-nav__link">
-        Kubeapps
+      <a href="../helm_dashboard/" class="md-nav__link">
+        Helm Dashboard
       </a>
     </li>
   
@@ -1687,6 +1687,20 @@
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubeapps/" class="md-nav__link">
+        Kubeapps
+      </a>
     </li>
   
 
@@ -3837,19 +3851,34 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 </div>
 <h2 id="installation">Installation</h2>
 <p>Install the dashboard with <code>kubectl</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.1/aio/deploy/recommended.yaml
+<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
 </code></pre></div>
 <p>Start the <code>kubectl</code> proxy:</p>
 <div class="highlight"><pre><span></span><code>kubectl proxy
 </code></pre></div>
 <p>The dashboard can now be viewed at:</p>
 <p><a href="http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/">http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/</a></p>
+<p>You need a token to use the dashboard. You can create the token to be able to log into the dashboard as follows:</p>
+<ul>
+<li>Create a Cluster Admin service account (if you have not done so)</li>
+</ul>
+<div class="highlight"><pre><span></span><code>kubectl create serviceaccount dashboard -n default
+</code></pre></div>
+<ul>
+<li>Add the cluster binding rules to your dashboard account</li>
+</ul>
+<div class="highlight"><pre><span></span><code>kubectl create clusterrolebinding dashboard-admin -n default --clusterrole<span class="o">=</span>cluster-admin --serviceaccount<span class="o">=</span>default:dashboard
+</code></pre></div>
+<ul>
+<li>Get the token</li>
+</ul>
+<div class="highlight"><pre><span></span><code>kubectl get secret <span class="k">$(</span>kubectl get serviceaccount dashboard -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.secrets[0].name}&quot;</span><span class="k">)</span> -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data.token}&quot;</span> <span class="p">|</span> base64 --decode
+</code></pre></div>
 <h2 id="application-monitoring">Application Monitoring</h2>
 <p>In the Kubernetes dashboard you can monitor various workload characteristics and identify issues in the workload. Like in this case, some services did not start:</p>
 <p><center>
 <img alt="Kubernetes Dashboard" src="../img/k8s_dashboard.png#fullwidth" title="Kubernetes Dashboard" />
 </center></p>
-<p>By clicking on the failed services, you can see that in this case the issue was a credential issue.</p>
 
               
             </article>
@@ -3863,7 +3892,7 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../kubeapps/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Kubeapps" rel="prev">
+        <a href="../helm_dashboard/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Helm Dashboard" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -3872,20 +3901,20 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
               <span class="md-footer__direction">
                 Previous
               </span>
-              Kubeapps
+              Helm Dashboard
             </div>
           </div>
         </a>
       
       
         
-        <a href="../hello_world_kubernetes/" class="md-footer__link md-footer__link--next" aria-label="Next: Hello World Kubernetes" rel="next">
+        <a href="../kubeapps/" class="md-footer__link md-footer__link--next" aria-label="Next: Kubeapps" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Hello World Kubernetes
+              Kubeapps
             </div>
           </div>
           <div class="md-footer__button md-icon">
