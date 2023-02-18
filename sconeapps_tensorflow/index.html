@@ -75,7 +75,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tensorflow" class="md-skip">
+        <a href="#sconeapps-tensorflow" class="md-skip">
           Skip to content
         </a>
       
@@ -2339,22 +2339,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-this-chart" class="md-nav__link">
-    Install this chart
+  <a href="#upload-the-policy-for-tensorflow" class="md-nav__link">
+    Upload the policy for Tensorflow
   </a>
   
-    <nav class="md-nav" aria-label="Install this chart">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-the-chart" class="md-nav__link">
+    Install the chart
+  </a>
+  
+    <nav class="md-nav" aria-label="Install the chart">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#add-the-repo" class="md-nav__link">
-    Add the repo
+  <a href="#add-the-sconeapps-repo" class="md-nav__link">
+    Add the sconeapps repo
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#install-the-chart" class="md-nav__link">
+  <a href="#install-the-chart_1" class="md-nav__link">
     Install the chart
   </a>
   
@@ -3878,22 +3885,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-this-chart" class="md-nav__link">
-    Install this chart
+  <a href="#upload-the-policy-for-tensorflow" class="md-nav__link">
+    Upload the policy for Tensorflow
   </a>
   
-    <nav class="md-nav" aria-label="Install this chart">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-the-chart" class="md-nav__link">
+    Install the chart
+  </a>
+  
+    <nav class="md-nav" aria-label="Install the chart">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#add-the-repo" class="md-nav__link">
-    Add the repo
+  <a href="#add-the-sconeapps-repo" class="md-nav__link">
+    Add the sconeapps repo
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#install-the-chart" class="md-nav__link">
+  <a href="#install-the-chart_1" class="md-nav__link">
     Install the chart
   </a>
   
@@ -3959,19 +3973,36 @@
                 
 
 
-<h1 id="tensorflow">Tensorflow</h1>
+<h1 id="sconeapps-tensorflow">SCONEAPPS: Tensorflow</h1>
 <p>Run a Tensorflow workload on a Kubernetes cluster.</p>
 <h3 id="prerequisites">Prerequisites</h3>
 <ol>
 <li>A Kubernetes cluster;</li>
 <li>Helm 3 client. Please refer to the official <a href="https://helm.sh/docs/intro/install/">setup guide</a>.</li>
 </ol>
-<h3 id="install-this-chart">Install this chart</h3>
-<h4 id="add-the-repo">Add the repo</h4>
-<p>If you haven't yet, please add this repo to Helm.</p>
-<h4 id="install-the-chart">Install the chart</h4>
+<h3 id="upload-the-policy-for-tensorflow">Upload the policy for Tensorflow</h3>
+<p>If you need remote attestation, you can use the <code>upload_policy</code> command to help you upload the <a href="https://github.com/scontain/scone-templates/tree/master/tensorflow/session_template.yml">tensorflow scone template</a> which runs the hello world example from the <a href="https://www.tensorflow.org/overview/">TensorFlow overview</a>. You can edit the template to run your confidential workload.</p>
+<p>The <code>upload_policy</code> command will generate a chart values file (<code>tensorflow_chart_values.yml</code>) that you can use to deploy your confidential workload with help of HELM.</p>
+<p>Run <code>upload_policy</code> with the default options to create the chart values with default poliy uploaded into the <a href="https://sconedocs.github.io/public-CAS/">latest public CAS</a>.</p>
+<p>Create an alias for the <code>upload_policy</code> container.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">alias</span> <span class="nv">scone</span><span class="o">=</span><span class="s2">&quot;docker run -it --rm \</span>
+<span class="s2">    -v \&quot;</span><span class="nv">$HOME</span><span class="s2">/.docker/config.json:/root/.docker/config.json\&quot; \</span>
+<span class="s2">    -v \&quot;\$PWD:/root\&quot; \</span>
+<span class="s2">    -v \&quot;\$PWD:/values\&quot; \</span>
+<span class="s2">    registry.scontain.com:5050/sconecuratedimages/experimental:upload-policy &quot;</span>
+</code></pre></div>
+<p><code>upload_policy</code> comes with the templates for <a href="https://sconedocs.github.io/helm/">sconeapps</a> preloaded. Assuming that you've created the alias above, use the following command to use the default policy for Tensorflow.</p>
+<div class="highlight"><pre><span></span><code>scone upload_policy templates/tensorflow
+</code></pre></div>
+<p>If everything went well, <code>upload_policy</code> created the <code>tensorflow_chart_values.yml</code> file in your current directory.</p>
+<p>In case you want to not use the default policy maintained by Scontain, you can upload a custom policy. See <code>scone upload_policy --help</code> for more information. It will always generate the chart values with the CAS address (SCONE_CAS_ADDR var) and SCONE_CONFIG_ID for remote attestation pointing to the policies created.</p>
+<h3 id="install-the-chart">Install the chart</h3>
+<h4 id="add-the-sconeapps-repo">Add the sconeapps repo</h4>
+<p>If you haven't yet, please add sconeapps repo to Helm.</p>
+<h4 id="install-the-chart_1">Install the chart</h4>
 <p>Use Helm to run Tensorflow on your cluster. We are deploying a Helm release called <code>my-tensorflow</code>, with default parameters (i.e., a simple model training):</p>
-<div class="highlight"><pre><span></span><code>helm install my-tensorflow sconeapps/tensorflow
+<div class="highlight"><pre><span></span><code><span class="c1"># Using the tensorflow_chart_values.yml file generated by the upload_policy command</span>
+helm install my-tensorflow sconeapps/tensorflow -f tensorflow_chart_values.yml
 </code></pre></div>
 <p>Have a look at the <a href="#parameters">Parameters</a> section for a complete list of parameters this chart supports.</p>
 <h4 id="sgx-device">SGX device</h4>
@@ -3997,7 +4028,7 @@
 </code></pre></div>
 <h3 id="before-you-begin">Before you begin</h3>
 <h4 id="attestation">Attestation</h4>
-<p>This chart does not submit any sessions to a CAS, so you have to do it beforehand, from a trusted computer. If you need to pass remote attestation information to your container, such as <code>SCONE_CONFIG_ID</code> and <code>SCONE_CAS_ADDR</code>, use the <code>extraEnv</code> parameter on <code>values.yaml</code>.</p>
+<p>This chart does not submit any sessions to a CAS, so you have to do it beforehand. If you need to pass remote attestation information to your container, use the upload_policy container. It will add information such as <code>SCONE_CONFIG_ID</code> and <code>SCONE_CAS_ADDR</code>, using the <code>extraEnv</code> parameter on <code>values.yaml</code>.</p>
 <h4 id="data-output-and-external-volumes">Data output and external volumes</h4>
 <p>If your workload produces any output artifacts that need to be saved before the container is gone, consider having an auxiliary task uploading it to somewhere after the main task is finished.</p>
 <p>For now, any output volumes are considered to be either <code>hostPath</code> (meaning that their respective directories have to exist on the worker node) or <code>emptyDir</code>, which maps everything to random-generated directory under <code>/tmp</code>.</p>
@@ -4059,7 +4090,7 @@
 <tr>
 <td><code>extraEnv</code></td>
 <td>Additional environment variables for Tensorflow container</td>
-<td><code>[{"name": "SCONE_LAS_ADDR", "valueFrom": {"fieldRef": {"fieldPath": "status.hostIP"}}}]</code></td>
+<td><code>[]</code></td>
 </tr>
 <tr>
 <td><code>resources</code></td>
@@ -4089,7 +4120,7 @@
 <tr>
 <td><code>sgxEpcMem</code></td>
 <td>Required to Azure SGX Device Plugin. Protected EPC memory in MiB</td>
-<td><code>nil</code></td>
+<td><code>16</code></td>
 </tr>
 </tbody>
 </table>
