@@ -1478,8 +1478,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tldr" class="md-nav__link">
     TL'DR
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-controller-reference" class="md-nav__link">
+    Operator Controller Reference
   </a>
   
 </li>
@@ -1569,7 +1583,7 @@
   
     <li class="md-nav__item">
       <a href="../5_kubectl/" class="md-nav__link">
-        Deploying CAS
+        Deploying CAS and Vault
       </a>
     </li>
   
@@ -3701,6 +3715,95 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_7" type="checkbox" id="__nav_11_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_7">
+          Security
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Security" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_7">
+          <span class="md-nav__icon md-icon"></span>
+          Security
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S1_threat_model/" class="md-nav__link">
+        Thread Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S2_random_numbers/" class="md-nav__link">
+        Random numbers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S3_governance/" class="md-nav__link">
+        Governance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S4_attestation/" class="md-nav__link">
+        Attestation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
       <a href="../SCONE_Publications/" class="md-nav__link">
         Publications
@@ -3747,18 +3850,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_10" type="checkbox" id="__nav_11_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_11" type="checkbox" id="__nav_11_11" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_11_10">
+        <label class="md-nav__link" for="__nav_11_11">
           Releases
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Releases" data-md-level="2">
-        <label class="md-nav__title" for="__nav_11_10">
+        <label class="md-nav__title" for="__nav_11_11">
           <span class="md-nav__icon md-icon"></span>
           Releases
         </label>
@@ -3874,8 +3977,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#tldr" class="md-nav__link">
     TL'DR
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-controller-reference" class="md-nav__link">
+    Operator Controller Reference
   </a>
   
 </li>
@@ -3964,6 +4081,23 @@
 
 
 <h1 id="deploying-reconciling-the-scone-operator">Deploying &amp; Reconciling the SCONE Operator</h1>
+<p>The <a href="https://sconedocs.github.io/1_scone_operator/">SCONE Kubernetes operator</a> facilitates a declarative description of SCONE-related custom resources. These custom resources include</p>
+<ul>
+<li>SCONE CAS (<code>cas.services.scone.cloud</code>): deploys a high-availability CAS using a primary/backup approach.</li>
+<li>SCONE LAS (<code>las.base.scone.cloud</code>): deploys local attestation service on all SGX-capable nodes of a Kubernetes cluster,</li>
+<li>SCONE SGXPlugin (<code>las.base.scone.cloud</code>): identifies and labels all SGX-capable Kubernetes nodes and ensures that containers can use SGX on these nodes,</li>
+<li>SCONE signed policies (<code>signedpolicies.cas.scone.cloud</code>): security policies uploaded to CAS via </li>
+<li>SCONE signed and encrypted policies (<code>encryptedpolicies.cas.scone.cloud</code>), and</li>
+<li>confidential Vault (<code>vaults.services.scone.cloud</code>).</li>
+</ul>
+<p>These custom resources are associated with controllers bringing or keeping these resources in their target state. For each of these custom resources, a custom resource definition (CRD) specifies how to define a custom resource.</p>
+<h2 id="installation">Installation</h2>
+<p>We maintain a script and a helm chart to install the SCONE Operator. The script installs</p>
+<ul>
+<li>the SCONE operator, and </li>
+<li>LAS, SGXPlugin, as well as </li>
+<li>our <a href="https://sconedocs.github.io/5_kubectl/"><code>kubectl provision</code> plugin</a></li>
+</ul>
 <p>The SCONE operator consists of</p>
 <ul>
 <li>a controller manager, and</li>
@@ -3974,24 +4108,99 @@
 <p>When the operator is deployed, its CRDs, controllers, and other Kubernetes objects are deployed, and the controller manager is started. The controller manager runs as a Kubernetes deployment and deploys mutating and validating webhooks at start-up. Once they have started up, a custom resource of each kind can be deployed. This is made possible by the previous deployment of the corresponding CRDs.</p>
 <p>Once a CR is created, deleted, or updated, the corresponding controller is notified, and reconciling the CR is started. To summarize, the reconciler, i.e., the controller, checks the current state of the CR, compares it to the desired state (i.e., its configuration), and takes the necessary action to change the current state into the desired state. This action either automatically (for example, if it was an update of the CR) or explicitly results in the reconciliation being triggered again. This process continues until the two states are equal.</p>
 <h2 id="tldr">TL'DR</h2>
-<p>A simple <code>operator_controller</code> script deploys and updates the SCONE Operator. In case you want to deploy or update the pull secrets, set environment variables:</p>
+<p>A simple <code>operator_controller</code> script deploys and updates the SCONE Operator. In case you use the SCONE image registry, you would need to deploy image pull secrets. For this, you would need to set environment variables:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">REGISTRY_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># username of the registry service account</span>
 <span class="nb">export</span> <span class="nv">REGISTRY_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-access-toke&gt; <span class="c1"># read access token</span>
 <span class="nb">export</span> <span class="nv">REGISTRY_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># email address of the service account</span>
 </code></pre></div>
 <p>Your access token needs to be able to read the registry: for more details, please see the section <a href="https://sconedocs.github.io/registry/#create-an-access-token">Create an Access Token</a>. </p>
 <p>You can now deploy or update the SCONE operator as follows:</p>
-<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - --set-version <span class="m">5</span>.8.0-rc.1 --reconcile --update --secret-operator  --plugin --verbose  --username <span class="nv">$REGISTRY_USERNAME</span> --access-token <span class="nv">$REGISTRY_ACCESS_TOKEN</span> --email <span class="nv">$REGISTRY_EMAIL</span>
+<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - --set-version <span class="m">5</span>.8.0-rc.8 --reconcile --update --secret-operator  --plugin --verbose  --username <span class="nv">$REGISTRY_USERNAME</span> --access-token <span class="nv">$REGISTRY_ACCESS_TOKEN</span> --email <span class="nv">$REGISTRY_EMAIL</span>
 </code></pre></div>
 <ul>
-<li><code>--reconcile</code>: deploys and reconciles the SCONE operator in a Kubernetes cluster.</li>
+<li><code>--set-version</code>:  set the version that you want to install. </li>
+<li><code>--reconcile</code>: The <code>operator_controller</code>, even without any of the above flags, will output <strong>warnings</strong> if the operator or any of its dependencies is not in the desired state.
+By setting flag <code>--reconcile</code>, the operator deploys and reconciles the SCONE operator in a Kubernetes cluster.</li>
 <li><code>--update</code>: redeploys the operator and updates its image.</li>
 <li><code>--secret-operator</code>:  deploy a <strong>secrets operator</strong> (see below) that injects the SCONE Operator, and CAS pull secrets in all namespaces.</li>
 <li><code>--username</code>, <code>--access-token</code>, <code>--email</code>: define if you want to <code>--reconcile</code> or to <code>--update</code> the pull secrets.</li>
-<li><code>--plugin</code>: deploy the SCONE <code>kubectl</code> on your local machine.</li>
+<li><code>--plugin</code>: deploy the SCONE <code>kubectl</code> plugin on your local machine. This will find the last directory on the <code>PATH</code> that is writeable. If there is no writable directory on the <code>PATH</code>, this will fail. In this case, please set <code>--plugin-path</code> to define a directory where the operator controller  should write the plugin. The name of the plugin is <code>kubectl-provision</code>.</li>
 <li><code>--verbose</code>: display progress information.</li>
-<li>The <code>operator_controller</code>, even without any of the above flags, will output <strong>warnings</strong> if the operator or any of its dependencies is not in the desired state.</li>
+<li><code>--only-operator</code>: By default, the <code>operator_controller</code> installs a LAS and SGXPlugin. Set flag  <code>--only-operator</code> to only install the operator.</li>
+<li><code>--no-sgxplugin</code>: in case another plugin is already installed in the cluster, set flag <code>--no-sgxplugin</code>.</li>
 </ul>
+<p>Typically, you want to keep all versions the same. Upgrading the versions needs to be performed in a given sequence. </p>
+<div class="admonition note">
+<p class="admonition-title">Upgrade of operator requires an upgrade of CAS</p>
+<p>If you have any CAS running, you must first upgrade the CAS instances before you upgrade the operator. Updating the operator also updates the LAS and the SGXPlugin.</p>
+</div>
+<h2 id="operator-controller-reference">Operator Controller Reference</h2>
+<div class="highlight"><pre><span></span><code>operator_controller [OPTIONS]
+
+Objectives:
+  - Checks if the SCONE operator and all its dependencies are available.
+  - Tries to fix any issues it discovers if flag &#39;--fix&#39; is set.
+  - Tries to update all components in case flag &#39;--update&#39; is set (even if everything is ok).
+  - Creates a namespace for a service if flag --create NAMESPACE is set.
+
+
+Options:
+    --reconcile | -r
+                  Try to fix all warnings that we discover.
+                  The default is to warn about potential issues only.
+    --update | -u
+                  Try to update all dependencies of the SCONE operator.
+                  independently if they need fixing.
+    -n | --namespace NAMESPACE
+                  The Kubernetes namespace in which the SCONE operator should be deployed on the cluster.
+                  Default value: &quot;scone-system&quot;
+    -c | --create NAMESPACE
+                  Create namespace &quot;NAMESPACE&quot; for provisioning SCONE CAS (or another service).
+    --username REGISTRY_USERNAME
+                  To create/update/fix the pull secrets (&#39;sconeapps&#39; and &#39;scone-operator-pull&#39;), 
+                  one needs to specify the user name, access token, and email of the registry.
+                  Signup for an account: https://sconedocs.github.io/registry/
+    --access-token REGISTRY_ACCESS_TOKEN
+                  The access token of the pull secret.
+    --email REGISTRY_EMAIL
+                  The email address belonging to the pull secret.
+    --plugin
+                  Include the kubectl plugin in the reconciliation and updates.
+    --plugin-path PATH
+                  Path where we should write the kubectl plugin binary. The path must be writeable.
+                  Default value: &quot;/Users/christoffetzer/.local/bin/kubectl-provision&quot;
+                  The prefix of the default value is the last path on your shell $PATH that is writeable. 
+                  If none is writeable and you set --plugin, you must specify --plugin-path PATH.
+    --secret-operator
+                  Check/Reconcile/Update the Secret Operator (used to inject Kubernetes Secrets into Kubernetes namespaces)
+    --only-operator
+                  Only install the SCONE Operator (but no LAS, SGXPlugin, kubectl plugin)
+    -v | --verbose
+                  Enable verbose output
+    --debug | debug_short_flag
+                  Create debug image instead of a production image
+    --set-version VERSION
+                  Set the version of the helm chart
+    --no-sgxplugin
+                  Set this flag in case you do not want to install the SGXPlugin.
+    --help
+                  Output this usage information and exit.
+
+Default Configuration: 
+  - CERT_MANAGER=https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.yaml
+  - DEFAULT_NAMESPACE=scone-system
+  - HELM_CHART=https://raw.githubusercontent.com/scontain/operator/main/scone-operator-5.8.0-rc.8.tgz
+  - LAS_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/las.yaml
+  - SGXPLUGIN_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/sgxplugin.yaml
+  - REGISTRY=registry.scontain.com
+  - IMAGE_REPO=registry.scontain.com/scone.cloud
+  - KUBECTLPLUGIN=https://raw.githubusercontent.com/scontain/SH/master/5.8.0-rc.8/kubectl-provision
+  - SECRET_OPERATOR_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/secrets_operator.yaml
+  - IMPS_HELM_CHART=banzaicloud-stable/imagepullsecrets
+  - IMPS_HELM_REPO=banzaicloud-stable https://kubernetes-charts.banzaicloud.com
+  - VERSION=5.8.0-rc.8
+You can overwrite the defaults by exporting these environment variables before executing this script.
+</code></pre></div>
 <h2 id="manual-deployment-of-the-operator">Manual Deployment of the Operator</h2>
 <div class="admonition note">
 <p class="admonition-title">Use the Operator Controller to deploy the SCONE Operator</p>
@@ -4143,13 +4352,13 @@ kubectl logs -n scone-system <span class="nv">$CONTROLLERPOD</span>
       
       
         
-        <a href="../5_kubectl/" class="md-footer__link md-footer__link--next" aria-label="Next: Deploying CAS" rel="next">
+        <a href="../5_kubectl/" class="md-footer__link md-footer__link--next" aria-label="Next: Deploying CAS and Vault" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Deploying CAS
+              Deploying CAS and Vault
             </div>
           </div>
           <div class="md-footer__button md-icon">
