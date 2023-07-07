@@ -1496,29 +1496,8 @@
     Operator Controller Reference
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#manual-deployment-of-the-operator" class="md-nav__link">
-    Manual Deployment of the Operator
-  </a>
-  
-    <nav class="md-nav" aria-label="Manual Deployment of the Operator">
+    <nav class="md-nav" aria-label="Operator Controller Reference">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#kubernetes-config" class="md-nav__link">
-    Kubernetes Config
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cert-manager" class="md-nav__link">
-    cert-manager
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#operator-namespace" class="md-nav__link">
@@ -4009,29 +3988,8 @@
     Operator Controller Reference
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#manual-deployment-of-the-operator" class="md-nav__link">
-    Manual Deployment of the Operator
-  </a>
-  
-    <nav class="md-nav" aria-label="Manual Deployment of the Operator">
+    <nav class="md-nav" aria-label="Operator Controller Reference">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#kubernetes-config" class="md-nav__link">
-    Kubernetes Config
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cert-manager" class="md-nav__link">
-    cert-manager
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#operator-namespace" class="md-nav__link">
@@ -4126,36 +4084,52 @@
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">REGISTRY_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># username of the registry service account</span>
 <span class="nb">export</span> <span class="nv">REGISTRY_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-access-toke&gt; <span class="c1"># read access token</span>
 <span class="nb">export</span> <span class="nv">REGISTRY_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># email address of the service account</span>
+<span class="nb">export</span> <span class="nv">DCAP_KEY</span><span class="o">=</span><span class="s2">&quot;00000000000000000000000000000000&quot;</span> <span class="c1"># replace by your Intel DCAP API - keep as is on Azure</span>
 </code></pre></div>
-<p>Your access token needs to be able to read the registry: for more details, please see the section <a href="https://sconedocs.github.io/registry/#create-an-access-token">Create an Access Token</a>. </p>
+<p>You can get the DCAP API Key from <a href="https://api.portal.trustedservices.intel.com/provisioning-certification">Intel</a>. Your access token needs to be able to read the registry: for more details, please see the section <a href="https://sconedocs.github.io/registry/#create-an-access-token">Create an Access Token</a>.</p>
 <p>You can now deploy or update the SCONE operator as follows:</p>
-<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - --set-version <span class="m">5</span>.8.0-rc.8 --reconcile --update --secret-operator  --plugin --verbose  --username <span class="nv">$REGISTRY_USERNAME</span> --access-token <span class="nv">$REGISTRY_ACCESS_TOKEN</span> --email <span class="nv">$REGISTRY_EMAIL</span>
+<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - --reconcile --update --plugin --verbose --dcap-api <span class="s2">&quot;</span><span class="nv">$DCAP_KEY</span><span class="s2">&quot;</span> --secret-operator  --username <span class="nv">$REGISTRY_USERNAME</span> --access-token <span class="nv">$REGISTRY_ACCESS_TOKEN</span> --email <span class="nv">$REGISTRY_EMAIL</span>
 </code></pre></div>
+<p>Flags:</p>
 <ul>
-<li><code>--set-version</code>:  set the version that you want to install. </li>
-<li><code>--reconcile</code>: The <code>operator_controller</code>, even without any of the above flags, will output <strong>warnings</strong> if the operator or any of its dependencies is not in the desired state.
-By setting flag <code>--reconcile</code>, the operator deploys and reconciles the SCONE operator in a Kubernetes cluster.</li>
-<li><code>--update</code>: redeploys the operator and updates its image.</li>
-<li><code>--secret-operator</code>:  deploy a <strong>secrets operator</strong> (see below) that injects the SCONE Operator, and CAS pull secrets in all namespaces.</li>
-<li><code>--username</code>, <code>--access-token</code>, <code>--email</code>: define if you want to <code>--reconcile</code> or to <code>--update</code> the pull secrets.</li>
-<li><code>--plugin</code>: deploy the SCONE <code>kubectl</code> plugin on your local machine. This will find the last directory on the <code>PATH</code> that is writeable. If there is no writable directory on the <code>PATH</code>, this will fail. In this case, please set <code>--plugin-path</code> to define a directory where the operator controller  should write the plugin. The name of the plugin is <code>kubectl-provision</code>.</li>
-<li><code>--verbose</code>: display progress information.</li>
-<li><code>--only-operator</code>: By default, the <code>operator_controller</code> installs a LAS and SGXPlugin. Set flag  <code>--only-operator</code> to only install the operator.</li>
-<li><code>--no-sgxplugin</code>: in case another plugin is already installed in the cluster, set flag <code>--no-sgxplugin</code>.</li>
+<li>
+<p><code>--reconcile</code>: The <code>operator_controller</code>, even without any of the above flags, will output <strong>warnings</strong> if the operator or any of its dependencies is not in the desired state.
+By setting flag <code>--reconcile</code>, the operator deploys and reconciles the SCONE operator in a Kubernetes cluster.</p>
+</li>
+<li>
+<p><code>--update</code>: redeploys the operator and updates its image.</p>
+</li>
+<li>
+<p><code>--secret-operator</code>:  deploy a <strong>secrets operator</strong> (see below) that injects the SCONE Operator, and CAS pull secrets in all namespaces.</p>
+</li>
+<li>
+<p><code>--username</code>, <code>--access-token</code>, <code>--email</code>: define if you want to <code>--reconcile</code> or to <code>--update</code> the pull secrets.</p>
+</li>
+<li>
+<p><code>--plugin</code>: deploy the SCONE <code>kubectl</code> plugin on your local machine. This will find the last directory on the <code>PATH</code> that is writeable. <strong>If there is no writable directory on the <code>PATH</code>, this will fail</strong>. In this case, please set <code>--plugin-path</code> to define a directory where the operator controller should write the plugin. The name of the plugin is <code>kubectl-provision</code>.</p>
+</li>
+<li>
+<p><code>--verbose</code>: display progress information.</p>
+</li>
+<li>
+<p><code>--only-operator</code>: By default, the <code>operator_controller</code> installs a LAS and SGXPlugin. Set flag  <code>--only-operator</code> to only install the operator.</p>
+</li>
+<li>
+<p><code>--no-sgxplugin</code>: in case another plugin is already installed in the cluster, set flag <code>--no-sgxplugin</code>.</p>
+</li>
 </ul>
-<p>Typically, you want to keep all versions the same. Upgrading the versions needs to be performed in a given sequence. </p>
-<div class="admonition note">
-<p class="admonition-title">Upgrade of operator requires an upgrade of CAS</p>
-<p>If you have any CAS running, you must first upgrade the CAS instances before you upgrade the operator. Updating the operator also updates the LAS and the SGXPlugin.</p>
-</div>
+<p>Typically, you want to keep all versions the same. Upgrading of the SCONE operator, SCONE SGXPlugin, and the SCONE LAS can be done via the operator controller using flag <code>--update</code>.  A SCONE CAS needs to be updated using our <a href="https://sconedocs.github.io/5_kubectl/"><code>kubectl provision</code> plugin</a>.  </p>
 <h2 id="operator-controller-reference">Operator Controller Reference</h2>
-<div class="highlight"><pre><span></span><code>operator_controller [OPTIONS]
+<div class="highlight"><pre><span></span><code>Usage:
+  operator_controller [OPTIONS]
 
 Objectives:
   - Checks if the SCONE operator and all its dependencies are available.
-  - Tries to fix any issues it discovers if flag &#39;--fix&#39; is set.
+  - Tries to fix any issues it discovers if flag &#39;--reconcile&#39; is set.
   - Tries to update all components in case flag &#39;--update&#39; is set (even if everything is ok).
   - Creates a namespace for a service if flag --create NAMESPACE is set.
+  - If the --verify-image-signatures is provided, or if the Scontain container image repository
+    is used, the signatures of the images used are verified.
 
 
 Options:
@@ -4197,39 +4171,51 @@ Options:
                   Set the version of the helm chart
     --no-sgxplugin
                   Set this flag in case you do not want to install the SGXPlugin.
+    --verify-image-signatures PUBLIC_KEY_PATH
+                  Path to the public key to use for verification of signed images.
+                  For the verification of signed images in the registry.scontain.com/scone.cloud
+                  repository, the public key does not need to be provided, and this
+                  option is ignored.
+    --dcap-api | -d &lt;DCAP API Key&gt;
+                  DCAP API Key - required when provisioning LAS.
     --help
                   Output this usage information and exit.
 
 Default Configuration: 
   - CERT_MANAGER=https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.yaml
   - DEFAULT_NAMESPACE=scone-system
-  - HELM_CHART=https://raw.githubusercontent.com/scontain/operator/main/scone-operator-5.8.0-rc.8.tgz
-  - LAS_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/las.yaml
-  - SGXPLUGIN_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/sgxplugin.yaml
+  - HELM_CHART=https://raw.githubusercontent.com/scontain/operator/main/scone-operator-5.8.0.tgz
+  - LAS_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0/las.yaml
+  - SGXPLUGIN_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0/sgxplugin.yaml
   - REGISTRY=registry.scontain.com
   - IMAGE_REPO=registry.scontain.com/scone.cloud
-  - KUBECTLPLUGIN=https://raw.githubusercontent.com/scontain/SH/master/5.8.0-rc.8/kubectl-provision
-  - SECRET_OPERATOR_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/secrets_operator.yaml
+  - KUBECTLPLUGIN=https://raw.githubusercontent.com/scontain/SH/master/5.8.0/kubectl-provision
+  - SECRET_OPERATOR_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0/secrets_operator.yaml
   - IMPS_HELM_CHART=banzaicloud-stable/imagepullsecrets
   - IMPS_HELM_REPO=banzaicloud-stable https://kubernetes-charts.banzaicloud.com
-  - VERSION=5.8.0-rc.8
-You can overwrite the defaults by exporting these environment variables before executing this script.
-</code></pre></div>
-<h2 id="manual-deployment-of-the-operator">Manual Deployment of the Operator</h2>
-<div class="admonition note">
-<p class="admonition-title">Use the Operator Controller to deploy the SCONE Operator</p>
-<p>We do not recommend installing the SCONE Operator manually. This description explains the individual steps that need to be performed in case you want to customize the Operator Controller.</p>
-</div>
-<p>We need to install a set of prerequisites to install the SCONE Operator. After the SCONE operator is up and running, each of the custom resources <code>SGXPlugin</code>, <code>LAS</code>, and <code>CAS</code> can be installed separately by deploying and creating a custom resource.</p>
-<h3 id="kubernetes-config">Kubernetes Config</h3>
-<p>The first step is to ensure you have access to your Kubernetes cluster.</p>
-<div class="admonition note">
-<p class="admonition-title">KUBECONFIG</p>
-<p>We assume you can access your Kubernetes cluster through your <code>$HOME/.kube/config</code> file or the <code>KUBECONFIG</code> environment variable.</p>
-</div>
-<h3 id="cert-manager"><code>cert-manager</code></h3>
-<p>The <code>cert-manager</code> is a prerequisite of the SCONE operator. You can check if the <code>cert-manager</code> is installed using <code>kubectl</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl get pods -A <span class="p">|</span> grep cert-manager
+  - VERSION=5.8.0
+You can overwrite the defaults by exporting these environment variables before executing this script.```
+
+## Manual Deployment of the Operator
+
+!!! note &quot;Use the Operator Controller to deploy the SCONE Operator&quot;
+    We do not recommend installing the SCONE Operator manually. This description explains the individual steps that need to be performed in case you want to customize the Operator Controller.
+
+We need to install a set of prerequisites to install the SCONE Operator. After the SCONE operator is up and running, each of the custom resources `SGXPlugin`, `LAS`, and `CAS` can be installed separately by deploying and creating a custom resource.
+
+### Kubernetes Config
+
+The first step is to ensure you have access to your Kubernetes cluster.
+
+!!! note &quot;KUBECONFIG&quot;
+    We assume you can access your Kubernetes cluster through your `$HOME/.kube/config` file or the `KUBECONFIG` environment variable.
+
+### `cert-manager`
+
+The `cert-manager` is a prerequisite of the SCONE operator. You can check if the `cert-manager` is installed using `kubectl`:
+
+```bash
+kubectl get pods -A | grep cert-manager
 </code></pre></div>
 <p>If no <code>cert-manager</code> pod is running,  you can install <code>cert-manager</code> using <code>kubectl</code> or <code>helm</code>. Our recommendation, however, is to install the latest release using <code>kubectl</code> as follows:</p>
 <div class="highlight"><pre><span></span><code>kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.yaml

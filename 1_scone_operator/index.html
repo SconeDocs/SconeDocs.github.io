@@ -1478,30 +1478,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#general-scone-operator-objectives" class="md-nav__link">
-    General SCONE Operator Objectives
+  <a href="#general-scone-operator" class="md-nav__link">
+    General SCONE Operator
   </a>
   
-    <nav class="md-nav" aria-label="General SCONE Operator Objectives">
+    <nav class="md-nav" aria-label="General SCONE Operator">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#specific-cas-objectives" class="md-nav__link">
-    Specific CAS Objectives
+  <a href="#specific-cas-properties" class="md-nav__link">
+    Specific CAS Properties
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#specific-las-objectives" class="md-nav__link">
-    Specific LAS Objectives
+  <a href="#specific-las-properties" class="md-nav__link">
+    Specific LAS Properties
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#specific-sgxplugin-objectives" class="md-nav__link">
-    Specific SGXPlugin Objectives
+  <a href="#specific-sgxplugin-properties" class="md-nav__link">
+    Specific SGXPlugin Properties
   </a>
   
 </li>
@@ -3963,30 +3963,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#general-scone-operator-objectives" class="md-nav__link">
-    General SCONE Operator Objectives
+  <a href="#general-scone-operator" class="md-nav__link">
+    General SCONE Operator
   </a>
   
-    <nav class="md-nav" aria-label="General SCONE Operator Objectives">
+    <nav class="md-nav" aria-label="General SCONE Operator">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#specific-cas-objectives" class="md-nav__link">
-    Specific CAS Objectives
+  <a href="#specific-cas-properties" class="md-nav__link">
+    Specific CAS Properties
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#specific-las-objectives" class="md-nav__link">
-    Specific LAS Objectives
+  <a href="#specific-las-properties" class="md-nav__link">
+    Specific LAS Properties
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#specific-sgxplugin-objectives" class="md-nav__link">
-    Specific SGXPlugin Objectives
+  <a href="#specific-sgxplugin-properties" class="md-nav__link">
+    Specific SGXPlugin Properties
   </a>
   
 </li>
@@ -4012,15 +4012,24 @@
 
 <h1 id="scone-kubernetes-operator">SCONE Kubernetes Operator</h1>
 <h2 id="introduction">Introduction</h2>
-<p>The SCONE Kubernetes operator facilitates a <strong>declarative description</strong> of SCONE-related custom resources. These custom resources include <strong>SCONE CAS</strong>, <strong>SCONE LAS</strong>, the <strong>SCONE SGX Plugin</strong>, and (confidential) <strong>Vault</strong>. These customer resources are associated with controllers to bring these resources to their target state. </p>
-<p>A <strong>custom resource definition</strong> (CRD) specifies how to define a custom resource. We introduce these CRDs in some more detail below.  <strong>SCONE CAS policies</strong> (aka sessions) are also defined as custom resources: This means that we can securely upload policies as Kubernetes manifests or as <strong>part of helm charts</strong>. This means that confidential applications can be deployed and operated using standard tools like <strong>helm</strong> and <strong>GitOps</strong> to manage <strong>confidential applications</strong>. </p>
-<p><strong>GitOps</strong>  means that the ground truth for the deployment state of a confidential application is the git repository. We will show in a later section that we do not need to trust the git repo or Kubernetes regarding <strong>integrity</strong>, <strong>confidentiality</strong>, or <strong>consistency</strong>. By excluding git repositories, Kubernetes, Linux, operations teams, etc, from the trusted computing base (TCB), we improve the security of our applications. This also means that the security argument of applications can be simplified: one does not need to have a detailed argument of the security of components that are not in the TCB.  </p>
+<p>A Kubernetes Operator automates the management of services. It monitors the behavior of these services and ensures that the services stay in the described state. Kubernetes supports the management of application service with the help of <em>custom resources</em>.</p>
+<p>We define a set of custom resources to manage the follow SCONE resources:</p>
+<ul>
+<li><strong>SCONE CAS</strong>: the SCONE Configuration and Attestation Service, to ensure that CAS is</li>
+<li><strong>SCONE LAS</strong>: the SCONE Local Attestation Service,</li>
+<li><strong>SCONE SGX Plugin</strong>: a Kubernetes plugin that provides containers with access to SGX,</li>
+<li>a confidential <strong>Vault</strong>, and</li>
+<li><strong>signed</strong> and/or <strong>encrypted</strong> SCONE CAS policies.</li>
+</ul>
+<p>A Kubernetes <strong>custom resource definition</strong> (CRD) specifies how to define such a custom resource. We introduce these CRDs in some more detail below.  <strong>SCONE CAS policies</strong> (aka sessions) are also defined as custom resources: This means that we can securely upload policies as Kubernetes manifests or as <strong>part of helm charts</strong>. This means that confidential applications can be deployed and operated using standard tools like <strong>helm</strong> and <strong>GitOps</strong> to manage <strong>confidential applications</strong>.</p>
+<p><strong>GitOps</strong>  means that the ground truth for the deployment state of a confidential application is the <code>git</code> repository. We will show in a later section that we do not need to trust the git repo or Kubernetes regarding <strong>integrity</strong>, <strong>confidentiality</strong>, or <strong>consistency</strong>. By excluding git repositories, Kubernetes, Linux, operations teams, etc, from the trusted computing base (TCB), we improve the security of our applications. This also means that the security argument of applications can be simplified: one does not need to have a detailed argument of the security of components that are not in the TCB.  </p>
+<p>The SCONE Kubernetes operator manages the SCONE <strong>custom resources</strong>.</p>
 <h2 id="custom-resources">Custom Resources</h2>
 <p>We define custom resources for the following SCONE services and resources:</p>
 <ul>
 <li>
 <p><strong>Configuration and Attestation Service (CAS):</strong></p>
-<p>SCONE CAS is a central component of the SCONE infrastructure. Programs executing in enclaves connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave using <strong>remote attestation</strong>. Additionally, CAS checks that the requesting enclave is authorized to obtain the confidential configuration. One can run CAS instances on the same node as the application, the same cluster, or a different cluster. The CAS operator enables us to configure CAS policies remotely using <code>kubectl</code> or <code>helm</code> without exposing CAS to any external network. </p>
+<p>SCONE CAS is a central component of the SCONE infrastructure. Programs executing in enclaves connect to CAS to obtain their confidential configuration. CAS provisions this configuration only after it has verified the integrity and authenticity of the requesting enclave using <strong>remote attestation</strong>. Additionally, CAS checks that the requesting enclave is authorized to obtain the confidential configuration. One can run CAS instances on the same node as the application, the same cluster, or a different cluster. The CAS operator enables us to configure CAS policies remotely using <code>kubectl</code> or <code>helm</code> without exposing CAS to any external network.</p>
 </li>
 <li>
 <p><strong>Local Attestation Service (LAS):</strong></p>
@@ -4047,13 +4056,13 @@
 <p><strong>Encrypted Policies</strong>:</p>
 <p>Encrypted Policies are integrity and confidentiality-protected. A policy can be encrypted through the SCONE CLI, which will use the public encryption key of the target SCONE CAS to encrypt the policy contents. This ensures that only the intended target SCONE CAS can decrypt the policy contents, making it ideal for including secrets or sensitive information. Encrypted Policies are also signed.</p>
 </li>
+<li>
+<p><strong>Vault</strong></p>
+<p>We can deploy a confidential variant of Vault in a Kubernetes cluster with the help of the <a href="https://sconedocs.github.io/5_kubectl/"><code>kubectl provision</code> plugin</a>.</p>
+</li>
 </ul>
 <p>In what follows, we will describe how to deploy the operator and the custom resources and configure them.</p>
-<ul>
-<li><strong>Vault</strong>:</li>
-</ul>
-<p>We can deploy a confidential variant of Vault in a Kubernetes cluster with the help of </p>
-<h2 id="general-scone-operator-objectives">General SCONE Operator Objectives</h2>
+<h2 id="general-scone-operator">General SCONE Operator</h2>
 <p>The SCONE operator controls the lifecycle of the <code>CAS</code>, <code>LAS</code>, and <code>SGXPlugin</code> custom resources. We aim to ensure a maintenance-free operation of all three services in a Kubernetes cluster. The general objectives of the SCONE operator are as follows:</p>
 <ul>
 <li>
@@ -4099,19 +4108,19 @@
 </ul>
 </li>
 </ul>
-<h3 id="specific-cas-objectives">Specific <code>CAS</code> Objectives</h3>
+<h3 id="specific-cas-properties">Specific <code>CAS</code> Properties</h3>
 <p>The functional objectives specific to the <code>CAS</code> operator are as follows:</p>
 <ul>
 <li>ensure that CAS is healthy and accepting new policies and attestation requests from confidential applications, and</li>
 <li>ensure that upgrades, database backups, and database encryption key backups, which ultimately allow for high-available CAS setups, are performed seamlessly.</li>
 </ul>
-<h3 id="specific-las-objectives">Specific <code>LAS</code> Objectives</h3>
+<h3 id="specific-las-properties">Specific <code>LAS</code> Properties</h3>
 <p>The functional objectives specific to the <code>LAS</code> operator are as follows:</p>
 <ul>
 <li>ensure that LAS is deployed to all (or a subset of) SGX-enabled nodes of the cluster, thus allowing confidential applications to be attested on these nodes, and</li>
 <li>ensure that there is never more than one LAS service running.</li>
 </ul>
-<h3 id="specific-sgxplugin-objectives">Specific <code>SGXPlugin</code> Objectives</h3>
+<h3 id="specific-sgxplugin-properties">Specific <code>SGXPlugin</code> Properties</h3>
 <p>The functional objectives specific to the <code>SGXPlugin</code> operator are as follows:</p>
 <ul>
 <li>ensure that the SGX Plugin provides all enclaves access to an SGX device,</li>
