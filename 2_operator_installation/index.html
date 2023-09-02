@@ -1546,6 +1546,40 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#trouble-shooting" class="md-nav__link">
+    Trouble Shooting
+  </a>
+  
+    <nav class="md-nav" aria-label="Trouble Shooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#image-pull-error" class="md-nav__link">
+    Image Pull Error
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-webhook-issues" class="md-nav__link">
+    SCONE Webhook Issues
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#las-unhealthy" class="md-nav__link">
+    LAS Unhealthy
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4052,6 +4086,40 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#trouble-shooting" class="md-nav__link">
+    Trouble Shooting
+  </a>
+  
+    <nav class="md-nav" aria-label="Trouble Shooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#image-pull-error" class="md-nav__link">
+    Image Pull Error
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-webhook-issues" class="md-nav__link">
+    SCONE Webhook Issues
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#las-unhealthy" class="md-nav__link">
+    LAS Unhealthy
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -4337,6 +4405,48 @@ kubectl logs -n scone-system <span class="nv">$CONTROLLERPOD</span>
 </tr>
 </tbody>
 </table>
+<h2 id="trouble-shooting">Trouble Shooting</h2>
+<p>We have seen as set of issues that cannot be solved automatically by the SCONE Operator.</p>
+<h3 id="image-pull-error">Image Pull Error</h3>
+<p>Sometimes, we see image pull errors when starting SCONE-related container images. For example,
+executing command</p>
+<div class="highlight"><pre><span></span><code>kubectl get pods -n scone-system
+</code></pre></div>
+<p>might result in the following output:</p>
+<div class="highlight"><pre><span></span><code>NAME                                               READY   STATUS             RESTARTS      AGE
+las-lxk95                                          <span class="m">0</span>/2     ImagePullBackOff   <span class="m">0</span>             25m
+</code></pre></div>
+<p>Please check that your pull secrets exists by executing</p>
+<div class="highlight"><pre><span></span><code>kubectl get secrets sconeapps scone-operator-pull -n scone-system
+</code></pre></div>
+<p>this should result in an output like this:</p>
+<div class="highlight"><pre><span></span><code>NAME                  TYPE                             DATA   AGE
+sconeapps             kubernetes.io/dockerconfigjson   <span class="m">1</span>      37m
+scone-operator-pull   kubernetes.io/dockerconfigjson   <span class="m">1</span>      37m
+</code></pre></div>
+<p>Most issues we have seen so far, were caused by expired pull secrets, i.e., the access token stored in the secrets had expired. You could check the validity of your token by logging into the registry using the command <code>docker login registry.scontain.com</code>.</p>
+<p>In case the two pull secrets do <strong>not</strong> exist, please check if the <strong>secret operator</strong> exists and is healthy.</p>
+<p>You can retrieve a new token with scope <code>read_registy</code> by visiting <code>gitlab.scontain.com</code>. The easiest way to update the token in a cluster is to reconciliate the SCONE operator. Please ensure the following environment variables are defined (see above for more details):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">REGISTRY_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># username of the registry service account</span>
+<span class="nb">export</span> <span class="nv">REGISTRY_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-access-toke&gt; <span class="c1"># read access token</span>
+<span class="nb">export</span> <span class="nv">REGISTRY_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># email address of the service account</span>
+<span class="nb">export</span> <span class="nv">DCAP_KEY</span><span class="o">=</span><span class="s2">&quot;00000000000000000000000000000000&quot;</span> <span class="c1"># replace by your Intel DCAP API - keep as is on Azure</span>
+</code></pre></div>
+<p>and execute</p>
+<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - --reconcile --update --plugin --verbose --dcap-api <span class="s2">&quot;</span><span class="nv">$DCAP_KEY</span><span class="s2">&quot;</span> --secret-operator  --username <span class="nv">$REGISTRY_USERNAME</span> --access-token <span class="nv">$REGISTRY_ACCESS_TOKEN</span> --email <span class="nv">$REGISTRY_EMAIL</span>
+</code></pre></div>
+<h3 id="scone-webhook-issues">SCONE Webhook Issues</h3>
+<p>One of the common problems during deployment of the SCONE Operator is related to the Kubernetes cert manager being not or incorrectly installed. This can result in errors related to the use of <em>webhooks</em> by the SCONE operator like this one:</p>
+<div class="highlight"><pre><span></span><code>Error from server <span class="o">(</span>InternalError<span class="o">)</span>: error when creating <span class="s2">&quot;.sgxplugin-manifest.yaml&quot;</span>: Internal error occurred: failed calling webhook <span class="s2">&quot;msgxplugin.kb.io&quot;</span>: failed to call webhook: Post <span class="s2">&quot;https://scone-webhook-service.scone-system.svc:443/mutate-base-scone-cloud-v1beta1-sgxplugin?timeout=10s&quot;</span>: context deadline exceeded
+</code></pre></div>
+<p>In case you are using <code>minikube</code>, please start it  with embedded certificates:  <code>minikube start --embed-certs</code>. By default, the <code>operator_controller</code> script will deploy the cert manager and wait until the cert manager gets ready. It has a built in version like <code>https://github.com/cert-manager/cert-manager/releases/download/v1.12.4/cert-manager.yaml</code>. One can overwrite the default cert manager by defining environment variable <code>CERT_MANAGER</code>.</p>
+<p>If the script is interrupted before the cert manager is properly running, one might need to wait a few minutes for the cert manager to become ready before trying to start <code>operator_controller</code>  again. Please set flag <code>--update</code> to reinstall the cert-manager. The <code>operator_controller</code> script searches for an existing cert-manager by searching for a pod that contains string <code>cert-manager</code>. We might wrongly update the cert manager in case the cert-manager pod is not found.</p>
+<h3 id="las-unhealthy">LAS Unhealthy</h3>
+<p>Some applications change their user ID during startup. To be able to provide such applications with access to SGX, we probe periodically that all users can access the SGX device from within containers. The custom resource <code>las</code> will become unhealthy, in case access to SGX is restricted. You can determine the status of LAS by executing:</p>
+<div class="highlight"><pre><span></span><code>kubectl get las
+</code></pre></div>
+<p>In case <code>las</code> is unhealthy, please check the diagnostic output of <code>kubectl describe las</code> for events and conditions that might have caused <code>las</code> to become unhealthy.</p>
+<p>Sometimes, reboots of servers and VMs can cause this if the default permissions are not properly set. To fix this issue, you might need to change the permissions of device <code>/dev/sgx_enclave</code>  to <code>0666</code> on the hosts and the Kubernetes VMs. Pods that have the wrong permissions set, should be restarted. Alternatively, one could also change the permissions of <code>/dev/sgx_enclave</code> inside of the pods.</p>
 
               
             </article>
