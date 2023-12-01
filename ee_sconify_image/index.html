@@ -4749,7 +4749,7 @@ cat identity.crt.pem &gt;&gt; identity.pem
 </code></pre></div></p>
 <p>Or we can extract it from a scone client which already uploaded a session, to acquire its identity and access rights:
 <div class="highlight"><pre><span></span><code><span class="c1"># within client container</span>
-<span class="nb">printf</span> <span class="s1">&#39;%b&#39;</span> <span class="s2">&quot;</span><span class="k">$(</span>cat <span class="nv">$HOME</span>/.cas/config.json <span class="p">|</span> jq .identity<span class="k">)</span><span class="s2">&quot;</span> &gt; identity.pem
+<span class="nb">printf</span> <span class="s1">&#39;%b&#39;</span> <span class="s2">&quot;</span><span class="k">$(</span>cat <span class="nv">$HOME</span>/.cas/config.json <span class="p">|</span> jq .identity <span class="p">|</span> tr -d <span class="s1">&#39;&quot;&#39;</span><span class="k">)</span><span class="s2">&quot;</span> &gt; identity.pem
 </code></pre></div></p>
 <p>We can then use this identity file in Sconify Image, to upload our session to e.g. a preexisting namespace, created by another client. We use the <code>--identity=FILE</code> option for this:
 <div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
