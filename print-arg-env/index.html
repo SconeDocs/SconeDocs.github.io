@@ -2009,6 +2009,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#creating-a-security-policy-aka-session" class="md-nav__link">
+    Creating a security policy (aka session)
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4082,6 +4089,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#creating-a-security-policy-aka-session" class="md-nav__link">
+    Creating a security policy (aka session)
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4256,7 +4270,7 @@ To protect secrets, we need to run in hardware mode.</p>
 We generate a unique name using two random numbers:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span>secure-arguments-example-sim-mode-<span class="nv">$RANDOM</span>-<span class="nv">$RANDOM</span>
 </code></pre></div>
-<p>Next, we create now a security policy as follows:</p>
+<p>The git repository contains already a policy in file <code>session.yaml</code>. We could manually create this security policy as follows:</p>
 <div class="highlight"><pre><span></span><code>cat &gt; session.yaml <span class="s">&lt;&lt;EOF</span>
 <span class="s"># Name of the session - this must be unique!</span>
 <span class="s"># The creation will fail in case session already exists</span>
@@ -4284,13 +4298,11 @@ We generate a unique name using two random numbers:</p>
 <span class="s">        env3: enclave</span>
 <span class="s">     pwd: /</span>
 <span class="s">EOF</span>
-
-To be able to upload this policy to CAS, we first need to attest CAS, i.e., we check that this 
+</code></pre></div>
+<p>To be able to upload this policy to CAS, we first need to attest CAS, i.e., we check that this 
 indeed a CAS running inside of an enclave and running the expected code and being signed by the 
-expected entity.  We can achieve this by executing
-
-<span class="sb">```</span>bash
-scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> 
+expected entity.  We can achieve this by executing</p>
+<div class="highlight"><pre><span></span><code>scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> 
 </code></pre></div>
 <p>This will fail by saying that this public CAS executes in debug mode,
 i.e. an adversary could attach to this CAS with a debugger.
@@ -4309,8 +4321,24 @@ of CAS instances:</p>
 </code></pre></div>
 <p>The <code>*</code> indicates that <code>scone-cas.cf</code> is now the default CAS and that it was attested.</p>
 <p>For running applications in production mode, you would run your own CAS instance in production mode on an up-to-date computer.</p>
+<h4 id="creating-a-security-policy-aka-session">Creating a security policy (aka session)</h4>
+<p>We can create a new policy with the command <code>scone session create</code>. The available flags for creating a policy can be printed via flag <code>--help</code>:</p>
+<div class="highlight"><pre><span></span><code>scone session create --help
+</code></pre></div>
+<p>We can set the name of the policy in three different ways:</p>
+<ul>
+<li><code>--name $POLICY_NAME</code> overwrites the policy name with the value of the environment variable <code>POLICY_NAME</code></li>
+<li><code>-e SESSION=$SESSION_NAME</code> overwrites the policy name with the value of the environment variable <code>SESSION_NAME</code></li>
+<li><code>--use-env</code> uses the value of the environment variable <code>SESSION</code> to set the policy name.</li>
+</ul>
+<p>Note that if none of the above options is used, the session creation will fail with the error:</p>
+<div class="highlight"><pre><span></span><code>Caused by: Parsing session from session template file &#39;session.yaml&#39; failed
+Caused by: name: Value for variable $SESSION is missing at line 3 column 7
+</code></pre></div>
+<p>This will also be the case if we replace the policy name with flag <code>--name</code> since the environment variables are first replaced before the CLI overwrites the policy name with option <code>--name</code>.</p>
+<p>When defining both <code>--use-env</code> and <code>-e SESSION=$SESSION_NAME</code>, option <code>-e</code> has priority over the environment variables imported via <code>--use-env</code>.</p>
 <p>Now we can create the policy on CAS as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR</span><span class="o">=</span><span class="k">$(</span>scone session create session.yaml<span class="k">)</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR</span><span class="o">=</span><span class="k">$(</span>scone session create --use-env session.yaml<span class="k">)</span>
 </code></pre></div>
 <p>The <code>PREDECESSOR</code> contains the hash value of the policy. This results in an output similar to this:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="nv">$PREDECESSOR</span>
