@@ -4177,43 +4177,55 @@
 <h2 id="image">Image</h2>
 <div class="admonition hint">
 <p class="admonition-title">Getting access to Python Images</p>
-<p>You need access to a private SCONTAIN hub repository <strong>registry.scontain.com/sconecuratedimages/apps</strong> to be able to evaluate our Python images. Please register a free account at <code>gitlab.scontain.com</code>.</p>
+<p>You need access to a private SCONTAIN hub repository <strong>registry.scontain.com/sconecuratedimages/python</strong> and <strong>registry.scontain.com/sconecuratedimages/apps</strong> (for Python 2) to be able to evaluate our Python images. Please register a free account at <code>gitlab.scontain.com</code>.</p>
 </div>
-<p>Currently, we provide a simple Python 2.7 image that is based on the standard Python image python:2.7-alpine.</p>
+<p>Currently, we provide images with Python 3.5 - 3.10 that are based on the standard alpine Python images and on glibc distribution (Ubuntu/debian) Python3.8.
+<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/python:3.10.6-alpine3.16
+docker pull registry.scontain.com/sconecuratedimages/python:3.8-bullseye
+docker pull registry.scontain.com/sconecuratedimages/python:3.8-ubuntu20.04
+</code></pre></div></p>
+<p>Also, we provide a simple Python2.7 image that is based on the standard Python image python:2.7-alpine.</p>
 <p>You can pull this image as follows:</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/apps:python-2-alpine3.6
+<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/apps:python-2.7-alpine3.6
 </code></pre></div>
 <h2 id="python-interpreter">Python Interpreter</h2>
+<div class="admonition error">
+<p class="admonition-title">Thinking about Python in production?</p>
+<p>For production please use <a href="../CAS_session_lang_0_3/#singleton-enclaves">singelton</a>.</p>
+</div>
+<p>First, we determine which SGX device to mount with function <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>. All following commands assume that <code>MOUNT_SGXDEVICE</code> was set by <code>determine_sgx_device</code>. </p>
 <p>To run the Python interpreter inside an enclave in interactive mode, first start the container:</p>
-<div class="highlight"><pre><span></span><code>docker run --rm -it <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp registry.scontain.com/sconecuratedimages/apps:python-2-alpine3.6 sh
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+docker run --rm -it <span class="nv">$MOUNT_SGXDEVICE</span> registry.scontain.com/sconecuratedimages/python:3.10.6-alpine3.16 sh
 </code></pre></div>
 <p>The execute python inside of the container:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python3
 </code></pre></div>
 <p>Since we set <strong>SCONE_VERSION=1</strong>, we get the following outputs<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">1</a></sup>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
-<span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
-<span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
-<span class="nb">export</span> <span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">268435456</span>
-<span class="nb">export</span> <span class="nv">SCONE_STACK</span><span class="o">=</span><span class="m">4194304</span>
-<span class="nb">export</span> <span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
-<span class="nb">export</span> <span class="nv">SCONE_ESPINS</span><span class="o">=</span><span class="m">10000</span>
-<span class="nb">export</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>hw
-<span class="nb">export</span> <span class="nv">SCONE_SGXBOUNDS</span><span class="o">=</span>no
-<span class="nb">export</span> <span class="nv">SCONE_VARYS</span><span class="o">=</span>no
-<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>yes <span class="o">(</span>unprotected<span class="o">)</span>
-<span class="nb">export</span> <span class="nv">SCONE_MPROTECT</span><span class="o">=</span>no
-Revision: d0afc0f23819476cbc7d944a20e91d79fcb6f9ab <span class="o">(</span>Thu Aug <span class="m">16</span> <span class="m">16</span>:45:05 <span class="m">2018</span> +0200<span class="o">)</span>
-Branch: master <span class="o">(</span>dirty<span class="o">)</span>
-Configure options: --enable-shared --enable-debug --prefix<span class="o">=</span>/mnt/ssd/franz/subtree-scone/built/cross-compiler/x86_64-linux-musl
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
+<span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
+<span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
+<span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
+<span class="nv">SCONE_TCS</span><span class="o">=</span><span class="m">8</span>
+<span class="nv">SCONE_LOG</span><span class="o">=</span>WARNING
+<span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">268435456</span>
+<span class="nv">SCONE_STACK</span><span class="o">=</span><span class="m">2097152</span>
+<span class="nv">SCONE_ESPINS</span><span class="o">=</span><span class="m">10000</span>
+<span class="nv">SCONE_MODE</span><span class="o">=</span>hw
+<span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>yes <span class="o">(</span>unprotected<span class="o">)</span>
+<span class="nv">SCONE_MPROTECT</span><span class="o">=</span>no
+<span class="nv">SCONE_FORK</span><span class="o">=</span>no
+<span class="nv">SCONE_FORK_OS</span><span class="o">=</span><span class="m">0</span>
 
-Enclave hash: f129bbd19627367c03e2980c0f04a32809a7aae1d795a75220d9054daf537b30
-Python <span class="m">2</span>.7.13 <span class="o">(</span>default, Jun  <span class="m">1</span> <span class="m">2018</span>, <span class="m">13</span>:20:58<span class="o">)</span>
-<span class="o">[</span>GCC <span class="m">7</span>.3.0<span class="o">]</span> on linux2
+SCONE_CONFIG_ID: &lt;not specified&gt;
+musl version: <span class="m">1</span>.2.4
+SCONE version: <span class="m">5</span>.8.0 <span class="o">(</span><span class="m">2023</span>-06-08 <span class="m">15</span>:13:27<span class="o">)</span>
+Enclave hash: 345bc79902e646d52d9271d0509da045550f537f7e1d7b8a4da8d6805733718c
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/enclave/dispatch.c:136:print_runtime_info<span class="o">()</span>: Application runs <span class="k">in</span> SGX debug mode. Its memory can be <span class="nb">read</span> from outside the enclave with a debugger! This is not secure!
+Python <span class="m">3</span>.10.6 <span class="o">(</span>main, Aug <span class="m">10</span> <span class="m">2022</span>, <span class="m">00</span>:19:55<span class="o">)</span> <span class="o">[</span>GCC <span class="m">11</span>.2.1 <span class="m">20220219</span><span class="o">]</span> on linux
 Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&quot;</span>, <span class="s2">&quot;credits&quot;</span> or <span class="s2">&quot;license&quot;</span> <span class="k">for</span> more information.
 &gt;&gt;&gt;
 </code></pre></div>
@@ -4232,7 +4244,7 @@ environment variable <strong>SCONE_HEAP</strong> appropriately.</p>
 <p>The meaning of <strong>protected</strong> versus <strong>unprotected</strong> library is explained in the <a href="../what-are-protected-dynamic-libraries">faq</a>.</p>
 <h2 id="running-an-application">Running an application</h2>
 <p>Say, you have a Python application called <em>myapp.py</em> in your current directory.
-To execute this with Pyhton 2.7 inside an enclave, you need to set some environment variables. </p>
+To execute this with Pyhton 3 inside an enclave, you need to set some environment variables. </p>
 <ul>
 <li>
 <p>To run Python inside of an enclave, you can set the environment variable <strong>SCONE_MODE=HW</strong> and <strong>SCONE_ALPINE=1</strong>.</p>
@@ -4252,163 +4264,201 @@ To execute this with Pyhton 2.7 inside an enclave, you need to set some environm
 <p>Python does not always deal gracefully with out of memory situations: often, it terminates with some misleading error message if Python runs out of heap or stack memory. Please try to give python sufficient stack and heap size if this happens. We recommend to start with a large heap, like, <strong>SCONE_HEAP=256M</strong> to ensure that Python has sufficient heap. If your program runs without any problem with a large heap, you can try to reduce the heap size to speedup program startup times.**</p>
 </div>
 <p>Note that you can set the environment variable of a process - in our case python - running inside a container with docker option <strong>-e</strong>:</p>
-<div class="highlight"><pre><span></span><code>docker run --rm  <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> registry.scontain.com/sconecuratedimages/apps:python-2-alpine3.6 python myapp.py
+<div class="highlight"><pre><span></span><code>docker run --rm <span class="nv">$MOUNT_SGXDEVICE</span> -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp -w /usr/src/myapp -e <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M -e <span class="nv">SCONE_MODE</span><span class="o">=</span>HW -e <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> -e <span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span> -e <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> registry.scontain.com/sconecuratedimages/python:3.10.6-alpine3.16b python3 myapp.py
 </code></pre></div>
 <p>Will produce an output like</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
-<span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
-<span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
+<span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
 ...
 </code></pre></div>
 <h2 id="numpy">NumPy</h2>
 <p>Let's see how we can install some extra packages that your python program might need. Let us focus on <strong>NumPy</strong> first, a very popular package for scientific computing. Note that the following steps you would typically perform as part of a <a href="../SCONE_Dockerfile/">Dockerfile</a>.</p>
-<p>First, we determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a> and start the SCONE Python  image:</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-docker run  <span class="nv">$MOUNT_SGXDEVICE</span> -it --rm registry.scontain.com/sconecuratedimages/apps:python-2-alpine3.6 sh
+<div class="highlight"><pre><span></span><code>docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it --rm rregistry.scontain.com/sconecuratedimages/python:3.10.6-alpine3.16 sh
 </code></pre></div>
-<p>This is a minimal image and you need to add some packages to be able to
-install packages that compile external code:</p>
-<div class="highlight"><pre><span></span><code>apk add --no-cache bats libbsd openssl musl-dev build-base
+<p>This is a minimal image and you need to add some packages to be able to install packages that compile external code:</p>
+<div class="highlight"><pre><span></span><code>apk add --no-cache alpine-sdk blas
 </code></pre></div>
 <p>We then install <strong>numpy</strong> inside of the container with the help of <strong>pip</strong>:</p>
-<div class="highlight"><pre><span></span><code>pip install <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
+<div class="highlight"><pre><span></span><code>pip install numpy
 </code></pre></div>
 <p>This results in an output like</p>
-<div class="highlight"><pre><span></span><code>Collecting <span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.14.5
-  Downloading https://files.pythonhosted.org/packages/d5/6e/f00492653d0fdf6497a181a1c1d46bbea5a2383e7faf4c8ca6d6f3d2581d/numpy-1.14.5.zip <span class="o">(</span><span class="m">4</span>.9MB<span class="o">)</span>
-    <span class="m">100</span>% <span class="p">|</span>████████████████████████████████<span class="p">|</span> <span class="m">4</span>.9MB 375kB/s
+<div class="highlight"><pre><span></span><code>Collecting numpy
+  Downloading numpy-1.26.4-cp310-cp310-musllinux_1_1_x86_64.whl <span class="o">(</span><span class="m">18</span>.1 MB<span class="o">)</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class="m">18</span>.1/18.1 MB <span class="m">8</span>.5 MB/s eta <span class="m">0</span>:00:00
 Installing collected packages: numpy
-  Running setup.py install <span class="k">for</span> numpy ... <span class="k">done</span>
-Successfully installed numpy-1.14.5
+Successfully installed numpy-1.26.4
 </code></pre></div>
-<p>Ok, let's try to execute some examples with <strong>NumPy</strong>. Let's  run Python inside an enclave, give it plenty of heap memory and ask SCONE to print some debug messages:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
+<p>Now, we can create application that uses <strong>numpy</strong> using following script:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /
+    cat &gt; numpytest.py <span class="s">&lt;&lt; EOF</span>
+<span class="s">import numpy as np</span>
+<span class="s">a = np.arange(15).reshape(3, 5)</span>
+<span class="s">print(a)</span>
+<span class="s">print(a.shape)</span>
+<span class="s">print(a.ndim)</span>
+<span class="s">print(a.dtype.name)</span>
+<span class="s">print(a.itemsize)</span>
+<span class="s">print(type(a).__name__)</span>
+<span class="s">EOF</span> 
 </code></pre></div>
-<p>during startup this issues the following messages</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
-<span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
-<span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
-<span class="nb">export</span> <span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">10000000000</span>
-<span class="nb">export</span> <span class="nv">SCONE_STACK</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
-<span class="nb">export</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>hw
-<span class="nb">export</span> <span class="nv">SCONE_SGXBOUNDS</span><span class="o">=</span>no
-<span class="nb">export</span> <span class="nv">SCONE_VARYS</span><span class="o">=</span>no
-<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>yes
-<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN2</span><span class="o">=</span>yes
-Revision: 7950fbd1a699ba15f9382ebaefc3ce0d4090801f
-Branch: master <span class="o">(</span>dirty<span class="o">)</span>
-Configure options: --enable-shared --enable-debug --prefix<span class="o">=</span>/scone/src/built/cross-compiler/x86_64-linux-musl
+<p>Ok, let's try to execute this application with <strong>NumPy</strong>. Let's  run Python inside an enclave, give it plenty of heap memory and ask SCONE to print some debug messages:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python3 numpytest.py
+</code></pre></div>
+<p>Result should look something like this:
+<div class="highlight"><pre><span></span><code><span class="o">[</span>SCONE<span class="o">]</span> Using the following values <span class="o">(</span>default values or specified <span class="k">in</span> the untrusted environment<span class="o">)</span>:
 
-Python <span class="m">2</span>.7.14 <span class="o">(</span>default, Dec <span class="m">19</span> <span class="m">2017</span>, <span class="m">22</span>:29:22<span class="o">)</span> 
-<span class="o">[</span>GCC <span class="m">6</span>.4.0<span class="o">]</span> on linux2
-Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&quot;</span>, <span class="s2">&quot;credits&quot;</span> or <span class="s2">&quot;license&quot;</span> <span class="k">for</span> more information.
-&gt;&gt;&gt; 
-</code></pre></div>
-<p>Now, we can import numpy and execute some commands:</p>
-<div class="highlight"><pre><span></span><code>&gt;&gt;&gt; import numpy as np
-&gt;&gt;&gt; <span class="nv">a</span> <span class="o">=</span> np.arange<span class="o">(</span><span class="m">15</span><span class="o">)</span>.reshape<span class="o">(</span><span class="m">3</span>, <span class="m">5</span><span class="o">)</span>
-&gt;&gt;&gt; a
-array<span class="o">([[</span> <span class="m">0</span>,  <span class="m">1</span>,  <span class="m">2</span>,  <span class="m">3</span>,  <span class="m">4</span><span class="o">]</span>,
-       <span class="o">[</span> <span class="m">5</span>,  <span class="m">6</span>,  <span class="m">7</span>,  <span class="m">8</span>,  <span class="m">9</span><span class="o">]</span>,
-       <span class="o">[</span><span class="m">10</span>, <span class="m">11</span>, <span class="m">12</span>, <span class="m">13</span>, <span class="m">14</span><span class="o">]])</span>
-&gt;&gt;&gt; a.shape
+<span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
+<span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
+<span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
+<span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
+<span class="nv">SCONE_TCS</span><span class="o">=</span><span class="m">8</span>
+<span class="nv">SCONE_LOG</span><span class="o">=</span>WARNING
+<span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">268435456</span>
+<span class="nv">SCONE_STACK</span><span class="o">=</span><span class="m">2097152</span>
+<span class="nv">SCONE_ESPINS</span><span class="o">=</span><span class="m">10000</span>
+<span class="nv">SCONE_MODE</span><span class="o">=</span>hw
+<span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>yes <span class="o">(</span>unprotected<span class="o">)</span>
+<span class="nv">SCONE_MPROTECT</span><span class="o">=</span>no
+<span class="nv">SCONE_FORK</span><span class="o">=</span>no
+<span class="nv">SCONE_FORK_OS</span><span class="o">=</span><span class="m">0</span>
+
+SCONE_CONFIG_ID: &lt;not specified&gt;
+musl version: <span class="m">1</span>.2.4
+SCONE version: <span class="m">5</span>.8.0 <span class="o">(</span><span class="m">2023</span>-06-08 <span class="m">15</span>:13:27<span class="o">)</span>
+Enclave hash: 345bc79902e646d52d9271d0509da045550f537f7e1d7b8a4da8d6805733718c
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/enclave/dispatch.c:136:print_runtime_info<span class="o">()</span>: Application runs <span class="k">in</span> SGX debug mode. Its memory can be <span class="nb">read</span> from outside the enclave with a debugger! This is not secure!
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/syscall.c:31:__scone_ni_syscall<span class="o">()</span>: system call: membarrier, number <span class="m">324</span> is not supported
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/syscall.c:31:__scone_ni_syscall<span class="o">()</span>: system call: membarrier, number <span class="m">324</span> is not supported
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/syscall.c:31:__scone_ni_syscall<span class="o">()</span>: system call: mbind, number <span class="m">237</span> is not supported
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/syscall.c:31:__scone_ni_syscall<span class="o">()</span>: system call: mbind, number <span class="m">237</span> is not supported
+<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/syscall.c:31:__scone_ni_syscall<span class="o">()</span>: system call: mbind, number <span class="m">237</span> is not supported
+<span class="o">[[</span> <span class="m">0</span>  <span class="m">1</span>  <span class="m">2</span>  <span class="m">3</span>  <span class="m">4</span><span class="o">]</span>
+ <span class="o">[</span> <span class="m">5</span>  <span class="m">6</span>  <span class="m">7</span>  <span class="m">8</span>  <span class="m">9</span><span class="o">]</span>
+ <span class="o">[</span><span class="m">10</span> <span class="m">11</span> <span class="m">12</span> <span class="m">13</span> <span class="m">14</span><span class="o">]]</span>
 <span class="o">(</span><span class="m">3</span>, <span class="m">5</span><span class="o">)</span>
-&gt;&gt;&gt; a.ndim
 <span class="m">2</span>
-&gt;&gt;&gt; a.dtype.name
-<span class="s1">&#39;int64&#39;</span>
-&gt;&gt;&gt; a.itemsize
+int64
 <span class="m">8</span>
-&gt;&gt;&gt; type<span class="o">(</span>a<span class="o">)</span>
-&lt;<span class="nb">type</span> <span class="s1">&#39;numpy.ndarray&#39;</span>&gt;
-&gt;&gt;&gt; 
-</code></pre></div>
+ndarray
+</code></pre></div></p>
 <h2 id="cairo">Cairo</h2>
 <p>Let's look at another popular library: the <strong>cairo</strong> graphics library. <strong>cairo</strong>  is written in C and has 
 Python bindings provided by package <strong>pycairo</strong>. In this case, we need to install the C-library first:</p>
 <p>In Alpine Linux - which is the basis of the SCONE Python image - we can install cairo as follows:</p>
-<p><div class="highlight"><pre><span></span><code>apk add --no-cache  cairo-dev cairo 
+<p><div class="highlight"><pre><span></span><code>apk add --no-cache  cairo-dev cairo
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/main/x86_64/APKINDEX.tar.gz
-fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/community/x86_64/APKINDEX.tar.gz
-<span class="o">(</span><span class="m">1</span>/55<span class="o">)</span> Installing expat-dev <span class="o">(</span><span class="m">2</span>.2.5-r0<span class="o">)</span>
+<div class="highlight"><pre><span></span><code>fetch https://dl-cdn.alpinelinux.org/alpine/v3.16/main/x86_64/APKINDEX.tar.gz
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.16/community/x86_64/APKINDEX.tar.gz
+<span class="o">(</span><span class="m">1</span>/59<span class="o">)</span> Upgrading expat <span class="o">(</span><span class="m">2</span>.4.8-r0 -&gt; <span class="m">2</span>.6.0-r0<span class="o">)</span>
 ...
-<span class="o">(</span><span class="m">55</span>/55<span class="o">)</span> Installing cairo-dev <span class="o">(</span><span class="m">1</span>.14.10-r0<span class="o">)</span>
-Executing busybox-1.27.2-r6.trigger
-Executing glib-2.54.2-r0.trigger
+<span class="o">(</span><span class="m">59</span>/59<span class="o">)</span> Installing cairo-dev <span class="o">(</span><span class="m">1</span>.17.4-r2<span class="o">)</span>
+Executing busybox-1.35.0-r17.trigger
+Executing glib-2.72.4-r0.trigger
 No schema files found: doing nothing.
-OK: <span class="m">297</span> MiB <span class="k">in</span> <span class="m">112</span> packages
+OK: <span class="m">333</span> MiB <span class="k">in</span> <span class="m">145</span> packages
 $ 
 </code></pre></div></p>
 <p>Now we can install the Python bindings of cairo with <strong>pip</strong>:</p>
 <p><div class="highlight"><pre><span></span><code>pip install pycairo
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>Collecting pycairo
-  Downloading pycairo-1.15.4.tar.gz <span class="o">(</span>178kB<span class="o">)</span>
-    <span class="m">100</span>% <span class="p">|</span>████████████████████████████████<span class="p">|</span> 184kB <span class="m">1</span>.7MB/s 
+  Downloading pycairo-1.26.0.tar.gz <span class="o">(</span><span class="m">346</span> kB<span class="o">)</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class="m">346</span>.9/346.9 kB <span class="m">4</span>.2 MB/s eta <span class="m">0</span>:00:00
+  Installing build dependencies ... <span class="k">done</span>
+  Getting requirements to build wheel ... <span class="k">done</span>
+  Installing backend dependencies ... <span class="k">done</span>
+  Preparing metadata <span class="o">(</span>pyproject.toml<span class="o">)</span> ... <span class="k">done</span>
 Building wheels <span class="k">for</span> collected packages: pycairo
-  Running setup.py bdist_wheel <span class="k">for</span> pycairo ... <span class="k">done</span>
-  Stored <span class="k">in</span> directory: /root/.cache/pip/wheels/99/a6/16/79c5186b0ead4be059ce3102496b1ff776776b31da8e51af8f
+  Building wheel <span class="k">for</span> pycairo <span class="o">(</span>pyproject.toml<span class="o">)</span> ... <span class="k">done</span>
+  Created wheel <span class="k">for</span> pycairo: <span class="nv">filename</span><span class="o">=</span>pycairo-1.26.0-cp310-cp310-linux_x86_64.whl <span class="nv">size</span><span class="o">=</span><span class="m">136777</span> <span class="nv">sha256</span><span class="o">=</span>794ca543ff6d84f8674343d081ec5438c248a0dd9b77c22d95093d72c7de4dee
+  Stored <span class="k">in</span> directory: /root/.cache/pip/wheels/e3/46/83/453eb7915b034ce1a9fee5a6023def2030633f6a73dc6d2de8
 Successfully built pycairo
 Installing collected packages: pycairo
-Successfully installed pycairo-1.15.4
+Successfully installed pycairo-1.26.0
 </code></pre></div></p>
-<p>We can now start Python again via </p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_HEAP</span><span class="o">=</span>256M <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python
+<p>Let's create script that uses cairo:</p>
+<div class="highlight"><pre><span></span><code>cat &gt; cairotest.py <span class="s">&lt;&lt; EOF</span>
+<span class="s">import cairo</span>
+<span class="s">import math</span>
+
+<span class="s">WIDTH, HEIGHT = 256, 256</span>
+<span class="s">surface = cairo.ImageSurface (cairo.FORMAT_ARGB32, WIDTH, HEIGHT)</span>
+
+<span class="s">ctx = cairo.Context (surface)</span>
+
+<span class="s">ctx.scale (WIDTH, HEIGHT)</span>
+<span class="s">pat = cairo.LinearGradient (0.0, 0.0, 0.0, 1.0)</span>
+<span class="s">pat.add_color_stop_rgba (1, 0.7, 0, 0, 0.5)</span>
+<span class="s">pat.add_color_stop_rgba (0, 0.9, 0.7, 0.2, 1)</span>
+
+<span class="s">ctx.rectangle (0, 0, 1, 1)</span>
+
+<span class="s">ctx.set_source (pat)</span>
+
+<span class="s">ctx.fill ()</span>
+<span class="s">ctx.translate (0.1, 0.1)</span>
+<span class="s">ctx.move_to (0, 0)</span>
+<span class="s">ctx.arc (0.2, 0.1, 0.1, -math.pi/2, 0)</span>
+<span class="s">ctx.line_to (0.5, 0.1)</span>
+<span class="s">ctx.curve_to (0.5, 0.2, 0.5, 0.4, 0.2, 0.8)</span>
+<span class="s">ctx.close_path ()</span>
+
+<span class="s">ctx.set_source_rgb (0.3, 0.2, 0.5)</span>
+<span class="s">ctx.set_line_width (0.02)</span>
+
+<span class="s">ctx.stroke ()</span>
+<span class="s">surface.write_to_png (&quot;example.png&quot;)</span>
+<span class="s">exit()</span>
+<span class="s">EOF</span>
 </code></pre></div>
-<p>before we execute some cairo examples:</p>
-<div class="highlight"><pre><span></span><code>&gt;&gt;&gt; import cairo
-&gt;&gt;&gt; import math
-&gt;&gt;&gt; WIDTH, <span class="nv">HEIGHT</span> <span class="o">=</span> <span class="m">256</span>, <span class="m">256</span>
-&gt;&gt;&gt; 
-&gt;&gt;&gt; <span class="nv">surface</span> <span class="o">=</span> cairo.ImageSurface <span class="o">(</span>cairo.FORMAT_ARGB32, WIDTH, HEIGHT<span class="o">)</span>
-&gt;&gt;&gt; <span class="nv">ctx</span> <span class="o">=</span> cairo.Context <span class="o">(</span>surface<span class="o">)</span>
-&gt;&gt;&gt; ctx.scale <span class="o">(</span>WIDTH, HEIGHT<span class="o">)</span> <span class="c1"># Normalizing the canvas</span>
-&gt;&gt;&gt; 
-&gt;&gt;&gt; <span class="nv">pat</span> <span class="o">=</span> cairo.LinearGradient <span class="o">(</span><span class="m">0</span>.0, <span class="m">0</span>.0, <span class="m">0</span>.0, <span class="m">1</span>.0<span class="o">)</span>
-&gt;&gt;&gt; pat.add_color_stop_rgba <span class="o">(</span><span class="m">1</span>, <span class="m">0</span>.7, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>.5<span class="o">)</span> <span class="c1"># First stop, 50% opacity</span>
-&gt;&gt;&gt; pat.add_color_stop_rgba <span class="o">(</span><span class="m">0</span>, <span class="m">0</span>.9, <span class="m">0</span>.7, <span class="m">0</span>.2, <span class="m">1</span><span class="o">)</span> <span class="c1"># Last stop, 100% opacity</span>
-&gt;&gt;&gt; 
-&gt;&gt;&gt; ctx.rectangle <span class="o">(</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">1</span>, <span class="m">1</span><span class="o">)</span> <span class="c1"># Rectangle(x0, y0, x1, y1)</span>
-&gt;&gt;&gt; ctx.set_source <span class="o">(</span>pat<span class="o">)</span>
-&gt;&gt;&gt; ctx.fill <span class="o">()</span>
-&gt;&gt;&gt; ctx.translate <span class="o">(</span><span class="m">0</span>.1, <span class="m">0</span>.1<span class="o">)</span> <span class="c1"># Changing the current transformation matrix</span>
-&gt;&gt;&gt; 
-&gt;&gt;&gt; ctx.move_to <span class="o">(</span><span class="m">0</span>, <span class="m">0</span><span class="o">)</span>
-&gt;&gt;&gt; <span class="c1"># Arc(cx, cy, radius, start_angle, stop_angle)</span>
-... ctx.arc <span class="o">(</span><span class="m">0</span>.2, <span class="m">0</span>.1, <span class="m">0</span>.1, -math.pi/2, <span class="m">0</span><span class="o">)</span>
-&gt;&gt;&gt; ctx.line_to <span class="o">(</span><span class="m">0</span>.5, <span class="m">0</span>.1<span class="o">)</span> <span class="c1"># Line to (x,y)</span>
-&gt;&gt;&gt; <span class="c1"># Curve(x1, y1, x2, y2, x3, y3)</span>
-... ctx.curve_to <span class="o">(</span><span class="m">0</span>.5, <span class="m">0</span>.2, <span class="m">0</span>.5, <span class="m">0</span>.4, <span class="m">0</span>.2, <span class="m">0</span>.8<span class="o">)</span>
-&gt;&gt;&gt; ctx.close_path <span class="o">()</span>
-&gt;&gt;&gt; 
-&gt;&gt;&gt; ctx.set_source_rgb <span class="o">(</span><span class="m">0</span>.3, <span class="m">0</span>.2, <span class="m">0</span>.5<span class="o">)</span> <span class="c1"># Solid color</span>
-&gt;&gt;&gt; ctx.set_line_width <span class="o">(</span><span class="m">0</span>.02<span class="o">)</span>
-&gt;&gt;&gt; ctx.stroke <span class="o">()</span>
-&gt;&gt;&gt; surface.write_to_png <span class="o">(</span><span class="s2">&quot;example.png&quot;</span><span class="o">)</span> <span class="c1"># Output to PNG</span>
-&gt;&gt;&gt; exit<span class="o">()</span>
+<p>We now can start that script: </p>
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python3 cairotest.py
 </code></pre></div>
 <p>This generates a file <strong>example.png</strong> in the working directory.</p>
 <h2 id="example">Example</h2>
 <p>Let's look at another example:</p>
 <ul>
 <li>
-<p>We use <em>pip</em> to install a Python chess library.</p>
+<p>We use <em>pip</em> to install a Python chess library.
+<div class="highlight"><pre><span></span><code>pip install python-chess
+</code></pre></div></p>
 </li>
 <li>
-<p>Then we run Python inside of an enclave and  import the chess library. </p>
-</li>
-<li>
-<p>We use the Scholar's mate example from <a href="https://pypi.python.org/pypi/python-chess">https://pypi.python.org/pypi/python-chess</a></p>
+<p>We use the Scholar's mate example from <a href="https://pypi.org/project/chess/">https://pypi.org/project/chess/</a></p>
 </li>
 </ul>
+<div class="highlight"><pre><span></span><code>     cat &gt; chessclient.py <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt; import chess</span>
+<span class="s">&gt; board = chess.Board()</span>
+<span class="s">&gt; board.legal_moves</span>
+<span class="s">&gt; chess.Move.from_uci(&quot;a8a1&quot;) in board.legal_moves</span>
+<span class="s">&gt; board.push_san(&quot;e4&quot;)</span>
+<span class="s">&gt; board.push_san(&quot;e5&quot;)</span>
+<span class="s">&gt; board.push_san(&quot;Qh5&quot;)</span>
+<span class="s">&gt; board.push_san(&quot;Nc6&quot;)</span>
+<span class="s">&gt; board.push_san(&quot;Bc4&quot;)</span>
+<span class="s">&gt; board.push_san(&quot;Nf6&quot;)</span>
+<span class="s">&gt; board.push_san(&quot;Qxf7&quot;)</span>
+<span class="s">&gt; board.is_checkmate()</span>
+<span class="s">&gt; print(board)</span>
+<span class="s">&gt; exit()</span>
+<span class="s">&gt; EOF</span>
+</code></pre></div>
+<ul>
+<li>Then we run our chess script:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> python3 chessclient.py
+</code></pre></div>
 <h2 id="screencast">Screencast</h2>
+<div class="admonition note">
+<p class="admonition-title">Chess</p>
+<p>Screencast was done for Python2. Current version of chess requires Python3.7+</p>
+</div>
 <script id="asciicast-285917" src="https://asciinema.org/a/285917.js" async></script>
 
 <div class="footnote">
