@@ -1,0 +1,5415 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Scone Documentation - Secure Containers">
+      
+      
+        <meta name="author" content="Christof Fetzer">
+      
+      
+        <link rel="canonical" href="https://sconedocs.github.io/3_resource_definitions/">
+      
+      <link rel="icon" href="../img/scone-favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
+    
+    
+      
+        <title>Custom Resource Definitions - Confidential Computing</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#ffffff">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"PT Sans";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+      <link rel="stylesheet" href="../css/extra.css">
+    
+      <link rel="stylesheet" href="../css/tooltips.css">
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="white" data-md-color-accent="purple">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#custom-resource-definitions" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing" class="md-header__button md-logo" aria-label="Confidential Computing" data-md-component="logo">
+      
+  <img src="../img/SCONE-logo-white.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Custom Resource Definitions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href=".." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../news/" class="md-tabs__link">
+        News and Overview
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../scone_mesh_tutorial/" class="md-tabs__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../k8s_concepts/" class="md-tabs__link md-tabs__link--active">
+        Kubernetes
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../CASOverview/" class="md-tabs__link">
+        Configuration & Attestation
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../helm/" class="md-tabs__link">
+        SconeApps
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../operations/" class="md-tabs__link">
+        DevOps Workflows
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../aks/" class="md-tabs__link">
+        Azure Kubernetes Services
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../usecases/" class="md-tabs__link">
+        Use Cases
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../registry/" class="md-tabs__link">
+        Sign up
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../iexec_sconify_image/" class="md-tabs__link">
+        More
+      </a>
+    </li>
+  
+
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing" class="md-nav__button md-logo" aria-label="Confidential Computing" data-md-component="logo">
+      
+  <img src="../img/SCONE-logo-white.png" alt="logo">
+
+    </a>
+    Confidential Computing
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          News and Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="News and Overview" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          News and Overview
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../news/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cc-telenovela/" class="md-nav__link">
+        CC Soap Opera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cc-university/" class="md-nav__link">
+        CC University
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vm_vs_enclave/" class="md-nav__link">
+        Confidential Computing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advantages/" class="md-nav__link">
+        Advantages of SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whyscone/" class="md-nav__link">
+        SCONE vs Intel SGX SDK
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../technical_summary/" class="md-nav__link">
+        Technical summary of SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../buildingApps/" class="md-nav__link">
+        (No) Cross-Compilation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curated_images/" class="md-nav__link">
+        Curated Images
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community_version/" class="md-nav__link">
+        Community Version
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Quick Start
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Quick Start" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Quick Start
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_1" type="checkbox" id="__nav_3_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_1">
+          sconectl
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="sconectl" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_1">
+          <span class="md-nav__icon md-icon"></span>
+          sconectl
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone_mesh_tutorial/" class="md-nav__link">
+        Hello World
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconectl/" class="md-nav__link">
+        sconectl cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install_sconectl/" class="md-nav__link">
+        install sconectl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service.html" class="md-nav__link">
+        openAPI description service
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh.html" class="md-nav__link">
+        openAPI description mesh
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java_mesh_tutorial/" class="md-nav__link">
+        Java Hello World
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_2">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Overview" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Overview
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflows/" class="md-nav__link">
+        Workflows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconify_hw_k8s/" class="md-nav__link">
+        Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lean_deployment/" class="md-nav__link">
+        kubectl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconify/" class="md-nav__link">
+        Sconify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconify_filetypes/" class="md-nav__link">
+        File Types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ee_sconify_image/" class="md-nav__link">
+        Sconify Image SE
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-stakeholder-workflow/" class="md-nav__link">
+        Multi-Stakeholder Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../example_policy/" class="md-nav__link">
+        Policy Update
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../microservices-demo/" class="md-nav__link">
+        Boutique Demo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq_sconify/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7" type="checkbox" id="__nav_3_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_7">
+          Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Installation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          Installation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hostexample/" class="md-nav__link">
+        Host Execution
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dockerinstall/" class="md-nav__link">
+        Installing docker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sgxinstall/" class="md-nav__link">
+        Installing Intel SGX driver
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeinstall/" class="md-nav__link">
+        Installing SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../microcode/" class="md-nav__link">
+        Updating CPU microcode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows10/" class="md-nav__link">
+        Windows 10
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_8">
+          Workshop
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Workshop" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_8">
+          <span class="md-nav__icon md-icon"></span>
+          Workshop
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/setup/" class="md-nav__link">
+        getting access
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/details/" class="md-nav__link">
+        background
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/task_1/" class="md-nav__link">
+        Task 1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/task_2/" class="md-nav__link">
+        Task 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/hands_on_1/" class="md-nav__link">
+        hands on A
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/hands_on_2/" class="md-nav__link">
+        hands on B
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/next_steps/" class="md-nav__link">
+        next steps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9">
+          Tutorial
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorial" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_9">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorial
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercises/" class="md-nav__link">
+        Assignments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise0/" class="md-nav__link">
+        Assignment 0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise1/" class="md-nav__link">
+        Assignment 1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise2/" class="md-nav__link">
+        Assignment 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise3/" class="md-nav__link">
+        Assignment 3
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise4/" class="md-nav__link">
+        Assignment 4
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise5/" class="md-nav__link">
+        Assignment 5
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/section_otp/" class="md-nav__link">
+        Section 2 OTP
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10">
+          SCONE Execution Modes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SCONE Execution Modes" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_10">
+          <span class="md-nav__icon md-icon"></span>
+          SCONE Execution Modes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../outline/" class="md-nav__link">
+        Execution Modes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../firstcontainer/" class="md-nav__link">
+        Simulation Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardwaremode/" class="md-nav__link">
+        Hardware Mode
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Kubernetes" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Kubernetes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../k8s_concepts/" class="md-nav__link">
+        Concepts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2">
+          SCONE Operator
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SCONE Operator" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          SCONE Operator
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_scone_operator/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2_operator_installation/" class="md-nav__link">
+        Reconciliation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5_kubectl/" class="md-nav__link">
+        Deploying CAS and Vault
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Custom Resource Definitions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Custom Resource Definitions
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#custom-resource-definitions" class="md-nav__link">
+    Custom Resource Definitions
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Resource Definitions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring-scone-services-cas-las-and-sgxplugin" class="md-nav__link">
+    Configuring SCONE Services (CAS, LAS, and SGXPlugin)
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring SCONE Services (CAS, LAS, and SGXPlugin)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-configuration" class="md-nav__link">
+    Common Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-of-the-cas-custom-resource" class="md-nav__link">
+    Configuration of the CAS Custom Resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-of-the-las-custom-resource" class="md-nav__link">
+    Configuration of the LAS Custom Resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-of-the-sgxplugin-custom-resource" class="md-nav__link">
+    Configuration of the SGXPlugin Custom Resource
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-scone-policies-signedpolicy-and-encryptedpolicy" class="md-nav__link">
+    Configuring SCONE Policies (SignedPolicy and EncryptedPolicy)
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring SCONE Policies (SignedPolicy and EncryptedPolicy)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields-for-the-signedpolicy-custom-resource" class="md-nav__link">
+    Fields for the SignedPolicy Custom Resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fields-for-the-encryptedpolicy-custom-resource" class="md-nav__link">
+    Fields for the EncryptedPolicy Custom Resource
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-the-services" class="md-nav__link">
+    Installing the Services
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metrics-alerts-and-conditions" class="md-nav__link">
+    Metrics, Alerts, and Conditions
+  </a>
+  
+    <nav class="md-nav" aria-label="Metrics, Alerts, and Conditions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cas-specific-metrics" class="md-nav__link">
+    CAS Specific Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#las-specific-metrics-and-alerts" class="md-nav__link">
+    LAS Specific Metrics and Alerts
+  </a>
+  
+    <nav class="md-nav" aria-label="LAS Specific Metrics and Alerts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alerts" class="md-nav__link">
+    Alerts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sgxplugin-specific-metrics-and-alerts" class="md-nav__link">
+    SGXPlugin Specific Metrics and Alerts
+  </a>
+  
+    <nav class="md-nav" aria-label="SGXPlugin Specific Metrics and Alerts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerts_1" class="md-nav__link">
+    Alerts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conditions" class="md-nav__link">
+    Conditions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3">
+          Helm Charts
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Helm Charts" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Helm Charts
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_sgxdevplugin/" class="md-nav__link">
+        Kubernetes SGX Plugin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_cas/" class="md-nav__link">
+        CAS Deploy & Attest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_las/" class="md-nav__link">
+        LAS Deploy & Platforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_mariadb/" class="md-nav__link">
+        MariaDB Deploy & Attest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_teemon/" class="md-nav__link">
+        TEEMon Deployment
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_4">
+          Dashboards
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Dashboards" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          Dashboards
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_dashboard/" class="md-nav__link">
+        Helm Dashboard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../k8s_dashboard/" class="md-nav__link">
+        Kubernetes Dashboard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubeapps/" class="md-nav__link">
+        Kubeapps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_5" type="checkbox" id="__nav_4_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_5">
+          Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Examples" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_5">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hello_world_kubernetes/" class="md-nav__link">
+        Hello World Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../azure/scone-pyspark/" class="md-nav__link">
+        PySpark on Azure
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Configuration & Attestation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration & Attestation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration & Attestation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CASOverview/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas_intro/" class="md-nav__link">
+        Concepts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_session_lang_0_3/" class="md-nav__link">
+        Policy Language
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4" type="checkbox" id="__nav_5_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4">
+          Policy Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Policy Examples" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_4">
+          <span class="md-nav__icon md-icon"></span>
+          Policy Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../auditLog/" class="md-nav__link">
+        Audit Log
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas_blender_example/" class="md-nav__link">
+        Posting Policies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_cli-intro/" class="md-nav__link">
+        CLI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../envcas/" class="md-nav__link">
+        envcas
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platform_attestation/" class="md-nav__link">
+        Platform-based attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4_6" type="checkbox" id="__nav_5_4_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4_6">
+          Secure Arguments
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Secure Arguments" data-md-level="3">
+        <label class="md-nav__title" for="__nav_5_4_6">
+          <span class="md-nav__icon md-icon"></span>
+          Secure Arguments
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../print-arg-env/" class="md-nav__link">
+        Part 1 - print arguments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../print-arg-env-p2/" class="md-nav__link">
+        Part 2 - session hash
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../encrypted_vol/" class="md-nav__link">
+        Encrypted Volume
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone-signer-example/" class="md-nav__link">
+        Binary Translation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../host_arguments/" class="md-nav__link">
+        Host Arguments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../otp_demo/" class="md-nav__link">
+        One-time Passwords
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EncryptedWordCount/" class="md-nav__link">
+        Encrypted Code and Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespace/" class="md-nav__link">
+        Namespaces
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network_shield/" class="md-nav__link">
+        Network Shield
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_5" type="checkbox" id="__nav_5_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_5">
+          Alternative CAS deployments
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Alternative CAS deployments" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_5">
+          <span class="md-nav__icon md-icon"></span>
+          Alternative CAS deployments
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_production/" class="md-nav__link">
+        CAS with helm
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_for_development/" class="md-nav__link">
+        CAS with docker compose
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas-backup-controller/" class="md-nav__link">
+        CAS Backup Controller for Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas-backup-controller-quick-start/" class="md-nav__link">
+        CAS Backup Controller Quick Start
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_config/" class="md-nav__link">
+        CAS Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../public-CAS/" class="md-nav__link">
+        Public CAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LASIntro/" class="md-nav__link">
+        Starting LAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../self-provisioned-cas/" class="md-nav__link">
+        Self-Provisioned CAS
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          SconeApps
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SconeApps" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          SconeApps
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm/" class="md-nav__link">
+        SconeApps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_database/" class="md-nav__link">
+        database
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_maxscale/" class="md-nav__link">
+        maxscale
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_memcached/" class="md-nav__link">
+        memcached
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_nginx/" class="md-nav__link">
+        nginx
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_openvino/" class="md-nav__link">
+        openvino
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_pytorch/" class="md-nav__link">
+        pytorch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_spark/" class="md-nav__link">
+        spark
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_tensorflow/" class="md-nav__link">
+        tensorflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_tensorflowlite/" class="md-nav__link">
+        tensorflowlite
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_zookeeper/" class="md-nav__link">
+        zookeeper
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          DevOps Workflows
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DevOps Workflows" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          DevOps Workflows
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/" class="md-nav__link">
+        Workflows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mitigation/" class="md-nav__link">
+        Attack mitigation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sadvisories/" class="md-nav__link">
+        Security advisories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../software_updates/" class="md-nav__link">
+        Software updates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone-signer/" class="md-nav__link">
+        Signing of enclaves
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../edmm/" class="md-nav__link">
+        EDMM support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone_semantic_versioning/" class="md-nav__link">
+        SCONE versioning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attestation_by_client/" class="md-nav__link">
+        Attestation by client
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../technotes/" class="md-nav__link">
+        Technotes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          Azure Kubernetes Services
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Azure Kubernetes Services" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          Azure Kubernetes Services
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks/" class="md-nav__link">
+        Confidential AKS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../azure/scone-playground/" class="md-nav__link">
+        SCONE Playground on Azure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks/flask_demo/" class="md-nav__link">
+        Flask Demo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_images/" class="md-nav__link">
+        Python Images
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks_integration/" class="md-nav__link">
+        AKS Integration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MicrosoftAzureIntegrations/" class="md-nav__link">
+        AKS Integration Tutorial
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks_charts/" class="md-nav__link">
+        AKS Applications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks_setup/" class="md-nav__link">
+        AKS Setup
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" type="checkbox" id="__nav_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9">
+          Use Cases
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Use Cases" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Use Cases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usecases/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secure_document_management/" class="md-nav__link">
+        Confidential Document Management
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../federated_machine_learning/" class="md-nav__link">
+        Federated Machine Learning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shared_source_code/" class="md-nav__link">
+        Confidential Code Deployment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blender/" class="md-nav__link">
+        Blender
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyspark/" class="md-nav__link">
+        PySpark
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensorflow/" class="md-nav__link">
+        TensorFlow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensorflowlite/" class="md-nav__link">
+        TensorFlow Lite
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../openvino/" class="md-nav__link">
+        OpenVino
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vault/" class="md-nav__link">
+        Vault
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone-use-case-overview/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secure_remote_execution/" class="md-nav__link">
+        Secure Remote Execution
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dockerfileexample/" class="md-nav__link">
+        Dockerfile Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multistagebuild/" class="md-nav__link">
+        Multi-stage build
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../groupcacheUseCase/" class="md-nav__link">
+        GO example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../memory_dump/" class="md-nav__link">
+        Finding Secrets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dapps/" class="md-nav__link">
+        Trusted DApps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flask_demo/" class="md-nav__link">
+        Flask Demo
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10">
+          Sign up
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Sign up" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          Sign up
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../registry/" class="md-nav__link">
+        Scontain Registy
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          More
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="More" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          More
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_1" type="checkbox" id="__nav_11_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_1">
+          Client Docu
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Client Docu" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_1">
+          <span class="md-nav__icon md-icon"></span>
+          Client Docu
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iexec_sconify_image/" class="md-nav__link">
+        iExec Sconify Image
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_2" type="checkbox" id="__nav_11_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_2">
+          Language Support
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Language Support" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_2">
+          <span class="md-nav__icon md-icon"></span>
+          Language Support
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C/" class="md-nav__link">
+        C
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mono/" class="md-nav__link">
+        C#
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C%2B%2B/" class="md-nav__link">
+        C++
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Fortran/" class="md-nav__link">
+        Fortran
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GO/" class="md-nav__link">
+        GO
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Java/" class="md-nav__link">
+        Java
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Running_Java_Applications_in_Scone_with_remote_attestation/" class="md-nav__link">
+        Java with remote attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Python/" class="md-nav__link">
+        Python
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pypyscone/" class="md-nav__link">
+        PyPy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mono/" class="md-nav__link">
+        C#
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Nodejs/" class="md-nav__link">
+        Node
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../node-example/" class="md-nav__link">
+        Node example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../R/" class="md-nav__link">
+        R
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Rust/" class="md-nav__link">
+        Rust
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_3" type="checkbox" id="__nav_11_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_3">
+          IDE Integration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IDE Integration" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_3">
+          <span class="md-nav__icon md-icon"></span>
+          IDE Integration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eclipse/" class="md-nav__link">
+        Eclipse
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_vscode/" class="md-nav__link">
+        Visual Studio Code
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_4" type="checkbox" id="__nav_11_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_4">
+          Command Line Interface
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Command Line Interface" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_4">
+          <span class="md-nav__icon md-icon"></span>
+          Command Line Interface
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_cli/" class="md-nav__link">
+        CLI Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCONE_Fileshield/" class="md-nav__link">
+        scone fspf
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary_fs/" class="md-nav__link">
+        scone binary fs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCONE_ENV/" class="md-nav__link">
+        environment variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MrEnclave/" class="md-nav__link">
+        MrEnclave
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone_affinity/" class="md-nav__link">
+        affinity
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_5" type="checkbox" id="__nav_11_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_5">
+          Performance
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Performance" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_5">
+          <span class="md-nav__icon md-icon"></span>
+          Performance
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/" class="md-nav__link">
+        Applications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../teemon/" class="md-nav__link">
+        Monitoring tool
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_6" type="checkbox" id="__nav_11_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_6">
+          Background
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Background" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_6">
+          <span class="md-nav__icon md-icon"></span>
+          Background
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appsecurity/" class="md-nav__link">
+        Application-Oriented Security
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../background/" class="md-nav__link">
+        SCONE Background
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_7" type="checkbox" id="__nav_11_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_7">
+          Security
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Security" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_7">
+          <span class="md-nav__icon md-icon"></span>
+          Security
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S1_threat_model/" class="md-nav__link">
+        Threat Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S2_random_numbers/" class="md-nav__link">
+        Random numbers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S3_governance/" class="md-nav__link">
+        Governance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S4_attestation/" class="md-nav__link">
+        Attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S5_debug_mode/" class="md-nav__link">
+        Debug Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S6_best_practices/" class="md-nav__link">
+        Best Practices
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCONE_Publications/" class="md-nav__link">
+        Publications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aboutScone/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_11" type="checkbox" id="__nav_11_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_11">
+          Releases
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Releases" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_11">
+          <span class="md-nav__icon md-icon"></span>
+          Releases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.9/" class="md-nav__link">
+        SCONE 5.9.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.8/" class="md-nav__link">
+        SCONE 5.8.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.7/" class="md-nav__link">
+        SCONE 5.7.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.6/" class="md-nav__link">
+        SCONE 5.6.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.5/" class="md-nav__link">
+        SCONE 5.5.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.4/" class="md-nav__link">
+        SCONE 5.4.0
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#custom-resource-definitions" class="md-nav__link">
+    Custom Resource Definitions
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Resource Definitions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring-scone-services-cas-las-and-sgxplugin" class="md-nav__link">
+    Configuring SCONE Services (CAS, LAS, and SGXPlugin)
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring SCONE Services (CAS, LAS, and SGXPlugin)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-configuration" class="md-nav__link">
+    Common Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-of-the-cas-custom-resource" class="md-nav__link">
+    Configuration of the CAS Custom Resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-of-the-las-custom-resource" class="md-nav__link">
+    Configuration of the LAS Custom Resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-of-the-sgxplugin-custom-resource" class="md-nav__link">
+    Configuration of the SGXPlugin Custom Resource
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-scone-policies-signedpolicy-and-encryptedpolicy" class="md-nav__link">
+    Configuring SCONE Policies (SignedPolicy and EncryptedPolicy)
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring SCONE Policies (SignedPolicy and EncryptedPolicy)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields-for-the-signedpolicy-custom-resource" class="md-nav__link">
+    Fields for the SignedPolicy Custom Resource
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fields-for-the-encryptedpolicy-custom-resource" class="md-nav__link">
+    Fields for the EncryptedPolicy Custom Resource
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-the-services" class="md-nav__link">
+    Installing the Services
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metrics-alerts-and-conditions" class="md-nav__link">
+    Metrics, Alerts, and Conditions
+  </a>
+  
+    <nav class="md-nav" aria-label="Metrics, Alerts, and Conditions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cas-specific-metrics" class="md-nav__link">
+    CAS Specific Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#las-specific-metrics-and-alerts" class="md-nav__link">
+    LAS Specific Metrics and Alerts
+  </a>
+  
+    <nav class="md-nav" aria-label="LAS Specific Metrics and Alerts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alerts" class="md-nav__link">
+    Alerts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sgxplugin-specific-metrics-and-alerts" class="md-nav__link">
+    SGXPlugin Specific Metrics and Alerts
+  </a>
+  
+    <nav class="md-nav" aria-label="SGXPlugin Specific Metrics and Alerts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alerts_1" class="md-nav__link">
+    Alerts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conditions" class="md-nav__link">
+    Conditions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+  <h1>Custom Resource Definitions</h1>
+
+<h2 id="custom-resource-definitions">Custom Resource Definitions</h2>
+<p>After we have deployed the SCONE operator, we are ready to create SCONE custom resources in the cluster. Before we can deploy them, however, we need to configure them.</p>
+<p><a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/" title="Kubernetes documentation">Kubernetes custom resources</a> are extensions to the Kubernetes API. They are specified with the help of <em>custom resource definitions</em> or <em>CRDs</em>. The SCONE CRDs are deployed at the time the SCONE operator is installed. You can examine them by executing the following commands:</p>
+<p><pre class="highlight"><code class="language-bash">kubectl describe crd sgxplugins
+kubectl describe crd las
+kubectl describe crd cas
+kubectl describe crd signedpolicies
+kubectl describe crd encryptedpolicies</code></pre>
+The group, version, and kind of custom resources resulting from the CRDs are summarized in the following table:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Group</th>
+<th>Version</th>
+<th>Kind</th>
+<th>Short Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCONE CAS</td>
+<td><code>services.scone.cloud</code></td>
+<td><code>v1beta1</code></td>
+<td><code>CAS</code></td>
+<td></td>
+</tr>
+<tr>
+<td>SCONE LAS</td>
+<td><code>base.scone.cloud</code></td>
+<td><code>v1beta1</code></td>
+<td><code>LAS</code></td>
+<td></td>
+</tr>
+<tr>
+<td>SCONE SGX Plugin</td>
+<td><code>base.scone.cloud</code></td>
+<td><code>v1beta1</code></td>
+<td><code>SGXPlugin</code></td>
+<td><code>sgx</code></td>
+</tr>
+<tr>
+<td>SCONE Signed Policies</td>
+<td><code>cas.scone.cloud</code></td>
+<td><code>v1beta1</code></td>
+<td><code>SignedPolicy</code></td>
+<td><code>spol</code></td>
+</tr>
+<tr>
+<td>SCONE Encrypted Policies</td>
+<td><code>cas.scone.cloud</code></td>
+<td><code>v1beta1</code></td>
+<td><code>EncryptedPolicy</code></td>
+<td><code>epol</code></td>
+</tr>
+</tbody>
+</table>
+<p>Using the following commands, you can list all existing resources of each kind:</p>
+<pre class="highlight"><code class="language-bash">kubectl get sgxplugins
+kubectl get las
+kubectl get cas
+kubectl get signedpolicies
+kubectl get encryptedpolicies</code></pre>
+<p>Since we have not yet created any custom resources, the output of all three commands will be empty. Creating one of these resources will start the corresponding SCONE service in your cluster. Before we create them, however, we want to configure them according to our needs. There is a sample manifest for the custom resource of each service at <a href="https://github.com/scontain/operator-samples">https://github.com/scontain/operator-samples</a> that you can use as a starting point:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Sample Manifest</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCONE CAS</td>
+<td><code>services_v1beta1_cas.yaml</code></td>
+</tr>
+<tr>
+<td>SCONE LAS</td>
+<td><code>base_v1beta1_las.yaml</code></td>
+</tr>
+<tr>
+<td>SCONE SGX Plugin</td>
+<td><code>base_v1beta1_sgxplugin.yaml</code></td>
+</tr>
+<tr>
+<td>SCONE Signed Policies</td>
+<td><code>cas_v1beta1_signedpolicy.yaml</code></td>
+</tr>
+<tr>
+<td>SCONE Encrypted Policies</td>
+<td><code>cas_v1beta1_encryptedpolicy.yaml</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="configuring-scone-services-cas-las-and-sgxplugin">Configuring SCONE Services (CAS, LAS, and SGXPlugin)</h3>
+<h4 id="common-configuration">Common Configuration</h4>
+<p>The following are configuration parameters that are common to all SCONE services (CAS, LAS, and SGXPlugin)</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Type</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>autoUpdate</code></td>
+<td>Indicates whether the docker image of the service should automatically be updated to the newest version. This triggers rolling updates of the service pods and assumes that the image has semantic versioning in place. <strong>NOTE:</strong> <code>autoUpdate</code> is currently disabled in CAS</td>
+<td>boolean</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td>OCI image for the service</td>
+<td>string</td>
+<td>most recent SCONE image</td>
+</tr>
+<tr>
+<td><code>imagePullPolicy</code></td>
+<td>Indicates when the OCI image should be pulled from the registry</td>
+<td><code>Always</code>, <code>Never</code>, <code>IfNotPresent</code></td>
+<td><code>Always</code></td>
+</tr>
+<tr>
+<td><code>imagePullSecrets</code></td>
+<td>ImagePullSecrets for the OCI image. <strong>NOTE:</strong> The current implementation considers only the first valid secret, even if multiple are supported</td>
+<td>Object</td>
+<td></td>
+</tr>
+<tr>
+<td><code>resources</code></td>
+<td><a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/" title="Kubernetes documentation">Resource requirements</a> of this SCONE SGX Plugin</td>
+<td>Object</td>
+<td><code>{}</code></td>
+</tr>
+<tr>
+<td><code>nodeSelector</code></td>
+<td>Selects the nodes where the service should run. The <a href="https://kubernetes.io/docs/concepts/configuration/assign-pod-node/" title="Kubernetes documentation">NodeSelector</a> must match a node's labels for a pod to be scheduled on that node</td>
+<td>map[string]string</td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="configuration-of-the-cas-custom-resource">Configuration of the <code>CAS</code> Custom Resource</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Type</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>service.type</code></td>
+<td>Service type for the CAS pod. Supported values are <code>ClusterIP</code>, <code>LoadBalancer</code> or <code>NodePort</code></td>
+<td>v1.ServiceType</td>
+<td><code>ClusterIP</code></td>
+</tr>
+<tr>
+<td><code>service.clientPort</code></td>
+<td>Specify a port for the CAS client port</td>
+<td>integer</td>
+<td>8081</td>
+</tr>
+<tr>
+<td><code>service.enclavePort</code></td>
+<td>Specify a port for the CAS enclave port</td>
+<td>integer</td>
+<td>18765</td>
+</tr>
+<tr>
+<td><code>service.loadBalancerIP</code></td>
+<td>Specify an IP address for your Service if <code>service.type=LoadBalancer</code> and your cloud provider supports it</td>
+<td>string</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>service.nodePorts.clientPort</code></td>
+<td>Specify a nodePort for the CAS client port if <code>service.type=NodePort</code></td>
+<td>integer</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>service.nodePorts.enclavePort</code></td>
+<td>Specify a nodePort for the CAS enclave port if <code>service.type=NodePort</code></td>
+<td>integer</td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>service.annotations</code></td>
+<td>Specify annotations for the CAS service</td>
+<td>map[string]string</td>
+<td><code>{}</code></td>
+</tr>
+<tr>
+<td><code>persistence.enabled</code></td>
+<td>If set to <code>true</code>, create a PersistentVolumeClaim alongside CAS for persistence</td>
+<td>boolean</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>persistence.mountPath</code></td>
+<td>Where to mount CAS persistent volume</td>
+<td>string</td>
+<td><code>/etc/cas/db</code></td>
+</tr>
+<tr>
+<td><code>persistence.storageClass</code></td>
+<td>Define a storageClassName for the provisioned PersistentVolumeClaim. If unset or set to nil (default), use default storageClassName. If set to "-", disable dynamic provisioning</td>
+<td>string</td>
+<td><code>nil</code></td>
+</tr>
+<tr>
+<td><code>persistence.accessModes</code></td>
+<td>PersistentVolume access modes</td>
+<td>[]v1.PersistentVolumeAccessMode</td>
+<td><code>["ReadWriteOnce"]</code></td>
+</tr>
+<tr>
+<td><code>persistence.size</code></td>
+<td>PersistentVolume size</td>
+<td>resource.Quantity</td>
+<td><code>1Gi</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="configuration-of-the-las-custom-resource">Configuration of the <code>LAS</code> Custom Resource</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Type</th>
+<th>Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hostPort</code></td>
+<td>Containers must forward attestation requests to LAS instances collocated in the same node, but this requirement is not achievable through a standard Kubernetes Service abstraction. For this reason, we rely on <code>hostPort</code> to expose LAS and assume that the pods will use the <code>status.hostIP</code> (provided by the Kubernetes API) as <code>SCONE_LAS_ADDR</code></td>
+<td>integer</td>
+<td><code>18766</code></td>
+</tr>
+<tr>
+<td><code>namespace</code></td>
+<td>Kubernetes namespace in which the SCONE LAS service should be running</td>
+<td>string</td>
+<td>namespace of SCONE Operator</td>
+</tr>
+</tbody>
+</table>
+<h4 id="configuration-of-the-sgxplugin-custom-resource">Configuration of the <code>SGXPlugin</code> Custom Resource</h4>
+<p>As we can see by executing <code>kubectl explain sgxplugins.spec</code>, we can configure the SCONE <code>SGXPlugin</code> custom resource using the following parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Type</th>
+<th>Default value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>capacitySGXPods</code></td>
+<td>Maximum number of SGX devices to use per Kubernetes node</td>
+<td>1&lt;=integer&lt;=10000</td>
+<td>Maximum number of pods per node</td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td>Docker image with the SCONE SGX Plugin</td>
+<td>string</td>
+<td><code>registry.scontain.com/</code> <code>scone.cloud/</code> <code>sgx-plugin</code></td>
+</tr>
+<tr>
+<td><code>namespace</code></td>
+<td>Kubernetes namespace in which the SCONE SGX Plugin service should be running</td>
+<td>string</td>
+<td>namespace of SCONE Operator</td>
+</tr>
+</tbody>
+</table>
+<h3 id="configuring-scone-policies-signedpolicy-and-encryptedpolicy">Configuring SCONE Policies (SignedPolicy and EncryptedPolicy)</h3>
+<p>The custom resources for SCONE Policies have a model that is very similar to the one of the CAS REST API. In this sense, they are not "configurable" but rather an immutable resource that reflects the output of the <code>sign</code> and <code>encrypts</code> SCONE CLI operations. Updating individual fields would lead to an error because it would break integrity.</p>
+<p>This means that for every create or update operation on a policy custom resource; the policy owner must re-do the <code>sign</code> or <code>encrypt</code> operations on the unencrypted base policy and then submit the result of the operation to the cluster by creating the corresponding CR. The creation of the CR registers the policy in CAS.</p>
+<p>Nonetheless, the custom resources for policies support the following fields.</p>
+<h4 id="fields-for-the-signedpolicy-custom-resource">Fields for the <code>SignedPolicy</code> Custom Resource</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>casAddress</code></td>
+<td>The target CAS address</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>policy</code></td>
+<td>The policy contents</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>signatures</code></td>
+<td>A list of signatures, where each signature is an object comprised of <code>signer</code> and <code>signature</code> fields</td>
+<td>[]Object</td>
+</tr>
+</tbody>
+</table>
+<h4 id="fields-for-the-encryptedpolicy-custom-resource">Fields for the <code>EncryptedPolicy</code> Custom Resource</h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>casAddress</code></td>
+<td>The target CAS address</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>policy</code></td>
+<td>The policy contents</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>encryptionKey</code></td>
+<td>The target CAS public encryption key</td>
+<td>string</td>
+</tr>
+</tbody>
+</table>
+<h2 id="installing-the-services">Installing the Services</h2>
+<p>To install any SCONE services you need to deploy its manifest file. If you configured it to meet your requirements in the previous step, you already have a manifest. If you did not, you could use the <a href="#configuring-the-services">sample manifests</a> provided for each service in the above table. To install a service with its manifest at <code>$MANIFEST_FILE</code>, simply execute the following command:</p>
+<pre class="highlight"><code class="language-bash">kubectl apply -f $MANIFEST_FILE</code></pre>
+<p>Since the SCONE SGX Plugin service is required for the other ones to run, let's use it as an example and install it:</p>
+<pre class="highlight"><code class="language-bash">kubectl apply -f ./config/samples/base_v1beta1_sgxplugin.yaml</code></pre>
+<blockquote>
+<p><strong>NOTE:</strong> Since the name of the CR in the sample file is <code>sgxplugin-sample</code>, we use that name in the following</p>
+</blockquote>
+<p>Check the status of the SGXPlugin CR using <code>kubectl get</code> or <code>kubectl describe</code>:</p>
+<pre class="highlight"><code class="language-bash">kubectl get sgxplugin sgxplugin-sample
+kubectl describe sgxplugin sgxplugin-sample</code></pre>
+<p>In the next section, we explain all the information you see in the output of those two commands.</p>
+<blockquote>
+<p><strong>NOTE:</strong> You can also check the log of the operator to follow the reconciliation process of the creation of the <code>SGXPlugin</code> CR:</p>
+<pre class="highlight"><code class="language-bash">kubectl logs -n $OPERATOR_NAMESPACE $OPERATOR_POD_NAME</code></pre>
+</blockquote>
+<h2 id="metrics-alerts-and-conditions">Metrics, Alerts, and Conditions</h2>
+<p>As soon as there is a problem with the execution of any of the services, this must be communicated to the responsible party as soon as possible. It must not go unnoticed. This communication is most commonly done by using a metrics provider like Prometheus or by updating a visible state of the corresponding resource appropriately. In the case of the Kubernetes custom resources (CR) for the SCONE services, each CR can have one of the following states: <code>HEALTHY</code>, <code>PENDING</code>, and <code>UNHEALTHY</code>:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HEALTHY</code></td>
+<td>The resource has been successfully reconciled by its controller, and no problems were detected.</td>
+</tr>
+<tr>
+<td><code>PENDING</code></td>
+<td>The resource is still in the process of reconciling or is waiting for something.</td>
+</tr>
+<tr>
+<td><code>UNHEALTHY</code></td>
+<td>An alert or a problem that is not expected to go away on its own or prevents proper functionality has been detected.</td>
+</tr>
+</tbody>
+</table>
+<p>The display of the <code>UNHEALTHY</code> state alerts the human operator, or monitoring services, of the fact that further action is required.</p>
+<p>To further help diagnose a potential problem, the <code>Status</code> field of the CRs is also populated with so-called <code>Conditions</code>, which describe the state of service-specific conditions in which the CR can be. <code>Conditions</code> are used in the <code>status</code> fields of many Kubernetes objects, e.g. <a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-conditions" title="Kubernetes documentation"><code>Pods</code></a>, and most notably they consist of a <code>Type</code> and a <code>Status</code>. The type describes the condition (e.g., <code>UpToDate</code>), and the possible values of the status of a condition are: <code>True</code>, <code>False</code>, and <code>Unknown</code>. <code>Conditions</code> are displayed when performing a <code>kubectl describe</code> on a resource. We describe the conditions we provide in more detail <a href="#conditions">below</a>. </p>
+<p>Apart from the state and conditions of a SCONE custom resource, we also provide metrics specific to the service of the corresponding CR.</p>
+<h3 id="cas-specific-metrics"><code>CAS</code> Specific Metrics</h3>
+<table>
+<thead>
+<tr>
+<th>Status Field</th>
+<th>Description</th>
+<th>Type</th>
+<th>Valid Values</th>
+<th>Invalid Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version</code></td>
+<td>Actual CAS version observed in the CAS pod</td>
+<td>string</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="las-specific-metrics-and-alerts"><code>LAS</code> Specific Metrics and Alerts</h3>
+<p>This section describes the metrics available for the SCONE LAS service.</p>
+<table>
+<thead>
+<tr>
+<th>Status Field</th>
+<th>Description</th>
+<th>Type</th>
+<th>Valid Values</th>
+<th>Invalid Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>desiredNumberScheduled</code></td>
+<td>Desired number of LAS pods for the cluster</td>
+<td>integer</td>
+<td>Number of nodes selected by <code>spec.nodeSelector</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>nodes</code></td>
+<td>Details about each cluster node that supports local attestation</td>
+<td>map[string]Object</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>numberAvailable</code></td>
+<td>Number of nodes that have a LAS pod in Ready state</td>
+<td>integer</td>
+<td>Number of nodes selected by <code>spec.nodeSelector</code></td>
+<td><code>-1</code>, ...,<code>(status.desiredNumberScheduled-1)</code></td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>Actual LAS version observed in the LAS pods</td>
+<td>string</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="alerts">Alerts</h4>
+<p>As the name suggests, an alert indicates to a human being or a monitoring system that something is not working.</p>
+<table>
+<thead>
+<tr>
+<th>Status Field</th>
+<th>Description</th>
+<th>Desired value</th>
+<th>Alerting values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lasReplicaAlert</code></td>
+<td>Number of nodes on which LAS is not running, although it was expected to</td>
+<td><code>0</code></td>
+<td><code>&gt;0</code></td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>State of LAS</td>
+<td><code>HEALTHY</code></td>
+<td><code>UNHEALTHY</code></td>
+</tr>
+</tbody>
+</table>
+<p>An alerting value of any of the above alerts will cause the <code>LAS</code> CR to go into the <code>UNHEALTHY</code> state. This <code>status.state</code> field is also displayed in the output of the <code>kubectl get las</code> command.</p>
+<h3 id="sgxplugin-specific-metrics-and-alerts"><code>SGXPlugin</code> Specific Metrics and Alerts</h3>
+<p>This section describes the metrics, conditions, and alerts available for the SCONE SGX Plugin service.</p>
+<h4 id="metrics">Metrics</h4>
+<table>
+<thead>
+<tr>
+<th>Status Field</th>
+<th>Description</th>
+<th>Type</th>
+<th>Valid Values</th>
+<th>Invalid Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>availableSGXDevices</code></td>
+<td>Number of SGX devices that are allocatable but not used</td>
+<td>integer</td>
+<td><code>&gt;0</code></td>
+<td><code>0</code>, <code>-1</code></td>
+</tr>
+<tr>
+<td><code>availableSGXDevicesPerNode</code></td>
+<td>Number of SGX devices that are allocatable but not used (per node)</td>
+<td>map[string]integer</td>
+<td><code>&gt;0</code></td>
+<td><code>0</code>, <code>-1</code></td>
+</tr>
+<tr>
+<td><code>capacitySGXDevices</code></td>
+<td>Total number of SGX devices that can be allocated by pods</td>
+<td>integer</td>
+<td><code>&gt;0</code></td>
+<td><code>0</code>, <code>-1</code></td>
+</tr>
+<tr>
+<td><code>capacitySGXDevicesPerNode</code></td>
+<td>Total number of SGX devices that pods can allocate (per node)</td>
+<td>map[string]integer</td>
+<td><code>&gt;0</code></td>
+<td><code>0</code>, <code>-1</code></td>
+</tr>
+<tr>
+<td><code>usedSGXDevices</code></td>
+<td>Number of pods that got access to an SGX device</td>
+<td>integer</td>
+<td><code>&gt;=0</code></td>
+<td><code>-1</code></td>
+</tr>
+<tr>
+<td><code>usedSGXDevicesPerNode</code></td>
+<td>Number of pods that got access to an SGX device (per node)</td>
+<td>map[string]integer</td>
+<td><code>&gt;=0</code></td>
+<td><code>-1</code></td>
+</tr>
+<tr>
+<td><code>desiredReplicas</code></td>
+<td>Number of desired replicas</td>
+<td>integer</td>
+<td>Number of nodes selected by <code>spec.nodeSelector</code></td>
+<td><code>-1</code></td>
+</tr>
+<tr>
+<td><code>readyReplicas</code></td>
+<td>Number of available replicas</td>
+<td>integer</td>
+<td>Number of nodes selected by <code>spec.nodeSelector</code></td>
+<td><code>-1</code>, ..., <code>(status.desiredReplicas-1)</code></td>
+</tr>
+</tbody>
+</table>
+<p>The metrics <code>status.desiredReplicas</code> and <code>status.readyReplicas</code> fields are also displayed in the output of the <code>kubectl get sgxplugin</code> command.</p>
+<h4 id="alerts_1">Alerts</h4>
+<p>As the name suggests, an alert indicates to a human being or a monitoring system that something is not working.</p>
+<table>
+<thead>
+<tr>
+<th>Status Field</th>
+<th>Description</th>
+<th>Desired value</th>
+<th>Alerting values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sgxDeviceAlert</code></td>
+<td>Number of nodes (on which the SGX Plugin is running) which has no available devices in one or more device category</td>
+<td><code>0</code></td>
+<td><code>&gt;0</code>, <code>-1</code></td>
+</tr>
+<tr>
+<td><code>sgxReplicaAlert</code></td>
+<td>Number of nodes on which the SGX Plugin is not running, although it was expected to</td>
+<td><code>0</code></td>
+<td><code>&gt;0</code>, <code>-1</code></td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>State of the SGX Plugin</td>
+<td><code>HEALTHY</code></td>
+<td><code>UNHEALTHY</code></td>
+</tr>
+</tbody>
+</table>
+<p>An alerting value of any of the above alerts will cause the <code>SGXPlugin</code> CR to go into the <code>UNHEALTHY</code> state. This <code>status.state</code> field is also displayed in the output of the <code>kubectl get sgxplugin</code> command.</p>
+<h3 id="conditions">Conditions</h3>
+<p>All Scone custom resources which are installed by <code>helm</code>, i.e., for example, the <code>SGXPlugin</code> and the <code>CAS</code> CRs, also have <a href="https://kubernetes.io/docs" title="Kubernetes documentation">conditions</a> in their status field. Each <code>condition</code> describes the condition in which a Kubernetes resource currently is. For example, if a resource is running as expected and no problems have been detected, its <code>IsHealty</code> condition would have the value <code>True</code>. On the other hand, if the object currently, for example, is having problems being deployed, its <code>IsHealthy</code> condition would have the value <code>False</code>. If the controller, for some reason, could not retrieve the object via the Kubernetes API, it would have the value <code>Unknown</code>.</p>
+<p>When creating a CR of a service, other Kubernetes objects (e.g., <code>ConfigMaps</code>, <code>Deployments</code>, ...) will also be created. We make sure the CR <em>owns</em> each of these objects, i.e., we set their <code>metadata.ownerReferences</code> to contain the CR, and we call these objects the <em>owned objects</em> or <em>OOs</em> of the CR.
+CRs and owned objects are described by different sets of condition types, namely <em>CR conditions</em> and <em>OO conditions</em>, respectively. If a CR owns many OOs, there will be many conditions of the same OO condition type (e.g., <code>OwnedObjectHealthy</code>), namely one per OO, whereas there will always only be one condition of each CR condition type. To keep the OO conditions from the different OOs apart, we prefix their condition types with a unique description of the OO when displaying them in the status field of the CR.</p>
+<p>The following is a table containing all different types of conditions, their meaning, and which state their value will force the CR (i.e., <code>HEALTHY</code>, <code>PENDING</code>, or <code>UNHEALTHY</code>). As soon as any of the conditions has the status <code>Unknown</code>, the <code>status.state</code> of the CR becomes <code>PENDING</code>, and only when all the <code>IsHealthy</code> and <code>OwnedObjectHealthy</code> conditions of the CR and OOs have a status of <code>True</code>, does the <code>status.state</code> of the CR become <code>HEALTHY</code>.</p>
+<table>
+    <thead>
+        <tr>
+            <th>Described Object</th>
+            <th>Condition Type</th>
+            <th>Value</th>
+            <th>Explanation</th>
+            <th>Resulting CR State</th>
+            <th>Resulting Action<br>(unless higher priority<br>action can be taken)</th>
+            <th>Action Priority</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td rowspan=28>CR</td>
+            <td rowspan=3>IsHealthy</td>
+            <td><code>True</code></td>
+            <td>The CR is healthy</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The CR is not healthy</td>
+            <td><code>UNHEALTHY</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=4>DeletionPresent</td>
+            <td rowspan=2><code>True</code></td>
+            <td rowspan=2>The CR is being deleted</td>
+            <td rowspan=2><code>PENDING</code></td>
+            <td>uninstall release</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>remove finalizer from CR</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The CR has not been deleted</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>FinalizerPresent</td>
+            <td><code>True</code></td>
+            <td>The CR has the CR controller as a finalizer</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The CR does not have the CR controller as a finalizer</td>
+            <td><code>PENDING</code></td>
+            <td>set controller as finalizer of the CR</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>ReleaseExists</td>
+            <td><code>True</code></td>
+            <td>The helm release installing the OOs of the CR exists</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The helm release installing the OOs of the CR could not be found</td>
+            <td><code>PENDING</code></td>
+            <td>install the release</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>The command retrieving the release returned an error of a<br>different kind than a not-found error</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>ReleaseSteady</td>
+            <td><code>True</code></td>
+            <td>The status of the release installing the OOs of the CR<br>indicates that it is not about to change on its own</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The status of the release installing the OOs of the CR<br>indicates that it is in transition</td>
+            <td><code>PENDING</code></td>
+            <td>wait</td>
+            <td>7</td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>ReleaseFailed</td>
+            <td><code>True</code></td>
+            <td>The helm release installing the OOs of the CR is in Failed state</td>
+            <td><code>PENDING</code></td>
+            <td>uninstall the release</td>
+            <td>8</td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The helm release installing the OOs of the CR is not in Failed state</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>ReleaseDeployed</td>
+            <td><code>True</code></td>
+            <td>The helm release installing the OOs of the CR is in Deployed state</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The helm release installing the OOs of the CR is not in Deployed state</td>
+            <td><code>PENDING</code></td>
+            <td>upgrade release</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>AtLeastOneOwnedObjectPresent</td>
+            <td><code>True</code></td>
+            <td>At least one OO of the CR exists</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>No OO of the CR was found</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined due to failure retrieving the OOs</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>AllOwnedObjectsPresent</td>
+            <td><code>True</code></td>
+            <td>All OOs of the CR exist</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>At least one OO of the CR was not found</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined due to failure retrieving the OOs</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=21>OO</td>
+            <td rowspan=3>OwnedObjectHealthy</td>
+            <td><code>True</code></td>
+            <td>The OO is healthy and matches the spec of the CR</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The CR is not healthy</td>
+            <td><code>UNHEALTHY</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>OwnedObjectPresent</td>
+            <td><code>True</code></td>
+            <td>The OO exists</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The OO does not exist</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>The command retrieving the oo returned an error of a<br>different kind than a not-found error</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>OwnedObjectDeletionPresent</td>
+            <td><code>True</code></td>
+            <td>The OO has been deleted</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The OO has not been deleted</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>OwnedObjectValidOwners</td>
+            <td><code>True</code></td>
+            <td>The OO has zero or one owner</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The OO has more than one owner</td>
+            <td><code>PENDING</code></td>
+            <td>remove all owners from the OO</td>
+            <td>4</td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>OwnsOwnedObject</td>
+            <td><code>True</code></td>
+            <td>The OO has the CR as an owner</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The OO does not have the CR as an owner</td>
+            <td><code>PENDING</code></td>
+            <td>set the CR as the owner of the OO</td>
+            <td>5</td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan=3>SoleOwner</td>
+            <td><code>True</code></td>
+            <td>The CR is the only owner of the OO</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>The OO does not have exactly one owner, which is the CR</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+       </tr>
+        <tr>
+            <td rowspan=3>EqualSpecs</td>
+            <td><code>True</code></td>
+            <td>No attribute of the OO contradicts the spec of the CR</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><code>False</code></td>
+            <td>At least one attribute of the OO contradicts the spec of the CR</td>
+            <td><code>PENDING</code></td>
+            <td>upgrade release</td>
+            <td>9</td>
+        </tr>
+        <tr>
+            <td><code>Unknown</code></td>
+            <td>Could not be determined</td>
+            <td><code>PENDING</code></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+<p>The conditions are displayed in the <code>status</code> field of the <code>SGXPlugin</code> CR when performing the <code>kubectl describe sgxplugin</code> command.</p>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../5_kubectl/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Deploying CAS and Vault" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Deploying CAS and Vault
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../helm_sgxdevplugin/" class="md-footer__link md-footer__link--next" aria-label="Next: Kubernetes SGX Plugin" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Kubernetes SGX Plugin
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright Scontain &copy; 2018-2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+      
+        <script src="../css/extra.js"></script>
+      
+        <script src="../search/main.js"></script>
+      
+    
+  </body>
+</html>

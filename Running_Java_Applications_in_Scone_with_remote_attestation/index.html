@@ -1,0 +1,4463 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Scone Documentation - Secure Containers">
+      
+      
+        <meta name="author" content="Christof Fetzer">
+      
+      
+        <link rel="canonical" href="https://sconedocs.github.io/Running_Java_Applications_in_Scone_with_remote_attestation/">
+      
+      <link rel="icon" href="../img/scone-favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
+    
+    
+      
+        <title>Java with remote attestation - Confidential Computing</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#ffffff">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"PT Sans";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+      <link rel="stylesheet" href="../css/extra.css">
+    
+      <link rel="stylesheet" href="../css/tooltips.css">
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="white" data-md-color-accent="purple">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#running-java-applications-in-scone-with-cas-policy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing" class="md-header__button md-logo" aria-label="Confidential Computing" data-md-component="logo">
+      
+  <img src="../img/SCONE-logo-white.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Java with remote attestation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href=".." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../news/" class="md-tabs__link">
+        News and Overview
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../scone_mesh_tutorial/" class="md-tabs__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../k8s_concepts/" class="md-tabs__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../CASOverview/" class="md-tabs__link">
+        Configuration & Attestation
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../helm/" class="md-tabs__link">
+        SconeApps
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../operations/" class="md-tabs__link">
+        DevOps Workflows
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../aks/" class="md-tabs__link">
+        Azure Kubernetes Services
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../usecases/" class="md-tabs__link">
+        Use Cases
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../registry/" class="md-tabs__link">
+        Sign up
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../iexec_sconify_image/" class="md-tabs__link md-tabs__link--active">
+        More
+      </a>
+    </li>
+  
+
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing" class="md-nav__button md-logo" aria-label="Confidential Computing" data-md-component="logo">
+      
+  <img src="../img/SCONE-logo-white.png" alt="logo">
+
+    </a>
+    Confidential Computing
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          News and Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="News and Overview" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          News and Overview
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../news/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cc-telenovela/" class="md-nav__link">
+        CC Soap Opera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cc-university/" class="md-nav__link">
+        CC University
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vm_vs_enclave/" class="md-nav__link">
+        Confidential Computing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advantages/" class="md-nav__link">
+        Advantages of SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whyscone/" class="md-nav__link">
+        SCONE vs Intel SGX SDK
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../technical_summary/" class="md-nav__link">
+        Technical summary of SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../buildingApps/" class="md-nav__link">
+        (No) Cross-Compilation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curated_images/" class="md-nav__link">
+        Curated Images
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community_version/" class="md-nav__link">
+        Community Version
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Quick Start
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Quick Start" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Quick Start
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_1" type="checkbox" id="__nav_3_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_1">
+          sconectl
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="sconectl" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_1">
+          <span class="md-nav__icon md-icon"></span>
+          sconectl
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone_mesh_tutorial/" class="md-nav__link">
+        Hello World
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconectl/" class="md-nav__link">
+        sconectl cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install_sconectl/" class="md-nav__link">
+        install sconectl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service.html" class="md-nav__link">
+        openAPI description service
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh.html" class="md-nav__link">
+        openAPI description mesh
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java_mesh_tutorial/" class="md-nav__link">
+        Java Hello World
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_2">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Overview" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Overview
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflows/" class="md-nav__link">
+        Workflows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconify_hw_k8s/" class="md-nav__link">
+        Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lean_deployment/" class="md-nav__link">
+        kubectl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconify/" class="md-nav__link">
+        Sconify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconify_filetypes/" class="md-nav__link">
+        File Types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ee_sconify_image/" class="md-nav__link">
+        Sconify Image SE
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-stakeholder-workflow/" class="md-nav__link">
+        Multi-Stakeholder Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../example_policy/" class="md-nav__link">
+        Policy Update
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../microservices-demo/" class="md-nav__link">
+        Boutique Demo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq_sconify/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7" type="checkbox" id="__nav_3_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_7">
+          Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Installation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          Installation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hostexample/" class="md-nav__link">
+        Host Execution
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dockerinstall/" class="md-nav__link">
+        Installing docker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sgxinstall/" class="md-nav__link">
+        Installing Intel SGX driver
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeinstall/" class="md-nav__link">
+        Installing SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../microcode/" class="md-nav__link">
+        Updating CPU microcode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows10/" class="md-nav__link">
+        Windows 10
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_8">
+          Workshop
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Workshop" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_8">
+          <span class="md-nav__icon md-icon"></span>
+          Workshop
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/setup/" class="md-nav__link">
+        getting access
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/details/" class="md-nav__link">
+        background
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/task_1/" class="md-nav__link">
+        Task 1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/task_2/" class="md-nav__link">
+        Task 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/hands_on_1/" class="md-nav__link">
+        hands on A
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/hands_on_2/" class="md-nav__link">
+        hands on B
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/next_steps/" class="md-nav__link">
+        next steps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9">
+          Tutorial
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorial" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_9">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorial
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercises/" class="md-nav__link">
+        Assignments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise0/" class="md-nav__link">
+        Assignment 0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise1/" class="md-nav__link">
+        Assignment 1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise2/" class="md-nav__link">
+        Assignment 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise3/" class="md-nav__link">
+        Assignment 3
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise4/" class="md-nav__link">
+        Assignment 4
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise5/" class="md-nav__link">
+        Assignment 5
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/section_otp/" class="md-nav__link">
+        Section 2 OTP
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10">
+          SCONE Execution Modes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SCONE Execution Modes" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_10">
+          <span class="md-nav__icon md-icon"></span>
+          SCONE Execution Modes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../outline/" class="md-nav__link">
+        Execution Modes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../firstcontainer/" class="md-nav__link">
+        Simulation Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardwaremode/" class="md-nav__link">
+        Hardware Mode
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Kubernetes" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Kubernetes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../k8s_concepts/" class="md-nav__link">
+        Concepts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2">
+          SCONE Operator
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SCONE Operator" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          SCONE Operator
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_scone_operator/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2_operator_installation/" class="md-nav__link">
+        Reconciliation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5_kubectl/" class="md-nav__link">
+        Deploying CAS and Vault
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3_resource_definitions/" class="md-nav__link">
+        Custom Resource Definitions
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3">
+          Helm Charts
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Helm Charts" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Helm Charts
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_sgxdevplugin/" class="md-nav__link">
+        Kubernetes SGX Plugin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_cas/" class="md-nav__link">
+        CAS Deploy & Attest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_las/" class="md-nav__link">
+        LAS Deploy & Platforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_mariadb/" class="md-nav__link">
+        MariaDB Deploy & Attest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_teemon/" class="md-nav__link">
+        TEEMon Deployment
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_4">
+          Dashboards
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Dashboards" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          Dashboards
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_dashboard/" class="md-nav__link">
+        Helm Dashboard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../k8s_dashboard/" class="md-nav__link">
+        Kubernetes Dashboard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubeapps/" class="md-nav__link">
+        Kubeapps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_5" type="checkbox" id="__nav_4_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_5">
+          Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Examples" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_5">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hello_world_kubernetes/" class="md-nav__link">
+        Hello World Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../azure/scone-pyspark/" class="md-nav__link">
+        PySpark on Azure
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Configuration & Attestation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration & Attestation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration & Attestation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CASOverview/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas_intro/" class="md-nav__link">
+        Concepts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_session_lang_0_3/" class="md-nav__link">
+        Policy Language
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4" type="checkbox" id="__nav_5_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4">
+          Policy Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Policy Examples" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_4">
+          <span class="md-nav__icon md-icon"></span>
+          Policy Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../auditLog/" class="md-nav__link">
+        Audit Log
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas_blender_example/" class="md-nav__link">
+        Posting Policies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_cli-intro/" class="md-nav__link">
+        CLI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../envcas/" class="md-nav__link">
+        envcas
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platform_attestation/" class="md-nav__link">
+        Platform-based attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4_6" type="checkbox" id="__nav_5_4_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4_6">
+          Secure Arguments
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Secure Arguments" data-md-level="3">
+        <label class="md-nav__title" for="__nav_5_4_6">
+          <span class="md-nav__icon md-icon"></span>
+          Secure Arguments
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../print-arg-env/" class="md-nav__link">
+        Part 1 - print arguments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../print-arg-env-p2/" class="md-nav__link">
+        Part 2 - session hash
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../encrypted_vol/" class="md-nav__link">
+        Encrypted Volume
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone-signer-example/" class="md-nav__link">
+        Binary Translation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../host_arguments/" class="md-nav__link">
+        Host Arguments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../otp_demo/" class="md-nav__link">
+        One-time Passwords
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EncryptedWordCount/" class="md-nav__link">
+        Encrypted Code and Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespace/" class="md-nav__link">
+        Namespaces
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network_shield/" class="md-nav__link">
+        Network Shield
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_5" type="checkbox" id="__nav_5_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_5">
+          Alternative CAS deployments
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Alternative CAS deployments" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_5">
+          <span class="md-nav__icon md-icon"></span>
+          Alternative CAS deployments
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_production/" class="md-nav__link">
+        CAS with helm
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_for_development/" class="md-nav__link">
+        CAS with docker compose
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas-backup-controller/" class="md-nav__link">
+        CAS Backup Controller for Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas-backup-controller-quick-start/" class="md-nav__link">
+        CAS Backup Controller Quick Start
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_config/" class="md-nav__link">
+        CAS Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../public-CAS/" class="md-nav__link">
+        Public CAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LASIntro/" class="md-nav__link">
+        Starting LAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../self-provisioned-cas/" class="md-nav__link">
+        Self-Provisioned CAS
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          SconeApps
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SconeApps" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          SconeApps
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm/" class="md-nav__link">
+        SconeApps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_database/" class="md-nav__link">
+        database
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_maxscale/" class="md-nav__link">
+        maxscale
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_memcached/" class="md-nav__link">
+        memcached
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_nginx/" class="md-nav__link">
+        nginx
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_openvino/" class="md-nav__link">
+        openvino
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_pytorch/" class="md-nav__link">
+        pytorch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_spark/" class="md-nav__link">
+        spark
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_tensorflow/" class="md-nav__link">
+        tensorflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_tensorflowlite/" class="md-nav__link">
+        tensorflowlite
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_zookeeper/" class="md-nav__link">
+        zookeeper
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          DevOps Workflows
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DevOps Workflows" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          DevOps Workflows
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/" class="md-nav__link">
+        Workflows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mitigation/" class="md-nav__link">
+        Attack mitigation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sadvisories/" class="md-nav__link">
+        Security advisories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../software_updates/" class="md-nav__link">
+        Software updates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone-signer/" class="md-nav__link">
+        Signing of enclaves
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../edmm/" class="md-nav__link">
+        EDMM support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone_semantic_versioning/" class="md-nav__link">
+        SCONE versioning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attestation_by_client/" class="md-nav__link">
+        Attestation by client
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../technotes/" class="md-nav__link">
+        Technotes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          Azure Kubernetes Services
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Azure Kubernetes Services" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          Azure Kubernetes Services
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks/" class="md-nav__link">
+        Confidential AKS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../azure/scone-playground/" class="md-nav__link">
+        SCONE Playground on Azure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks/flask_demo/" class="md-nav__link">
+        Flask Demo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_images/" class="md-nav__link">
+        Python Images
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks_integration/" class="md-nav__link">
+        AKS Integration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MicrosoftAzureIntegrations/" class="md-nav__link">
+        AKS Integration Tutorial
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks_charts/" class="md-nav__link">
+        AKS Applications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks_setup/" class="md-nav__link">
+        AKS Setup
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" type="checkbox" id="__nav_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9">
+          Use Cases
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Use Cases" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Use Cases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usecases/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secure_document_management/" class="md-nav__link">
+        Confidential Document Management
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../federated_machine_learning/" class="md-nav__link">
+        Federated Machine Learning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shared_source_code/" class="md-nav__link">
+        Confidential Code Deployment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blender/" class="md-nav__link">
+        Blender
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyspark/" class="md-nav__link">
+        PySpark
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensorflow/" class="md-nav__link">
+        TensorFlow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensorflowlite/" class="md-nav__link">
+        TensorFlow Lite
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../openvino/" class="md-nav__link">
+        OpenVino
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vault/" class="md-nav__link">
+        Vault
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone-use-case-overview/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secure_remote_execution/" class="md-nav__link">
+        Secure Remote Execution
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dockerfileexample/" class="md-nav__link">
+        Dockerfile Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multistagebuild/" class="md-nav__link">
+        Multi-stage build
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../groupcacheUseCase/" class="md-nav__link">
+        GO example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../memory_dump/" class="md-nav__link">
+        Finding Secrets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dapps/" class="md-nav__link">
+        Trusted DApps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flask_demo/" class="md-nav__link">
+        Flask Demo
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10">
+          Sign up
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Sign up" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          Sign up
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../registry/" class="md-nav__link">
+        Scontain Registy
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          More
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="More" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          More
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_1" type="checkbox" id="__nav_11_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_1">
+          Client Docu
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Client Docu" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_1">
+          <span class="md-nav__icon md-icon"></span>
+          Client Docu
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iexec_sconify_image/" class="md-nav__link">
+        iExec Sconify Image
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_2" type="checkbox" id="__nav_11_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_2">
+          Language Support
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Language Support" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_2">
+          <span class="md-nav__icon md-icon"></span>
+          Language Support
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C/" class="md-nav__link">
+        C
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mono/" class="md-nav__link">
+        C#
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C%2B%2B/" class="md-nav__link">
+        C++
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Fortran/" class="md-nav__link">
+        Fortran
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GO/" class="md-nav__link">
+        GO
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Java/" class="md-nav__link">
+        Java
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Java with remote attestation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Java with remote attestation
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    Requirements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#posting-a-scone-policy-to-configure-the-execution-inside-of-enclave" class="md-nav__link">
+    Posting a SCONE-Policy to configure the execution inside of Enclave
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-errors" class="md-nav__link">
+    Common errors
+  </a>
+  
+    <nav class="md-nav" aria-label="Common errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-ld_library_path" class="md-nav__link">
+    Missing LD_LIBRARY_PATH
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Python/" class="md-nav__link">
+        Python
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pypyscone/" class="md-nav__link">
+        PyPy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mono/" class="md-nav__link">
+        C#
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Nodejs/" class="md-nav__link">
+        Node
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../node-example/" class="md-nav__link">
+        Node example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../R/" class="md-nav__link">
+        R
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Rust/" class="md-nav__link">
+        Rust
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_3" type="checkbox" id="__nav_11_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_3">
+          IDE Integration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IDE Integration" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_3">
+          <span class="md-nav__icon md-icon"></span>
+          IDE Integration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eclipse/" class="md-nav__link">
+        Eclipse
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_vscode/" class="md-nav__link">
+        Visual Studio Code
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_4" type="checkbox" id="__nav_11_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_4">
+          Command Line Interface
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Command Line Interface" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_4">
+          <span class="md-nav__icon md-icon"></span>
+          Command Line Interface
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_cli/" class="md-nav__link">
+        CLI Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCONE_Fileshield/" class="md-nav__link">
+        scone fspf
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary_fs/" class="md-nav__link">
+        scone binary fs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCONE_ENV/" class="md-nav__link">
+        environment variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MrEnclave/" class="md-nav__link">
+        MrEnclave
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone_affinity/" class="md-nav__link">
+        affinity
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_5" type="checkbox" id="__nav_11_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_5">
+          Performance
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Performance" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_5">
+          <span class="md-nav__icon md-icon"></span>
+          Performance
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/" class="md-nav__link">
+        Applications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../teemon/" class="md-nav__link">
+        Monitoring tool
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_6" type="checkbox" id="__nav_11_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_6">
+          Background
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Background" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_6">
+          <span class="md-nav__icon md-icon"></span>
+          Background
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appsecurity/" class="md-nav__link">
+        Application-Oriented Security
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../background/" class="md-nav__link">
+        SCONE Background
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_7" type="checkbox" id="__nav_11_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_7">
+          Security
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Security" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_7">
+          <span class="md-nav__icon md-icon"></span>
+          Security
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S1_threat_model/" class="md-nav__link">
+        Threat Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S2_random_numbers/" class="md-nav__link">
+        Random numbers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S3_governance/" class="md-nav__link">
+        Governance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S4_attestation/" class="md-nav__link">
+        Attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S5_debug_mode/" class="md-nav__link">
+        Debug Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S6_best_practices/" class="md-nav__link">
+        Best Practices
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCONE_Publications/" class="md-nav__link">
+        Publications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aboutScone/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_11" type="checkbox" id="__nav_11_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_11">
+          Releases
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Releases" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_11">
+          <span class="md-nav__icon md-icon"></span>
+          Releases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.9/" class="md-nav__link">
+        SCONE 5.9.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.8/" class="md-nav__link">
+        SCONE 5.8.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.7/" class="md-nav__link">
+        SCONE 5.7.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.6/" class="md-nav__link">
+        SCONE 5.6.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.5/" class="md-nav__link">
+        SCONE 5.5.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.4/" class="md-nav__link">
+        SCONE 5.4.0
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    Requirements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#posting-a-scone-policy-to-configure-the-execution-inside-of-enclave" class="md-nav__link">
+    Posting a SCONE-Policy to configure the execution inside of Enclave
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-errors" class="md-nav__link">
+    Common errors
+  </a>
+  
+    <nav class="md-nav" aria-label="Common errors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#missing-ld_library_path" class="md-nav__link">
+    Missing LD_LIBRARY_PATH
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="running-java-applications-in-scone-with-cas-policy">Running Java Applications in Scone with CAS-Policy</h1>
+<h2 id="requirements">Requirements</h2>
+<p>The following steps assume that you have a running CAS container and a running LAS server and know its addresses.</p>
+<p>Some of the latest containers for CAS and LAS are available at</p>
+<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/services:cas
+docker pull registry.scontain.com/sconecuratedimages/kubernetes:las</code></pre>
+<p>but the <code>service</code>  repository requires a commercial subscription. You can use our <a href="../public-CAS/">public CAS instance</a> at domain <code>scone-cas.cf</code> instead.</p>
+<p>Make sure the sgx driver and  docker is installed and running correctly by doing the java hello world sample. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/apps:openjdk-8-alpine</code></pre>
+<p>or, in case the container does not start the bash command automatically:</p>
+<pre class="highlight"><code class="language-bash">docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/apps:openjdk-8-alpine /bin/sh</code></pre>
+<p>For Java 11 or Java 15 instead of Java 8:</p>
+<pre class="highlight"><code class="language-bash">docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/apps:openjdk-11-alpine /bin/sh
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/apps:openjdk-15-alpine /bin/sh</code></pre>
+<p>We provide a quick hello-world sample in Java</p>
+<pre class="highlight"><code class="language-bash">cat &gt; HelloWorld.java &lt;&lt; EOF
+import java.util.Map;
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+        Map&lt;String, String&gt; env = System.getenv();
+        for (String envName : env.keySet()) {
+            System.out.format("%s=%s%n", envName, env.get(envName));
+        }
+    }
+}
+EOF</code></pre>
+<p>Compile it, by executing:</p>
+<pre class="highlight"><code class="language-bash">javac HelloWorld.java</code></pre>
+<p>Expected output:</p>
+<pre class="highlight"><code class="language-text"># javac HelloWorld.java
+Picked up JAVA_TOOL_OPTIONS: -Xmx256m
+#</code></pre>
+<p>You need to set some environment variables:</p>
+<pre class="highlight"><code class="language-bash">export SCONE_CAS_ADDR=scone-cas.cf  # we use the public CAS service
+export SCONE_LAS_ADDR=127.0.0.1 # we must run a local LAS service
+export SCONE_VERSION=1   # show the SCONE version
+export SCONE_LOG=7   # maximum LOG level
+java HelloWorld</code></pre>
+<p>Expected output after 2-3 minutes with a NUC and 8GB memory. Note that if you have a CPU that supports EDMM (Enclave dynamic memory management), the startup times will be much quicker.</p>
+<pre class="highlight"><code class="language-Java">/ # export SCONE_VERSION=1
+/ # export SCONE_LOG=7
+/ # java HelloWorld
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_LOG=7
+export SCONE_HEAP=4294967296
+export SCONE_STACK=2097152
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_ESPINS=10000
+export SCONE_MODE=hw
+export SCONE_ALLOW_DLOPEN=yes (unprotected)
+export SCONE_MPROTECT=yes
+musl version: 1.1.24
+Revision: efb2bdadba60c120f36864a1d675c4c4ca35ed69 (Tue Apr 28 06:29:26 2020 +0000)
+Branch: 6ab648c20350b71cfeb8468001e8ebd78779870a
+
+Enclave hash: 7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb
+[SCONE|WARN] src/syscall/syscall.c:698:__scone_syscall_unshielded(): system call: SYS_membarrier, number 324 is not implemented.
+[SCONE|WARN] src/syscall/syscall.c:698:__scone_syscall_unshielded(): system call: SYS_membarrier, number 324 is not implemented.
+Picked up JAVA_TOOL_OPTIONS: -Xmx256m
+[SCONE|WARN] src/shielding/proc_fs.c:368:_proc_fs_open(): open: /proc/self/mountinfo is not supported
+[SCONE|WARN] src/shielding/proc_fs.c:368:_proc_fs_open(): open: /proc/self/maps is not supported
+OpenJDK 64-Bit Server VM warning: Can't detect primordial thread stack location - find_vma failed
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+Hello World
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
+SCONE_VERSION=1
+SCONE_HEAP=4G
+SCONE_LOG=7
+SCONE_CAS_ADDR=scone-cas.cf
+JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
+TERM=xterm
+LANG=C.UTF-8
+SCONE_ALPINE=1
+SCONE_ALLOW_DLOPEN=2
+HOSTNAME=86fd2f848e41
+SCONE_MPROTECT=1
+SCONE_LAS_ADDR=127.0.0.1
+LD_LIBRARY_PATH=/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64
+JAVA_TOOL_OPTIONS=-Xmx256m
+PWD=/
+HOME=/root
+SHLVL=2
+/ #</code></pre>
+<h2 id="posting-a-scone-policy-to-configure-the-execution-inside-of-enclave">Posting a SCONE-Policy to configure the execution inside of Enclave</h2>
+<p>Using the CAS container to provision an execution inside of an enclave with environment variables etc. which were previously set.
+Therefore, the SCONE-Policy for Java executions must include the following parameters LD_LIBRARY_PATH and if necessary JAVA_TOOL_OPTIONS and the CLASSPATH of the required Java libraries:</p>
+<p>First, similar to the <a href="../cas_blender_example/">posting sessions tutorial</a>,
+we create a yaml file for java 1.8 openjdk</p>
+<pre class="highlight"><code class="language-bash">cat &gt; sessionJavaHelloWorld.yml &lt;&lt;EOF
+name: java
+services:
+   - name: hello
+     mrenclaves: [7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb] # MRENCLAVE = Enclave hash: from execution with SCONE_VERSION=1
+     command: "java HelloWorld"
+     pwd: /
+     environment:
+       LD_LIBRARY_PATH: "/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64"
+       JAVA_TOOL_OPTIONS: "-Xmx256m"
+       CLASSPATH: "/" # path to directory contained your code
+       TMP_SECRET_VAR: "This is a protected secret distributed by Scone CAS!"
+EOF</code></pre>
+<p>We create client certificate and key material to identify this client:
+<pre class="highlight"><code class="language-bash">    mkdir -p conf
+    if [[ ! -f conf/client.crt || ! -f conf/client-key.key  ]] ; then
+        openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key  -days 31 -nodes -sha256 -subj "/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com" -reqexts SAN -extensions SAN -config &lt;(cat /etc/ssl/openssl.cnf \
+    &lt;(printf '[SAN]\nsubjectAltName=DNS:www.scontain.com'))
+    fi</code></pre></p>
+<p>Next, we will upload this session to CAS:</p>
+<pre class="highlight"><code class="language-bash">curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @sessionJavaHelloWorld.yml -X POST https://$SCONE_CAS_ADDR:8081/session</code></pre>
+<p>Expected output (please ignore the 'not-supported' fields):</p>
+<pre class="highlight"><code class="language-bash">Created Session[id=b11ac009c564f6e0c8c2b61d7b4774e89f896e83ec09ef3f919bd420aa3ab252, name='not-supported', status='not-supported']</code></pre>
+<p>If the output is not giving out an idea the session was not created. One possible reasons can be formatting errors like not using quotation marks ("java Helloworld") or single quotation marks ('java HelloWorld')</p>
+<p>If we have set up the SCONE_CAS_ADDR and SCONE_LAS_ADDR, we export the environment variable according to the policy's name "java" and the service "hello"</p>
+<pre class="highlight"><code class="language-bash">export SCONE_CONFIG_ID="java/hello"
+export SCONE_CAS_ADDR=$YOUR_CAS_ADDR
+export SCONE_LAS_ADDR=$YOUR_LAS_ADDR
+export SCONE_VERSION=1 
+export SCONE_LOG=7 </code></pre>
+<p>Now if we start the command  "java HelloWorld" again, we see the following output.</p>
+<pre class="highlight"><code class="language-bash">/ # java HelloWorld
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_LOG=7
+export SCONE_HEAP=4294967296
+export SCONE_STACK=2097152
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_ESPINS=10000
+export SCONE_MODE=hw
+export SCONE_ALLOW_DLOPEN=yes (unprotected)
+export SCONE_MPROTECT=yes
+musl version: 1.1.24
+Revision: efb2bdadba60c120f36864a1d675c4c4ca35ed69 (Tue Apr 28 06:29:26 2020 +0000)
+Branch: 6ab648c20350b71cfeb8468001e8ebd78779870a
+
+Enclave hash: 7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb
+[SCONE|INFO] src/shielding/crypto.c:222:crypto_get_identity(): Generated enclave certificate
+[SCONE|INFO] src/shielding/eai_attestor.c:174:eai_attestor_init(): Created TLS context to communicate with CAS
+[SCONE|DEBUG] src/shielding/eai_attestor.c:288:eai_attestor_attest(): Sending Attestation Request to LAS
+[SCONE|DEBUG] src/shielding/eai_attestor.c:311:eai_attestor_attest(): Got Quote from LAS
+[SCONE|DEBUG] src/shielding/eai_attestor.c:324:eai_attestor_attest(): Sending enclave hello message to CAS
+[SCONE|DEBUG] src/shielding/eai_attestor.c:349:eai_attestor_attest(): Successfully attested enclave via CAS
+[SCONE|DEBUG] src/process/init.c:639:__scone_prepare_secure_config(): Sending configuration request to CAS!
+[SCONE|DEBUG] src/process/init.c:666:__scone_prepare_secure_config(): Received configuration from CAS!
+[SCONE|WARN] src/syscall/syscall.c:698:__scone_syscall_unshielded(): system call: SYS_membarrier, number 324 is not implemented.
+[SCONE|WARN] src/syscall/syscall.c:698:__scone_syscall_unshielded(): system call: SYS_membarrier, number 324 is not implemented.
+Picked up JAVA_TOOL_OPTIONS: -Xmx256m
+[SCONE|WARN] src/shielding/proc_fs.c:368:_proc_fs_open(): open: /proc/self/mountinfo is not supported
+[SCONE|WARN] src/shielding/proc_fs.c:368:_proc_fs_open(): open: /proc/self/maps is not supported
+OpenJDK 64-Bit Server VM warning: Can't detect primordial thread stack location - find_vma failed
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+Hello World
+TMP_SECRET_VAR=This is a protected secret distributed by Scone CAS!
+CLASSPATH=/
+JAVA_TOOL_OPTIONS=-Xmx256m
+LD_LIBRARY_PATH=/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64
+/ #</code></pre>
+<p>Note that the content of TMP_SECRET_VAR came from the Scone policy which was posted earlier to the CAS.</p>
+<p>And we see the following logfiles in the containers of CAS (in case you are running a local copy):</p>
+<pre class="highlight"><code class="language-bash">ubuntu@kmaster:~$ docker logs cas_cas_1
+[2020-05-08T11:32:02Z DEBUG rustls::server::hs] decided upon suite SupportedCipherSuite { suite: TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, kx: ECDHE, bulk: AES_256_GCM, hash: SHA384, sign: ECDSA, enc_key_len: 32, fixed_iv_len: 4, explicit_nonce_len: 8, hkdf_algorithm: Algorithm(Algorithm(SHA384)) }
+[2020-05-08T11:32:02Z DEBUG rustls::server::tls12] Session saved
+[2020-05-08T11:32:02Z DEBUG eai::convert] Received length of next message
+[2020-05-08T11:32:02Z DEBUG eai::convert] Next message will be 518 bytes long
+[2020-05-08T11:32:02Z DEBUG eai::convert] Protobuf message received completely, interpreting it...
+[2020-05-08T11:32:02Z DEBUG eai] Got message EnclaveMessage::EnclaveHello from enclave
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): In current state: Fresh got message: EnclaveMessage::EnclaveHello
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Processing enclave hello message
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): SconeQuote is valid, it has not been tampared with.
+[2020-05-08T11:32:02Z WARN  cas::api::enclave::connection] V4(192.168.0.101:58584): CAS is running in debug mode, simulation mode or w/o SCONE runtime: It will accept quotes from SCONE quoting enclaves running in debug mode
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Hash of channel certificate: ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976, SGX reportdata: ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Secure channel terminates in enclave: Hash of channel certifacte matches SGX reportdata
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): SconeQuote is signed by known and trusted quoting enclave: true
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Trust established into enclave integrity. Sending attestation complete message
+[2020-05-08T11:32:02Z DEBUG eai] Sending message Complete to enclave
+[2020-05-08T11:32:02Z DEBUG eai::convert] Waiting for more data before decoding protobuf message
+[2020-05-08T11:32:02Z DEBUG eai::convert] Received length of next message
+[2020-05-08T11:32:02Z DEBUG eai::convert] Next message will be 16 bytes long
+[2020-05-08T11:32:02Z DEBUG eai::convert] Protobuf message received completely, interpreting it...
+[2020-05-08T11:32:02Z DEBUG eai] Got message EnclaveMessage::ConfigRequest from enclave
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): In current state: Attested got message: EnclaveMessage::ConfigRequest
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Received configuration request for config id javax2/hello
+[2020-05-08T11:32:02Z DEBUG cas_backend::backend] Got request for service: hello in session: javax2. Attificate is: SCONE(
+        SCONEAttificate {
+            identifier: "791f84651890514eefe32ecfe54a75d95475636f61180a6ca1765cbbee0253dd",
+            certificate: "-----BEGIN CERTIFICATE-----\nMIIBZjCB6qADAgECAhEA9vVqCQoOsEgtQ7Lo09QqNjAMBggqhkjOPQQDAwUAMA0x\nCzAJBgNVBAYTAkRFMCAXDTE4MDkxNzE5MzAwMFoYDzIwNTAwMTAxMDEwMDAwWjAA\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEoavE7JGhE5YqrBV979f8NTxUzGURrDE2\naU3vuZukWkioO8g+3Ec+YaVMu0N3CWy0hnwKD4nyCr7criLlXhvRaxQdJdp6d+4b\nMJXGtrgvcF4I1ZAb17FJOHoUD9Q5IVKSoxcwFTATBgNVHREEDDAKgghlbmNsYXZl\nADAMBggqhkjOPQQDAwUAA2kAMGYCMQCusCCDg8EKrrP75FL5kUShjoG28dWsAMVN\nDfv2InlX5ZCATrZ3YwSl8+MfV1Key0sCMQDMaA+jVF+bqr82C9iIYZhr4vXCWUhI\njYVnKAo+/GP+pwwvNE7XZwPTXbEPdRoyrbw=\n-----END CERTIFICATE-----\n",
+            report: SgxReportBody {
+                cpusvn: "02020000000000000000000000000000",
+                miscselect: "00000000",
+                attributes: SgxAttributes {
+                    flags: 7,
+                    xfrm: 27,
+                },
+                mrenclave: "7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb",
+                mrsigner: "11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd",
+                isvprodid: 0,
+                isvsvn: 0,
+                reportdata: "ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976",
+            },
+            scone_qe_pub_key: a470cda5245af18ef5d8d3e1b30982a3bc74848376ca4fd03237c0f342e97239,
+        },
+    )
+[2020-05-08T11:32:02Z INFO  cas::api::enclave::connection] V4(192.168.0.101:58584): Provisioned configuration javax2/hello
+[2020-05-08T11:32:02Z DEBUG eai] Sending message Config to enclave
+[2020-05-08T11:32:02Z DEBUG eai::convert] Waiting for more data before decoding protobuf message
+[2020-05-08T11:34:50Z DEBUG eai::convert] Waiting for more data before decoding protobuf message
+[2020-05-08T11:34:50Z WARN  cas::api::enclave] Failure while handling enclave connection: DisplayChain(Error(Msg("Connection closed"), State { next_error: None, backtrace: InternalBacktrace { backtrace: None } }))</code></pre>
+<p>And we see the following logfiles in the containers of LAS:</p>
+<pre class="highlight"><code class="language-bash">ubuntu@kmaster:~$ docker logs las_las_1
+jhi[8]: --&gt; jhi start
+jhi[8]: &lt;-- jhi start
+aesm_service[11]: [ADMIN]White List update requested
+aesm_service[11]: The server sock is 0x55c64a935e30
+aesm_service[11]: [ADMIN]White list update request successful for Version: 73
+[10000:INFO@04.05.2020/11:01:42] APP: Creating LAS target information message.
+aesm_service[11]: [ADMIN]EPID Provisioning initiated
+aesm_service[11]: The Request ID is f6131707e3714d359f33dca65dc72308
+aesm_service[11]: The Request ID is 23c495fac0b94c8984546fbddc0a75f3
+aesm_service[11]: [ADMIN]EPID Provisioning successful
+[10000:INFO@04.05.2020/11:01:44] STARTER: SCONE QE has MRENCLAVE D9A05D04E07CD75F4251D41A4D7F0FCA63BF392A19BEDE5C69A5BB60A94E376F
+[10000:INFO@04.05.2020/11:01:44] STARTER: SCONE QE has public key A470CDA5245AF18EF5D8D3E1B30982A3BC74848376CA4FD03237C0F342E97239
+[10000:INFO@04.05.2020/11:01:44] STARTER: LAS is listening on 0.0.0.0:18766
+[10000:INFO@04.05.2020/11:40:46] CONNECTION_HANDLER: Received attestation request
+[10000:INFO@04.05.2020/11:40:46] CONNECTION_HANDLER: Sent quote success: 1, type: 3, size: 480
+[10000:INFO@04.05.2020/11:40:46] CONNECTION_HANDLER: Received attestation request
+[10000:INFO@04.05.2020/11:40:46] CONNECTION_HANDLER: Sent quote success: 1, type: 2, size: 1116
+[01000:WARNING@04.05.2020/11:40:47] RECV_FUNC: Connection closed while reading message length.
+[01000:WARNING@04.05.2020/11:40:47] CONNECTION_HANDLER: Unable to decode received message. Terminating connection!
+...multiple log entries
+[10000:INFO@08.05.2020/11:38:27] CONNECTION_HANDLER: Received attestation request
+[10000:INFO@08.05.2020/11:38:27] CONNECTION_HANDLER: Sent quote success: 1, type: 3, size: 480
+[01000:WARNING@08.05.2020/11:38:27] RECV_FUNC: Connection closed while reading message length.
+[01000:WARNING@08.05.2020/11:38:27] CONNECTION_HANDLER: Unable to decode received message. Terminating connection!</code></pre>
+<h2 id="common-errors">Common errors</h2>
+<h3 id="missing-ld_library_path">Missing LD_LIBRARY_PATH</h3>
+<p>If the system is started without the default LD_LIBRARY_PATH and the SCONE-Policy is missing its environment variable the output will be:</p>
+<pre class="highlight"><code class="language-text">[SCONE|ERROR] src/syscall/execve.c:108:syscall_SYS_execve(): execve is only supported after a vfork (vfork is not active!) 
+No error information
+Error: trying to exec /usr/lib/jvm/java-1.8-openjdk/jre/bin/java.
+Check if file exists and permissions are set correctly.</code></pre>
+<p>The solution is settings the LD_LIBRARY_PATH according to the posting session example given above:</p>
+<pre class="highlight"><code class="language-bash">LD_LIBRARY_PATH: "/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/.</code></pre>
+<p>Author: Hendrik</p>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../Java/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Java" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Java
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../Python/" class="md-footer__link md-footer__link--next" aria-label="Next: Python" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Python
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright Scontain &copy; 2018-2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+      
+        <script src="../css/extra.js"></script>
+      
+        <script src="../search/main.js"></script>
+      
+    
+  </body>
+</html>

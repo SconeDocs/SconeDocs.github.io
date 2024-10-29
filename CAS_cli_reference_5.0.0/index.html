@@ -1,0 +1,6743 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Scone Documentation - Secure Containers">
+      
+      
+        <meta name="author" content="Christof Fetzer">
+      
+      
+        <link rel="canonical" href="https://sconedocs.github.io/CAS_cli_reference_5.0.0/">
+      
+      <link rel="icon" href="../img/scone-favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
+    
+    
+      
+        <title>SCONE CLI - Confidential Computing</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#ffffff">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"PT Sans";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+      <link rel="stylesheet" href="../css/extra.css">
+    
+      <link rel="stylesheet" href="../css/tooltips.css">
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="white" data-md-color-accent="purple">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scone-cli" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Confidential Computing" class="md-header__button md-logo" aria-label="Confidential Computing" data-md-component="logo">
+      
+  <img src="../img/SCONE-logo-white.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Confidential Computing
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SCONE CLI
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href=".." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../news/" class="md-tabs__link">
+        News and Overview
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../scone_mesh_tutorial/" class="md-tabs__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../k8s_concepts/" class="md-tabs__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../CASOverview/" class="md-tabs__link">
+        Configuration & Attestation
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../helm/" class="md-tabs__link">
+        SconeApps
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../operations/" class="md-tabs__link">
+        DevOps Workflows
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../aks/" class="md-tabs__link">
+        Azure Kubernetes Services
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../usecases/" class="md-tabs__link">
+        Use Cases
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../registry/" class="md-tabs__link">
+        Sign up
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../iexec_sconify_image/" class="md-tabs__link">
+        More
+      </a>
+    </li>
+  
+
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Confidential Computing" class="md-nav__button md-logo" aria-label="Confidential Computing" data-md-component="logo">
+      
+  <img src="../img/SCONE-logo-white.png" alt="logo">
+
+    </a>
+    Confidential Computing
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          News and Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="News and Overview" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          News and Overview
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../news/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cc-telenovela/" class="md-nav__link">
+        CC Soap Opera
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cc-university/" class="md-nav__link">
+        CC University
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vm_vs_enclave/" class="md-nav__link">
+        Confidential Computing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advantages/" class="md-nav__link">
+        Advantages of SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whyscone/" class="md-nav__link">
+        SCONE vs Intel SGX SDK
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../technical_summary/" class="md-nav__link">
+        Technical summary of SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../buildingApps/" class="md-nav__link">
+        (No) Cross-Compilation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../curated_images/" class="md-nav__link">
+        Curated Images
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community_version/" class="md-nav__link">
+        Community Version
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Quick Start
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Quick Start" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Quick Start
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_1" type="checkbox" id="__nav_3_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_1">
+          sconectl
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="sconectl" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_1">
+          <span class="md-nav__icon md-icon"></span>
+          sconectl
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone_mesh_tutorial/" class="md-nav__link">
+        Hello World
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconectl/" class="md-nav__link">
+        sconectl cli
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install_sconectl/" class="md-nav__link">
+        install sconectl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service.html" class="md-nav__link">
+        openAPI description service
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mesh.html" class="md-nav__link">
+        openAPI description mesh
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java_mesh_tutorial/" class="md-nav__link">
+        Java Hello World
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_2">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Overview" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Overview
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflows/" class="md-nav__link">
+        Workflows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconify_hw_k8s/" class="md-nav__link">
+        Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lean_deployment/" class="md-nav__link">
+        kubectl
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconify/" class="md-nav__link">
+        Sconify
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconify_filetypes/" class="md-nav__link">
+        File Types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ee_sconify_image/" class="md-nav__link">
+        Sconify Image SE
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-stakeholder-workflow/" class="md-nav__link">
+        Multi-Stakeholder Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../example_policy/" class="md-nav__link">
+        Policy Update
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../microservices-demo/" class="md-nav__link">
+        Boutique Demo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq_sconify/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7" type="checkbox" id="__nav_3_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_7">
+          Installation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Installation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          Installation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hostexample/" class="md-nav__link">
+        Host Execution
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        Installation overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dockerinstall/" class="md-nav__link">
+        Installing docker
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sgxinstall/" class="md-nav__link">
+        Installing Intel SGX driver
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeinstall/" class="md-nav__link">
+        Installing SCONE
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../microcode/" class="md-nav__link">
+        Updating CPU microcode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../windows10/" class="md-nav__link">
+        Windows 10
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_8">
+          Workshop
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Workshop" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_8">
+          <span class="md-nav__icon md-icon"></span>
+          Workshop
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/setup/" class="md-nav__link">
+        getting access
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/details/" class="md-nav__link">
+        background
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/task_1/" class="md-nav__link">
+        Task 1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/task_2/" class="md-nav__link">
+        Task 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/hands_on_1/" class="md-nav__link">
+        hands on A
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/hands_on_2/" class="md-nav__link">
+        hands on B
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workshop/next_steps/" class="md-nav__link">
+        next steps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9">
+          Tutorial
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorial" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_9">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorial
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercises/" class="md-nav__link">
+        Assignments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise0/" class="md-nav__link">
+        Assignment 0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise1/" class="md-nav__link">
+        Assignment 1
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise2/" class="md-nav__link">
+        Assignment 2
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise3/" class="md-nav__link">
+        Assignment 3
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise4/" class="md-nav__link">
+        Assignment 4
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/exercise5/" class="md-nav__link">
+        Assignment 5
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Exercise-Docu/section_otp/" class="md-nav__link">
+        Section 2 OTP
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_10">
+          SCONE Execution Modes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SCONE Execution Modes" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_10">
+          <span class="md-nav__icon md-icon"></span>
+          SCONE Execution Modes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../outline/" class="md-nav__link">
+        Execution Modes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../firstcontainer/" class="md-nav__link">
+        Simulation Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardwaremode/" class="md-nav__link">
+        Hardware Mode
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Kubernetes" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Kubernetes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../k8s_concepts/" class="md-nav__link">
+        Concepts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2">
+          SCONE Operator
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SCONE Operator" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          SCONE Operator
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_scone_operator/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2_operator_installation/" class="md-nav__link">
+        Reconciliation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../5_kubectl/" class="md-nav__link">
+        Deploying CAS and Vault
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3_resource_definitions/" class="md-nav__link">
+        Custom Resource Definitions
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_3" type="checkbox" id="__nav_4_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_3">
+          Helm Charts
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Helm Charts" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Helm Charts
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_sgxdevplugin/" class="md-nav__link">
+        Kubernetes SGX Plugin
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_cas/" class="md-nav__link">
+        CAS Deploy & Attest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_las/" class="md-nav__link">
+        LAS Deploy & Platforms
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_mariadb/" class="md-nav__link">
+        MariaDB Deploy & Attest
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_teemon/" class="md-nav__link">
+        TEEMon Deployment
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_4" type="checkbox" id="__nav_4_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_4">
+          Dashboards
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Dashboards" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          Dashboards
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_dashboard/" class="md-nav__link">
+        Helm Dashboard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../k8s_dashboard/" class="md-nav__link">
+        Kubernetes Dashboard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubeapps/" class="md-nav__link">
+        Kubeapps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_5" type="checkbox" id="__nav_4_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_5">
+          Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Examples" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_5">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hello_world_kubernetes/" class="md-nav__link">
+        Hello World Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../azure/scone-pyspark/" class="md-nav__link">
+        PySpark on Azure
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Configuration & Attestation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Configuration & Attestation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Configuration & Attestation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CASOverview/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas_intro/" class="md-nav__link">
+        Concepts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_session_lang_0_3/" class="md-nav__link">
+        Policy Language
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4" type="checkbox" id="__nav_5_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4">
+          Policy Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Policy Examples" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_4">
+          <span class="md-nav__icon md-icon"></span>
+          Policy Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../auditLog/" class="md-nav__link">
+        Audit Log
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas_blender_example/" class="md-nav__link">
+        Posting Policies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_cli-intro/" class="md-nav__link">
+        CLI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../envcas/" class="md-nav__link">
+        envcas
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../platform_attestation/" class="md-nav__link">
+        Platform-based attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_4_6" type="checkbox" id="__nav_5_4_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_4_6">
+          Secure Arguments
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Secure Arguments" data-md-level="3">
+        <label class="md-nav__title" for="__nav_5_4_6">
+          <span class="md-nav__icon md-icon"></span>
+          Secure Arguments
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../print-arg-env/" class="md-nav__link">
+        Part 1 - print arguments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../print-arg-env-p2/" class="md-nav__link">
+        Part 2 - session hash
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../encrypted_vol/" class="md-nav__link">
+        Encrypted Volume
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone-signer-example/" class="md-nav__link">
+        Binary Translation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../host_arguments/" class="md-nav__link">
+        Host Arguments
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../otp_demo/" class="md-nav__link">
+        One-time Passwords
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EncryptedWordCount/" class="md-nav__link">
+        Encrypted Code and Input
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../namespace/" class="md-nav__link">
+        Namespaces
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network_shield/" class="md-nav__link">
+        Network Shield
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_5" type="checkbox" id="__nav_5_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_5">
+          Alternative CAS deployments
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Alternative CAS deployments" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_5">
+          <span class="md-nav__icon md-icon"></span>
+          Alternative CAS deployments
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_production/" class="md-nav__link">
+        CAS with helm
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_for_development/" class="md-nav__link">
+        CAS with docker compose
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas-backup-controller/" class="md-nav__link">
+        CAS Backup Controller for Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cas-backup-controller-quick-start/" class="md-nav__link">
+        CAS Backup Controller Quick Start
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_config/" class="md-nav__link">
+        CAS Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../public-CAS/" class="md-nav__link">
+        Public CAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LASIntro/" class="md-nav__link">
+        Starting LAS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../self-provisioned-cas/" class="md-nav__link">
+        Self-Provisioned CAS
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          SconeApps
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="SconeApps" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          SconeApps
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm/" class="md-nav__link">
+        SconeApps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_database/" class="md-nav__link">
+        database
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_maxscale/" class="md-nav__link">
+        maxscale
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_memcached/" class="md-nav__link">
+        memcached
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_nginx/" class="md-nav__link">
+        nginx
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_openvino/" class="md-nav__link">
+        openvino
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_pytorch/" class="md-nav__link">
+        pytorch
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_spark/" class="md-nav__link">
+        spark
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_tensorflow/" class="md-nav__link">
+        tensorflow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_tensorflowlite/" class="md-nav__link">
+        tensorflowlite
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sconeapps_zookeeper/" class="md-nav__link">
+        zookeeper
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          DevOps Workflows
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DevOps Workflows" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          DevOps Workflows
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/" class="md-nav__link">
+        Workflows
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mitigation/" class="md-nav__link">
+        Attack mitigation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sadvisories/" class="md-nav__link">
+        Security advisories
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../software_updates/" class="md-nav__link">
+        Software updates
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone-signer/" class="md-nav__link">
+        Signing of enclaves
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../edmm/" class="md-nav__link">
+        EDMM support
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone_semantic_versioning/" class="md-nav__link">
+        SCONE versioning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attestation_by_client/" class="md-nav__link">
+        Attestation by client
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../technotes/" class="md-nav__link">
+        Technotes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          Azure Kubernetes Services
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Azure Kubernetes Services" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          Azure Kubernetes Services
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks/" class="md-nav__link">
+        Confidential AKS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../azure/scone-playground/" class="md-nav__link">
+        SCONE Playground on Azure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks/flask_demo/" class="md-nav__link">
+        Flask Demo
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python_images/" class="md-nav__link">
+        Python Images
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks_integration/" class="md-nav__link">
+        AKS Integration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MicrosoftAzureIntegrations/" class="md-nav__link">
+        AKS Integration Tutorial
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks_charts/" class="md-nav__link">
+        AKS Applications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aks_setup/" class="md-nav__link">
+        AKS Setup
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_9" type="checkbox" id="__nav_9" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_9">
+          Use Cases
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Use Cases" data-md-level="1">
+        <label class="md-nav__title" for="__nav_9">
+          <span class="md-nav__icon md-icon"></span>
+          Use Cases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usecases/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secure_document_management/" class="md-nav__link">
+        Confidential Document Management
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../federated_machine_learning/" class="md-nav__link">
+        Federated Machine Learning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shared_source_code/" class="md-nav__link">
+        Confidential Code Deployment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blender/" class="md-nav__link">
+        Blender
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyspark/" class="md-nav__link">
+        PySpark
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensorflow/" class="md-nav__link">
+        TensorFlow
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensorflowlite/" class="md-nav__link">
+        TensorFlow Lite
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../openvino/" class="md-nav__link">
+        OpenVino
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vault/" class="md-nav__link">
+        Vault
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone-use-case-overview/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../secure_remote_execution/" class="md-nav__link">
+        Secure Remote Execution
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dockerfileexample/" class="md-nav__link">
+        Dockerfile Example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multistagebuild/" class="md-nav__link">
+        Multi-stage build
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../groupcacheUseCase/" class="md-nav__link">
+        GO example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../memory_dump/" class="md-nav__link">
+        Finding Secrets
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dapps/" class="md-nav__link">
+        Trusted DApps
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flask_demo/" class="md-nav__link">
+        Flask Demo
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_10" type="checkbox" id="__nav_10" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_10">
+          Sign up
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Sign up" data-md-level="1">
+        <label class="md-nav__title" for="__nav_10">
+          <span class="md-nav__icon md-icon"></span>
+          Sign up
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../registry/" class="md-nav__link">
+        Scontain Registy
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          More
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="More" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          More
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_1" type="checkbox" id="__nav_11_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_1">
+          Client Docu
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Client Docu" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_1">
+          <span class="md-nav__icon md-icon"></span>
+          Client Docu
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iexec_sconify_image/" class="md-nav__link">
+        iExec Sconify Image
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_2" type="checkbox" id="__nav_11_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_2">
+          Language Support
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Language Support" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_2">
+          <span class="md-nav__icon md-icon"></span>
+          Language Support
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C/" class="md-nav__link">
+        C
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mono/" class="md-nav__link">
+        C#
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../C%2B%2B/" class="md-nav__link">
+        C++
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Fortran/" class="md-nav__link">
+        Fortran
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GO/" class="md-nav__link">
+        GO
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Java/" class="md-nav__link">
+        Java
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Running_Java_Applications_in_Scone_with_remote_attestation/" class="md-nav__link">
+        Java with remote attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Python/" class="md-nav__link">
+        Python
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pypyscone/" class="md-nav__link">
+        PyPy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mono/" class="md-nav__link">
+        C#
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Nodejs/" class="md-nav__link">
+        Node
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../node-example/" class="md-nav__link">
+        Node example
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../R/" class="md-nav__link">
+        R
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Rust/" class="md-nav__link">
+        Rust
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_3" type="checkbox" id="__nav_11_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_3">
+          IDE Integration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IDE Integration" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_3">
+          <span class="md-nav__icon md-icon"></span>
+          IDE Integration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../eclipse/" class="md-nav__link">
+        Eclipse
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../helm_vscode/" class="md-nav__link">
+        Visual Studio Code
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_4" type="checkbox" id="__nav_11_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_4">
+          Command Line Interface
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Command Line Interface" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_4">
+          <span class="md-nav__icon md-icon"></span>
+          Command Line Interface
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CAS_cli/" class="md-nav__link">
+        CLI Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCONE_Fileshield/" class="md-nav__link">
+        scone fspf
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary_fs/" class="md-nav__link">
+        scone binary fs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCONE_ENV/" class="md-nav__link">
+        environment variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MrEnclave/" class="md-nav__link">
+        MrEnclave
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scone_affinity/" class="md-nav__link">
+        affinity
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_5" type="checkbox" id="__nav_11_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_5">
+          Performance
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Performance" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_5">
+          <span class="md-nav__icon md-icon"></span>
+          Performance
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/" class="md-nav__link">
+        Applications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../teemon/" class="md-nav__link">
+        Monitoring tool
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_6" type="checkbox" id="__nav_11_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_6">
+          Background
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Background" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_6">
+          <span class="md-nav__icon md-icon"></span>
+          Background
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appsecurity/" class="md-nav__link">
+        Application-Oriented Security
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../background/" class="md-nav__link">
+        SCONE Background
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_7" type="checkbox" id="__nav_11_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_7">
+          Security
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Security" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_7">
+          <span class="md-nav__icon md-icon"></span>
+          Security
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S1_threat_model/" class="md-nav__link">
+        Threat Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S2_random_numbers/" class="md-nav__link">
+        Random numbers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S3_governance/" class="md-nav__link">
+        Governance
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S4_attestation/" class="md-nav__link">
+        Attestation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S5_debug_mode/" class="md-nav__link">
+        Debug Mode
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../S6_best_practices/" class="md-nav__link">
+        Best Practices
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCONE_Publications/" class="md-nav__link">
+        Publications
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aboutScone/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11_11" type="checkbox" id="__nav_11_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11_11">
+          Releases
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Releases" data-md-level="2">
+        <label class="md-nav__title" for="__nav_11_11">
+          <span class="md-nav__icon md-icon"></span>
+          Releases
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.9/" class="md-nav__link">
+        SCONE 5.9.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.8/" class="md-nav__link">
+        SCONE 5.8.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.7/" class="md-nav__link">
+        SCONE 5.7.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.6/" class="md-nav__link">
+        SCONE 5.6.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.5/" class="md-nav__link">
+        SCONE 5.5.0
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release5.4/" class="md-nav__link">
+        SCONE 5.4.0
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scone" class="md-nav__link">
+    scone
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-self" class="md-nav__link">
+    scone self
+  </a>
+  
+    <nav class="md-nav" aria-label="scone self">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scone-self-show" class="md-nav__link">
+    scone self show
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-self-show-certificate" class="md-nav__link">
+    scone self show-certificate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-self-show-key-hash" class="md-nav__link">
+    scone self show-key-hash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-self-show-certificate-hash" class="md-nav__link">
+    scone self show-certificate-hash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-self-show-session-signing-key" class="md-nav__link">
+    scone self show-session-signing-key
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-fspf" class="md-nav__link">
+    scone fspf
+  </a>
+  
+    <nav class="md-nav" aria-label="scone fspf">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scone-fspf-create" class="md-nav__link">
+    scone fspf create
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-fspf-addr" class="md-nav__link">
+    scone fspf addr
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-fspf-addf" class="md-nav__link">
+    scone fspf addf
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-fspf-encrypt" class="md-nav__link">
+    scone fspf encrypt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-fspf-show" class="md-nav__link">
+    scone fspf show
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-fspf-create-volume" class="md-nav__link">
+    scone fspf create-volume
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-cas" class="md-nav__link">
+    scone cas
+  </a>
+  
+    <nav class="md-nav" aria-label="scone cas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-list" class="md-nav__link">
+    scone cas list
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-attest" class="md-nav__link">
+    scone cas attest
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-show-identification" class="md-nav__link">
+    scone cas show-identification
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-show-certificate" class="md-nav__link">
+    scone cas show-certificate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-set-default" class="md-nav__link">
+    scone cas set-default
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-provision" class="md-nav__link">
+    scone cas provision
+  </a>
+  
+    <nav class="md-nav" aria-label="scone cas provision">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-provision-with-attestation" class="md-nav__link">
+    scone cas provision with-attestation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-provision-only_for_testing-without-attestation" class="md-nav__link">
+    scone cas provision only_for_testing-without-attestation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-update-config" class="md-nav__link">
+    scone cas update-config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-register-backup" class="md-nav__link">
+    scone cas register-backup
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-register-upgrade" class="md-nav__link">
+    scone cas register-upgrade
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-start-upgrade" class="md-nav__link">
+    scone cas start-upgrade
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-verify-audit-log" class="md-nav__link">
+    scone cas verify-audit-log
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-attest-audit-log" class="md-nav__link">
+    scone cas attest-audit-log
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-cas-version" class="md-nav__link">
+    scone cas version
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-session" class="md-nav__link">
+    scone session
+  </a>
+  
+    <nav class="md-nav" aria-label="scone session">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-check" class="md-nav__link">
+    scone session check
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-calculate-hash" class="md-nav__link">
+    scone session calculate-hash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-sign" class="md-nav__link">
+    scone session sign
+  </a>
+  
+    <nav class="md-nav" aria-label="scone session sign">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-sign-sign-with-cli-identity" class="md-nav__link">
+    scone session sign sign-with-cli-identity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-sign-generate-message-to-be-signed" class="md-nav__link">
+    scone session sign generate-message-to-be-signed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-sign-add-signature" class="md-nav__link">
+    scone session sign add-signature
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-encrypt" class="md-nav__link">
+    scone session encrypt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-create" class="md-nav__link">
+    scone session create
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-update" class="md-nav__link">
+    scone session update
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-verify" class="md-nav__link">
+    scone session verify
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-session-read" class="md-nav__link">
+    scone session read
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-las" class="md-nav__link">
+    scone las
+  </a>
+  
+    <nav class="md-nav" aria-label="scone las">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scone-las-scone-epid-trust-anchor" class="md-nav__link">
+    scone las scone-epid-trust-anchor
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-las-probe" class="md-nav__link">
+    scone las probe
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-las-show-tcb-state" class="md-nav__link">
+    scone las show-tcb-state
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-las-provision-pck-certificate" class="md-nav__link">
+    scone las provision-pck-certificate
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-cert" class="md-nav__link">
+    scone cert
+  </a>
+  
+    <nav class="md-nav" aria-label="scone cert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scone-cert-show-key-hash" class="md-nav__link">
+    scone cert show-key-hash
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-binary-fs" class="md-nav__link">
+    scone binary-fs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-signer" class="md-nav__link">
+    scone signer
+  </a>
+  
+    <nav class="md-nav" aria-label="scone signer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scone-signer-sign" class="md-nav__link">
+    scone signer sign
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scone-signer-info" class="md-nav__link">
+    scone signer info
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-cargo" class="md-nav__link">
+    scone cargo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-g" class="md-nav__link">
+    scone g++
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-gcc" class="md-nav__link">
+    scone gcc
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-gccgo" class="md-nav__link">
+    scone gccgo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-gdb" class="md-nav__link">
+    scone gdb
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-gfortran" class="md-nav__link">
+    scone gfortran
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-rustc" class="md-nav__link">
+    scone rustc
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-host" class="md-nav__link">
+    scone host
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-swarm" class="md-nav__link">
+    scone swarm
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-service" class="md-nav__link">
+    scone service
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-stack" class="md-nav__link">
+    scone stack
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-version" class="md-nav__link">
+    scone version
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scone-help-markdown" class="md-nav__link">
+    scone help-markdown
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="scone-cli">SCONE CLI</h1>
+<p>We provide a CLI (Command Line Interface) to</p>
+<ul>
+<li><strong>attest</strong> SCONE CAS, i.e., to ensure that we are connected to a CAS with an expected 'MrEnclave' running inside an enclave.</li>
+<li><strong>create</strong> a session, i.e., to upload a new session description.</li>
+<li><strong>update</strong> a session, i.e., replace an existing session by a new session description.</li>
+<li><strong>verify</strong>   that a session matches a given session template. Prints the digest of the verified session on success.</li>
+</ul>
+<p>Note that this CLI is implemented as a Rust crate that can be used to interact with CAS directly from programs linked with this library.
+The default SCONE CLI is available for subscribers and can be run as follows: 'docker run -it registry.scontain.com/sconecuratedimages/sconecli'.</p>
+<h2 id="scone">scone</h2>
+<pre class="highlight"><code>scone 5.8.0
+Your command line toolkit to interact with the SCONE infrastructure
+
+Note that this tool supports argument files using the @ prefix. I.e., any argument starting with @
+is interpreted as an argument file path. Argument files contain one argument per line and may
+recurisively include other argument files.
+
+USAGE:
+    scone [OPTIONS] &lt;SUBCOMMAND&gt;
+
+OPTIONS:
+    -c, --config &lt;CONFIG&gt;
+            Sets a custom config file
+
+            [env: SCONE_CLI_CONFIG=]
+            [default: ~/.cas/config.json]
+
+    -h, --help
+            Print help information
+
+    -o &lt;OUTPUT&gt;
+            Redirect the output towards the specified file
+
+    -V, --version
+            Print version information
+
+SUBCOMMANDS:
+    binary-fs
+            Collect directories and files to generate a binary fs artifacts
+    cargo
+            Rust Cargo utilizing SCONE compiler by default
+    cas
+            Communication with CAS
+    cert
+            Perform operations on X.509 certificates
+    fspf
+            Create and modify file system protection files 
+    g++
+            g++ SCONE compiler
+    gcc
+            gcc SCONE compiler
+    gccgo
+            gccgo SCONE compiler
+    gdb
+            gdb (debugger able to read SCONE debug enclave memory)
+    gfortran
+            fortran SCONE compiler
+    help
+            Print this message or the help of the given subcommand(s)
+    help-markdown
+            Generate markdown help pages on stdout
+    las
+            Interact with the local attestation service (LAS)
+    rustc
+            Rust SCONE compiler
+    self
+            Manage this instance of the SCONE CLI
+    session
+            Manage CAS sessions
+    signer
+            Sign executables
+    version
+            Show CLI version
+</code></pre>
+<h2 id="scone-self">scone self</h2>
+<pre class="highlight"><code>scone self 
+Manage this instance of the SCONE CLI
+
+USAGE:
+    scone self &lt;SUBCOMMAND&gt;
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+SUBCOMMANDS:
+    help
+            Print this message or the help of the given subcommand(s)
+    show
+            Show the certificate, public key hash, and session signing public key
+    show-certificate
+            Print only the certificate in PEM format
+    show-certificate-hash
+            Print only the SHA-256 certificate hash. Using the certificate hash in session access
+            control policies is deprecated, as it does not allow authentication with renewed
+            certificates. Please use the key hash (show-key-hash) instead
+    show-key-hash
+            Print only the public key hash
+    show-session-signing-key
+            Print the session signing public key
+</code></pre>
+<h3 id="scone-self-show">scone self show</h3>
+<pre class="highlight"><code>scone self show 
+Show the certificate, public key hash, and session signing public key
+
+USAGE:
+    scone self show
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-self-show-certificate">scone self show-certificate</h3>
+<pre class="highlight"><code>scone self show-certificate 
+Print only the certificate in PEM format
+
+USAGE:
+    scone self show-certificate
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-self-show-key-hash">scone self show-key-hash</h3>
+<pre class="highlight"><code>scone self show-key-hash 
+Print only the public key hash
+
+USAGE:
+    scone self show-key-hash
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-self-show-certificate-hash">scone self show-certificate-hash</h3>
+<pre class="highlight"><code>scone self show-certificate-hash 
+Print only the SHA-256 certificate hash. Using the certificate hash in session access control
+policies is deprecated, as it does not allow authentication with renewed certificates. Please use
+the key hash (show-key-hash) instead
+
+USAGE:
+    scone self show-certificate-hash
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-self-show-session-signing-key">scone self show-session-signing-key</h3>
+<pre class="highlight"><code>scone self show-session-signing-key 
+Print the session signing public key
+
+USAGE:
+    scone self show-session-signing-key
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-fspf">scone fspf</h2>
+<pre class="highlight"><code>scone fspf 
+Create and modify file system protection files
+
+USAGE:
+    scone fspf &lt;SUBCOMMAND&gt;
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+SUBCOMMANDS:
+    addf
+            Add files (file protection data) to an existing fspf
+    addr
+            Add a protection region to an existing fspf
+    create
+            Create a new file system protection file
+    create-volume
+            Create a new SCONE volume FSPF
+    encrypt
+            Encrypt an existing fspf
+    help
+            Print this message or the help of the given subcommand(s)
+    show
+            Show an existing fspf
+</code></pre>
+<h3 id="scone-fspf-create">scone fspf create</h3>
+<pre class="highlight"><code>scone fspf create 
+Create a new file system protection file
+
+USAGE:
+    scone fspf create &lt;FILE&gt; [VERSION]
+
+ARGS:
+    &lt;FILE&gt;
+            Path to store the created fspf at
+
+    &lt;VERSION&gt;
+            FSPF format version to use, optional: latest version will be used by default
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-fspf-addr">scone fspf addr</h3>
+<pre class="highlight"><code>scone fspf addr 
+Add a protection region to an existing fspf
+
+USAGE:
+    scone fspf addr [OPTIONS] &lt;--not-protected|--encrypted|--authenticated&gt; &lt;--kernel &lt;SOURCE_DIR&gt;|--ephemeral&gt; &lt;FILE&gt; &lt;EMBEDPOINT&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Location of the fspf
+
+    &lt;EMBEDPOINT&gt;
+            The location of the region in the protected file system
+
+OPTIONS:
+    -a, --authenticated
+            The content of this region should be authenticated (but not encrypted)
+
+    -c, --chunk-length &lt;CHUNK_LENGTH&gt;
+            in bytes, Files will be protected with chunks of this size, only valid for protected
+            regions
+
+    -e, --encrypted
+            The content of this region should be encrypted
+
+        --ephemeral
+            The region's files are stored in volatile &amp; untrusted memory
+
+    -h, --help
+            Print help information
+
+    -k, --key-length &lt;KEY_LENGTH&gt;
+            in bits, The file protection will use keys with this size, only valid for protected
+            regions
+
+        --kernel &lt;SOURCE_DIR&gt;
+            The region's files are stored in the kernel's filesystem
+
+    -n, --not-protected
+            The content of this region should NOT be protected
+</code></pre>
+<h3 id="scone-fspf-addf">scone fspf addf</h3>
+<pre class="highlight"><code>scone fspf addf 
+Add files (file protection data) to an existing fspf
+
+USAGE:
+    scone fspf addf &lt;FILE&gt; &lt;EMBEDPOINT&gt; &lt;SOURCE_DIR&gt; [OUTPUT_DIR]
+
+ARGS:
+    &lt;FILE&gt;
+            Location of the fspf
+
+    &lt;EMBEDPOINT&gt;
+            Region the files should be added to
+
+    &lt;SOURCE_DIR&gt;
+            Source directory files to take from
+
+    &lt;OUTPUT_DIR&gt;
+            Output directory into which processed files are written Required for encrypted regions!
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-fspf-encrypt">scone fspf encrypt</h3>
+<pre class="highlight"><code>scone fspf encrypt 
+Encrypt an existing fspf
+
+USAGE:
+    scone fspf encrypt &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Location of the fspf
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-fspf-show">scone fspf show</h3>
+<pre class="highlight"><code>scone fspf show 
+Show an existing fspf
+
+USAGE:
+    scone fspf show [OPTIONS] &lt;FILE&gt; [KEY]
+
+ARGS:
+    &lt;FILE&gt;
+            Location of the fspf
+
+    &lt;KEY&gt;
+            Decryption key of the fspf
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+    -t, --tag
+            Only print tag
+</code></pre>
+<h3 id="scone-fspf-create-volume">scone fspf create-volume</h3>
+<pre class="highlight"><code>scone fspf create-volume 
+Create a new SCONE volume FSPF
+
+This will prepare a directory (and its content) for secure data storage and exchange between SCONE
+enclaves/services in a microservice application. A SCONE volume in the simplest approximation is a
+directory with a `volume.fspf` file. This file contains the protection data for all data that is
+stored in the directory. The usage of SCONE volume must be configured via a SCONE CAS
+session/policy.
+
+USAGE:
+    scone fspf create-volume [OPTIONS] &lt;--encrypted|--authenticated&gt; &lt;VOLUME_PATH&gt; [OUTPUT_PATH]
+
+ARGS:
+    &lt;VOLUME_PATH&gt;
+            The path of an directory that should become the new SCONE volume
+
+            If the directory exists already its content will be the initial content of the new
+            volume. Otherwise, a directory with the `volume.fspf` will be created (as long as
+            `output_path` is not specified).
+
+    &lt;OUTPUT_PATH&gt;
+            Path were the output should be generated in (necessary for encrypted volumes)
+
+OPTIONS:
+    -a, --authenticated
+            The content of this region should be authenticated (but not encrypted)
+
+    -c, --chunk-length &lt;CHUNK_LENGTH&gt;
+            in bytes, Files will be protected with chunks of this size
+
+    -e, --encrypted
+            The content of this region should be encrypted
+
+            Requires setting `output_path` argument to the location where the encrypted initial
+            files are written to.
+
+        --envar-output
+            Print the key and tag message in environment defining format on stdout, such that the
+            output can be directly interpreted by a shell. This is useful if this command is used in
+            a script.
+
+            Environment variable will be `VOLUME_KEY` and `VOLUME_TAG`. The output will look like
+            this:
+
+            export VOLUME_KEY=55920e9398056f6cd83fc2354f9d29f9052df252c5d797a9500f905f42e9faae
+            export VOLUME_TAG=61b958b220b19b8b74a76f74fc94282e
+
+            You can use it to set the variables with a command like: eval "`scone fspf create-volume
+            ./volume-dir --authenticated --envar-output`"
+
+    -f, --force
+            Force creation even if existing files must be removed or overwritten
+
+    -h, --help
+            Print help information
+
+    -k, --key-length &lt;KEY_LENGTH&gt;
+            in bits, The file protection will use keys with this size
+
+    -v, --version &lt;VERSION&gt;
+            FSPF format version to use, optional: latest version will be used by default
+</code></pre>
+<h2 id="scone-cas">scone cas</h2>
+<pre class="highlight"><code>scone cas 
+Communication with CAS
+
+USAGE:
+    scone cas &lt;SUBCOMMAND&gt;
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+SUBCOMMANDS:
+    attest
+            Attest a CAS instance
+    attest-audit-log
+            Performs the same task as `verify-audit-log`, but additionally checks that the audit log
+            contains valid attestation reports according to the given attestation settings
+    help
+            Print this message or the help of the given subcommand(s)
+    list
+            List attested CAS instances
+    provision
+            Provision and take ownership of a CAS
+    register-backup
+            Register a backup CAS
+    register-upgrade
+            Register an upgrade CAS
+    set-default
+            Set default CAS - The default CAS is always used if no CAS is explicitly specified, e.g.
+            in the `session upload` command
+    show-certificate
+            Show certificate chain of an attested CAS instance
+    show-identification
+            Show identification information of an attested CAS that can be used to identify the
+            instance
+    start-upgrade
+            Initiate a CAS upgrade with database key rollover
+    update-config
+            Update a server-side CAS configuration
+    verify-audit-log
+            Verify the authenticity and integrity of a signed CAS audit log. The origin CAS will be
+            contacted to detect a CAS rollback or log truncation. You must be the CAS owner in order
+            to fetch the necessary information. Verification information will be printed to stderr
+    version
+            Query the CAS software version
+</code></pre>
+<h3 id="scone-cas-list">scone cas list</h3>
+<pre class="highlight"><code>scone cas list 
+List attested CAS instances
+
+USAGE:
+    scone cas list
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-cas-attest">scone cas attest</h3>
+<pre class="highlight"><code>scone cas attest 
+Attest a CAS instance
+
+USAGE:
+    scone cas attest [OPTIONS] &lt;ADDRESS&gt; [--] [_mrenclave]
+
+ARGS:
+    &lt;ADDRESS&gt;
+            CAS address
+
+    &lt;_mrenclave&gt;
+            Expected enclave measurement/MRENCLAVE of the CAS enclave (optional). Deprecated, please
+            use --mrenclave instead
+
+OPTIONS:
+        --allow-cas-owner-secret-access
+            Whether to trust the CAS even if its database encryption key was injected by the CAS
+            owner, and not generated securely within an enclave. If set, session secrets will be
+            accessible to the CAS owner!
+
+    -c &lt;CAS_KEY_HASH&gt;
+            Expected CAS public key hash
+
+    -C, --accept-configuration-needed
+            Accept CONFIGURATION NEEDED verification response (hyperthreading enabled, less secure)
+
+    -G, --accept-group-out-of-date
+            Accept GROUP OUT OF DATE verification response (TCB out-of-date, dangerous!)
+
+    -h, --help
+            Print help information
+
+        --isvprodid &lt;ISVPRODID&gt;
+            Verify the given Independent Software Vendor Product ID (ISVPRODID). Required when using
+            a custom MRSIGNER
+
+        --isvsvn &lt;ISVSVN&gt;
+            Verify that CAS has a given or greater Independent Software Vendor Security Version
+            Number (ISVSVN). Required when using a custom MRSIGNER
+
+        --mrenclave &lt;MRENCLAVE&gt;
+            An expected enclave measurement/MRENCLAVE of the CAS enclave (optional). The CAS
+            software signature will always be verified, regardless of this argument; but if set, the
+            default CAS version (ISVSVN) check will be disabled. If specified multiple times,
+            attestation will succeed if any of the given measurements matches
+
+        --mrsigner &lt;MRSIGNER&gt;
+            Verify the CAS software signature using the given MRSIGNER instead of the default
+            Scontain MRSIGNER. Requires ISVPRODID and ISVSVN too
+
+        --nonce &lt;NONCE&gt;
+            The nonce use during request of the offline-report
+
+            Ensure's the freshness of the offline report. Must only be provided if offline-report is
+            set.
+
+        --offline-report &lt;OFFLINE_REPORT&gt;
+            Instead of connecting to the CAS via the network read the CAS attestation report from
+            the provided file.
+
+            A CAS attestation report can be queried from a CAS using the `/v1/attest` endpoint. It
+            is strongly recommended to request the latest additional data format version to ensure
+            all features are supported.
+
+        --only_for_testing-debug
+            Allow CAS to run in debug mode, in which it CANNOT PROTECT SECRETS (only for testing
+            purposes!) Only allowed if CAS signer is ignored
+
+        --only_for_testing-ignore-signer
+            Do not verify CAS software signature (MRSIGNER). This allows using a CAS signed with
+            test keys. If set, argument &lt;mrenclave&gt; becomes mandatory, unless
+            --only_for_testing-trust-any was also set
+
+        --only_for_testing-trust-any
+            Trust ANY enclave measurement value, only allowed if CAS is in debug mode. With this
+            option, `mrenclave` can be omitted, but the attested enclave can run ANY software. This
+            is obviously not secure!
+
+        --only_for_testing_allow-unprovisioned-cas
+            Accept unprovisioned CASes during attestation Establishing trust into unprovisioned
+            CASes typically makes little sense as they rekey (change identity) during provisioning.
+            However, sometimes it is useful for testing purposes
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+
+    -s &lt;CAS_SOFTWARE_KEY_HASH&gt;
+            Expected CAS software public key hash
+
+    -S, --accept-sw-hardening-needed
+            Accept SW HARDENING NEEDED verification response (less safe compilation options)
+
+        --verification-time &lt;VERIFICATION_TIME&gt;
+            Specify the supposed time the verification of the attestation collaterals happen
+
+            Expects yyyy-mm-dd, dd.mm.yyy or dd-mm-yyyy. Date will be interpreted as 0 o'clock UTC
+            time. If this argument is not specified, the current system time is used.
+
+            This option can be used to allow the usage of DCAP verification data that is officially
+            expired or to allow verification of offline reports that have been gathered a longer
+            time ago.
+</code></pre>
+<h3 id="scone-cas-show-identification">scone cas show-identification</h3>
+<pre class="highlight"><code>scone cas show-identification 
+Show identification information of an attested CAS that can be used to identify the instance
+
+USAGE:
+    scone cas show-identification [OPTIONS] [CAS]
+
+ARGS:
+    &lt;CAS&gt;
+            CAS of which to show the information. Default CAS if omitted
+
+OPTIONS:
+    -c, --cas-key-hash
+            SHA256 Hash of CAS public key
+
+    -C, --cas-certificate
+            PEM-encoded CAS X509 certificate
+
+    -h, --help
+            Print help information
+
+    -s, --cas-software-key-hash
+            SHA256 Hash of CAS software public key
+
+    -S, --cas-software-certificate
+            PEM-encoded CAS software X509 certificate
+
+        --session-encryption-key
+            Public key to encrypt sessions with
+
+    -T, --certificate-chain
+            Certificate chain of trust of PEM-encoded CAS and CAS software certificates [default]
+</code></pre>
+<h3 id="scone-cas-show-certificate">scone cas show-certificate</h3>
+<pre class="highlight"><code>scone cas show-certificate 
+Show certificate chain of an attested CAS instance
+
+USAGE:
+    scone cas show-certificate [CAS]
+
+ARGS:
+    &lt;CAS&gt;
+            CAS of which to show the certificate chain, optional: default CAS if omitted
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-cas-set-default">scone cas set-default</h3>
+<pre class="highlight"><code>scone cas set-default 
+Set default CAS - The default CAS is always used if no CAS is explicitly specified, e.g. in the
+`session upload` command
+
+USAGE:
+    scone cas set-default &lt;CAS&gt;
+
+ARGS:
+    &lt;CAS&gt;
+            CAS to become the new default CAS
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-cas-provision">scone cas provision</h3>
+<pre class="highlight"><code>scone cas provision 
+Provision and take ownership of a CAS
+
+CAS ownership is bound to the cryptographic identity used during provisioning. Only the CAS owner is
+able to change certain CAS settings, register backup instances or upgrade CAS' software version. The
+owner identity is of great importance for the operations of a CAS and must be stored securely!
+
+If you're running this command in a container, please ensure that the owner identity is not lost!
+Without custom configuration, the container file system, containing the owner identity, is typically
+removed after the container terminates! If no external identity is specified during invocation, the
+identity stored in the configuration file (see SCONE_CLI_CONFIG option).
+
+USAGE:
+    scone cas provision [OPTIONS] -c &lt;CAS_KEY_HASH&gt; --token &lt;TOKEN&gt; --config-file &lt;CONFIG_FILE&gt; &lt;ADDRESS&gt; &lt;SUBCOMMAND&gt;
+
+ARGS:
+    &lt;ADDRESS&gt;
+            CAS address
+
+OPTIONS:
+    -c &lt;CAS_KEY_HASH&gt;
+            Expected CAS public key hash. Can be found in the CAS console
+
+        --config-file &lt;CONFIG_FILE&gt;
+            Path to the file containing the server-side / owner CAS configuration (in TOML, JSON or
+            YAML format)
+
+        --database-key &lt;DATABASE_KEY&gt;
+            Database key to encrypt the CAS database with. Must be a 64-character hexadecimal
+            string. Allows CAS owner to decrypt the database at will. This impacts security of the
+            CAS and session secrets, and is therefore discouraged. Database key injection will be
+            refused by CAS binaries signed by Scontain
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+
+    -s &lt;CAS_SOFTWARE_KEY_HASH&gt;
+            Expected CAS software public key hash (optional). Can be found in the CAS console
+
+        --token &lt;TOKEN&gt;
+            Provisioning token (32-character hexadecimal string). Can be found in the CAS console
+
+SUBCOMMANDS:
+    help
+            Print this message or the help of the given subcommand(s)
+    only_for_testing-without-attestation
+            Do not attest the CAS. With this command selected, NO verification of the used CAS will
+            be performed at all. This is obviously not secure!
+    with-attestation
+            Attest the CAS instance during provisioning
+</code></pre>
+<h4 id="scone-cas-provision-with-attestation">scone cas provision with-attestation</h4>
+<pre class="highlight"><code>scone cas provision with-attestation 
+Attest the CAS instance during provisioning
+
+USAGE:
+    scone cas provision with-attestation [OPTIONS] [--] [_mrenclave]
+
+ARGS:
+    &lt;_mrenclave&gt;
+            Expected enclave measurement/MRENCLAVE of the CAS enclave (optional). Deprecated, please
+            use --mrenclave instead
+
+OPTIONS:
+    -C, --accept-configuration-needed
+            Accept CONFIGURATION NEEDED verification response (hyperthreading enabled, less secure)
+
+    -G, --accept-group-out-of-date
+            Accept GROUP OUT OF DATE verification response (TCB out-of-date, dangerous!)
+
+    -h, --help
+            Print help information
+
+        --isvprodid &lt;ISVPRODID&gt;
+            Verify the given Independent Software Vendor Product ID (ISVPRODID). Required when using
+            a custom MRSIGNER
+
+        --isvsvn &lt;ISVSVN&gt;
+            Verify that CAS has a given or greater Independent Software Vendor Security Version
+            Number (ISVSVN). Required when using a custom MRSIGNER
+
+        --mrenclave &lt;MRENCLAVE&gt;
+            An expected enclave measurement/MRENCLAVE of the CAS enclave (optional). The CAS
+            software signature will always be verified, regardless of this argument; but if set, the
+            default CAS version (ISVSVN) check will be disabled. If specified multiple times,
+            attestation will succeed if any of the given measurements matches
+
+        --mrsigner &lt;MRSIGNER&gt;
+            Verify the CAS software signature using the given MRSIGNER instead of the default
+            Scontain MRSIGNER. Requires ISVPRODID and ISVSVN too
+
+        --only_for_testing-debug
+            Allow CAS to run in debug mode, in which it CANNOT PROTECT SECRETS (only for testing
+            purposes!) Only allowed if CAS signer is ignored
+
+        --only_for_testing-ignore-signer
+            Do not verify CAS software signature (MRSIGNER). This allows using a CAS signed with
+            test keys. If set, argument &lt;mrenclave&gt; becomes mandatory, unless
+            --only_for_testing-trust-any was also set
+
+        --only_for_testing-trust-any
+            Trust ANY enclave measurement value, only allowed if CAS is in debug mode. With this
+            option, `mrenclave` can be omitted, but the attested enclave can run ANY software. This
+            is obviously not secure!
+
+    -S, --accept-sw-hardening-needed
+            Accept SW HARDENING NEEDED verification response (less safe compilation options)
+
+        --verification-time &lt;VERIFICATION_TIME&gt;
+            Specify the supposed time the verification of the attestation collaterals happen
+
+            Expects yyyy-mm-dd, dd.mm.yyy or dd-mm-yyyy. Date will be interpreted as 0 o'clock UTC
+            time. If this argument is not specified, the current system time is used.
+
+            This option can be used to allow the usage of DCAP verification data that is officially
+            expired or to allow verification of offline reports that have been gathered a longer
+            time ago.
+</code></pre>
+<h4 id="scone-cas-provision-only_for_testing-without-attestation">scone cas provision only_for_testing-without-attestation</h4>
+<pre class="highlight"><code>scone cas provision only_for_testing-without-attestation 
+Do not attest the CAS. With this command selected, NO verification of the used CAS will be performed
+at all. This is obviously not secure!
+
+USAGE:
+    scone cas provision only_for_testing-without-attestation
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-cas-update-config">scone cas update-config</h3>
+<pre class="highlight"><code>scone cas update-config 
+Update a server-side CAS configuration
+
+USAGE:
+    scone cas update-config [OPTIONS] --config-file &lt;CONFIG_FILE&gt;
+
+OPTIONS:
+    -c, --cas &lt;CAS&gt;
+            CAS to use. Default CAS if omitted
+
+        --config-file &lt;CONFIG_FILE&gt;
+            Path to the file containing the server-side CAS configuration (in TOML, JSON or YAML
+            format)
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+        --only_for_testing-disable-attestation-verification
+            Do not require the CAS to be attested. With this option set, NO verification of the used
+            CAS will be performed at all. This is obviously not secure!
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+</code></pre>
+<h3 id="scone-cas-register-backup">scone cas register-backup</h3>
+<pre class="highlight"><code>scone cas register-backup 
+Register a backup CAS
+
+USAGE:
+    scone cas register-backup [OPTIONS] &lt;BACKUP_CAS&gt;
+
+ARGS:
+    &lt;BACKUP_CAS&gt;
+            The address of the backup CAS
+
+OPTIONS:
+    -c, --cas &lt;CAS&gt;
+            CAS to use. Default CAS if omitted
+
+    -C, --accept-configuration-needed
+            Accept CONFIGURATION NEEDED verification response (hyperthreading enabled, less secure)
+
+    -G, --accept-group-out-of-date
+            Accept GROUP OUT OF DATE verification response (TCB out-of-date, dangerous!)
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+        --only_for_testing-disable-attestation-verification
+            Do not require the CAS to be attested. With this option set, NO verification of the used
+            CAS will be performed at all. This is obviously not secure!
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+
+    -S, --accept-sw-hardening-needed
+            Accept SW HARDENING NEEDED verification response (less safe compilation options)
+</code></pre>
+<h3 id="scone-cas-register-upgrade">scone cas register-upgrade</h3>
+<pre class="highlight"><code>scone cas register-upgrade 
+Register an upgrade CAS
+
+USAGE:
+    scone cas register-upgrade [OPTIONS] &lt;UPGRADE_CAS&gt;
+
+ARGS:
+    &lt;UPGRADE_CAS&gt;
+            The address of the upgrade CAS
+
+OPTIONS:
+    -c, --cas &lt;CAS&gt;
+            CAS to use. Default CAS if omitted
+
+    -C, --accept-configuration-needed
+            Accept CONFIGURATION NEEDED verification response (hyperthreading enabled, less secure)
+
+    -G, --accept-group-out-of-date
+            Accept GROUP OUT OF DATE verification response (TCB out-of-date, dangerous!)
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+        --only_for_testing-disable-attestation-verification
+            Do not require the CAS to be attested. With this option set, NO verification of the used
+            CAS will be performed at all. This is obviously not secure!
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+
+    -S, --accept-sw-hardening-needed
+            Accept SW HARDENING NEEDED verification response (less safe compilation options)
+</code></pre>
+<h3 id="scone-cas-start-upgrade">scone cas start-upgrade</h3>
+<pre class="highlight"><code>scone cas start-upgrade 
+Initiate a CAS upgrade with database key rollover
+
+USAGE:
+    scone cas start-upgrade [OPTIONS]
+
+OPTIONS:
+    -c, --cas &lt;CAS&gt;
+            CAS to use. Default CAS if omitted
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+        --only_for_testing-disable-attestation-verification
+            Do not require the CAS to be attested. With this option set, NO verification of the used
+            CAS will be performed at all. This is obviously not secure!
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+
+    -y, --yes
+            Do not ask for confirmation
+</code></pre>
+<h3 id="scone-cas-verify-audit-log">scone cas verify-audit-log</h3>
+<pre class="highlight"><code>scone cas verify-audit-log 
+Verify the authenticity and integrity of a signed CAS audit log. The origin CAS will be contacted to
+detect a CAS rollback or log truncation. You must be the CAS owner in order to fetch the necessary
+information. Verification information will be printed to stderr.
+
+The command may exit with one of the following exit codes (most severe first): * 20 - Log
+authenticity/integrity violation - parsing error or signature verification failed * 19 - The log
+does not originate from the selected CAS * 18 - CAS rollback detected (excluding single failed &amp;
+rolled back transactions) * 17 - CAS rollback or missing/deleted log entries detected * 16 - CAS
+rollback cannot be ruled out * 15 - Log was truncated (older entries are missing) * 14 - Log was
+truncated (recent entries are missing) * 10 - At least one failed &amp; rolled back transaction detected
+* 0  - Log is fully correct * other - Fatal error during verification
+
+USAGE:
+    scone cas verify-audit-log [OPTIONS] &lt;LOG_FILE_PATH&gt;
+
+ARGS:
+    &lt;LOG_FILE_PATH&gt;
+            Path to the audit log file
+
+OPTIONS:
+    -c, --cas-key-hash &lt;CAS_KEY_HASH&gt;
+            Expected CAS public key hash (optional). If omitted, a previously attested key will be
+            used. Requires setting option 'cas', too
+
+        --cas &lt;CAS&gt;
+            URL of the CAS that the log file belongs to (optional, if omitted, the default CAS will
+            be assumed)
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+        --last &lt;LAST&gt;
+            If the log was split: Predecessor signature of the first event of a previously verified
+            succeeding log file. If omitted, verification ensures that the most recent event logged
+            by CAS is present
+
+    -p, --print-log
+            Print the log content in human-readable format to stdout
+
+        --predecessor &lt;PREDECESSOR&gt;
+            If the log was split: Signature of the last event of a previously verified preceding log
+            file. If omitted, verification ensures that the first event logged by CAS is present
+</code></pre>
+<h3 id="scone-cas-attest-audit-log">scone cas attest-audit-log</h3>
+<pre class="highlight"><code>scone cas attest-audit-log 
+Performs the same task as `verify-audit-log`, but additionally checks that the audit log contains
+valid attestation reports according to the given attestation settings
+
+USAGE:
+    scone cas attest-audit-log [OPTIONS] &lt;LOG_FILE_PATH&gt; [--] [_mrenclave]
+
+ARGS:
+    &lt;LOG_FILE_PATH&gt;
+            Path to the audit log file
+
+    &lt;_mrenclave&gt;
+            Expected enclave measurement/MRENCLAVE of the CAS enclave (optional). Deprecated, please
+            use --mrenclave instead
+
+OPTIONS:
+    -c, --cas-key-hash &lt;CAS_KEY_HASH&gt;
+            Expected CAS public key hash (optional). If omitted, a previously attested key will be
+            used. Requires setting option 'cas', too
+
+    -C, --accept-configuration-needed
+            Accept CONFIGURATION NEEDED verification response (hyperthreading enabled, less secure)
+
+        --cas &lt;CAS&gt;
+            URL of the CAS that the log file belongs to (optional, if omitted, the default CAS will
+            be assumed)
+
+    -G, --accept-group-out-of-date
+            Accept GROUP OUT OF DATE verification response (TCB out-of-date, dangerous!)
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+        --isvprodid &lt;ISVPRODID&gt;
+            Verify the given Independent Software Vendor Product ID (ISVPRODID). Required when using
+            a custom MRSIGNER
+
+        --isvsvn &lt;ISVSVN&gt;
+            Verify that CAS has a given or greater Independent Software Vendor Security Version
+            Number (ISVSVN). Required when using a custom MRSIGNER
+
+        --last &lt;LAST&gt;
+            If the log was split: Predecessor signature of the first event of a previously verified
+            succeeding log file. If omitted, verification ensures that the most recent event logged
+            by CAS is present
+
+        --mrenclave &lt;MRENCLAVE&gt;
+            An expected enclave measurement/MRENCLAVE of the CAS enclave (optional). The CAS
+            software signature will always be verified, regardless of this argument; but if set, the
+            default CAS version (ISVSVN) check will be disabled. If specified multiple times,
+            attestation will succeed if any of the given measurements matches
+
+        --mrsigner &lt;MRSIGNER&gt;
+            Verify the CAS software signature using the given MRSIGNER instead of the default
+            Scontain MRSIGNER. Requires ISVPRODID and ISVSVN too
+
+        --only_for_testing-debug
+            Allow CAS to run in debug mode, in which it CANNOT PROTECT SECRETS (only for testing
+            purposes!) Only allowed if CAS signer is ignored
+
+        --only_for_testing-ignore-signer
+            Do not verify CAS software signature (MRSIGNER). This allows using a CAS signed with
+            test keys. If set, argument &lt;mrenclave&gt; becomes mandatory, unless
+            --only_for_testing-trust-any was also set
+
+        --only_for_testing-trust-any
+            Trust ANY enclave measurement value, only allowed if CAS is in debug mode. With this
+            option, `mrenclave` can be omitted, but the attested enclave can run ANY software. This
+            is obviously not secure!
+
+    -p, --print-log
+            Print the log content in human-readable format to stdout
+
+        --predecessor &lt;PREDECESSOR&gt;
+            If the log was split: Signature of the last event of a previously verified preceding log
+            file. If omitted, verification ensures that the first event logged by CAS is present
+
+    -S, --accept-sw-hardening-needed
+            Accept SW HARDENING NEEDED verification response (less safe compilation options)
+
+        --verification-time &lt;VERIFICATION_TIME&gt;
+            Specify the supposed time the verification of the attestation collaterals happen
+
+            Expects yyyy-mm-dd, dd.mm.yyy or dd-mm-yyyy. Date will be interpreted as 0 o'clock UTC
+            time. If this argument is not specified, the current system time is used.
+
+            This option can be used to allow the usage of DCAP verification data that is officially
+            expired or to allow verification of offline reports that have been gathered a longer
+            time ago.
+</code></pre>
+<h3 id="scone-cas-version">scone cas version</h3>
+<pre class="highlight"><code>scone cas version 
+Query the CAS software version
+
+USAGE:
+    scone cas version [OPTIONS]
+
+OPTIONS:
+    -c, --cas &lt;CAS&gt;
+            CAS to use. Default CAS if omitted
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+        --only_for_testing-disable-attestation-verification
+            Do not require the CAS to be attested. With this option set, NO verification of the used
+            CAS will be performed at all. This is obviously not secure!
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+</code></pre>
+<h2 id="scone-session">scone session</h2>
+<pre class="highlight"><code>scone session 
+Manage CAS sessions
+
+USAGE:
+    scone session &lt;SUBCOMMAND&gt;
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+SUBCOMMANDS:
+    calculate-hash
+            Calculate and print the hash of the provided session file to stdout. Exits with a
+            non-zero exit code on session syntax or validation error
+    check
+            Check the syntax of the provided session file. Exits with a non-zero exit code on
+            validation error. On success, the session is printed to stdout
+    create
+            Upload a new session to CAS. Prints the hash of the created session on success. If the
+            given session does not contain a 'predecessor' field, but a session with the same name
+            already exists, the operation will fail. If the given session does contain a
+            'predecessor' field, and a session with the same name already exists, it will be
+            updated, if the session is the described `predecessor`
+    encrypt
+            Encrypt the given session file. If the session was not signed yet, it will be signed as
+            if using `scone session sign` prior to encryption. The encrypted session can only be
+            uploaded to (and decrypted by) the intended CAS. On success, the encrypted session, in
+            JSON format, is printed to stdout. It can later be uploaded to CAS using the `scone
+            session create` command
+    help
+            Print this message or the help of the given subcommand(s)
+    read
+            Load an active session from CAS and print it to stdout
+    sign
+            Sign the given session file using the CLI-managed session signing key. The session will
+            be checked for validity before signing
+    update
+            Update an existing session in CAS. Prints the hash of the updated session on success.
+            When a session is updated, the 'predecessor' filed of the new version must reference the
+            previous version of the session to prevent lost-updates. If the given session does not
+            contain a 'predecessor' field, the CLI will automatically attempt to read the hash of
+            the currently active session on CAS and write it into the 'predecessor' field. If no
+            session with a matching name exists, the update operation will fail
+    verify
+            Verify that a session active on CAS matches the given session. Prints the hash of the
+            verified session on success
+</code></pre>
+<h3 id="scone-session-check">scone session check</h3>
+<pre class="highlight"><code>scone session check 
+Check the syntax of the provided session file. Exits with a non-zero exit code on validation error.
+On success, the session is printed to stdout
+
+USAGE:
+    scone session check [OPTIONS] &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Path to the file containing the session description. This may either be a session
+            template YAML file, or a signed session (JSON) file
+
+OPTIONS:
+    -e &lt;VAR=VALUE&gt;
+            Replace variables in the session template with the given values. Ignored if the session
+            was already signed
+
+        --fail-on-warning
+            If a warning occurs, stop immediately and exit with a non-zero exit code. Note that this
+            option only applies to warnings detected locally, it has no effect on warnings returned
+            by CAS when a session was created
+
+    -h, --help
+            Print help information
+
+    -n, --name &lt;NAME&gt;
+            Name of the session. Will replace the name stored in the session file. If the session
+            was already signed, setting a name will lead to an error
+
+        --use-env
+            Use the process' environment variables to replace variables in the session template.
+            Ignored if the session was already signed
+</code></pre>
+<h3 id="scone-session-calculate-hash">scone session calculate-hash</h3>
+<pre class="highlight"><code>scone session calculate-hash 
+Calculate and print the hash of the provided session file to stdout. Exits with a non-zero exit code
+on session syntax or validation error
+
+USAGE:
+    scone session calculate-hash [OPTIONS] &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Path to the file containing the session description. This may either be a session
+            template YAML file, or a signed session (JSON) file
+
+OPTIONS:
+    -e &lt;VAR=VALUE&gt;
+            Replace variables in the session template with the given values. Ignored if the session
+            was already signed
+
+        --fail-on-warning
+            If a warning occurs, stop immediately and exit with a non-zero exit code. Note that this
+            option only applies to warnings detected locally, it has no effect on warnings returned
+            by CAS when a session was created
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. The identity file must contain a PEM-encoded X.509v3 certificate
+
+    -n, --name &lt;NAME&gt;
+            Name of the session. Will replace the name stored in the session file. If the session
+            was already signed, setting a name will lead to an error
+
+        --use-env
+            Use the process' environment variables to replace variables in the session template.
+            Ignored if the session was already signed
+
+        --with-self-as-creator &lt;IDENTITY&gt;
+            If the session does not have a creator set, pretend that it will be uploaded or signed
+            using this CLI configuration, and use the CLI's identity when calculating the hash.
+            (After uploading a session to CAS, CAS will assign the uploader's TLS client identity as
+            the session's creator; when signing a session, the signer becomes the session's
+            creator.) If the session already has a creator, this option does not have any effect. If
+            the session was signed, this option does not have any effect. If the session does not
+            require a creator, this option does not have any effect
+
+            [possible values: tls, signer]
+</code></pre>
+<h3 id="scone-session-sign">scone session sign</h3>
+<pre class="highlight"><code>scone session sign 
+Sign the given session file using the CLI-managed session signing key. The session will be checked
+for validity before signing.
+
+On success, the signed session, in JSON format, is printed to stdout. It can later be uploaded to
+CAS using the `scone session create` command.
+
+USAGE:
+    scone session sign [OPTIONS] &lt;FILE&gt; [SUBCOMMAND]
+
+ARGS:
+    &lt;FILE&gt;
+            Path to the file containing the session description. This may either be a session
+            template YAML file, or a signed session (JSON) file
+
+OPTIONS:
+    -e &lt;VAR=VALUE&gt;
+            Replace variables in the session template with the given values. Ignored if the session
+            was already signed
+
+        --fail-on-warning
+            If a warning occurs, stop immediately and exit with a non-zero exit code. Note that this
+            option only applies to warnings detected locally, it has no effect on warnings returned
+            by CAS when a session was created
+
+    -h, --help
+            Print help information
+
+    -n, --name &lt;NAME&gt;
+            Name of the session. Will replace the name stored in the session file. If the session
+            was already signed, setting a name will lead to an error
+
+        --use-env
+            Use the process' environment variables to replace variables in the session template.
+            Ignored if the session was already signed
+
+SUBCOMMANDS:
+    add-signature
+            Add a session signature to a session
+    generate-message-to-be-signed
+            Generate the message to be signed by the signer identity
+    help
+            Print this message or the help of the given subcommand(s)
+    sign-with-cli-identity
+            Sign the provided session with the CLI's signing identity
+</code></pre>
+<h4 id="scone-session-sign-sign-with-cli-identity">scone session sign sign-with-cli-identity</h4>
+<pre class="highlight"><code>scone session sign sign-with-cli-identity 
+Sign the provided session with the CLI's signing identity
+
+USAGE:
+    scone session sign sign-with-cli-identity
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h4 id="scone-session-sign-generate-message-to-be-signed">scone session sign generate-message-to-be-signed</h4>
+<pre class="highlight"><code>scone session sign generate-message-to-be-signed 
+Generate the message to be signed by the signer identity.
+
+The message is in binary format and is emitted on stdout.
+
+The produced signature can be added to the session using the `add-signature` command.
+
+USAGE:
+    scone session sign generate-message-to-be-signed [OPTIONS] [SIGNER]
+
+ARGS:
+    &lt;SIGNER&gt;
+            A file containing the signer identity, i.e., the cryptographic identity/public key that
+            is supposed to sign the session.
+
+            Each session has a creator. When the session is directly uploaded to CAS, the CLI's
+            identity becomes the session creator. However, if a session is signed it cannot be
+            modified afterwards, therefore, the creator needs to be set before signing. In this
+            case, the signer becomes the creator of the session. If the session was signed before,
+            or already explicitly specifies the creator, the provided signer identity is ignored.
+
+            The signer identity must be formatted in X.509 Subject Private Key Info (SPKI) format as
+            described in RFC5280. At this point, Ed25519 and P384/secp384r keys are supported.
+
+            You can create the necessary file from the private key using the OpenSSL CLI tool like
+            this: 'openssl pkey -in ./private.key -pubout -out ./public.key'
+
+OPTIONS:
+    -f, --force
+            Force the command
+
+            The command typically refuses producing the message if operated in a terminal. Use this
+            flag to force operation.
+
+    -h, --help
+            Print help information
+</code></pre>
+<h4 id="scone-session-sign-add-signature">scone session sign add-signature</h4>
+<pre class="highlight"><code>scone session sign add-signature 
+Add a session signature to a session.
+
+The signed session is produced to stdout.
+
+In combination with the generate-message-to-be-signed command, this command can be used to sign a
+session with external tools. For example, assuming a P384 key using openssl: 'scone session sign
+./session.yml generate-message-to-be-signed ./public_key.pem | openssl dgst -sha384 -sign
+./private_key.pem | scone session sign ./session.yml add-signature ./public_key.pem'
+
+USAGE:
+    scone session sign add-signature &lt;SIGNER&gt; [SIGNATURE]
+
+ARGS:
+    &lt;SIGNER&gt;
+            A file containing the signer identity, i.e., the cryptographic identity/public key that
+            created the signature.
+
+            The signer identity must be formatted in X.509 Subject Private Key Info (SPKI) format as
+            described in RFC5280. At this point, Ed25519 and P384/secp384r keys are supported.
+
+            You can create the necessary file from the private key using the OpenSSL CLI tool like
+            this: 'openssl pkey -in ./private.key -pubout -out ./public.key'
+
+    &lt;SIGNATURE&gt;
+            The signature in base64 encoding
+
+            If the signature is not provided, it is read verbatim, i.e., without any encoding from
+            stdin to facilitate command pipelines.
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h3 id="scone-session-encrypt">scone session encrypt</h3>
+<pre class="highlight"><code>scone session encrypt 
+Encrypt the given session file. If the session was not signed yet, it will be signed as if using
+`scone session sign` prior to encryption. The encrypted session can only be uploaded to (and
+decrypted by) the intended CAS. On success, the encrypted session, in JSON format, is printed to
+stdout. It can later be uploaded to CAS using the `scone session create` command
+
+USAGE:
+    scone session encrypt [OPTIONS] &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Path to the file containing the session description. This may either be a session
+            template YAML file, or a signed session (JSON) file
+
+OPTIONS:
+        --cas &lt;CAS&gt;
+            CAS to encrypt the session for. The encrypted session can only be uploaded to this CAS.
+            Default CAS if omitted
+
+    -e &lt;VAR=VALUE&gt;
+            Replace variables in the session template with the given values. Ignored if the session
+            was already signed
+
+        --fail-on-warning
+            If a warning occurs, stop immediately and exit with a non-zero exit code. Note that this
+            option only applies to warnings detected locally, it has no effect on warnings returned
+            by CAS when a session was created
+
+    -h, --help
+            Print help information
+
+        --key &lt;KEY&gt;
+            Public key to use for encryption. Mutually exclusive with option `cas`. Use `scone cas
+            show-identification --session-encryption-key` to display keys that can be used here
+
+    -n, --name &lt;NAME&gt;
+            Name of the session. Will replace the name stored in the session file. If the session
+            was already signed, setting a name will lead to an error
+
+        --use-env
+            Use the process' environment variables to replace variables in the session template.
+            Ignored if the session was already signed
+</code></pre>
+<h3 id="scone-session-create">scone session create</h3>
+<pre class="highlight"><code>scone session create 
+Upload a new session to CAS. Prints the hash of the created session on success. If the given session
+does not contain a 'predecessor' field, but a session with the same name already exists, the
+operation will fail. If the given session does contain a 'predecessor' field, and a session with the
+same name already exists, it will be updated, if the session is the described `predecessor`
+
+USAGE:
+    scone session create [OPTIONS] &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Path to the file containing the session description. This may either be a session
+            template YAML file, or a signed session (JSON) file
+
+OPTIONS:
+    -c, --cas &lt;CAS&gt;
+            CAS to use. Default CAS if omitted
+
+    -e &lt;VAR=VALUE&gt;
+            Replace variables in the session template with the given values. Ignored if the session
+            was already signed
+
+        --fail-on-warning
+            If a warning occurs, stop immediately and exit with a non-zero exit code. Note that this
+            option only applies to warnings detected locally, it has no effect on warnings returned
+            by CAS when a session was created
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+    -n, --name &lt;NAME&gt;
+            Name of the session. Will replace the name stored in the session file. If the session
+            was already signed, setting a name will lead to an error
+
+        --only_for_testing-disable-attestation-verification
+            Do not require the CAS to be attested. With this option set, NO verification of the used
+            CAS will be performed at all. This is obviously not secure!
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+
+        --use-env
+            Use the process' environment variables to replace variables in the session template.
+            Ignored if the session was already signed
+</code></pre>
+<h3 id="scone-session-update">scone session update</h3>
+<pre class="highlight"><code>scone session update 
+Update an existing session in CAS. Prints the hash of the updated session on success. When a session
+is updated, the 'predecessor' filed of the new version must reference the previous version of the
+session to prevent lost-updates. If the given session does not contain a 'predecessor' field, the
+CLI will automatically attempt to read the hash of the currently active session on CAS and write it
+into the 'predecessor' field. If no session with a matching name exists, the update operation will
+fail
+
+USAGE:
+    scone session update [OPTIONS] &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Path to the file containing the session description. This may either be a session
+            template YAML file, or a signed session (JSON) file
+
+OPTIONS:
+    -c, --cas &lt;CAS&gt;
+            CAS to use. Default CAS if omitted
+
+    -e &lt;VAR=VALUE&gt;
+            Replace variables in the session template with the given values. Ignored if the session
+            was already signed
+
+        --fail-on-warning
+            If a warning occurs, stop immediately and exit with a non-zero exit code. Note that this
+            option only applies to warnings detected locally, it has no effect on warnings returned
+            by CAS when a session was created
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+    -n, --name &lt;NAME&gt;
+            Name of the session. Will replace the name stored in the session file. If the session
+            was already signed, setting a name will lead to an error
+
+        --only_for_testing-disable-attestation-verification
+            Do not require the CAS to be attested. With this option set, NO verification of the used
+            CAS will be performed at all. This is obviously not secure!
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+
+        --use-env
+            Use the process' environment variables to replace variables in the session template.
+            Ignored if the session was already signed
+</code></pre>
+<h3 id="scone-session-verify">scone session verify</h3>
+<pre class="highlight"><code>scone session verify 
+Verify that a session active on CAS matches the given session. Prints the hash of the verified
+session on success
+
+USAGE:
+    scone session verify [OPTIONS] &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Path to the file containing the session description. This may either be a session
+            template YAML file, or a signed session (JSON) file
+
+OPTIONS:
+    -c, --cas &lt;CAS&gt;
+            CAS to use. Default CAS if omitted
+
+    -e &lt;VAR=VALUE&gt;
+            Replace variables in the session template with the given values. Ignored if the session
+            was already signed
+
+        --fail-on-warning
+            If a warning occurs, stop immediately and exit with a non-zero exit code. Note that this
+            option only applies to warnings detected locally, it has no effect on warnings returned
+            by CAS when a session was created
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+    -n, --name &lt;NAME&gt;
+            Name of the session. Will replace the name stored in the session file. If the session
+            was already signed, setting a name will lead to an error
+
+        --only_for_testing-disable-attestation-verification
+            Do not require the CAS to be attested. With this option set, NO verification of the used
+            CAS will be performed at all. This is obviously not secure!
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+
+        --use-env
+            Use the process' environment variables to replace variables in the session template.
+            Ignored if the session was already signed
+</code></pre>
+<h3 id="scone-session-read">scone session read</h3>
+<pre class="highlight"><code>scone session read 
+Load an active session from CAS and print it to stdout
+
+USAGE:
+    scone session read [OPTIONS] &lt;NAME&gt;
+
+ARGS:
+    &lt;NAME&gt;
+            The name of the session to get from CAS and print
+
+OPTIONS:
+    -c, --cas &lt;CAS&gt;
+            CAS to use. Default CAS if omitted
+
+    -h, --help
+            Print help information
+
+        --identity &lt;IDENTITY&gt;
+            External identity file to use (optional). If omitted, the automatically generated CLI
+            identity will be used. An identity file must contain a PEM-encoded PKCS#8 private key
+            followed by a X.509v3 certificate
+
+        --only_for_testing-disable-attestation-verification
+            Do not require the CAS to be attested. With this option set, NO verification of the used
+            CAS will be performed at all. This is obviously not secure!
+
+        --retries &lt;COUNT&gt;
+            How often the CLI should retry operations on network errors. 0 disables retries
+
+            [env: SCONE_CLI_RETRIES=]
+            [default: 3]
+</code></pre>
+<h2 id="scone-las">scone las</h2>
+<pre class="highlight"><code>scone las 
+Interact with the local attestation service (LAS)
+
+USAGE:
+    scone las &lt;SUBCOMMAND&gt;
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+SUBCOMMANDS:
+    help
+            Print this message or the help of the given subcommand(s)
+    probe
+            Liveness probe for the LAS service
+    provision-pck-certificate
+            Manually provision the latest PCK certificate to LAS, i.e., the PCK certificate for the
+            best TCB level currently supported by the platform
+    scone-epid-trust-anchor
+            Retrieve the EPID trust anchor of the SCONE QE (and verify it). Prints public key and
+            enclave measurement of the SCONE QE
+    show-tcb-state
+            Connect to LAS and query a DCAP quote to show information about the platforms TCB state.
+            In particular, the result will show whether the platform's trust level can be improved
+            and try to indicate how the platform can be upgraded
+</code></pre>
+<h3 id="scone-las-scone-epid-trust-anchor">scone las scone-epid-trust-anchor</h3>
+<pre class="highlight"><code>scone las scone-epid-trust-anchor 
+Retrieve the EPID trust anchor of the SCONE QE (and verify it). Prints public key and enclave
+measurement of the SCONE QE.
+
+The information can only be verified, and thus trusted in a production environment, if IAS
+credentials (sp_id and sp_key) are provided.
+
+USAGE:
+    scone las scone-epid-trust-anchor [OPTIONS]
+
+OPTIONS:
+    -C, --accept-configuration-needed
+            Accept CONFIGURATION NEEDED verification response (hyperthreading enabled, less secure)
+
+        --dev-env
+            Whether the service provider ID is registered in the IAS debug environment
+
+    -G, --accept-group-out-of-date
+            Accept GROUP OUT OF DATE verification response (TCB out-of-date, dangerous!)
+
+    -h, --help
+            Print help information
+
+    -l
+            The service provider ID's quote linkability setting
+
+        --las &lt;LAS&gt;
+            LAS to connect to. Default port will be added if no port is specified
+
+            [default: localhost]
+
+        --only_for_testing-debug
+            Allow LAS to run in debug mode, in which it CAN BE MANIPULATED AND SHOULDN'T BE TRUSTED
+            (only for testing purposes!)
+
+    -S, --accept-sw-hardening-needed
+            Accept SW HARDENING NEEDED verification response (less safe compilation options)
+
+        --sp-id &lt;SP_ID&gt;
+            The service provider ID used to verify the EPID quote with Intel IAS
+
+            [default: 00000000000000000000000000000000]
+
+        --sp-key &lt;SP_KEY&gt;
+            The service provider KEY used to authenticate to Intel IAS
+</code></pre>
+<h3 id="scone-las-probe">scone las probe</h3>
+<pre class="highlight"><code>scone las probe 
+Liveness probe for the LAS service
+
+Can be used in orchestration tools (Kubernets, Docker) to ensure LAS is able to provide SGX
+attestation quotes.
+
+This probe does NOT check the quote integrity as this typically requires internet connection and
+oftentimes also credentials. It follows that an adversary can fake LAS healthiness. In such a
+situation, attestation of SCONE services would fail.
+
+Note that this command must be executed with SGX hardware support. Running in SGX simulation mode,
+or a native binary is insufficient.
+
+USAGE:
+    scone las probe [OPTIONS]
+
+OPTIONS:
+        --dcap
+            Require the LAS to be able to generate DCAP quotes to pass the liveness probe
+
+            The received quote must contain a PCK certificate. This is typically only provisioned to
+            the LAS during attestation of a CAS or user enclave. Therefore, this healthcheck may not
+            turn healthy until an attestation is attempted. See `dcap-api-key` argument.
+
+            Successful DCAP quoting capabilities is typically sufficient to attest remote enclave
+            services.
+
+        --dcap-api-key &lt;DCAP_API_KEY&gt;
+            An optional DCAP PCS API subscription key
+
+            If this key is provided, LAS/AESM are found to not posses a PCK certificate yet, the
+            probe attempts to provision a PCK certificate to LAS/AESM enabling DCAP attestaion.
+
+        --epid
+            Require the LAS to be able to generate EPID quotes to pass the liveness probe
+
+            Successful EPID quoting capabilities is typically sufficient to attest remote enclave
+            services.
+
+    -h, --help
+            Print help information
+
+        --las &lt;LAS&gt;
+            Address and port of the LAS to connect to: IP:PORT, or ADDRESS:PORT
+
+            Default port will be added if no port is specified.
+
+            [env: SCONE_LAS_ADDR=]
+            [default: localhost]
+
+        --scone
+            Require the LAS to be able to generate SCONE quotes to pass the liveness probe
+
+            Successful SCONE quoting capabilities is insufficient to attest remote enclave services.
+            Either working EPID quoting is necessary to establish trust into the SCONE quoting
+            enclave, or the user has to manually establish trust into the quoting enclave and add
+            its public key to their CAS session/policy.
+
+    -t, --timeout &lt;TIMEOUT&gt;
+            Connection timeout in seconds
+
+            Seconds the probe will wait for a connection to be established before reporting failure.
+
+            [default: 10]
+</code></pre>
+<h3 id="scone-las-show-tcb-state">scone las show-tcb-state</h3>
+<pre class="highlight"><code>scone las show-tcb-state 
+Connect to LAS and query a DCAP quote to show information about the platforms TCB state. In
+particular, the result will show whether the platform's trust level can be improved and try to
+indicate how the platform can be upgraded.
+
+Note that, * this CLI and LAS must be executed on the same platform, * this operation may provision
+the DCAP PCK certificate to LAS, and * the Intel DCAP PCS API must be reachable from this CLI
+instance.
+
+USAGE:
+    scone las show-tcb-state [OPTIONS]
+
+OPTIONS:
+        --dcap-api-key &lt;DCAP_API_KEY&gt;
+            An optional DCAP PCS API subscription key
+
+            The DCAP PCS API subscription key may be necessary to attest the platform.
+
+        --dont-fail-on-upgradable-pck-certificate
+            Do not fail the command if the PCK certificate should be upgraded
+
+            Using an outdated PCK certificate forces the platform to attest software with a worse
+            TCB level, which may fail service attestation. Upgrading the PCK certificate is a
+            low-effort software only procedure that should happen automatically during attestation
+            with the SCONE platform or can be done manually with the `provision-pck-certificate`
+            command.
+
+        --fail-on-upgradable-platform-tcb
+            Fail the command if the platform TCB should be upgraded
+
+            Depending on the concrete situation, the platform TCB might require a software upgrade,
+            e.g., a newer provisioning enclave might be needed, which in SCONE, is part of the LAS
+            image, a CPU microcode or a BIOS/UEFI upgrade. Note that, this is not a complete
+            enumeration.
+
+            Some of these upgrades require service disruption as the system must be rebooted or are
+            not available entirely since the motherboard manufacturer does not yet offer a
+            particular firmware upgrade.
+
+    -h, --help
+            Print help information
+
+        --json &lt;JSON&gt;
+            Produce information in parsable JSON format
+
+            [possible values: summary]
+
+        --las &lt;LAS&gt;
+            LAS to connect to. Default port will be added if no port is specified
+
+            [default: localhost]
+
+    -t, --timeout &lt;TIMEOUT&gt;
+            Connection timeout in seconds
+
+            Seconds the probe will wait for a connection to be established before reporting failure.
+
+            [default: 10]
+</code></pre>
+<h3 id="scone-las-provision-pck-certificate">scone las provision-pck-certificate</h3>
+<pre class="highlight"><code>scone las provision-pck-certificate 
+Manually provision the latest PCK certificate to LAS, i.e., the PCK certificate for the best TCB
+level currently supported by the platform.
+
+This operation typically is done automatically during service attestation. Doing it manually may be
+useful in air-gapped systems or to reduce attestation latency.
+
+USAGE:
+    scone las provision-pck-certificate [OPTIONS] --dcap-api-key &lt;DCAP_API_KEY&gt;
+
+OPTIONS:
+        --dcap-api-key &lt;DCAP_API_KEY&gt;
+            The DCAP PCS API subscription key is necessary to obtain the PCK certificate
+
+    -h, --help
+            Print help information
+
+        --las &lt;LAS&gt;
+            LAS to connect to. Default port will be added if no port is specified
+
+            [default: localhost]
+
+    -t, --timeout &lt;TIMEOUT&gt;
+            Connection timeout in seconds
+
+            Seconds the probe will wait for a connection to be established before reporting failure.
+
+            [default: 10]
+</code></pre>
+<h2 id="scone-cert">scone cert</h2>
+<pre class="highlight"><code>scone cert 
+Perform operations on X.509 certificates
+
+USAGE:
+    scone cert &lt;SUBCOMMAND&gt;
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+SUBCOMMANDS:
+    help
+            Print this message or the help of the given subcommand(s)
+    show-key-hash
+            Print the hash of the certificate's public key
+</code></pre>
+<h3 id="scone-cert-show-key-hash">scone cert show-key-hash</h3>
+<pre class="highlight"><code>scone cert show-key-hash 
+Print the hash of the certificate's public key
+
+USAGE:
+    scone cert show-key-hash &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Path to the file containing the PEM-encoded X.509 certificate
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-binary-fs">scone binary-fs</h2>
+<pre class="highlight"><code>scone binary-fs 
+Collect directories and files to generate a binary fs artifacts.
+
+Note that, binary fs only supports regular files and symbolic links. Empty directories, for example,
+will be ignored. You may put an empty file into the directory as a workaround.
+
+USAGE:
+    scone binary-fs [OPTIONS] &lt;ROOT&gt; &lt;OUTPUT_DIR&gt;
+
+ARGS:
+    &lt;ROOT&gt;
+            The root directory from which the binary fs will be built
+
+    &lt;OUTPUT_DIR&gt;
+            Directory in which output files should be stored. Multiple files will be produce that
+            must be linked together subsequently. The command shows appropriate shell commands upon
+            success
+
+OPTIONS:
+    -h, --host-path &lt;HOST_PATH&gt;
+            Add host path - host paths are served directly from the host file system without any
+            protection or sanitization through SCONE. Path must be absolute (start with '/').
+            Typical usages of host paths are files containing system specific data, such as
+            networking configurations (`/etc/hosts`, `/etc/resolve.conf`), or special device files.
+
+            Can be specified multiple times.
+
+        --help
+            Print help information
+
+    -i, --include &lt;INCLUDE&gt;
+            Include expressions, only paths matching an include expression will be added. These
+            pattern use shell glob syntax.
+
+            For example, '*' will match all files, '/dir/file' only matches this single file, while,
+            '/dir/*' matches all files beneath '/dir'.
+
+    -p, --preserve-symbolic-links
+            Preserve any encountered symbolic links as they are.
+
+            If this option is not set, the tool will adapt any encountered symbolic link such it
+            work correctly once `root` is `/`. For example, if `/root` is the designated binary fs
+            root directory and `/root/a` is a symbolic link to `/root/b`, `/root/a` must be adapted
+            to link to `/b` within the binary fs.
+
+    -v, --verbose
+            Produce more informative output (specifying multiple time increases verbosity)
+</code></pre>
+<h2 id="scone-signer">scone signer</h2>
+<pre class="highlight"><code>scone signer 
+Sign executables
+
+USAGE:
+    scone signer &lt;SUBCOMMAND&gt;
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+SUBCOMMANDS:
+    help
+            Print this message or the help of the given subcommand(s)
+    info
+
+    sign
+
+</code></pre>
+<h3 id="scone-signer-sign">scone signer sign</h3>
+<pre class="highlight"><code>scone signer sign 
+
+USAGE:
+    scone signer sign [OPTIONS] &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+            Path to the enclave application
+
+OPTIONS:
+    -d, --dlopen &lt;DLOPEN&gt;
+            dlopen(): 0 - disable, 1 - enable, 2 - enable, do not require loaded libraries to be
+            authenticated/encrypted (default=0) [SCONE_ALLOW_DLOPEN]
+
+            [possible values: 0, 1, 2]
+
+    -e, --env
+            Consider SCONE_* environment variables additionally to provided arguments. Arguments
+            overwrite environment variables
+
+        --extensions &lt;EXTENSIONS&gt;
+            List of paths to runtime extension libraries (separated with ':')
+            [SCONE_EXTENSIONS_PATH]
+
+    -f, --fork &lt;FORK&gt;
+            fork: 0 - disable, 1 - enable (default=0) [SCONE_FORK]
+
+            [possible values: 0, 1]
+
+    -h, --help
+            Print help information
+
+    -H, --heap &lt;HEAP&gt;
+            Heap size (default=64MB) [SCONE_HEAP]
+
+        --isvprodid &lt;ISVPRODID&gt;
+            SGX Independent Software Vendor Product ID (default=0) [SCONE_ISVPRODID]
+
+        --isvsvn &lt;ISVSVN&gt;
+            SGX Independent Software Vendor Security Version Number (default=0) [SCONE_ISVSVN]
+
+    -k, --key &lt;KEY&gt;
+            Path to private key file. If not provided, a built-in debug key will be used [SCONE_KEY]
+
+    -m, --mprotect &lt;MPROTECT&gt;
+            mprotect: 0 - disable, 1 - enable (default=0) [SCONE_MPROTECT]
+
+            [possible values: 0, 1]
+
+    -M, --minheap &lt;MINHEAP&gt;
+            Minimal heap size (default=8MB) [SCONE_MIN_HEAP]
+
+        --miscselect &lt;MISCSELECT&gt;
+            MISCSELECT to set in SIGSTRUCT [SCONE_MISCSELECT]
+
+    -p, --production
+            Sign enclave to run in production mode. [SCONE_PRODUCTION]
+
+    -S, --stack &lt;STACK&gt;
+            Default stack size  (default=2MB) [SCONE_STACK]
+
+        --sconify
+            Add ELF sections used by the SCONE runtime and use SCONE program interpreter
+
+        --syslibs &lt;SYSLIBS&gt;
+            Enable/disable usage of system paths (/lib, /usr/lib, etc.) when searching for
+            application dependencies (default=0) [SCONE_SYSLIBS]
+
+            [possible values: 0, 1]
+
+    -t, --tcs &lt;TCS&gt;
+            Number of TCS  (default=8) [SCONE_TCS]
+
+    -v, --verbose
+            Output information about the enclave after signing
+
+    -x, --xfrm &lt;XFRM&gt;
+            XFRM to set in SIGSTRUCT [SCONE_XFRM]
+</code></pre>
+<h3 id="scone-signer-info">scone signer info</h3>
+<pre class="highlight"><code>scone signer info 
+
+USAGE:
+    scone signer info [OPTIONS] &lt;FILE&gt;
+
+ARGS:
+    &lt;FILE&gt;
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+
+        --yaml
+            print selected fields of the sigstruct in yaml format
+</code></pre>
+<h2 id="scone-cargo">scone cargo</h2>
+<pre class="highlight"><code>scone cargo 
+Rust Cargo utilizing SCONE compiler by default
+
+USAGE:
+    scone cargo [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-g">scone g++</h2>
+<pre class="highlight"><code>scone g++ 
+g++ SCONE compiler
+
+USAGE:
+    scone g++ [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-gcc">scone gcc</h2>
+<pre class="highlight"><code>scone gcc 
+gcc SCONE compiler
+
+USAGE:
+    scone gcc [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-gccgo">scone gccgo</h2>
+<pre class="highlight"><code>scone gccgo 
+gccgo SCONE compiler
+
+USAGE:
+    scone gccgo [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-gdb">scone gdb</h2>
+<pre class="highlight"><code>scone gdb 
+gdb (debugger able to read SCONE debug enclave memory)
+
+USAGE:
+    scone gdb [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-gfortran">scone gfortran</h2>
+<pre class="highlight"><code>scone gfortran 
+fortran SCONE compiler
+
+USAGE:
+    scone gfortran [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-rustc">scone rustc</h2>
+<pre class="highlight"><code>scone rustc 
+Rust SCONE compiler
+
+USAGE:
+    scone rustc [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-host">scone host</h2>
+<pre class="highlight"><code>scone host 
+
+USAGE:
+    scone host [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-swarm">scone swarm</h2>
+<pre class="highlight"><code>scone swarm 
+
+USAGE:
+    scone swarm [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-service">scone service</h2>
+<pre class="highlight"><code>scone service 
+
+USAGE:
+    scone service [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-stack">scone stack</h2>
+<pre class="highlight"><code>scone stack 
+
+USAGE:
+    scone stack [ARGS]...
+
+ARGS:
+    &lt;ARGS&gt;...
+
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-version">scone version</h2>
+<pre class="highlight"><code>scone version 
+Show CLI version
+
+USAGE:
+    scone version
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+<h2 id="scone-help-markdown">scone help-markdown</h2>
+<pre class="highlight"><code>scone help-markdown 
+Generate markdown help pages on stdout
+
+USAGE:
+    scone help-markdown
+
+OPTIONS:
+    -h, --help
+            Print help information
+</code></pre>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright Scontain &copy; 2018-2023
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+      
+        <script src="../css/extra.js"></script>
+      
+        <script src="../search/main.js"></script>
+      
+    
+  </body>
+</html>
