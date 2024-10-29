@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/azure/scone-playground/">
       
       <link rel="icon" href="../../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3437,7 +3437,7 @@
   
     <li class="md-nav__item">
       <a href="../../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4279,11 +4279,9 @@
 <p>Copy the IP address of your VM under the field "Public IP address".</p>
 <p><img alt="Copy the public IP address of the SCONE Confidential Computing Playground VM" src="../images/playground-quickstart6.png" /></p>
 <p>You can use this IP to log in to your VM through SSH, using the authentication method that you choose in the configuration step.</p>
-<div class="highlight"><pre><span></span><code>ssh azureuser@20.117.90.4
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">ssh azureuser@20.117.90.4</code></pre>
 <p>Once you're logged in to the Virtual Machine, you're good to go!</p>
-<div class="highlight"><pre><span></span><code>azureuser@scone-playground:~$ <span class="nb">echo</span> <span class="s2">&quot;Have fun! :-)&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">azureuser@scone-playground:~$ echo "Have fun! :-)"</code></pre>
 <h2 id="demos-and-examples">Demos and examples</h2>
 <p>Please check all the demos and their respective instructions below.</p>
 <ul>
@@ -4312,29 +4310,26 @@
 <ul>
 <li>Name and build the native image.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># Change the image name.</span>
-<span class="c1"># You need push access to the selected registry.</span>
-<span class="nb">export</span> <span class="nv">NATIVE_IMAGE</span><span class="o">=</span>registry.scontain.com/clenimar/scone-build-demo/hello-world-python:0.1-native
+<pre class="highlight"><code class="language-bash"># Change the image name.
+# You need push access to the selected registry.
+export NATIVE_IMAGE=registry.scontain.com/clenimar/scone-build-demo/hello-world-python:0.1-native
 
-<span class="c1"># Build and push.</span>
-<span class="nb">cd</span> /opt/scone/demos/hello-world-python/hello-world-python-image
-docker build . -t <span class="nv">$NATIVE_IMAGE</span>
-docker push <span class="nv">$NATIVE_IMAGE</span>
-</code></pre></div>
+# Build and push.
+cd /opt/scone/demos/hello-world-python/hello-world-python-image
+docker build . -t $NATIVE_IMAGE
+docker push $NATIVE_IMAGE</code></pre>
 <ul>
 <li>Specify your target image.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># Change the image name.</span>
-<span class="c1"># You need push access to the selected registry if</span>
-<span class="c1"># `imagePushPolicy` is set to &quot;Always&quot;.</span>
-<span class="nb">export</span> <span class="nv">TARGET_IMAGE</span><span class="o">=</span>registry.scontain.com/clenimar/scone-build-demo/hello-world-python:0.1-confidential
-</code></pre></div>
+<pre class="highlight"><code class="language-bash"># Change the image name.
+# You need push access to the selected registry if
+# `imagePushPolicy` is set to "Always".
+export TARGET_IMAGE=registry.scontain.com/clenimar/scone-build-demo/hello-world-python:0.1-confidential</code></pre>
 <ul>
 <li>Specify your CAS namespace.
 Move to the scone-build samples repository and replace the image names.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /opt/scone/demos/scone_build/examples/hello-world-python
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cd /opt/scone/demos/scone_build/examples/hello-world-python</code></pre>
 <ul>
 <li>
 <p>Edit <code>Sconefile</code>.</p>
@@ -4345,44 +4340,38 @@ _
 - Create an identity with scone-identity.</p>
 </li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># Setup ~/.rnd</span>
-dd <span class="k">if</span><span class="o">=</span>/dev/urandom <span class="nv">of</span><span class="o">=</span>~/.rnd <span class="nv">bs</span><span class="o">=</span><span class="m">256</span> <span class="nv">count</span><span class="o">=</span><span class="m">1</span>
-scone-identity
-</code></pre></div>
+<pre class="highlight"><code class="language-bash"># Setup ~/.rnd
+dd if=/dev/urandom of=~/.rnd bs=256 count=1
+scone-identity</code></pre>
 <p>This will produce <code>identity.pem</code> in your local directory.</p>
 <ul>
 <li>Run <code>scone-build</code>.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>scone-build -b ./build-resources
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone-build -b ./build-resources</code></pre>
 <ul>
 <li>Wait for it to finish. Now start the local Kubernetes cluster (if not already):</li>
 </ul>
-<div class="highlight"><pre><span></span><code>minikube start
+<pre class="highlight"><code class="language-bash">minikube start
 
-<span class="c1"># Install the SCONE SGX device plugin and SCONE LAS.</span>
+# Install the SCONE SGX device plugin and SCONE LAS.
 helm install sgxdevplugin /opt/scone/sconeapps/sgxdevplugin-1.2.0.tgz
-helm install las /opt/scone/sconeapps/las-0.3.4.tgz
-</code></pre></div>
+helm install las /opt/scone/sconeapps/las-0.3.4.tgz</code></pre>
 <ul>
 <li>Install the generated Helm chart.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>sudo chmod -R <span class="m">777</span> charts
-helm install hello-world-scone charts/service
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">sudo chmod -R 777 charts
+helm install hello-world-scone charts/service</code></pre>
 <p>You might want to configure additional parameters for the Helm chart. For example, if <code>$TARGET_IMAGE</code> belongs to a private registry, you must specify an Image Pull Secret, by adding <code>--set imagePullSecrets[0].name=$secretName</code> to the <code>helm install</code> line... Check the chart docs (<code>cat charts/service/README.md</code>) to see all supported parameters.</p>
 <ul>
 <li>Make sure your "Hello, World" application has run successfully. Get the pod name:</li>
 </ul>
-<div class="highlight"><pre><span></span><code>kubectl get pods <span class="p">|</span> grep hello-world
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl get pods | grep hello-world</code></pre>
 <ul>
 <li>Then get its logs. For example:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># Change the name of the pod to match yours.</span>
+<pre class="highlight"><code class="language-bash"># Change the name of the pod to match yours.
 $ kubectl logs hello-world-scone-sconify-service--1-2cds8 -f
-Hello World!
-</code></pre></div>
+Hello World!</code></pre>
 <h3 id="confidential-service-meshes">Confidential service meshes</h3>
 <table>
 <thead>
@@ -4401,108 +4390,98 @@ Hello World!
 <p>Showcase the Network Shield feature of the SCONE runtime, which allows for a) transparently encrypting the network communication of applications running on SCONE, much like a built-in, secure service mesh sidecar that enables truly end-to-end mTLS protection; and b) transparently blocking any unwanted inbound or outbound connections according to your security policy (built-in application firewall).</p>
 <h4 id="run-yourself_1">Run yourself</h4>
 <p>Move to repository.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /opt/scone/demos/flask_example
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cd /opt/scone/demos/flask_example</code></pre>
 <ul>
 <li>Define image names and your CAS namespace:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># NOTE: change the image names. Set a repository that you can push images to. If you set</span>
-<span class="c1"># a private repo, don&#39;t forget to set imagePullSecrets when deploying the Helm chart.</span>
-<span class="nb">export</span> <span class="nv">SERVER_IMAGE</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/clenimar/network-shield-demo/flask-restapi:0.1&quot;</span>
-<span class="nb">export</span> <span class="nv">CLIENT_IMAGE</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/clenimar/network-shield-demo/client:0.1&quot;</span>
-<span class="c1"># choose a random CAS namespace for this tutorial.</span>
-<span class="nb">export</span> <span class="nv">NAMESPACE</span><span class="o">=</span><span class="s2">&quot;network-shield-demo-&quot;&quot;</span><span class="nv">$RANDOM</span><span class="s2">&quot;&quot;</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash"># NOTE: change the image names. Set a repository that you can push images to. If you set
+# a private repo, don't forget to set imagePullSecrets when deploying the Helm chart.
+export SERVER_IMAGE="registry.scontain.com/clenimar/network-shield-demo/flask-restapi:0.1"
+export CLIENT_IMAGE="registry.scontain.com/clenimar/network-shield-demo/client:0.1"
+# choose a random CAS namespace for this tutorial.
+export NAMESPACE="network-shield-demo-""$RANDOM""$RANDOM"</code></pre>
 <ul>
 <li>Create the confidential image for the server. Extract the key and tag for the encrypted filesystem.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nv">SERVER_IMAGE</span><span class="o">=</span><span class="nv">$SERVER_IMAGE</span> ./create_image.sh
-<span class="nv">SCONE_FSPF_KEY_SERVER</span><span class="o">=</span><span class="k">$(</span>cat native-files/keytag <span class="p">|</span> grep -o -e <span class="s2">&quot;key: [0-9a-f]\{64\}&quot;</span> <span class="p">|</span> awk <span class="s1">&#39; { print $2 } &#39;</span><span class="k">)</span>
-<span class="nv">SCONE_FSPF_TAG_SERVER</span><span class="o">=</span><span class="k">$(</span>cat native-files/keytag <span class="p">|</span> grep -o -e <span class="s2">&quot;tag: [0-9a-f]\{32\}&quot;</span> <span class="p">|</span> awk <span class="s1">&#39; { print $2 } &#39;</span><span class="k">)</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SERVER_IMAGE=$SERVER_IMAGE ./create_image.sh
+SCONE_FSPF_KEY_SERVER=$(cat native-files/keytag | grep -o -e "key: [0-9a-f]\{64\}" | awk ' { print $2 } ')
+SCONE_FSPF_TAG_SERVER=$(cat native-files/keytag | grep -o -e "tag: [0-9a-f]\{32\}" | awk ' { print $2 } ')</code></pre>
 <ul>
 <li>Create the confidential image for the client. Extract the key and tag for the encrypted filesystem.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> client
-<span class="nv">CLIENT_IMAGE</span><span class="o">=</span><span class="nv">$CLIENT_IMAGE</span> ./create_image.sh
-<span class="nv">SCONE_FSPF_KEY_CLIENT</span><span class="o">=</span><span class="k">$(</span>cat native-files/keytag <span class="p">|</span> grep -o -e <span class="s2">&quot;key: [0-9a-f]\{64\}&quot;</span> <span class="p">|</span> awk <span class="s1">&#39; { print $2 } &#39;</span><span class="k">)</span>
-<span class="nv">SCONE_FSPF_TAG_CLIENT</span><span class="o">=</span><span class="k">$(</span>cat native-files/keytag <span class="p">|</span> grep -o -e <span class="s2">&quot;tag: [0-9a-f]\{32\}&quot;</span> <span class="p">|</span> awk <span class="s1">&#39; { print $2 } &#39;</span><span class="k">)</span>
-<span class="nb">cd</span> -
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cd client
+CLIENT_IMAGE=$CLIENT_IMAGE ./create_image.sh
+SCONE_FSPF_KEY_CLIENT=$(cat native-files/keytag | grep -o -e "key: [0-9a-f]\{64\}" | awk ' { print $2 } ')
+SCONE_FSPF_TAG_CLIENT=$(cat native-files/keytag | grep -o -e "tag: [0-9a-f]\{32\}" | awk ' { print $2 } ')
+cd -</code></pre>
 <ul>
 <li>Submit initial policies (i.e., without the Network Shield enabled).</li>
 </ul>
-<div class="highlight"><pre><span></span><code>docker run -it --rm <span class="se">\</span>
-  -v <span class="nv">$PWD</span>/.cas:/root/.cas <span class="se">\</span>
-  -v <span class="nv">$PWD</span>/policies:/policies <span class="se">\</span>
-  -e <span class="nv">NAMESPACE</span><span class="o">=</span><span class="nv">$NAMESPACE</span> <span class="se">\</span>
-  -e <span class="nv">SCONE_FSPF_KEY_CLIENT</span><span class="o">=</span><span class="nv">$SCONE_FSPF_KEY_CLIENT</span> <span class="se">\</span>
-  -e <span class="nv">SCONE_FSPF_TAG_CLIENT</span><span class="o">=</span><span class="nv">$SCONE_FSPF_TAG_CLIENT</span> <span class="se">\</span>
-  -e <span class="nv">SCONE_FSPF_KEY_SERVER</span><span class="o">=</span><span class="nv">$SCONE_FSPF_KEY_SERVER</span> <span class="se">\</span>
-  -e <span class="nv">SCONE_FSPF_TAG_SERVER</span><span class="o">=</span><span class="nv">$SCONE_FSPF_TAG_SERVER</span> <span class="se">\</span>
-  --entrypoint bash <span class="se">\</span>
+<pre class="highlight"><code class="language-bash">docker run -it --rm \
+  -v $PWD/.cas:/root/.cas \
+  -v $PWD/policies:/policies \
+  -e NAMESPACE=$NAMESPACE \
+  -e SCONE_FSPF_KEY_CLIENT=$SCONE_FSPF_KEY_CLIENT \
+  -e SCONE_FSPF_TAG_CLIENT=$SCONE_FSPF_TAG_CLIENT \
+  -e SCONE_FSPF_KEY_SERVER=$SCONE_FSPF_KEY_SERVER \
+  -e SCONE_FSPF_TAG_SERVER=$SCONE_FSPF_TAG_SERVER \
+  --entrypoint bash \
   registry.scontain.com/sconecuratedimages/sconecli:alpine-scone5
-<span class="c1"># (inside of the SCONE CLI container)</span>
-scone cas attest -GCS <span class="m">5</span>-5-0.scone-cas.cf --only_for_testing-ignore-signer --only_for_testing-debug --only_for_testing-trust-any
+# (inside of the SCONE CLI container)
+scone cas attest -GCS 5-5-0.scone-cas.cf --only_for_testing-ignore-signer --only_for_testing-debug --only_for_testing-trust-any
 scone session create --use-env policies/templates/namespace.yml.template
 scone session create --use-env policies/templates/initial-client.yml.template
 scone session create --use-env policies/templates/initial-server.yml.template
 scone session create --use-env policies/templates/redis.yml.template
-<span class="c1"># (exit SCONE CLI container)</span>
-<span class="nb">exit</span>
-</code></pre></div>
+# (exit SCONE CLI container)
+exit</code></pre>
 <ul>
 <li>Start the local Kubernetes cluster (if not already):</li>
 </ul>
-<div class="highlight"><pre><span></span><code>minikube start
+<pre class="highlight"><code class="language-bash">minikube start
 
-<span class="c1"># Install the SCONE SGX device plugin and SCONE LAS.</span>
+# Install the SCONE SGX device plugin and SCONE LAS.
 helm install sgxdevplugin /opt/scone/sconeapps/sgxdevplugin-1.2.0.tgz
-helm install las /opt/scone/sconeapps/las-0.3.4.tgz
-</code></pre></div>
+helm install las /opt/scone/sconeapps/las-0.3.4.tgz</code></pre>
 <ul>
 <li>Deploy services to Kubernetes.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># Install the services.</span>
-helm install network-shield-demo deploy/helm <span class="se">\</span>
-  --set scone.api_session<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NAMESPACE</span><span class="s2">/network-shield-demo-server/flask_restapi&quot;</span> <span class="se">\</span>
-  --set scone.redis_session<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NAMESPACE</span><span class="s2">/network-shield-demo-redis/redis&quot;</span> <span class="se">\</span>
-  --set scone.client_session<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NAMESPACE</span><span class="s2">/network-shield-demo-client/client&quot;</span> <span class="se">\</span>
-  --set <span class="nv">image</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SERVER_IMAGE</span><span class="s2">&quot;</span> <span class="se">\</span>
-  --set <span class="nv">client_image</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CLIENT_IMAGE</span><span class="s2">&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash"># Install the services.
+helm install network-shield-demo deploy/helm \
+  --set scone.api_session="$NAMESPACE/network-shield-demo-server/flask_restapi" \
+  --set scone.redis_session="$NAMESPACE/network-shield-demo-redis/redis" \
+  --set scone.client_session="$NAMESPACE/network-shield-demo-client/client" \
+  --set image="$SERVER_IMAGE" \
+  --set client_image="$CLIENT_IMAGE"</code></pre>
 <ul>
 <li>Check that the client is working.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>kubectl logs -l <span class="nv">app</span><span class="o">=</span>client
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl logs -l app=client</code></pre>
 <ul>
 <li>Now enter the client pod. Inside the pod, install tcpdump and check the traffic for sensitive data.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nv">CLIENT_POD</span><span class="o">=</span>...
-kubectl <span class="nb">exec</span> -it <span class="nv">$CLIENT_POD</span> bash
+<pre class="highlight"><code class="language-bash">CLIENT_POD=...
+kubectl exec -it $CLIENT_POD bash
 apk add tcpdump
-tcpdump -i eth0 -s <span class="m">0</span> -Xvv tcp port <span class="m">4996</span>
-</code></pre></div>
+tcpdump -i eth0 -s 0 -Xvv tcp port 4996</code></pre>
 <ul>
 <li>Now it's time to activate the Network Shield. To do so, we update the policies with the Network Shield environment variables. Check policies or refer to the screencast for more details.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>docker run -it --rm <span class="se">\</span>
-  -v <span class="nv">$PWD</span>/.cas:/root/.cas <span class="se">\</span>
-  -v <span class="nv">$PWD</span>/policies:/policies <span class="se">\</span>
-  -e <span class="nv">NAMESPACE</span><span class="o">=</span><span class="nv">$NAMESPACE</span> <span class="se">\</span>
-  -e <span class="nv">SCONE_FSPF_KEY_CLIENT</span><span class="o">=</span><span class="nv">$SCONE_FSPF_KEY_CLIENT</span> <span class="se">\</span>
-  -e <span class="nv">SCONE_FSPF_TAG_CLIENT</span><span class="o">=</span><span class="nv">$SCONE_FSPF_TAG_CLIENT</span> <span class="se">\</span>
-  -e <span class="nv">SCONE_FSPF_KEY_SERVER</span><span class="o">=</span><span class="nv">$SCONE_FSPF_KEY_SERVER</span> <span class="se">\</span>
-  -e <span class="nv">SCONE_FSPF_TAG_SERVER</span><span class="o">=</span><span class="nv">$SCONE_FSPF_TAG_SERVER</span> <span class="se">\</span>
-  --entrypoint bash <span class="se">\</span>
+<pre class="highlight"><code class="language-bash">docker run -it --rm \
+  -v $PWD/.cas:/root/.cas \
+  -v $PWD/policies:/policies \
+  -e NAMESPACE=$NAMESPACE \
+  -e SCONE_FSPF_KEY_CLIENT=$SCONE_FSPF_KEY_CLIENT \
+  -e SCONE_FSPF_TAG_CLIENT=$SCONE_FSPF_TAG_CLIENT \
+  -e SCONE_FSPF_KEY_SERVER=$SCONE_FSPF_KEY_SERVER \
+  -e SCONE_FSPF_TAG_SERVER=$SCONE_FSPF_TAG_SERVER \
+  --entrypoint bash \
   registry.scontain.com/sconecuratedimages/sconecli:alpine-scone5
-<span class="c1"># (inside of the SCONE CLI container)</span>
+# (inside of the SCONE CLI container)
 scone session update --use-env policies/templates/server.yml.template
 scone session update --use-env policies/templates/client.yml.template
-<span class="c1"># (exit SCONE CLI container)</span>
-<span class="nb">exit</span>
-</code></pre></div>
+# (exit SCONE CLI container)
+exit</code></pre>
 <ul>
 <li>
 <p>Changes will take effect after the services are restarted. Restart the server.</p>
@@ -4535,24 +4514,21 @@ scone session update --use-env policies/templates/client.yml.template
 <p>Showcase a multi-stakeholder scenario, where different partners can collaborate in a workflow whilst protecting their intellectual properties (code, data) from each other. <a href="https://sconedocs.github.io/multi-stakeholder-workflow/">Learn more.</a></p>
 <h4 id="run-yourself_2">Run yourself</h4>
 <p>Move to repository and specify your Docker repository.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /opt/scone/demos/multi-stakeholder-workflow/workflow_k8s_helm
-<span class="nb">export</span> <span class="nv">MY_DOCKER_REPOSITORY</span><span class="o">=</span>...
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cd /opt/scone/demos/multi-stakeholder-workflow/workflow_k8s_helm
+export MY_DOCKER_REPOSITORY=...</code></pre>
 <ul>
 <li>We transform native containers into confidential images with <code>sconify_image</code>. The source code and Dockerfiles for each container can be inspected in the <code>containers``/</code> directory. Each container has its own <code>sconify_me.sh</code> script, which performs the one-step transformation into a confidential container. To sconify (i.e. transform) all containers at once, run:</li>
 </ul>
-<div class="highlight"><pre><span></span><code>./sconify-compute.sh
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./sconify-compute.sh</code></pre>
 <ul>
 <li>At this point, the security policies and Helm charts were already generated. You can inspect Helm charts in the <code>charts``/</code> directory. To deploy all charts in the correct sequence, run:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># If your Docker repository is private, you must create an imagePullSecret</span>
-<span class="c1"># and specify its name so that Kubernetes can pull the images.</span>
-<span class="c1"># More info: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/</span>
-<span class="nb">export</span> <span class="nv">K8S_IMAGE_PULL_SECRET</span><span class="o">=</span>...
+<pre class="highlight"><code class="language-bash"># If your Docker repository is private, you must create an imagePullSecret
+# and specify its name so that Kubernetes can pull the images.
+# More info: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+export K8S_IMAGE_PULL_SECRET=...
 
-./deploy-compute.sh
-</code></pre></div>
+./deploy-compute.sh</code></pre>
 <ul>
 <li>The script will run to completion and print the logs for each service. You can also check the pods and their logs using <code>kubectl</code>.</li>
 </ul>
@@ -4576,18 +4552,15 @@ scone session update --use-env policies/templates/client.yml.template
 <ul>
 <li>Change to repository.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /opt/scone/demos/multi-stakeholder-ml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cd /opt/scone/demos/multi-stakeholder-ml</code></pre>
 <ul>
 <li>To run the whole demo at once, run:</li>
 </ul>
-<div class="highlight"><pre><span></span><code>./run.sh
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./run.sh</code></pre>
 <ul>
 <li>To run the demo step by step, we also provide a thorough set of instructions at:</li>
 </ul>
-<div class="highlight"><pre><span></span><code>cat /opt/scone/demos/multi-stakeholder-ml/README.md
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cat /opt/scone/demos/multi-stakeholder-ml/README.md</code></pre>
 
               
             </article>
@@ -4657,7 +4630,7 @@ scone session update --use-env policies/templates/client.yml.template
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.5413a266.min.js"></script>

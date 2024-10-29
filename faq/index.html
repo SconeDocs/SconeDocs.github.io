@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/faq/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3303,7 +3303,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4948,19 +4948,17 @@ encrypted file region. In this way, you can protect the integrity as well as the
 of your code.</p>
 <h2 id="library-path">Library Path</h2>
 <p>If you experience undefined symbols like <code>__cxa_init_primary_exception</code>, ensure that your library path (<code>LD_LIBRARY_PATH</code>) is set such that if finds the SCONE libraries. For example, inside our SCONE crosscompiler container, you might set</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/opt/scone/cross-compiler/x86_64-linux-musl/lib/
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export LD_LIBRARY_PATH=/opt/scone/cross-compiler/x86_64-linux-musl/lib/</code></pre>
 <h2 id="resource-usage">Resource Usage</h2>
 <h3 id="cpu-utilization-number-of-threads-is-higher-than-in-native-mode">CPU utilization / number of threads is higher than in native mode</h3>
 <p>By default, we use multiple threads to serve inside the enclave and to serve system calls outside the enclave.
 If theses threads have no work to do, they go to sleep.</p>
 <p>You can reduce the number of threads / CPU utilization by specifying a SCONE <a href="../SCONE_ENV/#format-of-scone-configuration-file">configuration file</a> which uses less threads. For example, you could use one thread inside the enclave and one outside the enclave with this configuration file:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; /etc/sgx-musl.conf <span class="s">&lt;&lt; EOF</span>
-<span class="s">Q 1</span>
-<span class="s">e -1 0 0</span>
-<span class="s">s -1 0 0</span>
-<span class="s">EOF</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cat &gt; /etc/sgx-musl.conf &lt;&lt; EOF
+Q 1
+e -1 0 0
+s -1 0 0
+EOF</code></pre>
 <h3 id="the-cpu-utilization-is-still-higher-than-in-native-mode">The CPU utilization is still higher than in native mode</h3>
 <p>In our experience, then newest version of SCONE needs less than 1-2% CPU utilization when a service is idling.</p>
 <p>If the CPU utilization of a service is higher than the native version during idle periods, you could try to tune the <a href="../SCONE_ENV/#format-of-scone-configuration-file">the backoff behavior of the queues</a> by setting parameters <code>L</code> and <code>P</code> appropriately. Note that the standard values should in most cases do not need any tuning.</p>
@@ -5034,7 +5032,7 @@ with environment variable <code>SCONE_LOG=7</code>.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

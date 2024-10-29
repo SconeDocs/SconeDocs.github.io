@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/auditLog/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3400,7 +3400,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4232,8 +4232,7 @@ If the log is sent to a server, each entry will be sent as a POST request body.<
 <li>and detects failed and rolled back transactions.</li>
 </ul>
 <p>The verification is provided by the <code>scone cas verify-audit-log</code> and <code>scone cas attest-audit-log</code> <a href="../CAS_cli/">CLI</a> tools. Basic usage:</p>
-<div class="highlight"><pre><span></span><code>scone cas verify-audit-log /var/log/cas/audit/cas_audit.log -p
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone cas verify-audit-log /var/log/cas/audit/cas_audit.log -p</code></pre>
 <p>With the <code>-p</code> switch, all events will be printed in a human-readable format. Omit it if you are only interested in the verification result.</p>
 <p>The default CAS will be used for verification. The CAS will be contacted to download and compare audit log history entries. If the CAS is unreachable, rollback and truncation detection will not work. Use the <code>--cas</code> option to select another CAS. You must be the CAS owner (in possession of the CAS owner client certificate).</p>
 <p>In addition to printing the verification status, the command will exit with one of the following exit codes (most severe first):</p>
@@ -4303,18 +4302,16 @@ Therefore, one must expect an event tree with multiple branches.</p>
 </ul>
 <h2 id="configuration">Configuration</h2>
 <p>The SCONE CAS audit log can be configured as part of the owners config of a CAS instance:</p>
-<div class="highlight"><pre><span></span><code><span class="k">[audit_log]</span><span class="w"></span>
-<span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;signed&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-toml">[audit_log]
+mode = "signed"</code></pre>
 <p>Optional. Select one of the following audit log modes:</p>
 <ul>
 <li><code>disabled</code> (default) - No audit log will be created</li>
 <li><code>unsigned</code> - An audit log will be created, but its entries will not be signed. The log cannot be cryptographically verified. More efficient than <code>signed</code>.</li>
 <li><code>signed</code> - An audit log will be created, and its entries will be signed (recommended).</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="k">[audit_log]</span><span class="w"></span>
-<span class="n">sink</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;file&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-toml">[audit_log]
+sink = "file"</code></pre>
 <p>Optional. Select one of the following destinations that the audit log will be written to:</p>
 <ul>
 <li><code>file</code> (default) - The audit log will be written to a file (the file path is configurable in the availability configuration).</li>
@@ -4327,15 +4324,14 @@ Therefore, one must expect an event tree with multiple branches.</p>
 <li>
 <p><code>server_ca_certificate</code> (optional) - PEM-encoded X.509 (CA) certificate to authenticate the server with. If omitted, a list of default Web PKI root CA certificates will be used.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><span class="k">[audit_log]</span><span class="w"></span>
-<span class="n">sink</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;network&quot;</span><span class="w"></span>
-<span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://logs.example.com/append&quot;</span><span class="w"></span>
-<span class="n">server_ca_certificate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;</span>
-<span class="s">  -----BEGIN CERTIFICATE-----</span>
-<span class="s">  ...</span>
-<span class="s">  -----END CERTIFICATE-----</span>
-<span class="s">  &quot;&quot;&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-toml">[audit_log]
+sink = "network"
+url = "https://logs.example.com/append"
+server_ca_certificate = """
+  -----BEGIN CERTIFICATE-----
+  ...
+  -----END CERTIFICATE-----
+  """</code></pre>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>If the log server cannot be reached, all logged operations will fail and be rolled back. This means that most requests to CAS will fail, rendering CAS unusable. This includes updating the CAS owner configuration! Therefore, make sure the configured server is available at all times.</p>
@@ -4411,7 +4407,7 @@ Therefore, one must expect an event tree with multiple branches.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

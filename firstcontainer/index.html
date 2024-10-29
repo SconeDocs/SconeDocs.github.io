@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/firstcontainer/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3353,7 +3353,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4080,27 +4080,23 @@
 <p>We first need to start the SCONE crosscompiler. The crosscompiler container image 
 is hosted in a private repository on Docker hub and
 can be started with the help of docker:</p>
-<div class="highlight"><pre><span></span><code>docker run -it registry.scontain.com/sconecuratedimages/crosscompilers
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run -it registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
 <div class="admonition warning">
 <p class="admonition-title">A docker engine must be installed and you need access to <strong>registry.scontain.com/sconecuratedimages/crosscompilers</strong></p>
 <p>You need to <a href="../dockerinstall/">install a docker engine</a>. In some docker installations, you might have to replace "docker" by "sudo docker". 
 Just register a free account on <code>gitlab.scontain.com</code>.</p>
 </div>
 <p>Now execute the following command inside the container to create the hello world program:</p>
-<div class="highlight"><pre><span></span><code><span class="n">cat</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">helloworld</span><span class="p">.</span><span class="n">c</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">EOF</span><span class="w"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-<span class="n">EOF</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-C">cat &gt; helloworld.c &lt;&lt; EOF
+#include &lt;stdio.h&gt;
+int main() {
+    printf("Hello World\n");
+}
+EOF</code></pre>
 <p>Compile the program with the SCONE crosscompiler (i.e., gcc):</p>
-<div class="highlight"><pre><span></span><code>gcc -o helloworld helloworld.c
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">gcc -o helloworld helloworld.c</code></pre>
 <p>You can run this program:</p>
-<div class="highlight"><pre><span></span><code>./helloworld
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./helloworld</code></pre>
 <p>This will print <em>Hello World</em>. </p>
 <p>Since we did not give the container access to SGX, the program runs in <strong>simulation mode</strong>, i.e.,<br />
 the SCONE software runs but we do not use Intel SGX enclaves.</p>
@@ -4109,10 +4105,9 @@ the SCONE software runs but we do not use Intel SGX enclaves.</p>
 <p>This mode must not be used for production since programs <strong>do not run inside of enclaves</strong>. Simulation mode will run on modern Intel CPUs - even those without
 Intel SGX. It might, however, fail on old CPUs without AES hardware support.</p>
 </div>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_VERSION=1 ./helloworld</code></pre>
 <p>This will print something like:</p>
-<div class="highlight"><pre><span></span><code>export SCONE_QUEUES=4
+<pre class="highlight"><code>export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -4130,8 +4125,7 @@ export SCONE_MPROTECT=no
 Revision: 501194b1da9d4e86828353349cc7f9ef310b0dd1
 
 Enclave hash: a01127f2190ed5ecd21f9fd432e4d07f7f250ad1e1808d9c0305e75505383c44
-Hello World
-</code></pre></div>
+Hello World</code></pre>
 <p>The output shows that SCONE is running in <strong>simulation mode</strong>: <em>export SCONE_MODE=sim</em></p>
 <h2 id="background-info">Background Info</h2>
 <p>The most convenient way to use SCONE for development is to enable automatic (a.k.a. <strong>AUTO</strong>) mode<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.
@@ -4220,7 +4214,7 @@ SCONE will run applications inside of SGX enclaves. Otherwise, the applications 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

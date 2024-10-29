@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/C/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3374,7 +3374,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4120,50 +4120,44 @@
 <p>This page focuses on the SCONE cross compiler. This cross compiler is based on gcc and hence, the command line options are the same as gcc.</p>
 <h2 id="image">Image</h2>
 <p>Ensure that you have the newest SCONE cross compiler image and determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>:</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/crosscompilers
+<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/crosscompilers
 determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/crosscompilers
-</code></pre></div>
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
 <p>In case you do not have an SGX driver installed, no device will be mounted and
 applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <h2 id="help">Help</h2>
 <p>If you need some help, just execute in the container:</p>
-<div class="highlight"><pre><span></span><code>$ scone gcc --help
-Usage: x86_64-linux-musl-gcc <span class="o">[</span>options<span class="o">]</span> file...
+<pre class="highlight"><code class="language-bash">$ scone gcc --help
+Usage: x86_64-linux-musl-gcc [options] file...
 Options:
-...
-</code></pre></div>
+...</code></pre>
 <h2 id="example">Example</h2>
 <p>Let's try to compile a simple program:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; fib.c <span class="s">&lt;&lt; EOF</span>
-<span class="s">#include &lt;stdio.h&gt;</span>
-<span class="s">#include &lt;stdlib.h&gt;</span>
+<pre class="highlight"><code class="language-bash">cat &gt; fib.c &lt;&lt; EOF
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
 
-<span class="s">int main(int argc, char** argv) {</span>
-<span class="s">   int n=0, first = 0, second = 1, next = 0, c;</span>
+int main(int argc, char** argv) {
+   int n=0, first = 0, second = 1, next = 0, c;
 
-<span class="s">   if (argc &gt; 1)</span>
-<span class="s">        n=atoi(argv[1]);</span>
-<span class="s">   printf(&quot;fib(%d)= 1&quot;,n);</span>
-<span class="s">   for ( c = 1 ; c &lt; n ; c++ ) {</span>
-<span class="s">        next = first + second;</span>
-<span class="s">        first = second;</span>
-<span class="s">        second = next;</span>
-<span class="s">        printf(&quot;, %d&quot;,next);</span>
-<span class="s">   }</span>
-<span class="s">   printf(&quot;\n&quot;);</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+   if (argc &gt; 1)
+        n=atoi(argv[1]);
+   printf("fib(%d)= 1",n);
+   for ( c = 1 ; c &lt; n ; c++ ) {
+        next = first + second;
+        first = second;
+        second = next;
+        printf(", %d",next);
+   }
+   printf("\n");
+}
+EOF</code></pre>
 <p>We compile the program with <strong>scone gcc</strong> or <strong>scone-gcc</strong> or just <strong>gcc</strong> (all equivalent):</p>
-<div class="highlight"><pre><span></span><code>scone gcc fib.c -o fib
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone gcc fib.c -o fib</code></pre>
 <p>To compute fib(23), execute:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./fib <span class="m">23</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_VERSION=1 ./fib 23</code></pre>
 <p>The last line of the output should look as follows:</p>
-<div class="highlight"><pre><span></span><code>fib(23)= 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657
-</code></pre></div>
+<pre class="highlight"><code class="language-text">fib(23)= 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657</code></pre>
 <h2 id="debugging">Debugging</h2>
 <p>You can use <strong>scone-gdb</strong> to debug your applications when running inside of an enclave. For some more details
 on how to use the debugger, please read how to <a href="../GO/#debugging">debug GO</a> programs.</p>
@@ -4238,7 +4232,7 @@ on how to use the debugger, please read how to <a href="../GO/#debugging">debug 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

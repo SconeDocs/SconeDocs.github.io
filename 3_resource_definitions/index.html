@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/3_resource_definitions/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3497,7 +3497,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4368,12 +4368,11 @@
 <h2 id="custom-resource-definitions">Custom Resource Definitions</h2>
 <p>After we have deployed the SCONE operator, we are ready to create SCONE custom resources in the cluster. Before we can deploy them, however, we need to configure them.</p>
 <p><a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/" title="Kubernetes documentation">Kubernetes custom resources</a> are extensions to the Kubernetes API. They are specified with the help of <em>custom resource definitions</em> or <em>CRDs</em>. The SCONE CRDs are deployed at the time the SCONE operator is installed. You can examine them by executing the following commands:</p>
-<p><div class="highlight"><pre><span></span><code>kubectl describe crd sgxplugins
+<p><pre class="highlight"><code class="language-bash">kubectl describe crd sgxplugins
 kubectl describe crd las
 kubectl describe crd cas
 kubectl describe crd signedpolicies
-kubectl describe crd encryptedpolicies
-</code></pre></div>
+kubectl describe crd encryptedpolicies</code></pre>
 The group, version, and kind of custom resources resulting from the CRDs are summarized in the following table:</p>
 <table>
 <thead>
@@ -4424,12 +4423,11 @@ The group, version, and kind of custom resources resulting from the CRDs are sum
 </tbody>
 </table>
 <p>Using the following commands, you can list all existing resources of each kind:</p>
-<div class="highlight"><pre><span></span><code>kubectl get sgxplugins
+<pre class="highlight"><code class="language-bash">kubectl get sgxplugins
 kubectl get las
 kubectl get cas
 kubectl get signedpolicies
-kubectl get encryptedpolicies
-</code></pre></div>
+kubectl get encryptedpolicies</code></pre>
 <p>Since we have not yet created any custom resources, the output of all three commands will be empty. Creating one of these resources will start the corresponding SCONE service in your cluster. Before we create them, however, we want to configure them according to our needs. There is a sample manifest for the custom resource of each service at <a href="https://github.com/scontain/operator-samples">https://github.com/scontain/operator-samples</a> that you can use as a starting point:</p>
 <table>
 <thead>
@@ -4714,23 +4712,19 @@ kubectl get encryptedpolicies
 </table>
 <h2 id="installing-the-services">Installing the Services</h2>
 <p>To install any SCONE services you need to deploy its manifest file. If you configured it to meet your requirements in the previous step, you already have a manifest. If you did not, you could use the <a href="#configuring-the-services">sample manifests</a> provided for each service in the above table. To install a service with its manifest at <code>$MANIFEST_FILE</code>, simply execute the following command:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f <span class="nv">$MANIFEST_FILE</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl apply -f $MANIFEST_FILE</code></pre>
 <p>Since the SCONE SGX Plugin service is required for the other ones to run, let's use it as an example and install it:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f ./config/samples/base_v1beta1_sgxplugin.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl apply -f ./config/samples/base_v1beta1_sgxplugin.yaml</code></pre>
 <blockquote>
 <p><strong>NOTE:</strong> Since the name of the CR in the sample file is <code>sgxplugin-sample</code>, we use that name in the following</p>
 </blockquote>
 <p>Check the status of the SGXPlugin CR using <code>kubectl get</code> or <code>kubectl describe</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl get sgxplugin sgxplugin-sample
-kubectl describe sgxplugin sgxplugin-sample
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl get sgxplugin sgxplugin-sample
+kubectl describe sgxplugin sgxplugin-sample</code></pre>
 <p>In the next section, we explain all the information you see in the output of those two commands.</p>
 <blockquote>
 <p><strong>NOTE:</strong> You can also check the log of the operator to follow the reconciliation process of the creation of the <code>SGXPlugin</code> CR:</p>
-<div class="highlight"><pre><span></span><code>kubectl logs -n <span class="nv">$OPERATOR_NAMESPACE</span> <span class="nv">$OPERATOR_POD_NAME</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl logs -n $OPERATOR_NAMESPACE $OPERATOR_POD_NAME</code></pre>
 </blockquote>
 <h2 id="metrics-alerts-and-conditions">Metrics, Alerts, and Conditions</h2>
 <p>As soon as there is a problem with the execution of any of the services, this must be communicated to the responsible party as soon as possible. It must not go unnoticed. This communication is most commonly done by using a metrics provider like Prometheus or by updating a visible state of the corresponding resource appropriately. In the case of the Kubernetes custom resources (CR) for the SCONE services, each CR can have one of the following states: <code>HEALTHY</code>, <code>PENDING</code>, and <code>UNHEALTHY</code>:</p>
@@ -5405,7 +5399,7 @@ CRs and owned objects are described by different sets of condition types, namely
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

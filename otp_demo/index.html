@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/otp_demo/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3353,7 +3353,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4086,181 +4086,173 @@
 <p>In this demo, we present two-factor authentication support for SCONE sessions using a simple secure python service. For the SCONE Configuration and Attestation Service (CAS) to provide the enclaved python service with its secure configuration, the service must not only be attested. A One-time password (OTP) must also be supplied to the CAS, whereby the OTP is generated using the Time-based One-time Password algorithm (TOTP) with a <a href="https://datatracker.ietf.org/doc/html/rfc4226#section-4">RFC4648 base32 encoded shared secret</a> as input.</p>
 <h2 id="demo">Demo</h2>
 <p>The python service calculates <code>a*x+b</code>, whereby the user supplies <code>x</code> and the secret configuration supplies the service with the factor <code>a</code> and constant <code>b</code>. We begin by create a native Docker image for said service:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># cd into temp dir or your diretory of choice</span>
-<span class="nb">cd</span> <span class="k">$(</span>mktemp -d<span class="k">)</span>
+<pre class="highlight"><code class="language-bash"># cd into temp dir or your diretory of choice
+cd $(mktemp -d)
 
-<span class="c1"># create empty program files</span>
+# create empty program files
 touch Dockerfile
-touch my_service.py
-</code></pre></div>
+touch my_service.py</code></pre>
 <p>Now to create the actual service, which we save to <code>my_service.py</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/env python</span>
+<pre class="highlight"><code class="language-python">#!/usr/bin/env python
 
-<span class="kn">import</span> <span class="nn">argparse</span>
+import argparse
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">()</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span>
-        <span class="n">a</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">factor</span><span class="p">,</span>
-        <span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">user_input</span><span class="p">,</span>
-        <span class="n">b</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">constant</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+def main():
+    args = parse_args()
+    result = function(
+        a=args.factor,
+        x=args.user_input,
+        b=args.constant
+    )
+    print(f"{result}")
 
-<span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">b</span>
+def function(a, x, b):
+    return a * x + b
 
-<span class="k">def</span> <span class="nf">parse_args</span><span class="p">():</span>
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Calculates a simple function.&quot;</span><span class="p">)</span>
+def parse_args():
+    parser = argparse.ArgumentParser(description="Calculates a simple function.")
 
-    <span class="c1"># user input arg</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-x&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--user-input&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;User input of the function&quot;</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
+    # user input arg
+    parser.add_argument(
+        "-x",
+        "--user-input",
+        type=int,
+        action="store",
+        help="User input of the function",
+        required=True
+    )
 
-    <span class="c1"># session arg</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-a&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--factor&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Session input of the function&#39;s factor&quot;</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
+    # session arg
+    parser.add_argument(
+        "-a",
+        "--factor",
+        type=int,
+        action="store",
+        help="Session input of the function's factor",
+        required=True
+    )
 
-    <span class="c1"># session arg</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--constant&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Session input of the function&#39;s constant&quot;</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
+    # session arg
+    parser.add_argument(
+        "-b",
+        "--constant",
+        type=int,
+        action="store",
+        help="Session input of the function's constant",
+        required=True
+    )
 
-    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    return parser.parse_args()
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</code></pre></div>
+if __name__ == "__main__":
+    main()</code></pre>
 <p>Along with the corresponding <code>Dockerfile</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">alpine:3.10</span>
+<pre class="highlight"><code class="language-Dockerfile">FROM alpine:3.10
 
-<span class="k">RUN</span><span class="w"> </span>apk add --no-cache python3 python3-dev 
+RUN apk add --no-cache python3 python3-dev 
 
-<span class="k">RUN</span><span class="w"> </span>mkdir -p /app
-<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
-<span class="k">COPY</span><span class="w"> </span>my_service.py .
+RUN mkdir -p /app
+WORKDIR /app
+COPY my_service.py .
 
-<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;python3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;my_service.py&quot;</span><span class="w"> </span><span class="p">]</span>
-</code></pre></div>
+ENTRYPOINT [ "python3", "my_service.py" ]</code></pre>
 <p>Now to build and test the native version:</p>
-<div class="highlight"><pre><span></span><code>docker build . --tag my_native_service
-docker run -it --rm my_native_service -x <span class="m">42</span> -a <span class="m">4</span> -b <span class="m">8</span>
-<span class="c1"># 176</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker build . --tag my_native_service
+docker run -it --rm my_native_service -x 42 -a 4 -b 8
+# 176</code></pre>
 <p>We now sconify the native service using the <a href="../sconify_image/">sconify image tool</a>. We thereby disable the session upload as we create a session manually afterwards. Further, we save its build resources to an extra directory:</p>
 <!-- TODO add description for extra options / command @vasyl used in session.yml -->
 
-<div class="highlight"><pre><span></span><code><span class="c1"># pull the sconify image tool</span>
+<pre class="highlight"><code class="language-bash"># pull the sconify image tool
 docker pull registry.scontain.com/sconecuratedimages/sconecli:sconify-image-scone5
 
-<span class="c1"># create dir for sconify build resources</span>
+# create dir for sconify build resources
 mkdir -p sconify-resources
 
-<span class="c1"># generate a random id for the session</span>
-<span class="nv">SESSION_NAME</span><span class="o">=</span>my_session_<span class="s2">&quot;</span><span class="nv">$RANDOM</span><span class="s2">&quot;&quot;</span><span class="nv">$RANDOM</span><span class="s2">&quot;&quot;</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
+# generate a random id for the session
+SESSION_NAME=my_session_"$RANDOM""$RANDOM""$RANDOM"
 
-<span class="c1"># sconify the native service</span>
-docker run <span class="se">\</span>
-    --volume <span class="nv">$PWD</span>/sconify-resources:/build-resources <span class="se">\</span>
-    --volume /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:sconify-image-scone5 <span class="se">\</span>
-    sconify_image <span class="se">\</span>
-        --from<span class="o">=</span>my_native_service <span class="se">\</span>
-        --to<span class="o">=</span>my_sconified_service <span class="se">\</span>
-        --binary<span class="o">=</span>/usr/bin/python3.7 <span class="se">\</span>
-        --binary-fs <span class="se">\</span>
-        --fs-dir<span class="o">=</span>/app <span class="se">\</span>
-        --name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SESSION_NAME</span><span class="s2">&quot;</span> <span class="se">\</span>
-        --verbose <span class="se">\</span>
-        --disable-session-upload <span class="se">\</span>
-        --allow-tcb-vulnerabilities <span class="se">\</span>
-        --allow-debug-mode <span class="se">\</span>
-        --cas<span class="o">=</span><span class="m">5</span>-6-0.scone-cas.cf <span class="se">\</span>
-        --command<span class="o">=</span><span class="s2">&quot;python3 my_service.py -a 4 -b 12 -x @@1&quot;</span>
-</code></pre></div>
+# sconify the native service
+docker run \
+    --volume $PWD/sconify-resources:/build-resources \
+    --volume /var/run/docker.sock:/var/run/docker.sock \
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image-scone5 \
+    sconify_image \
+        --from=my_native_service \
+        --to=my_sconified_service \
+        --binary=/usr/bin/python3.7 \
+        --binary-fs \
+        --fs-dir=/app \
+        --name="$SESSION_NAME" \
+        --verbose \
+        --disable-session-upload \
+        --allow-tcb-vulnerabilities \
+        --allow-debug-mode \
+        --cas=5-6-0.scone-cas.cf \
+        --command="python3 my_service.py -a 4 -b 12 -x @@1"</code></pre>
 <p>To enable the 2FA with OTP, we will need a base32-encoded shared secret. Such a secret can be generated on <a href="https://totp.info/">https://totp.info/</a> (although you will need to add 3 extra chars). With this secret, we continue by modifying the session generated in <code>sconify-resources/session.yml</code> (or you can copy/pase the following session):</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_session_&lt;random-id&gt;</span><span class="w"></span>
-<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.3&quot;</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">name: my_session_&lt;random-id&gt;
+version: "0.3"
 
-<span class="c1"># Access control:</span><span class="w"></span>
-<span class="c1">#   - only the data owner (CREATOR) can read or update the session</span><span class="w"></span>
-<span class="c1">#   - even the data owner cannot read the session secrets (i.e., the volume key and tag) or delete the session</span><span class="w"></span>
+# Access control:
+#   - only the data owner (CREATOR) can read or update the session
+#   - even the data owner cannot read the session secrets (i.e., the volume key and tag) or delete the session
 
-<span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
+access_policy:
+  read:
+   - CREATOR
+  update:
+   - CREATOR
 
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service</span><span class="w"></span>
-<span class="w">     </span><span class="nt">image_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_image</span><span class="w"></span>
-<span class="w">     </span><span class="nt">mrenclaves</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">032491dba2e7ec27f793a478ab556c26b87111b11657c93f5554a1a2975567e5</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">     </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;python3</span><span class="nv"> </span><span class="s">my_service.py</span><span class="nv"> </span><span class="s">-a</span><span class="nv"> </span><span class="s">4</span><span class="nv"> </span><span class="s">-b</span><span class="nv"> </span><span class="s">12</span><span class="nv"> </span><span class="s">-x</span><span class="nv"> </span><span class="s">@@1&quot;</span><span class="w"></span>
-<span class="w">     </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">         </span><span class="nt">SCONE_MODE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hw</span><span class="w"></span>
-<span class="w">         </span><span class="nt">LD_LIBRARY_PATH</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/lib:/usr/lib:/usr/local/lib:&quot;</span><span class="w"></span>
-<span class="w">         </span><span class="nt">PATH</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;</span><span class="w"></span>
-<span class="w">     </span><span class="nt">pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/app</span><span class="w"></span>
+services:
+   - name: service
+     image_name: service_image
+     mrenclaves: [032491dba2e7ec27f793a478ab556c26b87111b11657c93f5554a1a2975567e5]
+     command: "python3 my_service.py -a 4 -b 12 -x @@1"
+     environment:
+         SCONE_MODE: hw
+         LD_LIBRARY_PATH: "/lib:/usr/lib:/usr/local/lib:"
+         PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+     pwd: /app
 
-<span class="nt">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_image</span><span class="w"></span>
+images:
+  - name: service_image
 
-<span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># we add the shared secret here</span><span class="w"></span>
-<span class="w">    </span><span class="nt">one_time_password_shared_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BASE32SECRET3232BASE32SECRET3232</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tolerate</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">hyperthreading</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">insecure-igpu</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">outdated-tcb</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">software-hardening-needed</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">insecure-configuration</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">debug-mode</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ignore_advisories</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="w"></span>
-</code></pre></div>
+security:
+  attestation:
+    # we add the shared secret here
+    one_time_password_shared_secret: BASE32SECRET3232BASE32SECRET3232
+    tolerate: [hyperthreading, insecure-igpu, outdated-tcb, software-hardening-needed, insecure-configuration, debug-mode]
+    ignore_advisories: "*"</code></pre>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>We use secure arguments in this session for -a and -x: the values of <code>a</code> and <code>b</code> remain hidden. The user will only be able to supply the value for <code>x</code>: this is denoted by <code>@@1</code>. </p>
 </div>
 <p>We must now upload this session to a CAS:
-<div class="highlight"><pre><span></span><code><span class="c1"># image we use to upload to CAS</span>
+<pre class="highlight"><code class="language-bash"># image we use to upload to CAS
 docker pull registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5
 
-<span class="c1"># upload session to CAS</span>
-docker run -it --rm <span class="se">\</span>
-    --volume<span class="o">=</span><span class="nv">$PWD</span>/sconify-resources:/sconify-resources <span class="se">\</span>
-    --entrypoint<span class="o">=</span>scone <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5 <span class="se">\</span>
-    session create <span class="se">\</span>
-        --only_for_testing-disable-attestation-verification <span class="se">\</span>
-        --cas<span class="o">=</span><span class="m">5</span>-6-0.scone-cas.cf <span class="se">\</span>
-        --name<span class="o">=</span><span class="nv">$SESSION_NAME</span> <span class="se">\</span>
-        /sconify-resources/session.yml
-</code></pre></div></p>
+# upload session to CAS
+docker run -it --rm \
+    --volume=$PWD/sconify-resources:/sconify-resources \
+    --entrypoint=scone \
+    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5 \
+    session create \
+        --only_for_testing-disable-attestation-verification \
+        --cas=5-6-0.scone-cas.cf \
+        --name=$SESSION_NAME \
+        /sconify-resources/session.yml</code></pre></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>We do not attest the CAS in this demo. Typically, we would attest the CAS before uploading the session, to ensure its trustworthiness.</p>
 </div>
 <p>Now that we have uploaded the session, we can run our service! To execute the sconified service in an enclave, we require an SGX device. It can be determined with <a href="../sgxinstall/#determine-sgx-device">the <code>determine_sgx_device</code> function</a>. Further, we must generate an OTP from the shared secret. We can achieve this with <a href="https://totp.info/">https://totp.info/</a> as well. We must then set a custom <code>SCONE_CONFIG_ID</code> env variable, with which the sconified service will request the configuration from the CAS. This variable also holds the OTP, which it will use to authenticate itself. We append the OTP, delimited with an <code>@</code>, to the session name:</p>
-<div class="highlight"><pre><span></span><code>docker run -it --rm <span class="se">\</span>
-    --device<span class="o">=</span><span class="s2">&quot;/dev/isgx&quot;</span> <span class="se">\</span>
-    --env<span class="o">=</span><span class="s2">&quot;SCONE_CONFIG_ID=</span><span class="nv">$SESSION_NAME</span><span class="s2">/service@&lt;otp&gt;&quot;</span> <span class="se">\</span>
-    --entrypoint<span class="o">=</span>python3 <span class="se">\</span>
-    my_sconified_service <span class="m">42</span>
-<span class="c1"># 180</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run -it --rm \
+    --device="/dev/isgx" \
+    --env="SCONE_CONFIG_ID=$SESSION_NAME/service@&lt;otp&gt;" \
+    --entrypoint=python3 \
+    my_sconified_service 42
+# 180</code></pre>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>As we use secure arguments, we have to overwrite the entrypoint and command of the sconified python image, such that the first argument is the value of  <code>x</code>, i.e.,  42 in this example execution.</p>
@@ -4334,7 +4326,7 @@ docker run -it --rm <span class="se">\</span>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

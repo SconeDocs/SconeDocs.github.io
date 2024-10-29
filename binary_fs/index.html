@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/binary_fs/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3303,7 +3303,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4114,97 +4114,90 @@ Note that, 1) modifications the program does to the binary fs are not persistent
 You can utilize SCONE volumes to persistently store data on the host's file system.</p>
 <h2 id="tldr">TL;DR</h2>
 <p>A fully functioning single Dockerfile which runs a Python <code>hello_world.py</code> program using the <code>binary-fs</code> could look like this:</p>
-<div class="highlight"><pre><span></span><code><span class="c"># First stage: apply the binary-fs</span>
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/apps:python-3.7.3-alpine3.10</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">binary-fs</span>
+<pre class="highlight"><code class="language-Dockerfile"># First stage: apply the binary-fs
+FROM registry.scontain.com/sconecuratedimages/apps:python-3.7.3-alpine3.10 AS binary-fs
 
-<span class="k">RUN</span><span class="w"> </span><span class="nb">echo</span> <span class="s2">&quot;print(&#39;Hello World!&#39;)&quot;</span> &gt; /hello-world.py <span class="o">&amp;&amp;</span> <span class="se">\</span>
+RUN echo "print('Hello World!')" &gt; /hello-world.py &amp;&amp; \
     mkdir /binary-fs
 
-<span class="c"># &amp; apply scone binaryfs with SCONE_MODE=auto, as build will not have access to /dev/isgx</span>
-<span class="k">RUN</span><span class="w"> </span>mkdir binary-fs-dir <span class="o">&amp;&amp;</span>  rm /usr/lib/python3.7/config-3.7m-x86_64-linux-gnu/libpython3.7m.a <span class="o">&amp;&amp;</span> <span class="se">\</span>
-    <span class="nv">SCONE_MODE</span><span class="o">=</span>auto scone binaryfs / /binary-fs-dir -v <span class="se">\</span>
-        --include <span class="s1">&#39;/usr/lib/python3.7/*&#39;</span> <span class="se">\</span>
-        --include /hello-world.py <span class="se">\</span>
-        --host-path<span class="o">=</span>/etc/resolv.conf <span class="se">\</span>
-        --host-path<span class="o">=</span>/etc/hosts
+# &amp; apply scone binaryfs with SCONE_MODE=auto, as build will not have access to /dev/isgx
+RUN mkdir binary-fs-dir &amp;&amp;  rm /usr/lib/python3.7/config-3.7m-x86_64-linux-gnu/libpython3.7m.a &amp;&amp; \
+    SCONE_MODE=auto scone binaryfs / /binary-fs-dir -v \
+        --include '/usr/lib/python3.7/*' \
+        --include /hello-world.py \
+        --host-path=/etc/resolv.conf \
+        --host-path=/etc/hosts
 
-<span class="c"># Second stage: compile the binary fs</span>
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/crosscompilers:alpine</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">crosscompiler</span>
+# Second stage: compile the binary fs
+FROM registry.scontain.com/sconecuratedimages/crosscompilers:alpine AS crosscompiler
 
-<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>binary-fs /binary-fs-dir /.
+COPY --from=binary-fs /binary-fs-dir /.
 
-<span class="k">RUN</span><span class="w"> </span>scone gcc ./binary_fs_blob.s ./libbinary_fs_template.a -shared -o /libbinary-fs.so
+RUN scone gcc ./binary_fs_blob.s ./libbinary_fs_template.a -shared -o /libbinary-fs.so
 
 
-<span class="c"># Third stage: patch the binaryfs into the enclave executable</span>
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/apps:python-3.7.3-alpine3.10</span>
+# Third stage: patch the binaryfs into the enclave executable
+FROM registry.scontain.com/sconecuratedimages/apps:python-3.7.3-alpine3.10
 
-<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>crosscompiler /libbinary-fs.so /lib/libbinary-fs.so
+COPY --from=crosscompiler /libbinary-fs.so /lib/libbinary-fs.so
 
-<span class="k">ENV</span><span class="w"> </span><span class="nv">SCONE_EXTENSIONS_PATH</span><span class="o">=</span><span class="s2">&quot;/lib/libbinary-fs.so&quot;</span>
+ENV SCONE_EXTENSIONS_PATH="/lib/libbinary-fs.so"
 
-<span class="k">ENV</span><span class="w"> </span><span class="nv">SCONE_LOG</span><span class="o">=</span>info
+ENV SCONE_LOG=info
 
-<span class="k">CMD</span><span class="w"> </span>sh -c <span class="s2">&quot;python3 /hello-world.py&quot;</span>
-</code></pre></div>
+CMD sh -c "python3 /hello-world.py"
+</code></pre>
 <h2 id="generating-binary-fs-images-from-existing-file-systems">Generating Binary FS Images from existing File Systems</h2>
 <p>The SCONE CLI provides the <code>binaryfs</code> command with which an existing directory tree can be turned into a binary fs source code file.</p>
 <p>We illustrate the usage of this command by creating a binary fs source code image for Barbican (a python application). Within the SCONE Python image <code>registry.scontain.com/sconecuratedimages/apps:barbican-11-alpine</code> we execute:</p>
-<div class="highlight"><pre><span></span><code>scone binaryfs / /binary-fs.c <span class="se">\</span>
-    --include <span class="s1">&#39;/etc/barbican/*&#39;</span> <span class="se">\</span>
-    --include <span class="s1">&#39;/usr/lib/python3.7/*&#39;</span> <span class="se">\</span>
-    --include /lib/libssl.so.1.1 <span class="se">\</span>
-    --include /lib/libcrypto.so.1.1 <span class="se">\</span>
-    --include <span class="s1">&#39;/lib/libz.so.1*&#39;</span> <span class="se">\</span>
-    --include <span class="s1">&#39;/usr/lib/libbz2.so.1*&#39;</span> <span class="se">\</span>
-    --include <span class="s1">&#39;/usr/lib/libsqlite3.so.0*&#39;</span> <span class="se">\</span>
-    --include <span class="s1">&#39;/usr/lib/libev.so.4*&#39;</span> <span class="se">\</span>
-    --include <span class="s1">&#39;/usr/lib/libffi.so.6*&#39;</span> <span class="se">\</span>
-    --include <span class="s1">&#39;/usr/lib/libexpat.so.1*&#39;</span> <span class="se">\</span>
-    --include /start-barbican.py <span class="se">\</span>
-    --host-path<span class="o">=</span>/etc/resolv.conf <span class="se">\</span>
-    --host-path<span class="o">=</span>/etc/hosts
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone binaryfs / /binary-fs.c \
+    --include '/etc/barbican/*' \
+    --include '/usr/lib/python3.7/*' \
+    --include /lib/libssl.so.1.1 \
+    --include /lib/libcrypto.so.1.1 \
+    --include '/lib/libz.so.1*' \
+    --include '/usr/lib/libbz2.so.1*' \
+    --include '/usr/lib/libsqlite3.so.0*' \
+    --include '/usr/lib/libev.so.4*' \
+    --include '/usr/lib/libffi.so.6*' \
+    --include '/usr/lib/libexpat.so.1*' \
+    --include /start-barbican.py \
+    --host-path=/etc/resolv.conf \
+    --host-path=/etc/hosts</code></pre>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>To include files on the host file system, we use the <code>--host-path</code> option of binary-fs. The usage of this option is required e.g. for networking, as the binary-fs will need access to files typically managed by an underlying networking daemon. Note that these files are NOT protected by the SGX and are thereby unsafe!</p>
 </div>
 <p>Alternatively, we can copy the root directory of our binary-fs to a target directory, and create the binary-fs directly from this new directory:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># create the binary-fs root directory (which we use to create the binary-fs)</span>
+<pre class="highlight"><code class="language-bash"># create the binary-fs root directory (which we use to create the binary-fs)
 mkdir -p /my-binaryfs-root-dir
 
-<span class="c1"># copy all our files into the binary-fs root dir</span>
-<span class="c1"># the root dir will be embedded into the binary-fs in `/`</span>
+# copy all our files into the binary-fs root dir
+# the root dir will be embedded into the binary-fs in `/`
 cp -r /my-app /my-libs /my-binaryfs-root-dir/.
 
-<span class="c1"># generate the binary-fs files</span>
-<span class="nv">SCONE_MODE</span><span class="o">=</span>sim scone binaryfs /my-binaryfs-root-dir .
-</code></pre></div>
+# generate the binary-fs files
+SCONE_MODE=sim scone binaryfs /my-binaryfs-root-dir .</code></pre>
 <p>We must then compile the files created by <code>binaryfs</code> (<code>binary_fs.blob</code>, <code>binary_fs_blob.s</code>, <code>libbinary_fs_template.a</code>) using the <code>registry.scontain.com/sconecuratedimages/crosscompilers</code> image, as it contains the <code>scone gcc</code>:</p>
-<div class="highlight"><pre><span></span><code>scone gcc ./binary_fs_blob.s ./libbinary_fs_template.a -shared -o /libbinary-fs.so
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone gcc ./binary_fs_blob.s ./libbinary_fs_template.a -shared -o /libbinary-fs.so</code></pre>
 <p>Moving on, we move the generated <code>libbinary-fs.so</code> back to our original Python image. In this image, we set the <code>.so</code> file to be included in the enclave upon execution using the environment variable <code>SCONE_EXTENSIONS_PATH</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_EXTENSIONS_PATH</span><span class="o">=</span><span class="s2">&quot;/lib/libbinary-fs.so&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_EXTENSIONS_PATH="/lib/libbinary-fs.so"</code></pre>
 <p>Then we are all set! When we execute the sconified executable, the runtime will include the binary-fs.</p>
-<div class="highlight"><pre><span></span><code>python3 /start-barbican.py
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">python3 /start-barbican.py</code></pre>
 <h2 id="what-files-to-include-in-the-file-system">What Files to include in the File System</h2>
 <p>Typically, one must include all libraries which are not loaded by the dynamic loader, as well as any code not linked to the binary (e.g. python code files). As mentioned before, files which are changed by daemons and other host files are to be inclued with <code>--host-path</code>.</p>
 <p>To find out what files to include in the <code>binary-fs</code>, simply run your image with <code>strace</code> and identify which files the binary opens:</p>
-<div class="highlight"><pre><span></span><code>docker run -it --rm --device /dev/isgx -e <span class="nv">SCONE_LOG</span><span class="o">=</span>trace --cap-add SYS_PTRACE <span class="nv">$IMAGE</span> sh
+<pre class="highlight"><code class="language-bash">docker run -it --rm --device /dev/isgx -e SCONE_LOG=trace --cap-add SYS_PTRACE $IMAGE sh
 apk add strace
-strace -o strace.log -f <span class="nv">$EXECUTABLE</span>
-grep <span class="s2">&quot;open&quot;</span> strace.log
-</code></pre></div>
+strace -o strace.log -f $EXECUTABLE
+grep "open" strace.log</code></pre>
 <p>The output will then show which files the binary has accessed. Be sure to include these files in the binary fs to make your application function properly.
 Note that you do <strong>not</strong> have to include files that are already dependencies of your binary; i.e., do not include files that appear in <code>ldd $(which your_binary)</code>.</p>
 <h2 id="what-executables-are-supported">What executables are supported</h2>
 <p>Currently, only binaries compiled as position-independent code (pie) can use the binary fs. For all other binaries, applying the binary fs may result in the binary having segmentation fault errors or the binary ignoring the binary fs. To ensure your binary is compatible, execute <code>file $(which your_binary)</code> and check the output if it is a pie executable. To illustrate:
-<div class="highlight"><pre><span></span><code>$ file <span class="k">$(</span>which python3.7<span class="k">)</span>
-/usr/bin/python3.7: ELF <span class="m">64</span>-bit LSB pie executable, x86-64, version <span class="m">1</span> <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked, interpreter /opt/scone/lib/ld-scone-x86_64.so.1, bad note name size 0xb57f3448, bad note name size 0xb57f3448, stripped
-<span class="c1"># pie executable -&gt; binary fs compatible</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">$ file $(which python3.7)
+/usr/bin/python3.7: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /opt/scone/lib/ld-scone-x86_64.so.1, bad note name size 0xb57f3448, bad note name size 0xb57f3448, stripped
+# pie executable -&gt; binary fs compatible</code></pre></p>
 
               
             </article>
@@ -4274,7 +4267,7 @@ Note that you do <strong>not</strong> have to include files that are already dep
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

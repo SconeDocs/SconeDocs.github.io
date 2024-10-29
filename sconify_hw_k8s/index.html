@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/sconify_hw_k8s/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3395,7 +3395,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4172,8 +4172,7 @@ generate a <strong>security policy</strong> as well as a <strong>helm chart</str
 </ul>
 <details class="success" open="open">
 <summary>You can clone this example:</summary>
-<div class="highlight"><pre><span></span><code>git clone https://github.com/scontain/hello-world-kubernetes.git
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">git clone https://github.com/scontain/hello-world-kubernetes.git</code></pre>
 </details>
 <h2 id="standard-image-generation">Standard Image Generation</h2>
 <p>To generate the standard container image, we use a simple Dockerfile-based flow:</p>
@@ -4182,21 +4181,20 @@ generate a <strong>security policy</strong> as well as a <strong>helm chart</str
 </center></p>
 <p>The native service consists of a very simple Python program (see <a href="https://github.com/scontain/hello-world-kubernetes/blob/master/native-image/code/app.py">https://github.com/scontain/hello-world-kubernetes/blob/master/native-image/code/app.py</a>)
 that implements a counter. The counter is stored in a file. It creates this file and initializes it with the value "0" - in case the file does not yet exist. The path of this file can be changed via option <code>-v PATH</code>. Next, it reads the integer stored in the file, increments it by 1, and writes back the new content of the file.</p>
-<div class="highlight"><pre><span></span><code><span class="o">...</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span>  <span class="n">default</span><span class="o">=</span><span class="s1">&#39;/V1/num&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;file number of executions.&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> does not exist, creating ... &quot;</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">mknod</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;And writing 0 to it ... &quot;</span><span class="p">)</span>
-        <span class="n">write_int</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<pre class="highlight"><code class="language-python">...
+@click.command()
+@click.option('-v',  default='/V1/num', help='file number of executions.')
+def main(v):
+    if not os.path.exists(v):
+        print(f"{v} does not exist, creating ... ")
+        os.mknod(v)
+        print("And writing 0 to it ... ")
+        write_int(v,0)
 
-    <span class="n">num</span> <span class="o">=</span> <span class="n">read_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The number of executions is </span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">)</span>
-    <span class="n">write_int</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">num</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-<span class="o">...</span>
-</code></pre></div>
+    num = read_int(v)
+    print(f"The number of executions is {num}" )
+    write_int(v, num+1)
+...</code></pre>
 <p>You can build a native container image from this via a Dockerfile that we provide (see <a href="https://github.com/scontain/hello-world-kubernetes/blob/master/native-image/Dockerfile">https://github.com/scontain/hello-world-kubernetes/blob/master/native-image/Dockerfile</a>) and run it on your local machine or in a Kubernetes cluster.</p>
 <h2 id="protection-goals">Protection Goals</h2>
 <p>This example focuses on ensuring the <strong>integrity</strong> of the counter value stored in file <code>/V1/num</code>. This counter could represent, for example, the number
@@ -4247,10 +4245,9 @@ of times this program has been executed. We want to ensure that this counter can
 <p>You can log onto the Kubernetes node that executes this example. The volume is stored at path <code>/mnt/test-pvc</code> and you can copy the
 content of the file <code>num</code> and later restore this content before running the next instance of the code. In this case, the log
 will show an error (something like this):</p>
-<div class="highlight"><pre><span></span><code>SCONE version: <span class="m">5</span>.4.0-25-g25a661e71-master <span class="o">(</span>Thu May <span class="m">27</span> <span class="m">18</span>:04:17 <span class="m">2021</span> +0200<span class="o">)</span>
+<pre class="highlight"><code class="language-bash">SCONE version: 5.4.0-25-g25a661e71-master (Thu May 27 18:04:17 2021 +0200)
 Enclave hash: e2f7cb1c13fa16d2a48f1727ebf1c20ac8185e72e14f647e876072e1f006377d
-<span class="o">[</span>SCONE<span class="p">|</span>FATAL<span class="o">]</span> src/shielding/file_content_processor.c:307:_load_chunk<span class="o">()</span>: Verification of file chunk <span class="m">0</span> <span class="o">(</span>bytes <span class="m">0</span> to <span class="m">4091</span><span class="o">)</span> of file /V1/num failed.
-</code></pre></div>
+[SCONE|FATAL] src/shielding/file_content_processor.c:307:_load_chunk(): Verification of file chunk 0 (bytes 0 to 4091) of file /V1/num failed.</code></pre>
 <h2 id="generated-policy">Generated Policy</h2>
 <p><center>
 <img alt="Attestation Flow" src="../img/transparent_attestation.png#fullwidth" title="SCONE transparently attests service and provisions the service." />
@@ -4265,50 +4262,49 @@ Enclave hash: e2f7cb1c13fa16d2a48f1727ebf1c20ac8185e72e14f647e876072e1f006377d
 <li>defines an encrypted volume (<code>V1</code>) and where it is mounted (<code>/V1</code>)</li>
 </ul>
 <p>The actual policy would look like this:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ns-8991241572316/python-session</span><span class="w"></span>
-<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.3&quot;</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">name: ns-8991241572316/python-session
+version: "0.3"
 
-<span class="c1"># Access control:</span><span class="w"></span>
-<span class="c1">#   - only the data owner (CREATOR) can read or update the session</span><span class="w"></span>
-<span class="c1">#   - even the data owner cannot read the session secrets (i.e., the volume key and tag) or delete the session</span><span class="w"></span>
+# Access control:
+#   - only the data owner (CREATOR) can read or update the session
+#   - even the data owner cannot read the session secrets (i.e., the volume key and tag) or delete the session
 
-<span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
+access_policy:
+  read:
+   - CREATOR
+  update:
+   - CREATOR
 
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python-service</span><span class="w"></span>
-<span class="w">     </span><span class="nt">image_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python-service_image</span><span class="w"></span>
-<span class="w">     </span><span class="nt">mrenclaves</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">e2f7cb1c13fa16d2a48f1727ebf1c20ac8185e72e14f647e876072e1f006377d</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">     </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;python3</span><span class="nv"> </span><span class="s">/code/app.py&quot;</span><span class="w"></span>
-<span class="w">     </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">         </span><span class="nt">SCONE_MODE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hw</span><span class="w"></span>
-<span class="w">         </span><span class="nt">SCONE_LOG</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;7&quot;</span><span class="w"></span>
-<span class="w">         </span><span class="nt">LANG</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;C.UTF-8&quot;</span><span class="w"></span>
-<span class="w">         </span><span class="nt">PATH</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;</span><span class="w"></span>
-<span class="w">     </span><span class="nt">pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w"></span>
-<span class="w">     </span><span class="nt">fspf_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4ee511ed8963f1b8034f33cfbb57f8800a6c2f17e64e4ed89122fc25e2ee50b1</span><span class="w"></span>
-<span class="w">     </span><span class="nt">fspf_tag</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">849565fe4a941e2be3bcc3c9d46f40c1</span><span class="w"></span>
-<span class="w">     </span><span class="nt">fspf_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/fspf/fs.fspf</span><span class="w"></span>
+services:
+   - name: python-service
+     image_name: python-service_image
+     mrenclaves: [e2f7cb1c13fa16d2a48f1727ebf1c20ac8185e72e14f647e876072e1f006377d]
+     command: "python3 /code/app.py"
+     environment:
+         SCONE_MODE: hw
+         SCONE_LOG: "7"
+         LANG: "C.UTF-8"
+         PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+     pwd: /
+     fspf_key: 4ee511ed8963f1b8034f33cfbb57f8800a6c2f17e64e4ed89122fc25e2ee50b1
+     fspf_tag: 849565fe4a941e2be3bcc3c9d46f40c1
+     fspf_path: /fspf/fs.fspf
 
-<span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">V1</span><span class="w"></span>
+volumes:
+  - name: V1
 
-<span class="nt">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python-service_image</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">V1</span><span class="w"></span>
-<span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/V1</span><span class="w"></span>
+images:
+  - name: python-service_image
+    volumes:
+      - name: V1
+        path: /V1
 
 
 
-<span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tolerate</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">debug-mode</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">hyperthreading</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">insecure-igpu</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">outdated-tcb</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">software-hardening-needed</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">insecure-configuration</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ignore_advisories</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="w"></span>
-</code></pre></div>
+security:
+  attestation:
+    tolerate: [debug-mode, hyperthreading, insecure-igpu, outdated-tcb, software-hardening-needed, insecure-configuration]
+    ignore_advisories: "*"</code></pre>
 <h2 id="generated-helm-chart">Generated Helm Chart</h2>
 <p>The generated helm chart is located in the directory <code>charts/python-service</code>. The file <code>values.yml</code> defines a set of arguments that can be set when deploying the chart via <code>helm install</code>. Moreover, we also generate a <code>README.md</code> that describes the arguments of the charts.</p>
 
@@ -4380,7 +4376,7 @@ Enclave hash: e2f7cb1c13fa16d2a48f1727ebf1c20ac8185e72e14f647e876072e1f006377d
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

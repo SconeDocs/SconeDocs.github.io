@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/CAS_for_development/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3366,7 +3366,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4116,11 +4116,9 @@
 <h2 id="pulling-cas-image">Pulling CAS Image</h2>
 <p>To start CAS, you first pull the CAS Docker image to your local registry. To be able to do so, please ask us via email for access to CAS. We will give you access to a private Docker repository, and we will send you the name of the private repository
 For this tutorial, please set the environment variable  <code>CAS</code> to the name of the Docker repository - typically, this might look something like this:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">CAS</span><span class="o">=</span>registry.scontain.com/scone.cloud/cas
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export CAS=registry.scontain.com/scone.cloud/cas</code></pre>
 <p>Pull the CAS image like this:</p>
-<div class="highlight"><pre><span></span><code>docker pull <span class="nv">$CAS</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker pull $CAS</code></pre>
 <p>If this fails, ensure that you are logged into docker (via <code>docker login</code>) and that you set environment variable <code>CAS</code> properly.</p>
 <h3 id="determining-the-sgx-device">Determining the SGX device</h3>
 <p>Depending on the platform, the SGX device is named <code>/dev/sgx_enclave</code>, <code>/dev/sgx/sgx_enclave</code>  (legacy), <code>/dev/isgx</code> (legacy) or <code>/dev/sgx</code> (legacy). To write generic
@@ -4129,78 +4127,70 @@ It sets the environment variable <code>SGXDEVICE</code> to the device that needs
 <h3 id="starting-and-stopping-cas">Starting and Stopping CAS</h3>
 <p>The easiest way to start CAS is to use a simple Docker compose file. To do so,
 create a new directory for the Docker compose file:</p>
-<div class="highlight"><pre><span></span><code>mkdir -p CAS
-<span class="nb">cd</span> CAS
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">mkdir -p CAS
+cd CAS</code></pre>
 <p>Create a compose file that exposes the ports of CAS to the host:</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-cat &gt; docker-compose.yml <span class="s">&lt;&lt;EOF</span>
-<span class="s">version: &#39;3.2&#39;</span>
-<span class="s">services:</span>
-<span class="s">    cas:</span>
-<span class="s">        command: cas -c /etc/cas/cas.toml</span>
-<span class="s">        environment:</span>
-<span class="s">         - SCONE_LOG=info</span>
-<span class="s">         - SCONE_MODE=HW</span>
-<span class="s">         - SCONE_LAS_ADDR=172.17.0.1</span>
-<span class="s">        image: $CAS</span>
-<span class="s">        privileged: true</span>
-<span class="s">        working_dir: /etc/cas</span>
-<span class="s">        devices:</span>
-<span class="s">          - &quot;$SGXDEVICE:$SGXDEVICE&quot;</span>
-<span class="s">        volumes:</span>
-<span class="s">          - &quot;$PWD/cas:/etc/cas/&quot;</span>
-<span class="s">        restart: on-failure</span>
-<span class="s">        ports:</span>
-<span class="s">          - target: 8081</span>
-<span class="s">            published: 8081</span>
-<span class="s">            protocol: tcp</span>
-<span class="s">            mode: host</span>
-<span class="s">          - target: 18765</span>
-<span class="s">            published: 18765</span>
-<span class="s">            protocol: tcp</span>
-<span class="s">            mode: host</span>
-<span class="s">EOF</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+cat &gt; docker-compose.yml &lt;&lt;EOF
+version: '3.2'
+services:
+    cas:
+        command: cas -c /etc/cas/cas.toml
+        environment:
+         - SCONE_LOG=info
+         - SCONE_MODE=HW
+         - SCONE_LAS_ADDR=172.17.0.1
+        image: $CAS
+        privileged: true
+        working_dir: /etc/cas
+        devices:
+          - "$SGXDEVICE:$SGXDEVICE"
+        volumes:
+          - "$PWD/cas:/etc/cas/"
+        restart: on-failure
+        ports:
+          - target: 8081
+            published: 8081
+            protocol: tcp
+            mode: host
+          - target: 18765
+            published: 18765
+            protocol: tcp
+            mode: host
+EOF</code></pre>
 <p>We need a default configuration file - please set your work subscription keys for EPID or DCAP. You can retrieve these keys from the <a href="https://api.portal.trustedservices.intel.com/">Intel website</a>.</p>
-<div class="highlight"><pre><span></span><code>mkdir cas
-cat &gt; cas/cas-default-owner-config.toml <span class="s">&lt;&lt;EOF</span>
-<span class="s">[ias]</span>
-<span class="s">spid            = &quot;00000000000000000000000000000000&quot;</span>
-<span class="s">linkable_quotes = true</span>
-<span class="s">sp_key          = &quot;00000000000000000000000000000000&quot;</span>
+<pre class="highlight"><code class="language-bash">mkdir cas
+cat &gt; cas/cas-default-owner-config.toml &lt;&lt;EOF
+[ias]
+spid            = "00000000000000000000000000000000"
+linkable_quotes = true
+sp_key          = "00000000000000000000000000000000"
 
-<span class="s">[dcap]</span>
-<span class="s">subscription_key = &quot;00000000000000000000000000000000&quot;</span>
-<span class="s">EOF</span>
+[dcap]
+subscription_key = "00000000000000000000000000000000"
+EOF
 
-cat &gt; cas/cas.toml <span class="s">&lt;&lt;EOF</span>
-<span class="s">[database]</span>
-<span class="s">path = &quot;/etc/cas/cas.db&quot;</span>
+cat &gt; cas/cas.toml &lt;&lt;EOF
+[database]
+path = "/etc/cas/cas.db"
 
-<span class="s">[api]</span>
-<span class="s">api_listen = &quot;0.0.0.0:8081&quot;</span>
-<span class="s">enclave_listen = &quot;0.0.0.0:18765&quot;</span>
-<span class="s">EOF</span>
-</code></pre></div>
+[api]
+api_listen = "0.0.0.0:8081"
+enclave_listen = "0.0.0.0:18765"
+EOF</code></pre>
 <p>You need to <code>provision</code> the CAS first:</p>
-<div class="highlight"><pre><span></span><code>docker run -v <span class="nv">$PWD</span>/cas:/etc/cas -it --network host --rm --device <span class="nv">$SGXDEVICE</span>  registry.scontain.com/scone.cloud/cas sh -c <span class="s2">&quot;set -m ; cd /etc/cas; export SCONE_LAS_ADDR=127.0.0.1:18766 ;  cas provision --owner-config /etc/cas/cas-default-owner-config.toml &quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run -v $PWD/cas:/etc/cas -it --network host --rm --device $SGXDEVICE  registry.scontain.com/scone.cloud/cas sh -c "set -m ; cd /etc/cas; export SCONE_LAS_ADDR=127.0.0.1:18766 ;  cas provision --owner-config /etc/cas/cas-default-owner-config.toml "</code></pre>
 <p>Now start CAS in the background as follows:</p>
-<div class="highlight"><pre><span></span><code>docker-compose up -d cas
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker-compose up -d cas</code></pre>
 <p>By executing</p>
-<div class="highlight"><pre><span></span><code>docker-compose logs cas
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker-compose logs cas</code></pre>
 <p>You will see the output of CAS.</p>
 <p>You can check if CAS is still running by executing the following:</p>
-<div class="highlight"><pre><span></span><code>docker-compose up -d cas
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker-compose up -d cas</code></pre>
 <p>This will result in an output like</p>
 <p><code>cas_cas_1 is up-to-date</code></p>
 <p>You can stop CAS by executing the following:</p>
-<div class="highlight"><pre><span></span><code>docker-compose stop cas
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker-compose stop cas</code></pre>
 
               
             </article>
@@ -4270,7 +4260,7 @@ cat &gt; cas/cas.toml <span class="s">&lt;&lt;EOF</span>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

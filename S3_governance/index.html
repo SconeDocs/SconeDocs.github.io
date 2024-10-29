@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/S3_governance/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3303,7 +3303,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4115,69 +4115,65 @@ A certificate with this key shall be used to establish a CAS connection. TLS ens
 <li><code>require-all:</code> or <code>require-at-least-X:</code></li>
 </ul>
 <p>By default, the access policy is defined as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">  </span><span class="nt">create_sessions</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">&lt;same as update&gt;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  read:
+   - CREATOR
+  update:
+   - CREATOR
+  create_sessions:
+    &lt;same as update&gt;</code></pre>
 <p>Default values will be used for operations not explicitly specified in a session description.</p>
 <p>Example policy:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">      </span><span class="no">-----BEGIN CERTIFICATE-----</span><span class="w"></span>
-<span class="w">      </span><span class="no">MIIFwTCCA6mgAwIBAgIUCF1MVJJ78BIf4WmTE24aAX7NlHowDQYJKoZIhvcNAQEL</span><span class="w"></span>
-<span class="w">      </span><span class="no">BQAwcDELMAkGA1UEBhMCVVMxDzANBgNVBAgMBk9yZWdvbjERMA8GA1UEBwwIUG9y</span><span class="w"></span>
-<span class="w">      </span><span class="no">dGxhbmQxFTATBgNVBAoMDENvbXBhbnkgTmFtZTEMMAoGA1UECwwDT3JnMRgwFgYD</span><span class="w"></span>
-<span class="w">      </span><span class="no">VQQDDA93d3cuZXhhbXBsZS5jb20wHhcNMTkwNzIyMTU1NTExWhcNMTkwODIyMTU1</span><span class="w"></span>
-<span class="w">      </span><span class="no">NTExWjBwMQswCQYDVQQGEwJVUzEPMA0GA1UECAwGT3JlZ29uMREwDwYDVQQHDAhQ</span><span class="w"></span>
-<span class="w">      </span><span class="no">b3J0bGFuZDEVMBMGA1UECgwMQ29tcGFueSBOYW1lMQwwCgYDVQQLDANPcmcxGDAW</span><span class="w"></span>
-<span class="w">      </span><span class="no">BgNVBAMMD3d3dy5leGFtcGxlLmNvbTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC</span><span class="w"></span>
-<span class="w">      </span><span class="no">AgoCggIBALVbVIrBAlzDOztWs9hZr5kvYoUwq/hL7zaMrYKBLQJZFNbhmMaUsW7A</span><span class="w"></span>
-<span class="w">      </span><span class="no">Fzj87dzP3xIf4c2r3IGJSukv7hJpaJ2Ykv80i3C7EiFgaDV/+JP9d/GjsvcW20zH</span><span class="w"></span>
-<span class="w">      </span><span class="no">mtJcBIkdkqPt1epOtxsMyJGZL+34DoWOqgY7up6nCirr+MeUxYJ/dWBFD1j0iuHl</span><span class="w"></span>
-<span class="w">      </span><span class="no">Y+rEMsv4xFBndgLmMQNlcMyXtBgPls4EgnDfnjICqIYMHt6PG+kwoR4tbs+v2Gsl</span><span class="w"></span>
-<span class="w">      </span><span class="no">vqldxI7efErZh+kKtjtFxt6qzrypUs9bYgH3tsaUE0xYeK/A2llylJzPOv6vkCqg</span><span class="w"></span>
-<span class="w">      </span><span class="no">vPOJETcZyoeH46niITdPssYr4yPQOxn/a7WS+7Mn2y6o5z4Q+DkB96lzUyvVJnwO</span><span class="w"></span>
-<span class="w">      </span><span class="no">aorzec0PaB/qqYrHqVfftMu4thMwHGB8CrGUiq/ImHPWkfobyVcMYJ0/LaLSDHFj</span><span class="w"></span>
-<span class="w">      </span><span class="no">1hN36VkzWqQcCM6ymhjx9Lpfzzxna5910jE86zb1cMnD/eAAd90jpJvGJN43Hw40</span><span class="w"></span>
-<span class="w">      </span><span class="no">MIvjYBunOy9P3ah0kgCk7gW0oKlYHxugv8pZVHMwU1HFIdwYvlGd09XHFDyj9tul</span><span class="w"></span>
-<span class="w">      </span><span class="no">eX8zaVwaNeLUrMdJN5Ct1HX16RpnpaIMwwExzXgsZ01BQcfIcGWGbvBfH2C86klt</span><span class="w"></span>
-<span class="w">      </span><span class="no">SuG7M6kxk4XgIIlwTSGk7qJlfd4s8PD1fVJNKvJZwXXoQBy4hCrTAgMBAAGjUzBR</span><span class="w"></span>
-<span class="w">      </span><span class="no">MB0GA1UdDgQWBBRSUKop9QDGmSdLCfzWlBIF5ClNVDAfBgNVHSMEGDAWgBRSUKop</span><span class="w"></span>
-<span class="w">      </span><span class="no">9QDGmSdLCfzWlBIF5ClNVDAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUA</span><span class="w"></span>
-<span class="w">      </span><span class="no">A4ICAQAny4QmzvCza0TQUuh7YIxtkBjJoyTSDGmr5W/4AWKsoZJM9QxzWeIAXhWD</span><span class="w"></span>
-<span class="w">      </span><span class="no">UPH2TfwcNX/ovZiSDQaGduRL67Wk8lbp1MvjACMEtLRjsbnYtGFdhit0fR97B5Y6</span><span class="w"></span>
-<span class="w">      </span><span class="no">d06Ka/NXgPTJorXx8WSWUp0qaAQcgvhfgF0vnOSB5CbP5RSYE5TuLu6gh+iQTrBI</span><span class="w"></span>
-<span class="w">      </span><span class="no">Syl+9UaopkbQDRsg+XRfie+kUxQgldUAFvFmu6sM6FTbw0KGkrsOajwpF/Fu5hSV</span><span class="w"></span>
-<span class="w">      </span><span class="no">Ucov4Lzrrxkok5FzWPkVtMalLZ4Du+ZUYG//10WZg+HdrIwx3m2wxrFIkZaMKxv4</span><span class="w"></span>
-<span class="w">      </span><span class="no">ZkIMsb6DUPUZqy8qZpMzIqvDzx3iYEWWfBOCJWBjs8/V1mAuUu6TBCKAJpvfX6bU</span><span class="w"></span>
-<span class="w">      </span><span class="no">hNrCbnrpuxuCCPJnj9sXkBDvl5rcyfshTtKl3NoBrRRDuUHWsJWzsKvBQtwN46vF</span><span class="w"></span>
-<span class="w">      </span><span class="no">CbF0aXOozihtmmcMpFFeDIj6p/5qlaJtslegtfv2zoztc3e2ituOjqFQ/I5pplvo</span><span class="w"></span>
-<span class="w">      </span><span class="no">p8EGwCI1xTGF0BTatcSV1+lLNeONhhAtwliV13nPSH1o4yxoZ+xZTZq4+9ylw7dq</span><span class="w"></span>
-<span class="w">      </span><span class="no">yV3BQM11U6OyAPE1G6EX0PgFvLm25sGTJq9TKXs9yWPRit9vHcOCXSGn8osn4SMg</span><span class="w"></span>
-<span class="w">      </span><span class="no">Puqpk+3M9xR8XDPJiBjkxcSnt9+EDNwpthTzgUEoyM6dY8nvWA==</span><span class="w"></span>
-<span class="w">      </span><span class="no">-----END CERTIFICATE-----</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;$$SCONE::remote_validation_service$$&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LtLcbPVddnCkH36ZcRdgYsw4H8xDbYaFZfuefkDc25uq2qdjmM</span><span class="w"></span>
-<span class="w">  </span><span class="nt">create_sessions</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NONE</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  read:
+    - CREATOR
+    - 3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1
+    - |
+      -----BEGIN CERTIFICATE-----
+      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
+      -----END CERTIFICATE-----
+    - "$$SCONE::remote_validation_service$$"
+  update:
+    - signer: LtLcbPVddnCkH36ZcRdgYsw4H8xDbYaFZfuefkDc25uq2qdjmM
+  create_sessions:
+    - NONE</code></pre>
 <p>This policy will allow reading requests from the creator, a user whose TLS client certificate has a public key hash <code>3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1</code>, a user whose TLS client certificate has a public key similar to the one of the certificates specified in the session description and a user whose credential is taken from the secret named <code>remote_validation_service</code> (which may be imported from another session).
 The session may only be updated if successors are signed by the given signer identity <code>LtLcbPVddnCkH36ZcRdgYsw4H8xDbYaFZfuefkDc25uq2qdjmM</code>.
 No one is allowed to create sessions in its namespace.</p>
 <p>Individual sections or the entire access_policy can be replaced with variables, too:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::external_policy$$</span><span class="w"></span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::external_update_policy$$</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy: $$SCONE::external_policy$$</code></pre>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  update: $$SCONE::external_update_policy$$</code></pre>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Ensure referenced secrets are valid and stay valid throughout the session's lifetime. Otherwise, you may lose access to your session.</p>
@@ -4189,18 +4185,17 @@ No one is allowed to create sessions in its namespace.</p>
 <h2 id="policy-board">Policy Board</h2>
 <p>Controlling access to a session with a single credential is insufficient for multi-stakeholder computations. The <strong>governance</strong> system allows multi-credential access control using <code>require-all</code> and <code>require-at-least-X</code> rules.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NONE</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">require-all</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-at-least-2</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter1</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter2</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter3</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-all</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$veto_member1</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$veto_member2</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  read: NONE
+  update:
+    require-all:
+      - require-at-least-2:
+          - signer: $voter1
+          - signer: $voter2
+          - signer: $voter3
+      - require-all:
+          - signer: $veto_member1
+          - signer: $veto_member2</code></pre>
 <p>The above example requires an update to a session to be signed by <strong>both</strong> <code>$veto_member1</code> and <code>$veto_member2</code>, as well as at least 2 of the 3 <code>$voter</code>s.</p>
 <p>Governance rules can be used in the <code>update</code> and <code>create_sessions</code> access policies but not in the <code>read</code> access policy.</p>
 <div class="admonition note">
@@ -4211,20 +4206,19 @@ Therefore, it does not make sense to require more than one certificate at a time
 </div>
 <p>Rules can be arbitrarily deeply nested.
 Extended example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NONE</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">require-at-least-1</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$owner</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-all</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-at-least-2</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter1</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter2</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter3</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-all</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$veto_member1</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$veto_member2</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  read: NONE
+  update:
+    require-at-least-1:
+      - signer: $owner
+      - require-all:
+          - require-at-least-2:
+              - signer: $voter1
+              - signer: $voter2
+              - signer: $voter3
+          - require-all:
+              - signer: $veto_member1
+              - signer: $veto_member2</code></pre>
 <p>This example works the same as the previous one but allows the <code>$owner</code> to overrule all other members.</p>
 
               
@@ -4295,7 +4289,7 @@ Extended example:</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

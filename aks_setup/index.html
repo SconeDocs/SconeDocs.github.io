@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/aks_setup/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3358,7 +3358,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4111,23 +4111,19 @@ We support a variety of <a href="../helm/">helm charts</a>: we provide confident
 <ol>
 <li>You need a <em>resource group</em> for the new cluster. You can create a new one named <code>myResourceGroup</code> in the <code>westus2</code> region by running:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="go">az group create --name myResourceGroup --location westus2</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">az group create --name myResourceGroup --location westus2</code></pre>
 <ol>
 <li>Create the cluster with the confidential computing add-on enabled. This command will create a system node pool, responsible for running the Kubernetes control plane services. You can control the number of nodes through <code>-c</code> option.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="go">az aks create --name myAKSCluster --generate-ssh-keys --enable-addon confcom -g myResourceGroup</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">az aks create --name myAKSCluster --generate-ssh-keys --enable-addon confcom -g myResourceGroup</code></pre>
 <ol>
 <li>Create the confidential node pool with Intel SGX and the Azure SGX device plugin. You can configure the number of nodes through <code>-c</code> option. Change the VM size by setting a different <code>--node-vm-size</code> (<a href="https://docs.microsoft.com/en-us/azure/virtual-machines/dcv2-series">see all available sizes</a>).</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="go">az aks nodepool add --cluster-name myAKSCluster --name confcompool1 --node-vm-size Standard_DC2s_v2 --resource-group myResourceGroup</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">az aks nodepool add --cluster-name myAKSCluster --name confcompool1 --node-vm-size Standard_DC2s_v2 --resource-group myResourceGroup</code></pre>
 <ol>
 <li>Get the credentials for the cluster. This will write the credentials to your default kubeconfig (<code>$KUBECONFIG</code> or <code>~/.kube.config</code>):</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="go">az aks get-credentials --name myAKSCluster --resource-group myResourceGroup</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">az aks get-credentials --name myAKSCluster --resource-group myResourceGroup</code></pre>
 <h2 id="deploying-las-local-attestation-service">Deploying LAS (Local Attestation Service)</h2>
 <p>You need to deploy our Local Attestation Service (LAS) to run your SCONE applications with remote attestation.</p>
 <ol>
@@ -4138,75 +4134,69 @@ We support a variety of <a href="../helm/">helm charts</a>: we provide confident
 <p>Install the <a href="../helm_las/">LAS Helm chart</a>. In this example, we use the Azure SGX device plugin that comes with the cluster.</p>
 </li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="go">helm install las sconeapps/las --set useSGXDevPlugin=azure --set image=registry.scontain.com/sconecuratedimages/kubernetes:las.microsoft-azure</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">helm install las sconeapps/las --set useSGXDevPlugin=azure --set image=registry.scontain.com/sconecuratedimages/kubernetes:las.microsoft-azure</code></pre>
 <ol>
 <li>That's it. LAS pods should now be running (one per node) in your cluster.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="gp">$ </span>kubectl get pods
-<span class="go">NAME        READY   STATUS    RESTARTS   AGE</span>
-<span class="go">las-2z2vk   1/1     Running   0          5s</span>
-<span class="go">las-7vdkt   1/1     Running   0          5s</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">$ kubectl get pods
+NAME        READY   STATUS    RESTARTS   AGE
+las-2z2vk   1/1     Running   0          5s
+las-7vdkt   1/1     Running   0          5s</code></pre>
 <h2 id="deploy-a-scone-application">Deploy a SCONE application</h2>
 <p>To run your first SCONE application on the confidential AKS cluster, use the following manifest from our <a href="../hello_world_kubernetes/">Kubernetes tutorial</a>.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
-<span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sconecuratedimages/kubernetes:hello-k8s-scone0.1</span><span class="w"></span>
-<span class="w">        </span><span class="nt">imagePullPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Always</span><span class="w"></span>
-<span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">        </span><span class="nt">env</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GREETING</span><span class="w"></span>
-<span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">howdy!</span><span class="w"></span>
-<span class="w">        </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
-<span class="w">            </span><span class="nt">sgx.intel.com/epc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5Mi</span><span class="w"></span>
-<span class="nn">---</span><span class="w"></span>
-<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span><span class="w"></span>
-<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span><span class="w"></span>
-<span class="nt">metadata</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span><span class="w"></span>
-<span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TCP</span><span class="w"></span>
-<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hello-world</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+spec:
+  selector:
+    matchLabels:
+      run: hello-world
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: hello-world
+    spec:
+      containers:
+      - name: hello-world
+        image: sconecuratedimages/kubernetes:hello-k8s-scone0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: GREETING
+          value: howdy!
+        resources:
+          limits:
+            sgx.intel.com/epc: 5Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world
+  labels:
+    run: hello-world
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+  selector:
+    run: hello-world</code></pre>
 <ol>
 <li>Run the application.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="go">kubectl create -f app.yaml</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">kubectl create -f app.yaml</code></pre>
 <ol>
 <li>Redirect a local port to the service port.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="go">kubectl port-forward svc/hello-world 8080:8080 &amp;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">kubectl port-forward svc/hello-world 8080:8080 &amp;</code></pre>
 <ol>
 <li>Send a request to the service.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="gp">$ </span>curl localhost:8080
-<span class="go">Hello World!</span>
-<span class="gp">$</span>GREETING is: howdy!
-</code></pre></div>
+<pre class="highlight"><code class="language-console">$ curl localhost:8080
+Hello World!
+$GREETING is: howdy!</code></pre>
 <p>To run the same application with remote attestation, transparent filesystem encryption and secret delivery, check our <a href="../hello_world_kubernetes/">Kubernetes tutorial</a>.</p>
 
               
@@ -4277,7 +4267,7 @@ We support a variety of <a href="../helm/">helm charts</a>: we provide confident
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

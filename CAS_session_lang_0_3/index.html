@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/CAS_session_lang_0_3/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3928,7 +3928,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -5323,8 +5323,7 @@ Moreover, the calculation is cryptographically sound in the sense that a malicio
 <h3 id="version">Version</h3>
 <p>This document describes versions 0.3.10 and older.
 Always specify the version that provides the set of features you need:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.3.10&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">version: "0.3.10"</code></pre>
 <p>If a feature does not mention a version, it was introduced with <code>v0.3.0</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -5341,8 +5340,7 @@ Thus, the <code>session name</code> is the primary property with which a session
 <p>As sessions will be routeable in a future version of CAS and session names are the primary way of referencing a session, they have to obey certain restrictions regarding the allowed character set: Only URI "Unreserved Characters" as defined by <a href="https://www.ietf.org/rfc/rfc3986.txt">RFC3986</a> are permitted, and names can be at most 128 characters long.
 In <a href="https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions">PCRE</a> the match clause matching valid session names would be <code>[A-Za-z0-9_\-.~]{1,128}</code>.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-testing-session</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">name: my-testing-session</code></pre>
 <p>Providing a session name is <strong>mandatory</strong>.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.5</p>
@@ -5350,16 +5348,13 @@ In <a href="https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions">P
 <h4 id="namespaces">Namespaces</h4>
 <p>Sessions can be organized hierarchically, by creating them within the <strong>namespace</strong> of another session. Organizations and large teams can benefit from namespaces to structure their sessions and restrict the creation and management of nested sessions to a set of authorized users.</p>
 <p>In order to create session <code>hello-world</code> in the namespace of a previously created session <code>my-company</code>, set the new session's name to:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-company/hello-world</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">name: my-company/hello-world</code></pre>
 <p>You must have <a href="#access-control">permission to create the session</a> in this namespace.</p>
 <p>Namespaces can be nested:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-company/project-1/hello-world</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">name: my-company/project-1/hello-world</code></pre>
 <h3 id="predecessor-session">Predecessor Session</h3>
 <p>If a session description is an update for a previously existing session, i.e. the session's name is already in use, it has to include the previous session's hash to detect and prevent lost updates.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">predecessor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">predecessor: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The value has to be 32 hex encoded bytes.</p>
@@ -5372,21 +5367,19 @@ For now, there can be an unlimited number of instances of a service.</p>
 <p>In the current version, the service description specifies the service configuration and which software (code) is allowed to access it.
 A service configuration consists of the command to be executed, any environment variables and the process working directory from which path resolution of relative paths starts.
 These properties may contain secrets and would be prone to inspection and manipulation by adversaries.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-test-service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test --arg=value</span><span class="w"></span>
-<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">VAR_1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value</span><span class="w"></span>
-<span class="w">    </span><span class="nt">pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/main.fspf</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;66e7935397249112d1148e6ce98a396a8c96b3b0ae70708c16ff284c66f0821e&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_tag</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;5a0fe9bdcfed5c0391a707e05f6cfbeb&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my-test-service
+    command: test --arg=value
+    environment:
+        VAR_1: value
+    pwd: /
+    fspf_path: /main.fspf
+    fspf_key: "66e7935397249112d1148e6ce98a396a8c96b3b0ae70708c16ff284c66f0821e"
+    fspf_tag: "5a0fe9bdcfed5c0391a707e05f6cfbeb"</code></pre>
 <h3 id="name">name</h3>
 <p>To be able to identify a service, every service has to have a <code>name</code> key.
 As the name will be part of the routeable session identification in the future, its character set and length is restricted in the same way as the session name is.</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-test-service</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    name: my-test-service</code></pre>
 <p>Providing a service name is <strong>mandatory</strong>.</p>
 <h3 id="command">command</h3>
 <p>The command of a service is a sequence of the program's name plus any <a href="https://en.wikipedia.org/wiki/Command-line_interface#Arguments">command-line arguments</a> that have to be provided for it to deliver the expected service.</p>
@@ -5395,17 +5388,14 @@ As the name will be part of the routeable session identification in the future, 
 <p>The first element of the command, the program name, should match the actual program's file name.
 Although not enforced, in the future automatic scheduling will not function properly if the provided program name does not match.</p>
 </div>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test --arg=value</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    command: test --arg=value</code></pre>
 <p>The command is split at whitespace characters. If spaces should be preserved for an argument, either quote the argument (with single or double quotes):</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mysql -e &quot;show databases;&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    command: mysql -e "show databases;"</code></pre>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.5</p>
 </div>
 <p>or use a list instead:</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;mysql&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;-e&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;show</span><span class="nv"> </span><span class="s">databases;&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    command: ["mysql", "-e", "show databases;"]</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Command arguments have to be C-String compatible, i.e., they are not allowed to contain a NULL byte.</p>
@@ -5413,9 +5403,8 @@ Although not enforced, in the future automatic scheduling will not function prop
 <h3 id="environment">environment</h3>
 <p>The <a href="https://en.wikipedia.org/wiki/Environment_variable">environment variables</a> provide a process with values that are needed to provide the expected service.
 As we cannot trust pre-existing environment variables, only the environment specified in the session policy will be available to the SCONE program.</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">VAR_1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    environment:
+        VAR_1: value</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
@@ -5428,8 +5417,7 @@ As we cannot trust pre-existing environment variables, only the environment spec
 For example, a program writing a private key to <code>private.key</code> with pwd of <code>/encrypted/</code> would resolve actually write to <code>/encrypted/private.key</code>.
 Changing the pwd to <code>/plaintext/</code> before the writing would lead it to write the private key to <code>/plaintext/private.key</code> instead.
 To prevent this kind of manipulation the pwd of a SCONE service has to be specified explicitly in the session description.</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/user/scone/encrypted</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    pwd: /home/user/scone/encrypted</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Please note that:
@@ -5442,12 +5430,11 @@ To prevent this kind of manipulation the pwd of a SCONE service has to be specif
 The main FSPF protects files and directories that are associated with the service, such as optional code stored in shared libraries, images or data source used by the service.
 <a href="#volumes">Volume FSPFs</a> are better suited to protect file that are transferred between services, for example, as a means of input and output.</p>
 <p>Main FSPF are configured with three options:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/main.fspf</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;66e7935397249112d1148e6ce98a396a8c96b3b0ae70708c16ff284c66f0821e&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_tag</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;5a0fe9bdcfed5c0391a707e05f6cfbeb&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    fspf_path: /main.fspf
+    fspf_key: "66e7935397249112d1148e6ce98a396a8c96b3b0ae70708c16ff284c66f0821e"
+    fspf_tag: "5a0fe9bdcfed5c0391a707e05f6cfbeb"</code></pre>
 <ul>
 <li>The location of the file in the file system is specified in the <code>fspf_path</code> option</li>
 <li><code>fspf_key</code> is a 32 byte long hex-encoded encryption key...</li>
@@ -5465,12 +5452,11 @@ The main FSPF protects files and directories that are associated with the servic
 </div>
 <h4 id="main-fspf-tag-update-policy">Main FSPF Tag Update Policy</h4>
 <p>By default, service file systems are rollback-protected when an FSPF is enabled: Attempting to restore an old filesystem state and letting a service read files from or write files to this old state will be detected and prevented. In specific cases, however, this may not be the desired behavior. The <code>fspf_update_policy</code> key can be used to change it:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/main.fspf</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;66e7935397249112d1148e6ce98a396a8c96b3b0ae70708c16ff284c66f0821e&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_update_policy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_rollback_protection</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    fspf_path: /main.fspf
+    fspf_key: "66e7935397249112d1148e6ce98a396a8c96b3b0ae70708c16ff284c66f0821e"
+    fspf_update_policy: no_rollback_protection</code></pre>
 <p>The following values are possible as a <code>fspf_update_policy</code>:</p>
 <ul>
 <li><code>rollback_protected_reinitializable</code>: This is the default setting if <code>fspf_update_policy</code> is omitted. Services are allowed to alter the filesystem's state, rollbacks will be detected and lead to an error upon access. This ensures a coherent, linear history of filesystem changes. There is one exception to this rule: Filesystems are allowed to roll back to the initial state, given by the <code>fspf_tag</code> in the session. This is called "reinitializable". It allows multiple services to be started in parallel, each having their own, independent filesystem state.</li>
@@ -5478,10 +5464,9 @@ The main FSPF protects files and directories that are associated with the servic
 </ul>
 <h3 id="image">Image</h3>
 <p>A service can optionally use an image, which has to be specified as part of the session (see Section <a href="#images">Images</a>).</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_image</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    image_name: my_image</code></pre>
 <p>Images must be specified if their volumes or secret injection files should be used by a service.</p>
 <h3 id="attestation">Attestation</h3>
 <p>Attestation is the process of verifying a remote SCONE program's integrity, ensuring it has not been (maliciously) manipulated.
@@ -5505,20 +5490,19 @@ That is because a service without attestation configuration cannot start.</p>
 </div>
 <h4 id="attestation-configuration-example">Attestation Configuration Example</h4>
 <p>&nbsp;</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">loadbalancer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bac31957ee05e5f3f95ea10632008315bf314a536a453dbb787be02c5b920b88</span><span class="w"></span>
-<span class="w">        </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">mrsigner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ce24e0918a348837738a18c4ce7a3afe3aed8acb58ee6ddb6031a570a1e1401c</span><span class="w"></span>
-<span class="w">          </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">mrsigner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1190831f4e21529d6702681f2906d5a27cc7cf1900bc323cd1cdedb2dc27edbd</span><span class="w"></span>
-<span class="w">          </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">213</span><span class="w"></span>
-<span class="w">          </span><span class="nt">isvsvn_min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">13</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: loadbalancer
+    attestation:
+      - mrenclave:
+          - 2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076
+          - bac31957ee05e5f3f95ea10632008315bf314a536a453dbb787be02c5b920b88
+        signer:
+          mrsigner: ce24e0918a348837738a18c4ce7a3afe3aed8acb58ee6ddb6031a570a1e1401c
+          isvprodid: 6
+      - signer:
+          mrsigner: 1190831f4e21529d6702681f2906d5a27cc7cf1900bc323cd1cdedb2dc27edbd
+          isvprodid: 213
+          isvsvn_min: 13</code></pre>
 <p>The above example allows successful service attestation in <strong>any</strong> of the following cases:</p>
 <ul>
 <li>The application has either mrenclave <code>2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076</code> or mrenclave <code>bac31957ee05e5f3f95ea10632008315bf314a536a453dbb787be02c5b920b88</code>, and was additionally signed by mrsigner <code>ce24e0918a348837738a18c4ce7a3afe3aed8acb58ee6ddb6031a570a1e1401c</code> with product ID 6 and any security version number.</li>
@@ -5556,37 +5540,33 @@ Note that Singleton-based Attestation is necessary to secure execution of progra
 <p>You'll find more details about Singleton-based Attestation at <a href="#singleton-enclaves">Singleton Enclaves</a>.
 From the usage perspective, Measurement-based SGX Attestation and Singleton-based Attestation are almost identical.
 The only difference is that Singleton-based Attestation must be activated by activating the <code>singleton_enclaves</code> security setting:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">singleton_enclaves</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  singleton_enclaves: true</code></pre>
 <p><code>singleton_enclaves</code> are deactivated by default due to backwards-compatibility reasons.
 Starting with the next session language version <code>singleton_enclaves</code> will be active by default.</p>
 <p>Code Identity-based SGX attestation gives access to service secrets based on the enclave measurement value, abbreviated as <code>mrenclave</code>.
 An enclave measurement value uniquely identifies the enclave's initial state.
 The measurement value of a SCONE program can be determined by running it either with <code>SCONE_VERSION</code> or <code>SCONE_HASH</code> environment variables set.</p>
 <p>For example, if you have an executable <code>go-webserver</code> you can determine its measurement value by executing:</p>
-<div class="highlight"><pre><span></span><code>$ <span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./go-webserver
-d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">$ SCONE_HASH=1 ./go-webserver
+d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61</code></pre>
 <p>Any modifications to the executable, malicious or not, will void access capabilities using measurement-based attestation.</p>
 <p>A service can define a single enclave measurement value, or a list of values that are allowed to get access to the configuration as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61</span><span class="w"></span>
-<span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">singleton_enclaves</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    attestation:
+      mrenclave: d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61
+security:
+  singleton_enclaves: true</code></pre>
 <p>An example in which multiple enclaves have access is shown here:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">228be796e784d152987014aae213a536c881533d07c81a224775234cd1c4c290</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">e96a21c7f86eae2b311f84c6509dd849ff2ac1da0b8d6c64e0dacba912b6c139</span><span class="w"></span>
-<span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">singleton_enclaves</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    attestation:
+      mrenclave:
+        - 228be796e784d152987014aae213a536c881533d07c81a224775234cd1c4c290
+        - e96a21c7f86eae2b311f84c6509dd849ff2ac1da0b8d6c64e0dacba912b6c139
+security:
+  singleton_enclaves: true</code></pre>
 <p>For example, you can define <code>mrenclave</code>s for different permitted <code>HEAP_SIZE</code>s. Also, to permit a smooth transition to new service versions, you can first add the mrenclaves of the new version, upgrade the services, and then remove the <code>mrenclave</code>s of the old service version.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -5614,80 +5594,77 @@ This data consists of the signer identity (<code>mrsigner</code>), a product ID 
 <p>By verifying a trusted enclave signer instead of the enclave's code, software updates can be simplified, as the signer just has to sign the updated enclave, and the session doesn't need to be changed.
 However, it also puts all trust about the code integrity into the entity controlling the signer identity / private key.</p>
 <p>The data associated with a compiled SCONE program can be determined with the <code>scone-signer</code> tool:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># scone-signer info ./test</span>
+<pre class="highlight"><code class="language-bash"># scone-signer info ./test
 SIGSTRUCT:
         Header: 06000000e10000000000010000000000
-        Vendor: <span class="m">00000000</span>
-        Date: <span class="m">00000000</span>
-        Header <span class="c1">#2: 01010000600000006000000001000000</span>
-        Software defined: <span class="m">00000000</span>
-        Modulus: <span class="o">[</span> .. <span class="o">]</span>
-        Exponent: <span class="m">03000000</span>
-        Signature: <span class="o">[</span> .. <span class="o">]</span>
-        Misc Select: <span class="m">00000000</span>
-        Misc Mask: <span class="m">00000000</span>
-        Attributes: <span class="m">06000000000000000300000000000000</span>
+        Vendor: 00000000
+        Date: 00000000
+        Header #2: 01010000600000006000000001000000
+        Software defined: 00000000
+        Modulus: [ .. ]
+        Exponent: 03000000
+        Signature: [ .. ]
+        Misc Select: 00000000
+        Misc Mask: 00000000
+        Attributes: 06000000000000000300000000000000
                 Debug: yes
-                <span class="m">64</span>-bit Mode: yes
+                64-bit Mode: yes
                 Access to Provisioning Key: no
                 Access to EINITTOKEN Key: no
-                XFRM: <span class="m">0300000000000000</span>
+                XFRM: 0300000000000000
         Attributes Mask: 0600000000000000fbffffffffffffff
                 Debug: yes
-                <span class="m">64</span>-bit Mode: yes
+                64-bit Mode: yes
                 Access to Provisioning Key: no
                 Access to EINITTOKEN Key: no
                 XFRM: fbffffffffffffff
         MRENCLAVE: 54b6de36d5d041453e7e00ae13ef7e520754e2785afecd4bbb5a1194ca65e671
-        ISV Product ID: <span class="m">12</span>
-        ISV SVN: <span class="m">5</span>
-        Q1: <span class="o">[</span> .. <span class="o">]</span>
-        Q2: <span class="o">[</span> .. <span class="o">]</span>
+        ISV Product ID: 12
+        ISV SVN: 5
+        Q1: [ .. ]
+        Q2: [ .. ]
 
-<span class="o">[</span> .. <span class="o">]</span>
+[ .. ]
 
 MRSIGNER: 11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd
 
 Enclave Parameters:
-        Number of TCS: <span class="m">8</span>
-        Enclave size: <span class="m">68719476736</span>
-        Heap size: <span class="m">67108864</span>
-        Minimal heap size <span class="o">(</span>EDMM<span class="o">)</span>: <span class="m">20971520</span>
-        Default stack size: <span class="m">2097152</span>
+        Number of TCS: 8
+        Enclave size: 68719476736
+        Heap size: 67108864
+        Minimal heap size (EDMM): 20971520
+        Default stack size: 2097152
         Flags:
                 DLOPEN: not allowed
                 MPROTECT: disabled
 
-<span class="o">[</span> .. <span class="o">]</span>
-</code></pre></div>
+[ .. ]</code></pre>
 <p>Some fields have been omitted for brevity.
 These values can be set using the tool's <code>sign</code> command or by specifying <code>SCONE_KEY</code>, <code>SCONE_ISVPRODID</code> and/or <code>SCONE_ISVSVN</code> during compilation with one of the SCONE compilers.</p>
 <p>Use the <code>signer</code> subsection to authorize access based on the signer associated data of an enclave:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">mrsigner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd</span><span class="w"></span>
-<span class="w">        </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    attestation:
+      signer:
+        mrsigner: 11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd
+        isvprodid: 12</code></pre>
 <p>The <code>signer</code> section must always list a single signer identity (<code>mrsigner</code>) and a product ID (<code>isvprodid</code>).
 The security version number is optional; if omitted, it is not being checked.
 Otherwise, it can be a specific version (<code>isvsvn</code>), or a range of versions (<code>isvsvn_min</code> and/or <code>isvsvn_max</code>).</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webserver</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">mrsigner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd</span><span class="w"></span>
-<span class="w">        </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
-<span class="w">        </span><span class="nt">isvsvn</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">mrsigner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd</span><span class="w"></span>
-<span class="w">        </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">        </span><span class="nt">isvsvn_min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">        </span><span class="nt">isvsvn_max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: webserver
+    attestation:
+      signer:
+        mrsigner: 11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd
+        isvprodid: 1
+        isvsvn: 4
+  - name: database
+    attestation:
+      signer:
+        mrsigner: 11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd
+        isvprodid: 2
+        isvsvn_min: 2
+        isvsvn_max: 5</code></pre>
 <p>In the above example, the webserver program/enclave has product id 1 and only enclaves with an associated security version number of 4 are permitted to access the configuration.
 The database program/enclave must have product id 2 and the security version number must be 2, 3, 4, or 5.</p>
 <div class="admonition note">
@@ -5701,16 +5678,15 @@ Specific versions (<code>isvsvn</code>) and version ranges (<code>isvsvn_min</co
 </div>
 <h4 id="combining-attestation-factors">Combining Attestation Factors</h4>
 <p>Code-identity- and signer-based attestation can be combined to yield an attestation schema with stronger guarantees.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bac31957ee05e5f3f95ea10632008315bf314a536a453dbb787be02c5b920b88</span><span class="w"></span>
-<span class="w">      </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">mrsigner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1190831f4e21529d6702681f2906d5a27cc7cf1900bc323cd1cdedb2dc27edbd</span><span class="w"></span>
-<span class="w">        </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    attestation:
+      mrenclave:
+        - 2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076
+        - bac31957ee05e5f3f95ea10632008315bf314a536a453dbb787be02c5b920b88
+      signer:
+        mrsigner: 1190831f4e21529d6702681f2906d5a27cc7cf1900bc323cd1cdedb2dc27edbd
+        isvprodid: 8</code></pre>
 <p>In the above example, the enclave has to fulfill <strong>both</strong> mrenclave and signer requirements in order to pass attestation.</p>
 <p>Such a combination has the advantage that the signer doesn't need to be trusted regarding the code's integrity anymore.
 At the same time, the signer must have also expressed its trust into the program (second factor).</p>
@@ -5719,16 +5695,15 @@ At the same time, the signer must have also expressed its trust into the program
 </div>
 <h4 id="independent-attestation-factors">Independent Attestation Factors</h4>
 <p>Multiple <strong>independent</strong> attestation variants can be configured as well:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bac31957ee05e5f3f95ea10632008315bf314a536a453dbb787be02c5b920b88</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">mrsinger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1190831f4e21529d6702681f2906d5a27cc7cf1900bc323cd1cdedb2dc27edbd</span><span class="w"></span>
-<span class="w">          </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    attestation:
+      - mrenclave:
+        - 2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076
+        - bac31957ee05e5f3f95ea10632008315bf314a536a453dbb787be02c5b920b88
+      - signer:
+          mrsinger: 1190831f4e21529d6702681f2906d5a27cc7cf1900bc323cd1cdedb2dc27edbd
+          isvprodid: 8</code></pre>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>Please note the difference to the <a href="#combining-attestation-factors">previous example</a>: Here, <code>attestation</code> is a list (there are dashes in front of <code>mrenclave</code> and <code>signer</code>).</p>
@@ -5745,60 +5720,54 @@ It becomes necessary, for example, when the signer identity is supposed to be ch
 <h4 id="deprecated-attestation-configuration">Deprecated Attestation Configuration</h4>
 <p>Measurement-based Attestation can also be configured via the legacy <code>mrenclaves</code> sections.
 This configuration variant is deprecated through and will be removed in the next version of the session language.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">mrenclaves</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">b138e442406ee2bd571be7fd8ddd428f21421fb23ebddd6d739d890c81758c8c</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    mrenclaves:
+      - d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61
+      - b138e442406ee2bd571be7fd8ddd428f21421fb23ebddd6d739d890c81758c8c</code></pre>
 <p>The above configuration is equivalent to the following one using the current configuration format.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">b138e442406ee2bd571be7fd8ddd428f21421fb23ebddd6d739d890c81758c8c</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    attestation:
+      mrenclave:
+        - d08b7351eeb8d5c0653d32794218f183ac9c6fa3923b67052752f78a3559de61
+        - b138e442406ee2bd571be7fd8ddd428f21421fb23ebddd6d739d890c81758c8c</code></pre>
 <h4 id="platform-based-attestation">Platform-based Attestation</h4>
 <p>Platform-based attestation gives access to services that are deployed on a specific platform.
 <strong>This is not sufficiently secure on its own to prevent program manipulation!</strong>
 Thus, platform-based attestation should always be combined with another attestation factor.</p>
 <p>The <code>platform</code> identity is the public key of the SCONE Quoting Enclave (SCONE QE), which is part of the <strong>SCONE Local Attestation Service (LAS)</strong>.
 The SCONE QE will have a unique public key on each platform. Platforms that are allowed to get access to the configuration can be specified as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="nt">platforms</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">2c45c8294d491808aa9b2a6bca01b8e185ffc69266c833546e5dca1c676a6151</span><span class="p p-Indicator">]</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">  platforms: [2c45c8294d491808aa9b2a6bca01b8e185ffc69266c833546e5dca1c676a6151]</code></pre>
 <p>Platform-based attestation requires the SCONE attestation scheme, which is used by default.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The platform identity has to be a sequence of 32 hex-encoded bytes (i.e., 64 characters).</p>
 </div>
 <p>You can determine the public platform key using the SCONE CLI:</p>
-<div class="highlight"><pre><span></span><code>$ scone las scone-epid-trust-anchor --las las.server.address
+<pre class="highlight"><code class="language-bash">$ scone las scone-epid-trust-anchor --las las.server.address
 Unverified Information! An adversary could have manipulated this information!
 Provide IAS credentials to allow attestation and prevent manipulations
 Public Key:             2c45c8294d491808aa9b2a6bca01b8e185ffc69266c833546e5dca1c676a6151
-Enclave Measurement:    1bf719b124c4be51edb607ea8f2282b5209c4dfe80b3d7bef2cf492161eaac75
-</code></pre></div>
+Enclave Measurement:    1bf719b124c4be51edb607ea8f2282b5209c4dfe80b3d7bef2cf492161eaac75</code></pre>
 <p>In this example, the platform key is <code>2c45c8294d491808aa9b2a6bca01b8e185ffc69266c833546e5dca1c676a6151</code>.</p>
 <p>You also find the key in the output of the LAS container:</p>
-<div class="highlight"><pre><span></span><code>[10000:INFO@25.03.2021/10:53:17] STARTER: SCONE QE has public key 2C45C8294D491808AA9B2A6BCA01B8E185FFC69266C833546E5DCA1C676A6151
-</code></pre></div>
+<pre class="highlight"><code>[10000:INFO@25.03.2021/10:53:17] STARTER: SCONE QE has public key 2C45C8294D491808AA9B2A6BCA01B8E185FFC69266C833546E5DCA1C676A6151</code></pre>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.10</p>
 </div>
 <p>A platform entry can also be a reference to a SCONE secret:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">platforms</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2c45c8294d491808aa9b2a6bca01b8e185ffc69266c833546e5dca1c676a6151</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::platform_2$$</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_service
+    platforms:
+      - 2c45c8294d491808aa9b2a6bca01b8e185ffc69266c833546e5dca1c676a6151
+      - $$SCONE::platform_2$$
 
-<span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">platform_2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">platform_policy</span><span class="w"></span>
-<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">authorized_platform</span><span class="w"></span>
-</code></pre></div>
+secrets:
+  - name: platform_2
+    import:
+      session: platform_policy
+      secret: authorized_platform</code></pre>
 <h2 id="secrets">Secrets</h2>
 <p>Secrets are defined in the <code>secrets</code> section of the session.
 Each secret is uniquely identified with a name.
@@ -5837,14 +5806,13 @@ This is necessary for CAS to know how to <strong>generate</strong> its value or 
 <li><code>size</code> - the length of generated values, in characters. Optional. Default value: <code>20</code></li>
 </ul>
 <p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_generated_ascii_secret</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ascii</span><span class="w"></span>
-<span class="w">      </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_explicit_ascii_secret</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ascii</span><span class="w"></span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret-value&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+    - name: my_generated_ascii_secret
+      kind: ascii
+      size: 12
+    - name: my_explicit_ascii_secret
+      kind: ascii
+      value: "secret-value"</code></pre>
 <p><strong>Secret Placeholders:</strong></p>
 <p>Assuming a secret named <code>my_password</code>, use <code>$$SCONE::my_password$$</code> in program arguments, environment variables or secret injection files (see <a href="#secret-injection">Secret Injection</a>). ASCII secrets do not support any format suffix.</p>
 <h4 id="binary">binary</h4>
@@ -5859,14 +5827,13 @@ This is necessary for CAS to know how to <strong>generate</strong> its value or 
 <li><code>size</code> - the length of generated values, in bytes. Optional. Default value: <code>20</code></li>
 </ul>
 <p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_generated_binary_secret</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span><span class="w"></span>
-<span class="w">      </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_explicit_binary_secret</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span><span class="w"></span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEADBEEF</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+    - name: my_generated_binary_secret
+      kind: binary
+      size: 32
+    - name: my_explicit_binary_secret
+      kind: binary
+      value: DEADBEEF</code></pre>
 <p><strong>Secret Placeholders:</strong></p>
 <p>Assume a secret named <code>my_secret</code>:</p>
 <div class="admonition success inline end">
@@ -5945,21 +5912,20 @@ In future session language versions, private keys will be migratable by default.
 <li><code>migrate</code>: Whether to keep the private key when updating the session. Optional, defaults to <code>false</code>. Both old and new session must contain <code>migrate: true</code> in order for migration to happen.</li>
 </ul>
 <p><strong>Examples:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_generated_long_term_signing_key</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span><span class="w"></span>
-<span class="w">      </span><span class="nt">key_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ed25519</span><span class="w"></span>
-<span class="w">      </span><span class="nt">migrate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_generated_tls_server_private_key</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span><span class="w"></span>
-<span class="w">      </span><span class="nt">key_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">P-384</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_explicit_tls_server_private_key</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span><span class="w"></span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">        </span><span class="no">-----BEGIN PRIVATE KEY-----</span><span class="w"></span>
-<span class="w">        </span><span class="no">...</span><span class="w"></span>
-<span class="w">        </span><span class="no">-----END PRIVATE KEY-----</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+    - name: my_generated_long_term_signing_key
+      kind: private-key
+      key_type: Ed25519
+      migrate: true
+    - name: my_generated_tls_server_private_key
+      kind: private-key
+      key_type: P-384
+    - name: my_explicit_tls_server_private_key
+      kind: private-key
+      value: |
+        -----BEGIN PRIVATE KEY-----
+        ...
+        -----END PRIVATE KEY-----</code></pre>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.5</p>
 </div>
@@ -6013,39 +5979,38 @@ Explicit values must be specified in PEM encoding.</p>
 </li>
 </ul>
 <p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_ca_certificate</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509-ca</span><span class="w"></span>
-<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_ca_private_key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">common_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;My</span><span class="nv"> </span><span class="s">own</span><span class="nv"> </span><span class="s">CA&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_generated_server_certificate</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509</span><span class="w"></span>
-<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_server_certificate_private_key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_ca_certificate</span><span class="w"></span>
-<span class="w">    </span><span class="nt">common_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;example.com&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">valid_for</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90 days</span><span class="w"></span>
-<span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server</span><span class="w"></span>
-<span class="w">    </span><span class="nt">san</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;dns:example.com&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;dns:db.example.com&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;dns:*.api.example.com&quot;</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;ip:192.168.1.2&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_explicit_server_certificate</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509</span><span class="w"></span>
-<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">      </span><span class="no">-----BEGIN CERTIFICATE-----</span><span class="w"></span>
-<span class="w">      </span><span class="no">MIIB0TCCAXigAwIBAgIUX4hfQWl+PKcrmOFW8phCO1vtQpUwCgYIKoZIzj0EAwIw</span><span class="w"></span>
-<span class="w">      </span><span class="no">HzEdMBsGA1UEAwwUVGVzdCBJbnRlcm1lZGlhdGUgQ0EwIBcNMjAwNTA2MTQ1NTAx</span><span class="w"></span>
-<span class="w">      </span><span class="no">WhgPMzAxOTA5MDcxNDU1MDFaMBYxFDASBgNVBAMMC2V4YW1wbGUuY29tMFkwEwYH</span><span class="w"></span>
-<span class="w">      </span><span class="no">KoZIzj0CAQYIKoZIzj0DAQcDQgAE1gqmACizRH9ENwun/rkmqoCjxf6NPJNHTpYg</span><span class="w"></span>
-<span class="w">      </span><span class="no">y8D5UOy5HNZXSi6ZNNL1x89d6UZfrYfDrf/PwH5LOhrgfkm42aOBmDCBlTAdBgNV</span><span class="w"></span>
-<span class="w">      </span><span class="no">HQ4EFgQUw3LfMbqwEJJRr5v7itg4A5jR0ngwHwYDVR0jBBgwFoAUHgrspKzSFC8r</span><span class="w"></span>
-<span class="w">      </span><span class="no">0/ygrsQIGA+Ft6MwDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMB</span><span class="w"></span>
-<span class="w">      </span><span class="no">BggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMBYGA1UdEQQPMA2CC2V4YW1wbGUuY29t</span><span class="w"></span>
-<span class="w">      </span><span class="no">MAoGCCqGSM49BAMCA0cAMEQCIAC7fWVRBG3mBzfyKf/WidYVL9IcAOdYsElgHTKb</span><span class="w"></span>
-<span class="w">      </span><span class="no">5h5HAiBlXklXq2lXo3srdQNJ4I8QJwWMYLIZUUw7fmWKOaireg==</span><span class="w"></span>
-<span class="w">      </span><span class="no">-----END CERTIFICATE-----</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+  - name: my_ca_certificate
+    kind: x509-ca
+    private_key: my_ca_private_key
+    common_name: "My own CA"
+  - name: my_generated_server_certificate
+    kind: x509
+    private_key: my_server_certificate_private_key
+    issuer: my_ca_certificate
+    common_name: "example.com"
+    valid_for: 90 days
+    endpoint: server
+    san:
+      - "dns:example.com"
+      - "dns:db.example.com"
+      - "dns:*.api.example.com"
+      - "ip:192.168.1.2"
+  - name: my_explicit_server_certificate
+    kind: x509
+    value: |
+      -----BEGIN CERTIFICATE-----
+      MIIB0TCCAXigAwIBAgIUX4hfQWl+PKcrmOFW8phCO1vtQpUwCgYIKoZIzj0EAwIw
+      HzEdMBsGA1UEAwwUVGVzdCBJbnRlcm1lZGlhdGUgQ0EwIBcNMjAwNTA2MTQ1NTAx
+      WhgPMzAxOTA5MDcxNDU1MDFaMBYxFDASBgNVBAMMC2V4YW1wbGUuY29tMFkwEwYH
+      KoZIzj0CAQYIKoZIzj0DAQcDQgAE1gqmACizRH9ENwun/rkmqoCjxf6NPJNHTpYg
+      y8D5UOy5HNZXSi6ZNNL1x89d6UZfrYfDrf/PwH5LOhrgfkm42aOBmDCBlTAdBgNV
+      HQ4EFgQUw3LfMbqwEJJRr5v7itg4A5jR0ngwHwYDVR0jBBgwFoAUHgrspKzSFC8r
+      0/ygrsQIGA+Ft6MwDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMB
+      BggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMBYGA1UdEQQPMA2CC2V4YW1wbGUuY29t
+      MAoGCCqGSM49BAMCA0cAMEQCIAC7fWVRBG3mBzfyKf/WidYVL9IcAOdYsElgHTKb
+      5h5HAiBlXklXq2lXo3srdQNJ4I8QJwWMYLIZUUw7fmWKOaireg==
+      -----END CERTIFICATE-----</code></pre>
 <p><strong>Secret Placeholders</strong></p>
 <p>Assume a secret named <code>my_x509</code>:</p>
 <div class="admonition success">
@@ -6089,24 +6054,23 @@ Explicit values must be specified in PEM encoding.</p>
 <p>The AAD application must have application API permissions to access secrets of an Azure Key Vault; for information on how to set up an Azure application for API access, see <a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app">https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad-app</a>. The Key Vault permissions for the application must then be configured using Azure <a href="https://docs.microsoft.com/en-us/azure/key-vault/general/assign-access-policy-portal">access policies</a> or Azure <a href="https://docs.microsoft.com/en-us/azure/key-vault/general/rbac-guide">role-based access control</a>.</p>
 </div>
 <p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ad_token_1</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aad-token</span><span class="w"></span>
-<span class="w">      </span><span class="nt">tenant_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">e6c9c526-f1aa-4e0d-b207-50bad9a89d21</span><span class="w"></span>
-<span class="w">      </span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3f6a210e-83b4-4217-9eee-4f707d8aeeb3</span><span class="w"></span>
-<span class="w">      </span><span class="nt">application_secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dGmbyTBE4JNAN3JJobeD&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ad_token_2</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aad-token</span><span class="w"></span>
-<span class="w">      </span><span class="nt">tenant_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">e6c9c526-f1aa-4e0d-b207-50bad9a89d21</span><span class="w"></span>
-<span class="w">      </span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3f6a210e-83b4-4217-9eee-4f707d8aeeb3</span><span class="w"></span>
-<span class="w">      </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">        </span><span class="no">-----BEGIN PRIVATE KEY-----</span><span class="w"></span>
-<span class="w">        </span><span class="no">MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCbkIjwCh2zXbUs</span><span class="w"></span>
-<span class="w">        </span><span class="no">...</span><span class="w"></span>
-<span class="w">        </span><span class="no">s5is0+EmTLXoWCqftUG5RQ==</span><span class="w"></span>
-<span class="w">        </span><span class="no">-----END PRIVATE KEY-----</span><span class="w"></span>
-<span class="w">      </span><span class="nt">certificate_thumbprint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">B033DB596639F3CA02D6537055E85B8EFE060756</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+    - name: ad_token_1
+      kind: aad-token
+      tenant_id: e6c9c526-f1aa-4e0d-b207-50bad9a89d21
+      client_id: 3f6a210e-83b4-4217-9eee-4f707d8aeeb3
+      application_secret: "dGmbyTBE4JNAN3JJobeD"
+    - name: ad_token_2
+      kind: aad-token
+      tenant_id: e6c9c526-f1aa-4e0d-b207-50bad9a89d21
+      client_id: 3f6a210e-83b4-4217-9eee-4f707d8aeeb3
+      private_key: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCbkIjwCh2zXbUs
+        ...
+        s5is0+EmTLXoWCqftUG5RQ==
+        -----END PRIVATE KEY-----
+      certificate_thumbprint: B033DB596639F3CA02D6537055E85B8EFE060756</code></pre>
 <p><strong>Secret Placeholders:</strong></p>
 <p>Assuming a secret named <code>ad_token_1</code>, use <code>$$SCONE::ad_token_1$$</code> in program arguments, environment variables or secret injection files (see <a href="#secret-injection">Secret Injection</a>). AAD token secrets do not support any format suffix. The token can be used to authenticate directly for Microsoft Azure services.</p>
 <div class="admonition note">
@@ -6122,43 +6086,40 @@ They are most useful when imported from other sessions, in order to let another 
 <p><strong>Parameters:</strong></p>
 <p>None. Fragments require an explicit <code>value</code> or must be <code>import</code>ed (see <a href="#secret-sharing">secret sharing</a>).</p>
 <p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mrenclave_list</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-fragment</span><span class="w"></span>
-<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ec8906f332d9aaada4c4c4ddd772bcbedb80562dd69e43ba87d80c3236914d8c</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16bcc65040c5dd79aa93ccf465cfdde485664588acfb4f9940ef81a14a048703</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">attestation_config_part</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-fragment</span><span class="w"></span>
-<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">mrsigner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1190831f4e21529d6702681f2906d5a27cc7cf1900bc323cd1cdedb2dc27edbd</span><span class="w"></span>
-<span class="w">        </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">213</span><span class="w"></span>
-<span class="w">        </span><span class="nt">isvsvn_min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">13</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">isvprodid</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-fragment</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">attestation_policy</span><span class="w"></span>
-<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">webserver_isvprodid</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+  - name: mrenclave_list
+    kind: config-fragment
+    value:
+      - ec8906f332d9aaada4c4c4ddd772bcbedb80562dd69e43ba87d80c3236914d8c
+      - 16bcc65040c5dd79aa93ccf465cfdde485664588acfb4f9940ef81a14a048703
+  - name: attestation_config_part
+    kind: config-fragment
+    value:
+      signer:
+        mrsigner: 1190831f4e21529d6702681f2906d5a27cc7cf1900bc323cd1cdedb2dc27edbd
+        isvprodid: 213
+        isvsvn_min: 13
+  - name: isvprodid
+    kind: config-fragment
+    import:
+      session: attestation_policy
+      secret: webserver_isvprodid</code></pre>
 <p><strong>Secret Placeholders:</strong></p>
 <p>Assuming a secret named <code>mrenclave_list</code>, use <code>$$SCONE::mrenclave_list$$</code> in configuration sections that support it; for example <a href="#attestation-configuration-example">the service attestation section</a>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">loadbalancer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::mrenclave_list$$</span><span class="w"></span>
-<span class="w">        </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">mrsigner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ce24e0918a348837738a18c4ce7a3afe3aed8acb58ee6ddb6031a570a1e1401c</span><span class="w"></span>
-<span class="w">          </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::attestation_config_part$$</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: loadbalancer
+    attestation:
+      - mrenclave:
+          - 2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076
+          - $$SCONE::mrenclave_list$$
+        signer:
+          mrsigner: ce24e0918a348837738a18c4ce7a3afe3aed8acb58ee6ddb6031a570a1e1401c
+          isvprodid: 6
+      - $$SCONE::attestation_config_part$$</code></pre>
 <p>Lists will be combined, i.e. the <code>mrenclave:</code> list above will be expanded to</p>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ec8906f332d9aaada4c4c4ddd772bcbedb80562dd69e43ba87d80c3236914d8c</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">16bcc65040c5dd79aa93ccf465cfdde485664588acfb4f9940ef81a14a048703</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">- 2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076
+- ec8906f332d9aaada4c4c4ddd772bcbedb80562dd69e43ba87d80c3236914d8c
+- 16bcc65040c5dd79aa93ccf465cfdde485664588acfb4f9940ef81a14a048703</code></pre>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.10</p>
 </div>
@@ -6172,10 +6133,9 @@ They are most useful when imported from other sessions, in order to let another 
 <li>They have configured AES256, SHA256 and ZLIB as preferred encryption, hashing, and compression algorithms</li>
 </ul>
 <p><strong>Examples:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_message_encryption_key</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pgp-key</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+    - name: my_message_encryption_key
+      kind: pgp-key</code></pre>
 <p><strong>Secret Placeholders:</strong></p>
 <p>PGP private and public keys are accessible in binary or <a href="https://datatracker.ietf.org/doc/html/rfc4880#section-6.2">ASCII-armored</a> formats.
 ASCII-armored keys are similar in nature to PEM-encoded PKCS#8 keys: They begin with a header like <code>-----BEGIN PGP PRIVATE KEY BLOCK-----</code>, and contain a base64-encoded body.</p>
@@ -6197,17 +6157,15 @@ These variables will be replaced with the actual secret values (be it generated 
 Placeholders are of the form <code>$$SCONE::secret_name:format_suffix$$</code>. The <code>:format_suffix</code> is optional. Different kinds of secrets support different formats, please have a look at <a href="#secret-kinds">the previous chapter</a> for details.</p>
 <h4 id="program-arguments-and-environment-variables">Program Arguments and Environment Variables</h4>
 <p>For example, to inject a secret into a service's program arguments its command field in the session description could look like this:</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_name --password $$SCONE::service_password$$ --non-confidential-argument 1234 --non-confidential-flag</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    [...]
+    command: service_name --password $$SCONE::service_password$$ --non-confidential-argument 1234 --non-confidential-flag
+    [...]</code></pre>
 <p>In the above example, the <code>command</code>'s program arguments will be presented to the service with <code>$$SCONE::service_password$$</code> replaced by the actual value of secret <code>service_password</code>.</p>
 <p>To inject secrets into a service's environment the session description could contain this:</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">FILE_ENCRYPTION_KEY</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;$$SCONE::MY_SERVICES_ENCRYPTION_SECRET$$&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    [...]
+    environment:
+      FILE_ENCRYPTION_KEY: "$$SCONE::MY_SERVICES_ENCRYPTION_SECRET$$"
+    [...]</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Secrets referred to (<code>service_private_key</code> and <code>MY_SERVICES_ENCRYPTION_SECRET</code> in the above example) have to be defined in the <code>secrets</code> section of the session description.</p>
@@ -6220,38 +6178,35 @@ Simply writing the password into the file in cleartext would leak it - that is n
 Using SCONE's filesystem shield to encrypt the file complicates the setup, and - if distributed as part of an image - would require users to change the encryption keys in order to protect their individual passwords.
 Instead, a secret injection file allows to specify a placeholder for the password, which will be dynamically replaced at runtime through the means of secret injection:</p>
 <p><code>/etc/mysql/my.cnf</code>:</p>
-<div class="highlight"><pre><span></span><code>[client]
+<pre class="highlight"><code class="language-text">[client]
 user=mysqluser
-password=$$SCONE::mysqlpass$$
-</code></pre></div>
+password=$$SCONE::mysqlpass$$</code></pre>
 <p>The path to this configuration file must be specified as part of an image (see <a href="#images">Images</a>). The corresponding session would look like this:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database_client</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_db_client_image</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_database_client
+    image_name: my_db_client_image
 
-<span class="nt">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_db_client_image</span><span class="w"></span>
-<span class="w">    </span><span class="nt">injection_files</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/mysql/my.cnf</span><span class="w"></span>
-</code></pre></div>
+images:
+  - name: my_db_client_image
+    injection_files:
+      - /etc/mysql/my.cnf</code></pre>
 <p>Alternatively, the file's content may be specified within the session:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database_client</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_db_client_image</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my_database_client
+    image_name: my_db_client_image
 
-<span class="nt">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_db_client_image</span><span class="w"></span>
-<span class="w">    </span><span class="nt">injection_files</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/mysql/my.cnf</span><span class="w"></span>
-<span class="w">        </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">          </span><span class="no">[client]</span><span class="w"></span>
-<span class="w">          </span><span class="no">user=mysqluser</span><span class="w"></span>
-<span class="w">          </span><span class="no">password=$$SCONE::mysqlpass$$</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/ssl/db_server_full_chain.pem</span><span class="w"></span>
-<span class="w">        </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">          </span><span class="no">$$SCONE::db_server_cert:crt$$</span><span class="w"></span>
-<span class="w">          </span><span class="no">$$SCONE::db_server_cert:chain$$</span><span class="w"></span>
-</code></pre></div>
+images:
+  - name: my_db_client_image
+    injection_files:
+      - path: /etc/mysql/my.cnf
+        content: |
+          [client]
+          user=mysqluser
+          password=$$SCONE::mysqlpass$$
+      - path: /etc/ssl/db_server_full_chain.pem
+        content: |
+          $$SCONE::db_server_cert:crt$$
+          $$SCONE::db_server_cert:chain$$</code></pre>
 <p>The <code>content</code> specified in the session file can contain multiline strings.
 This way, entire configuration files can be embedded in the session description, even if no secret injection is required.
 Producing valid multiline strings in YAML can be challenging - <a href="https://yaml-multiline.info/">https://yaml-multiline.info/</a> can be of great help to find the desired syntax.</p>
@@ -6266,103 +6221,96 @@ Secret injection files by default have 0o700 permissions.
 That is they're read-, write-, and, executable by the owner, which is always the user executing the program.
 If necessary different file permissions can be set in description.
 In the following snippet, only the file owner is allowed read access:</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">injection_files</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/mysql/my.cnf</span><span class="w"></span>
-<span class="w">        </span><span class="nt">permission</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0o100</span><span class="w"></span>
-<span class="w">        </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">          </span><span class="no">[client]</span><span class="w"></span>
-<span class="w">          </span><span class="no">user=mysqluser</span><span class="w"></span>
-<span class="w">          </span><span class="no">password=$$SCONE::mysqlpass$$</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    injection_files:
+      - path: /etc/mysql/my.cnf
+        permission: 0o100
+        content: |
+          [client]
+          user=mysqluser
+          password=$$SCONE::mysqlpass$$</code></pre>
 <p>Remember that secret injection files are in-memory that don't persist data, and all modification will be lost.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.10</p>
 </div>
 <h4 id="dynamic-configurations">Dynamic Configurations</h4>
 <p>Some configuration sections, like <a href="#attestation-configuration-example">the service attestation section</a>, allow variable injection:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">loadbalancer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bac31957ee05e5f3f95ea10632008315bf314a536a453dbb787be02c5b920b88</span><span class="w"></span>
-<span class="w">        </span><span class="nt">signer</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">mrsigner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ce24e0918a348837738a18c4ce7a3afe3aed8acb58ee6ddb6031a570a1e1401c</span><span class="w"></span>
-<span class="w">          </span><span class="nt">isvprodid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::attestation_config_part$$</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: loadbalancer
+    attestation:
+      - mrenclave:
+          - 2c4de8cbe6725f7e11f2f5240bc7e0b7fe0651f2997a48c87ca38918574ef076
+          - bac31957ee05e5f3f95ea10632008315bf314a536a453dbb787be02c5b920b88
+        signer:
+          mrsigner: ce24e0918a348837738a18c4ce7a3afe3aed8acb58ee6ddb6031a570a1e1401c
+          isvprodid: 6
+      - $$SCONE::attestation_config_part$$</code></pre>
 <p><a href="#config-fragment">config-fragment</a> secrets are especially useful here, since they support structured values.
 <a href="#ascii">ascii</a> and other secret kinds can be used, too, except binary-encoded secrets. When using another encoding (like <code>:hex</code>), <a href="#binary">binary secrets</a> can be used as well.</p>
 <h3 id="secret-sharing">Secret Sharing</h3>
 <p>Session owners can decide to share their secrets with other parties to enable collaboration.
 For example, database operators could use TLS to implement access control to databases.
 They would define an access certificate, configure the database to only allow connections from said certificate and export it to the database client:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_operator</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">name: database_operator
 
-<span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_access_key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">export</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_client</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_access_certificate</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509</span><span class="w"></span>
-<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_access_key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">export</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_client</span><span class="w"></span>
-</code></pre></div>
+secrets:
+  - name: database_access_key
+    kind: private-key
+    export:
+      session: database_client
+  - name: database_access_certificate
+    kind: x509
+    private_key: database_access_key
+    export:
+      session: database_client</code></pre>
 <p>The secret owner might also specify multiple receiving sessions - or namespaces - at once:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_operator</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">name: database_operator
 
-<span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_access_key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">export</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_client</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">another_client</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_access_certificate</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509</span><span class="w"></span>
-<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_access_key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">export</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_client</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">another_client</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">relying_party</span><span class="w"> </span><span class="c1"># since v0.3.5</span><span class="w"></span>
-</code></pre></div>
+secrets:
+  - name: database_access_key
+    kind: private-key
+    export:
+      - session: database_client
+      - session: another_client
+  - name: database_access_certificate
+    kind: x509
+    private_key: database_access_key
+    export:
+      - session: database_client
+      - session: another_client
+      - namespace: relying_party # since v0.3.5</code></pre>
 <p>Furthermore, the export might be restricted to certain instances of the importing session.
 For more details, see the concrete SCONE ID format by which other sessions can be referenced in <a href="#referencing-other-sessions">Referencing Other Sessions</a>.</p>
 <p>The database client, on the other hand, would import it and could use it in their session as if it was their own certificate:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_client</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">name: database_client
 
-<span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_access_certificate</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509</span><span class="w"> </span><span class="c1"># optional</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_operator</span><span class="w"></span>
-<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_access_certificate</span><span class="w"></span>
-</code></pre></div>
+secrets:
+  - name: database_access_certificate
+    kind: x509 # optional
+    import:
+      session: database_operator
+      secret: database_access_certificate</code></pre>
 <p>On the importing side, the <code>kind</code> of a secret can be optionally defined to ensure imported secrets match a specific form, but this is not strictly necessary.
 When importing certificates, the associated <code>private-key</code> does not have to be imported explicitly - it will be available automatically if the exporting session exports the private key as well.</p>
 <p>In very specific cases, secrets may also be made public (exported to anyone <em>without authentication</em>) - this may be useful when, for example, defining certificate key hashes:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy_checker</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">name: policy_checker
 
-<span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">certificate_hash</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ascii</span><span class="w"></span>
-<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;4sEY84YhUKT7Q7m4qUj2pmQMxFvZK5XpDyJ3QR6mETVRDkyren&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">export_public</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-</code></pre></div>
+secrets:
+  - name: certificate_hash
+    kind: ascii
+    value: "4sEY84YhUKT7Q7m4qUj2pmQMxFvZK5XpDyJ3QR6mETVRDkyren"
+    export_public: true</code></pre>
 <p>This hash can be used in another session's access control policy through secret substitution (see <a href="#access-control">Access Control</a>):</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">checked_session</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">name: checked_session
 
-<span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy_checker_certificate_hash</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy_checker</span><span class="w"></span>
-<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">certificate_hash</span><span class="w"></span>
+secrets:
+  - name: policy_checker_certificate_hash
+    import:
+      session: policy_checker
+      secret: certificate_hash
 
-<span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;$$SCONE::policy_checker_certificate_hash$$&quot;</span><span class="w"></span>
-</code></pre></div>
+access_policy:
+  read:
+    - "$$SCONE::policy_checker_certificate_hash$$"</code></pre>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>By using <code>export_public: true</code>, the whole world will be able to see the secret value. Make sure this is your intention.
@@ -6378,17 +6326,16 @@ These secrets may also be queried through the <code>/v1/values</code> CAS REST A
 <li>an <a href="#aad-token"><code>aad-token</code> secret</a> authorized to access this vault</li>
 </ul>
 <p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_encryption_key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import_akv</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">vault</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myvaultname.vault.azure.net</span><span class="w"></span>
-<span class="w">      </span><span class="nt">secret_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">abc</span><span class="w"></span>
-<span class="w">      </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::db-aad-token$$</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-aad-token</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aad-token</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+  - name: db_encryption_key
+    kind: binary
+    import_akv:
+      vault: myvaultname.vault.azure.net
+      secret_name: abc
+      token: $$SCONE::db-aad-token$$
+  - name: db-aad-token
+    kind: aad-token
+    ...</code></pre>
 <p><strong><code>import_akv</code> Parameters:</strong></p>
 <ul>
 <li><code>vault</code>: The address of the key vault to use (required)</li>
@@ -6421,11 +6368,10 @@ Deletion, modification or rollback of secret values will be detected by CAS. Not
 </div>
 <h4 id="microsoft-azure-key-vault-secret-backend">Microsoft Azure Key Vault Secret Backend</h4>
 <p>All secrets can be stored in Azure Key Vault, by configuring the secret backend in the session:</p>
-<div class="highlight"><pre><span></span><code>secret_config:
+<pre class="highlight"><code>secret_config:
   store_in: !akv
     token: $$SCONE::my_aad_token$$
-    vault: https://example.vault.microsoftazure.de
-</code></pre></div>
+    vault: https://example.vault.microsoftazure.de</code></pre>
 <p>Note that <code>my_aad_token</code> must refer to an <a href="#aad-token">aad-token secret</a> - similar to <a href="#microsoft-azure-key-vault-import">Microsoft Azure Key Vault Imports</a>.</p>
 <p>There are some key differences between using Azure Key Vault as a secret backend, and importing individual secrets from Azure Key Vault:</p>
 <ul>
@@ -6439,9 +6385,8 @@ Deletion, modification or rollback of secret values will be detected by CAS. Not
 </div>
 <h4 id="cas-database-secret-backend">CAS Database Secret Backend</h4>
 <p>For reference, the default secret backend is the CAS database:</p>
-<div class="highlight"><pre><span></span><code>secret_config:
-  store_in: !cas
-</code></pre></div>
+<pre class="highlight"><code>secret_config:
+  store_in: !cas</code></pre>
 <p>It will be used by default, if no <code>secret_config</code> is present in the session.</p>
 <h3 id="secret-migration">Secret Migration</h3>
 <p>When uploading a new session which has a predecessor session, secret migration takes place.
@@ -6477,22 +6422,20 @@ In short: Secret values which were generated as part of the old session will be 
 </tbody>
 </table>
 <p>Example old session:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_generated_ascii_secret</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ascii</span><span class="w"></span>
-<span class="w">      </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foobar</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span><span class="w"></span>
-<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEADBEEF</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+    - name: my_generated_ascii_secret
+      kind: ascii
+      size: 12
+    - name: foobar
+      kind: binary
+      value: DEADBEEF</code></pre>
 <p>Example new session:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_generated_ascii_secret</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ascii</span><span class="w"></span>
-<span class="w">      </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foobar</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+    - name: my_generated_ascii_secret
+      kind: ascii
+      size: 12
+    - name: foobar
+      kind: private-key</code></pre>
 <p>In the given example, the value of <code>my_generated_ascii_secret</code> will be kept, as it stays an ASCII secret of the same size, whereas <code>foobar</code> will be freshly generated, since its kind changed.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -6506,16 +6449,14 @@ In short: Secret values which were generated as part of the old session will be 
 <p>The volume <code>name</code> is not the volume's mount point. The latter is defined as part of an <a href="#images">image</a>.</p>
 </div>
 <p>By default, a volume will be automatically initialized during the first use:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">volumes:
+  - name: my_database</code></pre>
 <p>The volume will contain a single encrypted region, and a new key will be generated by CAS to encrypt <code>volume.fspf</code> (the file system protection file for the volume). Once initialized, CAS and the runtime will work together to track the updates of the volume. This ensures that a volume can be initialized only once. Use of automatically initialized volumes ensures that the key for the file system is only visible inside of CAS and the application(s) that get access to this volume, i.e., no system administrator will ever see the volume key.</p>
 <p>Alternatively, a file system protection file key (<code>fspf_key</code>) and file system protection file tag (<code>fspf_tag</code>) can be specified for the volume:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f843051d21afa9e52a5b54a708a8032bc49581e982696a81393b8da4a32d00b8</span><span class="w"></span>
-<span class="w">    </span><span class="nt">fspf_tag</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8d8fbe332fb9c893020be791ccd3e8a8</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">volumes:
+  - name: my_database
+    fspf_key: f843051d21afa9e52a5b54a708a8032bc49581e982696a81393b8da4a32d00b8
+    fspf_tag: 8d8fbe332fb9c893020be791ccd3e8a8</code></pre>
 <ul>
 <li><code>fspf_key</code> must be either a hex-encoded 32 byte long key, ...</li>
 </ul>
@@ -6530,41 +6471,37 @@ In short: Secret values which were generated as part of the old session will be 
 <p>A volume can be initialized using the SCONE CLI's <code>scone fspf create-volume</code> command, which generates an encryption key, encrypts initial files, and calculates the initial tag to put into the session.</p>
 <h3 id="volume-sharing">Volume Sharing</h3>
 <p>Volumes may be exported to other sessions, which implies authorizing the other sessions to decrypt and read existing files or encrypt and store new files:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
-<span class="w">    </span><span class="nt">export</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">another-session</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">volumes:
+  - name: my_database
+    export:
+      session: another-session</code></pre>
 <p>or</p>
-<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
-<span class="w">    </span><span class="nt">export</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">another-session</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foobar</span><span class="w"></span>
-<span class="w">        </span><span class="nt">session_hash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">volumes:
+  - name: my_database
+    export:
+      - session: another-session
+      - session: foobar
+        session_hash: 668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088</code></pre>
 <p>The concrete SCONE ID format by which other sessions can be referenced is described in section <a href="#referencing-other-sessions">Referencing Other Sessions</a>.
 Note that volumes can only be exported to local sessions on the same CAS, not to sessions on a remote CAS.</p>
 <p>Similarly, volumes may be imported from another session (in which case fspf key/tag and export list must be omitted):</p>
-<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">their_database</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the_exporting_session</span><span class="w"></span>
-<span class="w">      </span><span class="nt">volume</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">volumes:
+  - name: their_database
+    import:
+      session: the_exporting_session
+      volume: my_database</code></pre>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.2</p>
 </div>
 <h4 id="volume-tag-update-policy">Volume Tag Update Policy</h4>
 <p>When exporting a volume, it is possible to restrict which kind of modifications an importing session is allowed to perform. Section <a href="#image-volumes">Image Volumes</a> demonstrates how volume access can be restricted for local services; the same is also possible for volume exports by using the <code>update_policy</code> key:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
-<span class="w">    </span><span class="nt">export</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">web_server</span><span class="w"></span>
-<span class="w">          </span><span class="nt">session_hash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088</span><span class="w"></span>
-<span class="w">        </span><span class="nt">update_policy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ephemeral</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">volumes:
+  - name: my_database
+    export:
+      - to:
+          session: web_server
+          session_hash: 668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088
+        update_policy: ephemeral</code></pre>
 <p>Note that the SCONE ID (<code>session</code> and <code>session_hash</code>) needed to be moved to a new <code>to:</code> section!</p>
 <p><code>update_policy</code> can have any of the following values:</p>
 <ul>
@@ -6578,43 +6515,39 @@ Note that volumes can only be exported to local sessions on the same CAS, not to
 <h4 id="volume-alias">Volume Alias</h4>
 <p>In multi-stakeholder processing pipelines, individual components may have only partial knowledge of the whole system.
 To facilitate pipeline assembly, it is possible to export a volume under a different name (called alias) towards individual sessions:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_server</span><span class="w"></span>
-<span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
-<span class="w">    </span><span class="nt">export</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">processing_component_1</span><span class="w"></span>
-<span class="w">          </span><span class="nt">session_hash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088</span><span class="w"></span>
-<span class="w">        </span><span class="nt">volume_alias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">processing_component_2</span><span class="w"></span>
-<span class="w">        </span><span class="nt">volume_alias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">input</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">name: database_server
+volumes:
+  - name: my_database
+    export:
+      - to:
+          session: processing_component_1
+          session_hash: 668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088
+        volume_alias: output
+      - to:
+          session: processing_component_2
+        volume_alias: input</code></pre>
 <p>When importing the volume, the alias must be specified as the volume's name:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">processing_component_2</span><span class="w"></span>
-<span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dataset</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database_server</span><span class="w"></span>
-<span class="w">      </span><span class="nt">volume</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">input</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">name: processing_component_2
+volumes:
+  - name: dataset
+    import:
+      session: database_server
+      volume: input</code></pre>
 <p>During import, using the original volume name is not possible.</p>
 <h2 id="images">Images</h2>
 <p>The <code>images</code> keyword allows specifying images usable by services (see section <a href="#service-description">Service Description</a>). Each image has an arbitrary but unique <code>name</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_image</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">images:
+  - name: my_image</code></pre>
 <h3 id="image-volumes">Image Volumes</h3>
 <p>Images may define access to <a href="#volumes">volumes</a>, by referencing a previously declared volume's <code>name</code> and giving it a mount point (<code>path</code>):</p>
-<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">volumes:
+  - name: my_database
 
-<span class="nt">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_image</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
-<span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/media/database</span><span class="w"></span>
-</code></pre></div>
+images:
+  - name: my_image
+    volumes:
+      - name: my_database
+        path: /media/database</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The given path must already exist in the filesystem, e.g., through a mounted docker volume. The information provided as part of the session description are only used to encrypt and authenticate all of the volume's files. The CAS does not actually store the encrypted files.</p>
@@ -6624,16 +6557,15 @@ To facilitate pipeline assembly, it is possible to export a volume under a diffe
 </div>
 <h4 id="image-volume-tag-update-policy">Image Volume Tag Update Policy</h4>
 <p>By default, volumes are rollback-protected: Attempting to restore an old volume state and letting a service read files from or write files to this old state will be detected and prevented. In specific cases, however, this may not be the desired behavior. The <code>update_policy</code> key can be used to change it:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">volumes:
+  - name: my_database
 
-<span class="nt">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_image</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_database</span><span class="w"></span>
-<span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/media/database</span><span class="w"></span>
-<span class="w">        </span><span class="nt">update_policy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no_rollback_protection</span><span class="w"></span>
-</code></pre></div>
+images:
+  - name: my_image
+    volumes:
+      - name: my_database
+        path: /media/database
+        update_policy: no_rollback_protection</code></pre>
 <p>The following values are possible as a volume <code>update_policy</code> policy:</p>
 <ul>
 <li><code>rollback_protected</code>: This is the default setting if <code>update_policy</code> is omitted. Services are allowed to alter the volume state, any rollback will be detected and lead to an error upon access. This ensures a coherent, linear history of volume changes.</li>
@@ -6648,16 +6580,15 @@ For details, please refer to section <a href="#volume-sharing">Volume Sharing</a
 </div>
 <h3 id="image-secret-injection-files">Image Secret Injection Files</h3>
 <p>Images may also contain secret injection files, a way to inject secrets into configuration files:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">proxy_image</span><span class="w"></span>
-<span class="w">    </span><span class="nt">injection_files</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/nginx/nginx.conf</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/mysql/my.cnf</span><span class="w"></span>
-<span class="w">        </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">          </span><span class="no">[client]</span><span class="w"></span>
-<span class="w">          </span><span class="no">user=mysqluser</span><span class="w"></span>
-<span class="w">          </span><span class="no">password=$$SCONE::mysqlpass$$</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">images:
+  - name: proxy_image
+    injection_files:
+      - /etc/nginx/nginx.conf
+      - path: /etc/mysql/my.cnf
+        content: |
+          [client]
+          user=mysqluser
+          password=$$SCONE::mysqlpass$$</code></pre>
 <p>For details, refer to section <a href="#secret-injection-files">Secret Injection Files</a>.</p>
 <h2 id="access-control">Access Control</h2>
 <p>Any operation on a session description requires permission. If the entity requesting a certain operation is not explicitly permitted to perform said operation, the request will fail. The <code>access_policy</code> keyword allows specifying lists of entities that are allowed to perform the following operations:</p>
@@ -6684,10 +6615,9 @@ A certificate with this key shall be used when establishing a connection to CAS 
 <li><code>$$SCONE::secret-name$$</code> will dynamically use the value of a secret with the given name (<code>secret-name</code>) at permission evaluation time. The replaced value must be either <code>CREATOR</code> (ascii), a certificate key hash (ascii) or certificate (x509) as defined above. It is possible to use explicit secrets, generated secrets, and imported secrets. When referencing X.509 certificates, do not specify a format suffix. If the mentioned secret does not exist, cannot be read, or has an incompatible value, it will be ignored, but an error message will be shown on unsuccessful authentication attempts.</li>
 <li>
 <p><code>signer: &lt;public key&gt;</code>: Public key of a session signer. Signing sessions is an alternative to using TLS client certificates during session upload. <code>scone self show-session-signing-key</code> shows the CLI signer identity. The public key is an X.509 Subject Public Key Info (SPKI, see <a href="https://datatracker.ietf.org/doc/html/rfc5280#section-4.1.2.7">RFC 5280 section 4.1.2.7</a>) encoded. At the moment, Ed25519 and P384/secp384r1 keys are supported. A valid public key looks similar to:
-    <div class="highlight"><pre><span></span><code>-----BEGIN PUBLIC KEY-----
+    <pre class="highlight"><code>-----BEGIN PUBLIC KEY-----
 MCowBQYDK2VwAyEAOsufQ7RCOXueVLQBpk7Y44GAaj+LzPbmHfdr/TPdlrE=
------END PUBLIC KEY-----
-</code></pre></div>
+-----END PUBLIC KEY-----</code></pre>
     Note that signers are not supported in the <code>read</code> policy.</p>
 </li>
 <li>
@@ -6695,79 +6625,74 @@ MCowBQYDK2VwAyEAOsufQ7RCOXueVLQBpk7Y44GAaj+LzPbmHfdr/TPdlrE=
 </li>
 </ul>
 <p>By default, the access policy is defined as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">  </span><span class="nt">create_sessions</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">&lt;same as update&gt;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  read:
+   - CREATOR
+  update:
+   - CREATOR
+  create_sessions:
+    &lt;same as update&gt;</code></pre>
 <p>Default values will be used for operations not explicitly specified in a session description.</p>
 <p>Example policy:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">      </span><span class="no">-----BEGIN CERTIFICATE-----</span><span class="w"></span>
-<span class="w">      </span><span class="no">MIIFwTCCA6mgAwIBAgIUCF1MVJJ78BIf4WmTE24aAX7NlHowDQYJKoZIhvcNAQEL</span><span class="w"></span>
-<span class="w">      </span><span class="no">BQAwcDELMAkGA1UEBhMCVVMxDzANBgNVBAgMBk9yZWdvbjERMA8GA1UEBwwIUG9y</span><span class="w"></span>
-<span class="w">      </span><span class="no">dGxhbmQxFTATBgNVBAoMDENvbXBhbnkgTmFtZTEMMAoGA1UECwwDT3JnMRgwFgYD</span><span class="w"></span>
-<span class="w">      </span><span class="no">VQQDDA93d3cuZXhhbXBsZS5jb20wHhcNMTkwNzIyMTU1NTExWhcNMTkwODIyMTU1</span><span class="w"></span>
-<span class="w">      </span><span class="no">NTExWjBwMQswCQYDVQQGEwJVUzEPMA0GA1UECAwGT3JlZ29uMREwDwYDVQQHDAhQ</span><span class="w"></span>
-<span class="w">      </span><span class="no">b3J0bGFuZDEVMBMGA1UECgwMQ29tcGFueSBOYW1lMQwwCgYDVQQLDANPcmcxGDAW</span><span class="w"></span>
-<span class="w">      </span><span class="no">BgNVBAMMD3d3dy5leGFtcGxlLmNvbTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC</span><span class="w"></span>
-<span class="w">      </span><span class="no">AgoCggIBALVbVIrBAlzDOztWs9hZr5kvYoUwq/hL7zaMrYKBLQJZFNbhmMaUsW7A</span><span class="w"></span>
-<span class="w">      </span><span class="no">Fzj87dzP3xIf4c2r3IGJSukv7hJpaJ2Ykv80i3C7EiFgaDV/+JP9d/GjsvcW20zH</span><span class="w"></span>
-<span class="w">      </span><span class="no">mtJcBIkdkqPt1epOtxsMyJGZL+34DoWOqgY7up6nCirr+MeUxYJ/dWBFD1j0iuHl</span><span class="w"></span>
-<span class="w">      </span><span class="no">Y+rEMsv4xFBndgLmMQNlcMyXtBgPls4EgnDfnjICqIYMHt6PG+kwoR4tbs+v2Gsl</span><span class="w"></span>
-<span class="w">      </span><span class="no">vqldxI7efErZh+kKtjtFxt6qzrypUs9bYgH3tsaUE0xYeK/A2llylJzPOv6vkCqg</span><span class="w"></span>
-<span class="w">      </span><span class="no">vPOJETcZyoeH46niITdPssYr4yPQOxn/a7WS+7Mn2y6o5z4Q+DkB96lzUyvVJnwO</span><span class="w"></span>
-<span class="w">      </span><span class="no">aorzec0PaB/qqYrHqVfftMu4thMwHGB8CrGUiq/ImHPWkfobyVcMYJ0/LaLSDHFj</span><span class="w"></span>
-<span class="w">      </span><span class="no">1hN36VkzWqQcCM6ymhjx9Lpfzzxna5910jE86zb1cMnD/eAAd90jpJvGJN43Hw40</span><span class="w"></span>
-<span class="w">      </span><span class="no">MIvjYBunOy9P3ah0kgCk7gW0oKlYHxugv8pZVHMwU1HFIdwYvlGd09XHFDyj9tul</span><span class="w"></span>
-<span class="w">      </span><span class="no">eX8zaVwaNeLUrMdJN5Ct1HX16RpnpaIMwwExzXgsZ01BQcfIcGWGbvBfH2C86klt</span><span class="w"></span>
-<span class="w">      </span><span class="no">SuG7M6kxk4XgIIlwTSGk7qJlfd4s8PD1fVJNKvJZwXXoQBy4hCrTAgMBAAGjUzBR</span><span class="w"></span>
-<span class="w">      </span><span class="no">MB0GA1UdDgQWBBRSUKop9QDGmSdLCfzWlBIF5ClNVDAfBgNVHSMEGDAWgBRSUKop</span><span class="w"></span>
-<span class="w">      </span><span class="no">9QDGmSdLCfzWlBIF5ClNVDAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUA</span><span class="w"></span>
-<span class="w">      </span><span class="no">A4ICAQAny4QmzvCza0TQUuh7YIxtkBjJoyTSDGmr5W/4AWKsoZJM9QxzWeIAXhWD</span><span class="w"></span>
-<span class="w">      </span><span class="no">UPH2TfwcNX/ovZiSDQaGduRL67Wk8lbp1MvjACMEtLRjsbnYtGFdhit0fR97B5Y6</span><span class="w"></span>
-<span class="w">      </span><span class="no">d06Ka/NXgPTJorXx8WSWUp0qaAQcgvhfgF0vnOSB5CbP5RSYE5TuLu6gh+iQTrBI</span><span class="w"></span>
-<span class="w">      </span><span class="no">Syl+9UaopkbQDRsg+XRfie+kUxQgldUAFvFmu6sM6FTbw0KGkrsOajwpF/Fu5hSV</span><span class="w"></span>
-<span class="w">      </span><span class="no">Ucov4Lzrrxkok5FzWPkVtMalLZ4Du+ZUYG//10WZg+HdrIwx3m2wxrFIkZaMKxv4</span><span class="w"></span>
-<span class="w">      </span><span class="no">ZkIMsb6DUPUZqy8qZpMzIqvDzx3iYEWWfBOCJWBjs8/V1mAuUu6TBCKAJpvfX6bU</span><span class="w"></span>
-<span class="w">      </span><span class="no">hNrCbnrpuxuCCPJnj9sXkBDvl5rcyfshTtKl3NoBrRRDuUHWsJWzsKvBQtwN46vF</span><span class="w"></span>
-<span class="w">      </span><span class="no">CbF0aXOozihtmmcMpFFeDIj6p/5qlaJtslegtfv2zoztc3e2ituOjqFQ/I5pplvo</span><span class="w"></span>
-<span class="w">      </span><span class="no">p8EGwCI1xTGF0BTatcSV1+lLNeONhhAtwliV13nPSH1o4yxoZ+xZTZq4+9ylw7dq</span><span class="w"></span>
-<span class="w">      </span><span class="no">yV3BQM11U6OyAPE1G6EX0PgFvLm25sGTJq9TKXs9yWPRit9vHcOCXSGn8osn4SMg</span><span class="w"></span>
-<span class="w">      </span><span class="no">Puqpk+3M9xR8XDPJiBjkxcSnt9+EDNwpthTzgUEoyM6dY8nvWA==</span><span class="w"></span>
-<span class="w">      </span><span class="no">-----END CERTIFICATE-----</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;$$SCONE::remote_validation_service$$&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">        </span><span class="no">-----BEGIN PUBLIC KEY-----</span><span class="w"></span>
-<span class="w">        </span><span class="no">MCowBQYDK2VwAyEAOsufQ7RCOXueVLQBpk7Y44GAaj+LzPbmHfdr/TPdlrE=</span><span class="w"></span>
-<span class="w">        </span><span class="no">-----END PUBLIC KEY-----</span><span class="w"></span>
-<span class="w">  </span><span class="nt">create_sessions</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NONE</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  read:
+    - CREATOR
+    - 3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1
+    - |
+      -----BEGIN CERTIFICATE-----
+      MIIFwTCCA6mgAwIBAgIUCF1MVJJ78BIf4WmTE24aAX7NlHowDQYJKoZIhvcNAQEL
+      BQAwcDELMAkGA1UEBhMCVVMxDzANBgNVBAgMBk9yZWdvbjERMA8GA1UEBwwIUG9y
+      dGxhbmQxFTATBgNVBAoMDENvbXBhbnkgTmFtZTEMMAoGA1UECwwDT3JnMRgwFgYD
+      VQQDDA93d3cuZXhhbXBsZS5jb20wHhcNMTkwNzIyMTU1NTExWhcNMTkwODIyMTU1
+      NTExWjBwMQswCQYDVQQGEwJVUzEPMA0GA1UECAwGT3JlZ29uMREwDwYDVQQHDAhQ
+      b3J0bGFuZDEVMBMGA1UECgwMQ29tcGFueSBOYW1lMQwwCgYDVQQLDANPcmcxGDAW
+      BgNVBAMMD3d3dy5leGFtcGxlLmNvbTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCC
+      AgoCggIBALVbVIrBAlzDOztWs9hZr5kvYoUwq/hL7zaMrYKBLQJZFNbhmMaUsW7A
+      Fzj87dzP3xIf4c2r3IGJSukv7hJpaJ2Ykv80i3C7EiFgaDV/+JP9d/GjsvcW20zH
+      mtJcBIkdkqPt1epOtxsMyJGZL+34DoWOqgY7up6nCirr+MeUxYJ/dWBFD1j0iuHl
+      Y+rEMsv4xFBndgLmMQNlcMyXtBgPls4EgnDfnjICqIYMHt6PG+kwoR4tbs+v2Gsl
+      vqldxI7efErZh+kKtjtFxt6qzrypUs9bYgH3tsaUE0xYeK/A2llylJzPOv6vkCqg
+      vPOJETcZyoeH46niITdPssYr4yPQOxn/a7WS+7Mn2y6o5z4Q+DkB96lzUyvVJnwO
+      aorzec0PaB/qqYrHqVfftMu4thMwHGB8CrGUiq/ImHPWkfobyVcMYJ0/LaLSDHFj
+      1hN36VkzWqQcCM6ymhjx9Lpfzzxna5910jE86zb1cMnD/eAAd90jpJvGJN43Hw40
+      MIvjYBunOy9P3ah0kgCk7gW0oKlYHxugv8pZVHMwU1HFIdwYvlGd09XHFDyj9tul
+      eX8zaVwaNeLUrMdJN5Ct1HX16RpnpaIMwwExzXgsZ01BQcfIcGWGbvBfH2C86klt
+      SuG7M6kxk4XgIIlwTSGk7qJlfd4s8PD1fVJNKvJZwXXoQBy4hCrTAgMBAAGjUzBR
+      MB0GA1UdDgQWBBRSUKop9QDGmSdLCfzWlBIF5ClNVDAfBgNVHSMEGDAWgBRSUKop
+      9QDGmSdLCfzWlBIF5ClNVDAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUA
+      A4ICAQAny4QmzvCza0TQUuh7YIxtkBjJoyTSDGmr5W/4AWKsoZJM9QxzWeIAXhWD
+      UPH2TfwcNX/ovZiSDQaGduRL67Wk8lbp1MvjACMEtLRjsbnYtGFdhit0fR97B5Y6
+      d06Ka/NXgPTJorXx8WSWUp0qaAQcgvhfgF0vnOSB5CbP5RSYE5TuLu6gh+iQTrBI
+      Syl+9UaopkbQDRsg+XRfie+kUxQgldUAFvFmu6sM6FTbw0KGkrsOajwpF/Fu5hSV
+      Ucov4Lzrrxkok5FzWPkVtMalLZ4Du+ZUYG//10WZg+HdrIwx3m2wxrFIkZaMKxv4
+      ZkIMsb6DUPUZqy8qZpMzIqvDzx3iYEWWfBOCJWBjs8/V1mAuUu6TBCKAJpvfX6bU
+      hNrCbnrpuxuCCPJnj9sXkBDvl5rcyfshTtKl3NoBrRRDuUHWsJWzsKvBQtwN46vF
+      CbF0aXOozihtmmcMpFFeDIj6p/5qlaJtslegtfv2zoztc3e2ituOjqFQ/I5pplvo
+      p8EGwCI1xTGF0BTatcSV1+lLNeONhhAtwliV13nPSH1o4yxoZ+xZTZq4+9ylw7dq
+      yV3BQM11U6OyAPE1G6EX0PgFvLm25sGTJq9TKXs9yWPRit9vHcOCXSGn8osn4SMg
+      Puqpk+3M9xR8XDPJiBjkxcSnt9+EDNwpthTzgUEoyM6dY8nvWA==
+      -----END CERTIFICATE-----
+    - "$$SCONE::remote_validation_service$$"
+  update:
+    - signer: |
+        -----BEGIN PUBLIC KEY-----
+        MCowBQYDK2VwAyEAOsufQ7RCOXueVLQBpk7Y44GAaj+LzPbmHfdr/TPdlrE=
+        -----END PUBLIC KEY-----
+  create_sessions:
+    - NONE</code></pre>
 <p>This policy will allow read requests from the creator, a user whose TLS client certificate has a public key hash <code>3s1pm8W6Be6cxvAQRbRP5YXd9YuERAr7KswN97uGtoPkRW87x1</code>, a user whose TLS client certificate has a public key similar to the one of the certificate specified in the session description and a user whose credential is taken from the secret named <code>remote_validation_service</code> (which may be imported from another session).
 The session may only be updated if successors are signed by the given signer identity:
-<div class="highlight"><pre><span></span><code>-----BEGIN PUBLIC KEY-----
+<pre class="highlight"><code>-----BEGIN PUBLIC KEY-----
 MCowBQYDK2VwAyEAOsufQ7RCOXueVLQBpk7Y44GAaj+LzPbmHfdr/TPdlrE=
------END PUBLIC KEY-----
-</code></pre></div>
+-----END PUBLIC KEY-----</code></pre>
 No one is allowed to create sessions in its namespace.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.10</p>
 </div>
 <p>Individual sections or the entire access_policy can be replaced with variables, too:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::external_policy$$</span><span class="w"></span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::external_update_policy$$</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy: $$SCONE::external_policy$$</code></pre>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  update: $$SCONE::external_update_policy$$</code></pre>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Make sure that referenced secrets are valid and stay valid over the course of the session's lifetime, otherwise you may lose access to your session.</p>
@@ -6783,18 +6708,17 @@ No one is allowed to create sessions in its namespace.</p>
 <p>For multi-stakeholder computations, controlling access to a session with a single credential is insufficient.
 The <strong>governance</strong> system allows multi-credential access control using <code>require-all</code> and <code>require-at-least-X</code> rules.</p>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NONE</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">require-all</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-at-least-2</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter1</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter2</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter3</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-all</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$veto_member1</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$veto_member2</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  read: NONE
+  update:
+    require-all:
+      - require-at-least-2:
+          - signer: $voter1
+          - signer: $voter2
+          - signer: $voter3
+      - require-all:
+          - signer: $veto_member1
+          - signer: $veto_member2</code></pre>
 <p>The above example requires an update to a session to be signed by <strong>both</strong> <code>$veto_member1</code> and <code>$veto_member2</code>, as well as at least 2 of the 3 <code>$voter</code>s.</p>
 <p>Governance rules can be used in the <code>update</code> and <code>create_sessions</code> access policies, but not in the <code>read</code> access policy.</p>
 <div class="admonition note">
@@ -6805,20 +6729,19 @@ Therefore, it does not make sense to require more than one certificate at a time
 </div>
 <p>Rules can be arbitrarily deeply nested.
 Extended example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NONE</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">require-at-least-1</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$owner</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-all</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-at-least-2</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter1</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter2</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$voter3</span><span class="w"></span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">require-all</span><span class="p">:</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$veto_member1</span><span class="w"></span>
-<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">signer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$veto_member2</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  read: NONE
+  update:
+    require-at-least-1:
+      - signer: $owner
+      - require-all:
+          - require-at-least-2:
+              - signer: $voter1
+              - signer: $voter2
+              - signer: $voter3
+          - require-all:
+              - signer: $veto_member1
+              - signer: $veto_member2</code></pre>
 <p>This example works the same as the previous one, but additionally allows the <code>$owner</code> to overrule all other members.</p>
 <h2 id="attestation-security">Attestation Security</h2>
 <p>The services' security directly depends on CAS' ability to verify that a service process has not been manipulated (referred to as attestation), as described in <a href="#attestation">the service attestation section</a>. CAS ships with secure defaults, and only allows hardware-attested services running on trustworthy platforms in secure production-mode enclaves.</p>
@@ -6841,9 +6764,8 @@ For such applications we <strong>strongly recommend</strong> using singleton enc
 <p>Note that, <strong>in production environments, Singleton Enclaves currently require hardware with FLC (Flexible Launch Control)</strong> support.
 FLC was introduced in 2018 (<a href="https://software.intel.com/content/www/us/en/develop/blogs/an-update-on-3rd-party-attestation.html">An update on 3<sup>rd</sup> Party Attestation</a>) by Intel and most modern Processors should support it.</p>
 <p>Singleton enclave support was added in SCONE 5.7.0 and can be opted in with the following option in <code>security</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">singleton_enclaves</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  singleton_enclaves: true</code></pre>
 <p>Singleton enclaves will be enabled by default starting with the next session language version.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.1</p>
@@ -6856,10 +6778,9 @@ FLC was introduced in 2018 (<a href="https://software.intel.com/content/www/us/e
 <li>A platform with known security vulnerabilities is used in a testing environment</li>
 </ul>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tolerate</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">debug-mode</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">hyperthreading</span><span class="p p-Indicator">]</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  attestation:
+    tolerate: [debug-mode, hyperthreading]</code></pre>
 <p><code>tolerate</code> is an array which can hold the following variants:</p>
 <ul>
 <li><code>debug-mode</code> enclaves allow introspection with a debugger. This disables enclave protection, all secrets can be extracted.</li>
@@ -6880,17 +6801,15 @@ FLC was introduced in 2018 (<a href="https://software.intel.com/content/www/us/e
 <p>Displayed attestation error messages are not authenticated, and may be forged by a MitM attacker. It is advisable to critically review the suggested configuration changes as well as Intel advisories.</p>
 </div>
 <p>Intel will release advisories when becoming aware of new security issues with SGX-enabled processors. Some of the problems listed in these advisories are encountered more frequently, in which case SCONE/CAS provide shortcuts to ignore them (like <code>hyperthreading</code>). Others may be more severe or very recent. In order to ignore them, they and their associated category (<code>software-hardening-needed</code> / <code>insecure-configuration</code> / <code>outdated-tcb</code>) need to be specified explicitly. Example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tolerate</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">outdated-tcb</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ignore_advisories</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">INTEL-SA-00161</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">INTEL-SA-00270</span><span class="p p-Indicator">]</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  attestation:
+    tolerate: [outdated-tcb]
+    ignore_advisories: [INTEL-SA-00161, INTEL-SA-00270]</code></pre>
 <p>When in <code>debug-mode</code>, all advisories can be ignored by using a wildcard, simplifying the workflow in testing environments:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tolerate</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">debug-mode</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">outdated-tcb</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ignore_advisories</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  attestation:
+    tolerate: [debug-mode, outdated-tcb]
+    ignore_advisories: "*"</code></pre>
 <p>As this silently ignores newly released platform advisories too, wildcards cannot be used in (non-debug) production mode.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.1</p>
@@ -6898,10 +6817,9 @@ FLC was introduced in 2018 (<a href="https://software.intel.com/content/www/us/e
 <h3 id="trusted-scone-quoting-enclaves">Trusted SCONE Quoting Enclaves</h3>
 <p>By default, the system uses the SCONE attestation scheme. This scheme is built around a separate quoting enclave (QE), into which trust has to be established. This is done automatically using EPID-based attestation for a set of known trustworthy QE measurements embedded into the CAS software.</p>
 <p>If EPID-based attestation is not available, or you want to use custom QEs, the QE public keys can be manually specified as trustworthy:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">trusted_scone_qe_pubkeys</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;E37F149AE30896E314A2859874C5A9C7803FB3187B99F5D08E526B1C0396507C&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  attestation:
+    trusted_scone_qe_pubkeys: ["E37F149AE30896E314A2859874C5A9C7803FB3187B99F5D08E526B1C0396507C"]</code></pre>
 <p>The QE public key can be found in the log output of the Local Attestation Service (LAS). Specified keys are an additional trust anchor, and do not replace the trusted built-in QE measurements. To trust the given keys exclusively, additionally enable <a href="#platform-based-attestation">platform-based attestation</a> for individual services.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.7</p>
@@ -6919,12 +6837,11 @@ In addition, MAA allows setting up <a href="https://docs.microsoft.com/en-us/azu
 </ul>
 </div>
 <p>Example MAA configuration:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">maa</span><span class="w"></span>
-<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://sharedweu.weu.attest.azure.net</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tolerate</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">debug</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">maa-managed-tcb</span><span class="p p-Indicator">]</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  attestation:
+    mode: maa
+    url: https://sharedweu.weu.attest.azure.net
+    tolerate: [debug, maa-managed-tcb]</code></pre>
 <p>The following attestation parameters are supported:</p>
 <ul>
 <li><code>mode: maa</code> enables MAA-based attestation and disables the default hardware attestation mode.</li>
@@ -6942,10 +6859,9 @@ At the moment, MAA does not expose the security posture of the platform's TCB it
 </div>
 <h3 id="disabling-attestation">Disabling attestation</h3>
 <p>Attestation can be completely disabled:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span><span class="w">  </span><span class="c1"># Default mode is &#39;hardware&#39;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  attestation:
+    mode: none  # Default mode is 'hardware'</code></pre>
 <p>This may be useful in testing environments where no hardware-based attestation is available.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -6962,9 +6878,8 @@ This feature offers an additional layer of authentication on top of service atte
 <p>Service Access Tokens were added in SCONE 5.7.0.</p>
 </div>
 <p>To enable the feature, add a Service Access Token to the session's security configuration:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">service_access_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">j765WyMWTKksiqWbBuuc</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  service_access_token: j765WyMWTKksiqWbBuuc</code></pre>
 <p>There are no restrictions regarding the length or content of the token, however we recommend that the token should be a randomly generated password of sufficient length with high entropy.</p>
 <p>Once enabled, the <code>SCONE_SERVICE_ACCESS_TOKEN</code> environment variable must be set when starting one of the session's services.
 For the above configuration example, this would be: <code>SCONE_SERVICE_ACCESS_TOKEN=j765WyMWTKksiqWbBuuc</code></p>
@@ -6989,55 +6904,50 @@ For the above configuration example, this would be: <code>SCONE_SERVICE_ACCESS_T
 </div>
 <p>Sessions support Two-factor Authentication (2FA) with One-time Passwords (OTP) generated by the <a href="https://datatracker.ietf.org/doc/html/rfc6238">Time-based One-time Password Algorithm (TOTP)</a>. This feature offers an additional layer of authentication on top of attestation. Hence, OTPs can be used to authenticate individual service executions from a session during attestation. Its implementation adheres to <a href="https://datatracker.ietf.org/doc/html/rfc6238">RFC6238</a>. The implementation generates OTP values with the length of six digits and uses a <a href="https://datatracker.ietf.org/doc/html/rfc6238#section-4.2">time-step</a> of 30 seconds.</p>
 <p>To enable the 2FA, a <a href="https://datatracker.ietf.org/doc/html/rfc4648#section-6">RFC4648 base32 encoded</a> <a href="https://datatracker.ietf.org/doc/html/rfc4226#section-4">shared secret</a> must be specified in the session security attestation subsection. This shared secret must have a length of at least 128 bits:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">one_time_password_shared_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BASE32SECRET3232BASE32SECRET3232</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">security:
+  attestation:
+    one_time_password_shared_secret: BASE32SECRET3232BASE32SECRET3232</code></pre>
 <p>To authenticate the execution of a service of a 2FA-enabled session, an OTP value must be generated using the TOTP with the supplied shared secret. The generated OTP value must then be appended to the <code>SCONE_CONFIG_ID</code> delimited with an <code>@</code> when the service is executed:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span>my-session/my-service@123456 /app/my-service
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_CONFIG_ID=my-session/my-service@123456 /app/my-service</code></pre>
 <p>The service attestation will only commence once the CAS has verified the given OTP.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.10</p>
 </div>
 <p>The OTP shared secret can also be a reference to another secret in the session:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">one_time_password_shared_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::otp_shared_secret:base32nopad$$</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">security:
+  attestation:
+    one_time_password_shared_secret: $$SCONE::otp_shared_secret:base32nopad$$
 
-<span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">otp_shared_secret</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">otp_policy</span><span class="w"></span>
-<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">otp_shared_secret</span><span class="w"></span>
-</code></pre></div>
+secrets:
+  - name: otp_shared_secret
+    kind: binary
+    import:
+      session: otp_policy
+      secret: otp_shared_secret</code></pre>
 <p>The referenced secret must either be a <a href="https://datatracker.ietf.org/doc/html/rfc4648#section-6">RFC4648 base32-encoded</a> <a href="#ascii">ascii value</a>, or a <a href="#binary">binary secret</a> with a size of at least 16. When using a binary secret, make sure to specify the <code>:base32nopad</code> format suffix.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.10</p>
 </div>
 <p>Shared secrets can also be set on a per-service basis:</p>
 <p>&nbsp;</p>
-<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-service</span><span class="w"></span>
-<span class="w">    </span><span class="nt">one_time_password_shared_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BASE32SECRET3232BASE32SECRET3232</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">services:
+  - name: my-service
+    one_time_password_shared_secret: BASE32SECRET3232BASE32SECRET3232</code></pre>
 <p>If a shared secret was configured both in the <code>services</code> section as well as the <code>security</code> section, the one taken from <code>services</code> takes precedence.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.10</p>
 </div>
 <h3 id="delegating-security-decisions-to-other-sessions">Delegating Security Decisions to Other Sessions</h3>
 <p>Parts of, or even the entire <code>security</code> section can be replaced with a SCONE variable. The referenced secret can be a <a href="#config-fragment">configuration fragment</a> imported from another session. This allows delegation of security decisions to other (administrative) sessions.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::central_attestation_policy$$</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">security:
+  attestation: $$SCONE::central_attestation_policy$$
 
-<span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">central_attestation_policy</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config-fragment</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">admin_session</span><span class="w"></span>
-<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">attestation_policy</span><span class="w"></span>
-</code></pre></div>
+secrets:
+  - name: central_attestation_policy
+    kind: config-fragment
+    import:
+      session: admin_session
+      secret: attestation_policy</code></pre>
 <h2 id="referencing-other-sessions">Referencing Other Sessions</h2>
 <p>In some cases it may be necessary to reference other sessions, e.g. when exporting or importing <a href="#volumes">volumes</a> or <a href="#secret-sharing">secrets</a>.
 This is possible by using a SCONE ID. The following sections describe the format and content of this ID.</p>
@@ -7065,38 +6975,32 @@ This is possible by using a SCONE ID. The following sections describe the format
 <li>Pointing to sessions nested in the current session: <code>session: ./&lt;nested session name&gt;</code> <em>(added in SCONE 5.8.0)</em></li>
 </ul>
 <p>Note that, depending on the context, you may also have to supply a secret, volume or service name, e.g.:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-database</span><span class="w"></span>
-<span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-encryption-key</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">session: my-database
+secret: db-encryption-key</code></pre>
 <p>By using this simple form, you trust the session's owner, and accept that their session configuration may change over time.
 If you want to trust a specific session configuration instead, you have to additionally specify a <em>session hash</em>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;session name&gt;</span><span class="w"></span>
-<span class="nt">session_hash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;session hash-key&gt;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">session: &lt;session name&gt;
+session_hash: &lt;session hash-key&gt;</code></pre>
 <p>e.g.:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-database</span><span class="w"></span>
-<span class="nt">session_hash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a51c14dd7029d2ef54a50a9e26efcdd37c4971b5b62cb6d244c9216f80b6eadf</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">session: my-database
+session_hash: a51c14dd7029d2ef54a50a9e26efcdd37c4971b5b62cb6d244c9216f80b6eadf</code></pre>
 <p>Exporting/Importing elements to/from the other session will be prevented by the CAS when the currently active session does not match the specified hash.
 Note that, in this case, your own session may cease working when importing secrets or volumes from another session whose hash has changed, requiring you to update the session.</p>
 <div class="admonition success inline end">
 <p class="admonition-title">v0.3.6</p>
 </div>
 <p>When exporting secrets to another session, access is only granted to this specific session, excluding nested sessions. Exporting to all nested sessions is possible using the <code>namespace</code> keyword (instead of <code>session</code>):</p>
-<div class="highlight"><pre><span></span><code><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;session name&gt;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">namespace: &lt;session name&gt;</code></pre>
 <p>The namespace session itself can access the secret as well. Relative paths are usable, too. Note that it is not possible to restrict session hashes when exporting to a namespace. Exporting to a namespace is currently only possible for secrets, not for volumes.</p>
 <h3 id="sessions-on-another-cas">Sessions on another CAS</h3>
 <p>Referencing sessions on another CAS requires more information - the remote CAS' address and a key to authenticate it:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">cas_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;CAS address&gt;</span><span class="w"></span>
-<span class="nt">cas_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;CAS key hash&gt;</span><span class="w"></span>
-<span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;session name&gt;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">cas_url: &lt;CAS address&gt;
+cas_key: &lt;CAS key hash&gt;
+session: &lt;session name&gt;</code></pre>
 <p>e.g.:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">cas_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cas.example.com</span><span class="w"></span>
-<span class="nt">cas_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">46YyxrywJ8PFRruWX8YLxa9q4axxYJgTbA81tv7NBcJfn43DQt</span><span class="w"></span>
-<span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">company-storage</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">cas_url: cas.example.com
+cas_key: 46YyxrywJ8PFRruWX8YLxa9q4axxYJgTbA81tv7NBcJfn43DQt
+session: company-storage</code></pre>
 <p>The <code>cas_key</code> is used for authentication and ensures that exports/imports will only be performed to/from the correct CAS.
 <strong>It is of utmost importance to specify a verified, correct key.</strong>
 When a CAS was attested using the CLI, you can query its verified key by using <code>scone cas show-identification -c</code>.
@@ -7105,33 +7009,29 @@ Similarly, when attesting a CAS, you can supply the key received from another se
 Most of the time, this is an adequate solution.
 In specific cases, when trusting the remote CAS' owner is not an option, it may be necessary to pin a specific CAS software revision instead.
 This may be done by using the <code>cas_software_key</code> instead of a <code>cas_key</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">cas_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;CAS address&gt;</span><span class="w"></span>
-<span class="nt">cas_software_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;CAS key hash&gt;</span><span class="w"></span>
-<span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;session name&gt;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">cas_url: &lt;CAS address&gt;
+cas_software_key: &lt;CAS key hash&gt;
+session: &lt;session name&gt;</code></pre>
 <p>e.g.:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">cas_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cas.example.com</span><span class="w"></span>
-<span class="nt">cas_software_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3AC5RSbL73aVVf98m2UMTN2BFsQv6eQufi5BGBxrG8awxP4ygQ</span><span class="w"></span>
-<span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-namespace/company-storage</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">cas_url: cas.example.com
+cas_software_key: 3AC5RSbL73aVVf98m2UMTN2BFsQv6eQufi5BGBxrG8awxP4ygQ
+session: my-namespace/company-storage</code></pre>
 <p>In this case, exporting/importing elements to/from the other session will be prevented by the local CAS when the software of the remote CAS changes.
 The same limitations as specified for the usage of a <code>session_hash</code> apply here as well.
 The software key can be retrieved or specified on the CLI by using <code>scone cas show-identification -s</code> and <code>scone cas attest -s &lt;CAS software key hash&gt;</code> respectively.</p>
 <h3 id="url-short-form">URL short form</h3>
 <p>Instead of using YAML syntax, you can also fit all SCONE ID fields on a single line, forming a SCONE URL.</p>
 <p>For instance,</p>
-<div class="highlight"><pre><span></span><code><span class="nt">cas_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cas.example.com</span><span class="w"></span>
-<span class="nt">cas_software_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3AC5RSbL73aVVf98m2UMTN2BFsQv6eQufi5BGBxrG8awxP4ygQ</span><span class="w"></span>
-<span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">company-storage</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">cas_url: cas.example.com
+cas_software_key: 3AC5RSbL73aVVf98m2UMTN2BFsQv6eQufi5BGBxrG8awxP4ygQ
+session: company-storage</code></pre>
 <p>can also be written as</p>
 <p><code>cas.example.com/cas_software_key=3AC5RSbL73aVVf98m2UMTN2BFsQv6eQufi5BGBxrG8awxP4ygQ,session=company-storage</code></p>
 <p>This may be useful when referencing the same CAS multiple times, as the CAS URL and keys can be extracted into a common variable, example:</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span><span class="nt">export</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$OTHER_CAS,session=A</span><span class="w"></span>
-<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$OTHER_CAS,session=B</span><span class="w"></span>
-<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$OTHER_CAS,session=C</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">    export:
+     - $OTHER_CAS,session=A
+     - $OTHER_CAS,session=B
+     - $OTHER_CAS,session=C</code></pre>
 <p>For replacing the variable with a concrete value, please refer to the SCONE CLI documentation.</p>
 <p>The same format can also be used when referencing sessions on the local CAS. Simply omit the host and keys (but notice the leading slash <code>/</code>):</p>
 <p><code>/session=company-storage,session_hash=a51c14dd7029d2ef54a50a9e26efcdd37c4971b5b62cb6d244c9216f80b6eadf</code></p>
@@ -7154,23 +7054,19 @@ runtime and can <strong>not</strong> be specified in secure session.</p>
 <h3 id="host-program-arguments-argv">Host Program Arguments (argv)</h3>
 <p>To use program arguments that could be specified by the operator the session file
 has to contain <code>@@#position of the argument in host argv</code>. For example in session:
-<div class="highlight"><pre><span></span><code>command: ./print-arg-env arg1 @@1 @@2
-</code></pre></div>
+<pre class="highlight"><code>command: ./print-arg-env arg1 @@1 @@2</code></pre>
 Then during the execution operator will specify 2 missing arguments:
-<div class="highlight"><pre><span></span><code>$host ./print-arg-env arg2 arg3
-</code></pre></div>
+<pre class="highlight"><code>$host ./print-arg-env arg2 arg3</code></pre>
 Which will give us the following result:
-<div class="highlight"><pre><span></span><code>./print-arg-env arg1 arg2 arg3
-</code></pre></div></p>
+<pre class="highlight"><code>./print-arg-env arg1 arg2 arg3</code></pre></p>
 <p>If an operator does <strong>not</strong> specify all arguments anticipated by a session this will
 lead to a fatal error. Because this will imply access beyond host <code>argc</code>, which is
 unsafe. Also, duplicate positions (for example @@1 @@1) is a fatal error.</p>
 <h3 id="host-environment-variables">Host Environment Variables</h3>
 <p>The same idea was applied to environment variables.
 Session has to contain <code>\@\@HOST_NAME</code>, like:
-<div class="highlight"><pre><span></span><code>environment:
-      \@\@NAME: SESSION_VALUE
-</code></pre></div>
+<pre class="highlight"><code>environment:
+      \@\@NAME: SESSION_VALUE</code></pre>
 Value specified in the session will be ignored.
 An operator has to define the environment variable <code>NAME=VALUE</code>. And this host 
 variable will be used by the runtime. If a host does <strong>not</strong> have variable anticipated by a
@@ -7244,7 +7140,7 @@ session, we will define it empty <code>NAME=</code> and leave it to an applicati
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

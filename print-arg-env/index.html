@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/print-arg-env/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3423,7 +3423,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4231,81 +4231,72 @@
 <h2 id="step-1-without-attestation">Step 1: Without Attestation</h2>
 <p>We create a simple C program to print the arguments as well as the environment variables. You can
 clone the following repo from <code>github</code>:</p>
-<div class="highlight"><pre><span></span><code>git clone https://github.com/scontain/args-env-tutorial.git
-<span class="nb">cd</span> args-env-tutorial/
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">git clone https://github.com/scontain/args-env-tutorial.git
+cd args-env-tutorial/</code></pre>
 <p>Now, you should see the <code>C</code> program <code>print-arg-env.c</code> in your local directory.
 Alternatively, you could create this program as follows:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; print-arg-env.c <span class="s">&lt;&lt;EOF</span>
-<span class="s">#include &lt;stdio.h&gt;</span>
-<span class="s">#include &lt;unistd.h&gt;</span>
+<pre class="highlight"><code class="language-bash">cat &gt; print-arg-env.c &lt;&lt;EOF
+#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
 
-<span class="s">// extern char **__environ;</span>
-<span class="s">extern char **environ;</span>
+// extern char **__environ;
+extern char **environ;
 
 
-<span class="s">int main (int argc, char **argv) {</span>
-<span class="s">    printf(&quot;argv:&quot;);</span>
-<span class="s">    for (int i = 0; i &lt; argc; i++) {</span>
-<span class="s">        printf(&quot; %s&quot;, argv[i]);</span>
-<span class="s">    }</span>
-<span class="s">    printf(&quot;\n&quot;);</span>
+int main (int argc, char **argv) {
+    printf("argv:");
+    for (int i = 0; i &lt; argc; i++) {
+        printf(" %s", argv[i]);
+    }
+    printf("\n");
 
-<span class="s">    char** envp = environ;</span>
-<span class="s">    printf(&quot;environ:\n&quot;);</span>
-<span class="s">    while (*envp != NULL) {</span>
-<span class="s">        printf(&quot;%s\n&quot;, *envp);</span>
-<span class="s">        envp++;</span>
-<span class="s">    }</span>
-<span class="s">    return 42;</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+    char** envp = environ;
+    printf("environ:\n");
+    while (*envp != NULL) {
+        printf("%s\n", *envp);
+        envp++;
+    }
+    return 42;
+}
+EOF</code></pre>
 <h3 id="native-execution">Native Execution</h3>
 <p>We can compile this natively as follows:</p>
-<div class="highlight"><pre><span></span><code>gcc print-arg-env.c -g -O3 -o print-arg-env
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">gcc print-arg-env.c -g -O3 -o print-arg-env</code></pre>
 <p>And we can now run this with some some arguments and some environment variables:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">ENV2</span><span class="o">=</span>World <span class="nv">ENV1</span><span class="o">=</span>! ./print-arg-env Hello
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">
+ENV2=World ENV1=! ./print-arg-env Hello
+</code></pre>
 <p>This results in an output similar to this:</p>
-<div class="highlight"><pre><span></span><code>argv: ./print-arg-env Hello
+<pre class="highlight"><code class="language-text">argv: ./print-arg-env Hello
 environ:
 ENV2=World
 ENV1=!
-...
-</code></pre></div>
+...</code></pre>
 <h3 id="confidential-execution">Confidential Execution</h3>
 <p>In the native execution, the arguments and environment variables is not only controlled by the shell in which the program is executing but also by the underlying operating system. This means that an adversary that controls the operating system, can control the environment variables and the arguments of our application.</p>
 <p>Confidential computing helps to protect against such a <strong>system software adversary</strong>, i.e., an adversary that controls the hypervisor or the operating system. Let's cross-compile this program to run inside of <strong>enclaves</strong>, i.e. inside of an encrypted memory region that only the application itself can access in clear text. In a later step, we will show that one does not actually need to cross-compile the application: We can just perform a <strong>binary translation</strong> of a native application into a <strong>confidential application</strong>.</p>
 <p>Running an application inside of an enclave requires access to an operating system device. In case of Intel SGX, this is the <strong>SGX device</strong>.  This device had various names over the last years. We determine which SGX device to use with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>. This function sets an environment variable <code>MOUNT_SGXDEVICE</code>. In case there is no SGX device available, this variable will be set to an empty string. In this case, our code runs in simulation mode, i.e., the application does NOT run inside an encrypted memory region.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">source</span> determine_sgx_device.sh
-docker run <span class="nv">$MOUNT_SGXDEVICE</span>  --network<span class="o">=</span>host --rm -it -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/work registry.scontain.com/sconecuratedimages/crosscompilers bash
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">source determine_sgx_device.sh
+docker run $MOUNT_SGXDEVICE  --network=host --rm -it -v `pwd`:/work registry.scontain.com/sconecuratedimages/crosscompilers bash</code></pre>
 <p>Within this container, we have access to a cross-compiler. This cross-compiler creates a binary that is automatically executing in an enclave, i.e., an encrypted memory region if available:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># in the container compile the program:</span>
-scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env
-</code></pre></div>
+<pre class="highlight"><code class="language-bash"># in the container compile the program:
+scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env</code></pre>
 <p>The initial content of the enclave ist determined by the application binary. We
 <code>MRENCLAVE</code> is the value of a  secure hash function when applied to the initial state of the enclave.
  We can now determine <code>MRENCLAVE</code> of program <code>scone-print-arg-env</code> as follows.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="sb">`</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> /work/scone-print-arg-env<span class="sb">`</span>
-<span class="nb">echo</span> MRENCLAVE of scone-print-arg-env is <span class="nv">$MRENCLAVE</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export MRENCLAVE=`SCONE_HASH=1 /work/scone-print-arg-env`
+echo MRENCLAVE of scone-print-arg-env is $MRENCLAVE</code></pre>
 <p>This results in some output similar to this:</p>
-<div class="highlight"><pre><span></span><code>MRENCLAVE of scone-print-arg-env is d385e09d99ae0f82e1cb93e6359e39813031610ee8488a8c24b76b00f1d9d6e3
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">MRENCLAVE of scone-print-arg-env is d385e09d99ae0f82e1cb93e6359e39813031610ee8488a8c24b76b00f1d9d6e3</code></pre>
 <p>We can now run the program inside of an enclave but not under the control of CAS as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">ENV2</span><span class="o">=</span>World <span class="nv">ENV1</span><span class="o">=</span>! /work/scone-print-arg-env Hello
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">ENV2=World ENV1=! /work/scone-print-arg-env Hello</code></pre>
 <p>This will result in the same output as before:</p>
-<div class="highlight"><pre><span></span><code><span class="go">[SCONE|WARN] src/enclave/dispatch.c:140:print_runtime_info(): Application runs in SGX simulation mode. Its memory can be read by the untrusted system! This is not secure!</span>
-<span class="go">argv: /work/scone-print-arg-env Hello</span>
-<span class="go">environ:</span>
-<span class="go">ENV2=World</span>
-<span class="go">ENV1=!</span>
-<span class="go">...</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-output">[SCONE|WARN] src/enclave/dispatch.c:140:print_runtime_info(): Application runs in SGX simulation mode. Its memory can be read by the untrusted system! This is not secure!
+argv: /work/scone-print-arg-env Hello
+environ:
+ENV2=World
+ENV1=!
+...</code></pre>
 <p>There are two obvious issues with this application:</p>
 <ul>
 <li>The output indicates that the memory region of the application is not protected.</li>
@@ -4333,68 +4324,59 @@ To protect secrets, we need to run in hardware mode.</p>
  host <code>cas``. The SCONE runtime will also contact</code>SCONE_LAS_ADDR<code>for local attestation. If</code>SCONE_LAS_ADDR<code>is not set, we contact by default host</code>las`.</p>
 </div>
 <p>You can use one of our <a href="../public-CAS/">public CAS instances</a> at domain <code>scone-cas.cf</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SCONE_CAS_ADDR=scone-cas.cf</code></pre>
 <p>In this first step of the tutorial, we do not attest the program, i.e., we perform neither local nor remote attestation: we explicitly switch this off in the policy.</p>
 <p>We can now create a new policy on the CAS as follows. Each policy must have a unique name.
 We generate a unique name using two random numbers:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span>secure-arguments-example-sim-mode-<span class="nv">$RANDOM</span>-<span class="nv">$RANDOM</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SESSION=secure-arguments-example-sim-mode-$RANDOM-$RANDOM</code></pre>
 <p>The git repository contains already a policy in file <code>session.yaml</code>. We could manually create this security policy as follows:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; session.yaml <span class="s">&lt;&lt;EOF</span>
-<span class="s"># Name of the session - this must be unique!</span>
-<span class="s"># The creation will fail in case session already exists</span>
-<span class="s">name: $SESSION</span>
-<span class="s"># Policies are versioned using semantic versioning. For this example,</span>
-<span class="s"># we use version 0.3.10</span>
-<span class="s">version: 0.3.10</span>
+<pre class="highlight"><code class="language-bash">cat &gt; session.yaml &lt;&lt;EOF
+# Name of the session - this must be unique!
+# The creation will fail in case session already exists
+name: $SESSION
+# Policies are versioned using semantic versioning. For this example,
+# we use version 0.3.10
+version: 0.3.10
 
-<span class="s"># the security section defines how to attest applications</span>
-<span class="s">security:</span>
+# the security section defines how to attest applications
+security:
 
-<span class="s"># We disable attestation first since we might not have</span>
-<span class="s"># access to SGX or a LAS, see</span>
-<span class="s">#    https://sconedocs.github.io/CAS_session_lang_0_3/#disabling-attestation</span>
-<span class="s">  attestation:</span>
-<span class="s">    mode: none</span>
+# We disable attestation first since we might not have
+# access to SGX or a LAS, see
+#    https://sconedocs.github.io/CAS_session_lang_0_3/#disabling-attestation
+  attestation:
+    mode: none
 
-<span class="s">services:</span>
-<span class="s">   - name: scone-print-arg-env</span>
-<span class="s">     command: ./scone-print-arg-env arg1 arg2 arg3</span>
-<span class="s">     environment:</span>
-<span class="s">        SCONE_MODE: auto</span>
-<span class="s">        env1: running</span>
-<span class="s">        env2: in</span>
-<span class="s">        env3: enclave</span>
-<span class="s">     pwd: /</span>
-<span class="s">EOF</span>
-</code></pre></div>
+services:
+   - name: scone-print-arg-env
+     command: ./scone-print-arg-env arg1 arg2 arg3
+     environment:
+        SCONE_MODE: auto
+        env1: running
+        env2: in
+        env3: enclave
+     pwd: /
+EOF</code></pre>
 <p>To be able to upload this policy to CAS, we first need to attest CAS, i.e., we check that this 
 indeed a CAS running inside of an enclave and running the expected code and being signed by the 
 expected entity.  We can achieve this by executing</p>
-<div class="highlight"><pre><span></span><code>scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> 
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone cas attest $SCONE_CAS_ADDR </code></pre>
 <p>This will fail by saying that this public CAS executes in debug mode,
 i.e. an adversary could attach to this CAS with a debugger.
 Hence, we need to tolerate this. We can determine the right flags for attesting CAS by executing first:</p>
-<div class="highlight"><pre><span></span><code>scone cas attest --help
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone cas attest --help</code></pre>
 <p>We actually need to tolerate quite a few things before the CLI accepts that this CAS and adds it to the list
 of CAS instances:</p>
-<div class="highlight"><pre><span></span><code>scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> --only_for_testing-debug --only_for_testing-ignore-signer --only_for_testing-trust-any --accept-configuration-needed --accept-sw-hardening-needed --accept-group-out-of-date
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone cas attest $SCONE_CAS_ADDR --only_for_testing-debug --only_for_testing-ignore-signer --only_for_testing-trust-any --accept-configuration-needed --accept-sw-hardening-needed --accept-group-out-of-date</code></pre>
 <p>We can list the CAS instances that were attested by executing</p>
-<div class="highlight"><pre><span></span><code>scone cas list
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone cas list</code></pre>
 <p>In this case, it would output:</p>
-<div class="highlight"><pre><span></span><code>* scone-cas.cf: https://scone-cas.cf:8081/
-</code></pre></div>
+<pre class="highlight"><code class="language-text">* scone-cas.cf: https://scone-cas.cf:8081/</code></pre>
 <p>The <code>*</code> indicates that <code>scone-cas.cf</code> is now the default CAS and that it was attested.</p>
 <p>For running applications in production mode, you would run your own CAS instance in production mode on an up-to-date computer.</p>
 <h4 id="creating-a-security-policy-aka-session">Creating a security policy (aka session)</h4>
 <p>We can create a new policy with the command <code>scone session create</code>. The available flags for creating a policy can be printed via flag <code>--help</code>:</p>
-<div class="highlight"><pre><span></span><code>scone session create --help
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone session create --help</code></pre>
 <p>We can set the name of the policy in three different ways:</p>
 <ul>
 <li><code>--name $POLICY_NAME</code> overwrites the policy name with the value of the environment variable <code>POLICY_NAME</code></li>
@@ -4402,153 +4384,137 @@ of CAS instances:</p>
 <li><code>--use-env</code> uses the value of the environment variable <code>SESSION</code> to set the policy name.</li>
 </ul>
 <p>Note that if none of the above options is used, the session creation will fail with the error:</p>
-<div class="highlight"><pre><span></span><code>Caused by: Parsing session from session template file &#39;session.yaml&#39; failed
-Caused by: name: Value for variable $SESSION is missing at line 3 column 7
-</code></pre></div>
+<pre class="highlight"><code class="language-text">Caused by: Parsing session from session template file 'session.yaml' failed
+Caused by: name: Value for variable $SESSION is missing at line 3 column 7</code></pre>
 <p>This will also be the case if we replace the policy name with flag <code>--name</code> since the environment variables are first replaced before the CLI overwrites the policy name with option <code>--name</code>.</p>
 <p>When defining both <code>--use-env</code> and <code>-e SESSION=$SESSION_NAME</code>, option <code>-e</code> has priority over the environment variables imported via <code>--use-env</code>.</p>
 <p>Now we can create the policy on CAS as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR</span><span class="o">=</span><span class="k">$(</span>scone session create --use-env session.yaml<span class="k">)</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export PREDECESSOR=$(scone session create --use-env session.yaml)</code></pre>
 <p>The <code>PREDECESSOR</code> contains the hash value of the policy. This results in an output similar to this:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="nv">$PREDECESSOR</span>
-39ae54974c6892f7a3ee1492175fc092f50b31f9ed9f45e721125fcc332ef3c2
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">echo $PREDECESSOR
+39ae54974c6892f7a3ee1492175fc092f50b31f9ed9f45e721125fcc332ef3c2</code></pre>
 <h3 id="reading-a-policy">Reading a Policy</h3>
 <p>To verify that the policy was indeed created, we can read the policy back from CAS as follows:</p>
-<div class="highlight"><pre><span></span><code>scone session <span class="nb">read</span> <span class="nv">$SESSION</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone session read $SESSION</code></pre>
 <p>This will result in an output like this:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.3.10</span><span class="w"></span>
-<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secure-arguments-example-sim-mode-1740-30164</span><span class="w"></span>
-<span class="nt">predecessor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span><span class="w"></span>
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scone-print-arg-env</span><span class="w"></span>
-<span class="w">  </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">SCONE_MODE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auto</span><span class="w"></span>
-<span class="w">    </span><span class="nt">env1</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">running</span><span class="w"></span>
-<span class="w">    </span><span class="nt">env2</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">in</span><span class="w"></span>
-<span class="w">    </span><span class="nt">env3</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">enclave</span><span class="w"></span>
-<span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./scone-print-arg-env arg1 arg2 arg3</span><span class="w"></span>
-<span class="w">  </span><span class="nt">pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w"></span>
-<span class="w">  </span><span class="nt">persistency</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">None</span><span class="w"></span>
-<span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span><span class="w"></span>
-<span class="nt">creator</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">  </span><span class="no">-----BEGIN CERTIFICATE-----</span><span class="w"></span>
-<span class="w">  </span><span class="no">MIIBUDCB+KADAgECAghP28D+hc0/8DAKBggqhkjOPQQDAjAhMR8wHQYDVQQDDBZy</span><span class="w"></span>
-<span class="w">  </span><span class="no">Y2dlbiBzZWxmIHNpZ25lZCBjZXJ0MCAXDTc1MDEwMTAwMDAwMFoYDzQwOTYwMTAx</span><span class="w"></span>
-<span class="w">  </span><span class="no">MDAwMDAwWjAhMR8wHQYDVQQDDBZyY2dlbiBzZWxmIHNpZ25lZCBjZXJ0MFkwEwYH</span><span class="w"></span>
-<span class="w">  </span><span class="no">KoZIzj0CAQYIKoZIzj0DAQcDQgAE6r3FIds+eewO6SPaw2qz+qUAMrEzLCIlCj/O</span><span class="w"></span>
-<span class="w">  </span><span class="no">0NuYRdJ3Gg7zBPqQCzp5JuK+AncSDYes95HLvvh69mDowB5xoaMYMBYwFAYDVR0R</span><span class="w"></span>
-<span class="w">  </span><span class="no">BA0wC4IJc2NvbmUgY2xpMAoGCCqGSM49BAMCA0cAMEQCICm2edJloMbamD51dZGP</span><span class="w"></span>
-<span class="w">  </span><span class="no">cMv8WRdOFyFelHZOqVXIN6U4AiARU2Tal14Gj2HuTPERMTDTNNk3WAHRM/lSbqgH</span><span class="w"></span>
-<span class="w">  </span><span class="no">t8QUrg==</span><span class="w"></span>
-<span class="w">  </span><span class="no">-----END CERTIFICATE-----</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">version: 0.3.10
+name: secure-arguments-example-sim-mode-1740-30164
+predecessor: null
+services:
+- name: scone-print-arg-env
+  environment:
+    SCONE_MODE: auto
+    env1: running
+    env2: in
+    env3: enclave
+  command: ./scone-print-arg-env arg1 arg2 arg3
+  pwd: /
+  persistency: None
+access_policy:
+  read:
+  - CREATOR
+  update:
+  - CREATOR
+security:
+  attestation:
+    mode: none
+creator: |
+  -----BEGIN CERTIFICATE-----
+  MIIBUDCB+KADAgECAghP28D+hc0/8DAKBggqhkjOPQQDAjAhMR8wHQYDVQQDDBZy
+  Y2dlbiBzZWxmIHNpZ25lZCBjZXJ0MCAXDTc1MDEwMTAwMDAwMFoYDzQwOTYwMTAx
+  MDAwMDAwWjAhMR8wHQYDVQQDDBZyY2dlbiBzZWxmIHNpZ25lZCBjZXJ0MFkwEwYH
+  KoZIzj0CAQYIKoZIzj0DAQcDQgAE6r3FIds+eewO6SPaw2qz+qUAMrEzLCIlCj/O
+  0NuYRdJ3Gg7zBPqQCzp5JuK+AncSDYes95HLvvh69mDowB5xoaMYMBYwFAYDVR0R
+  BA0wC4IJc2NvbmUgY2xpMAoGCCqGSM49BAMCA0cAMEQCICm2edJloMbamD51dZGP
+  cMv8WRdOFyFelHZOqVXIN6U4AiARU2Tal14Gj2HuTPERMTDTNNk3WAHRM/lSbqgH
+  t8QUrg==
+  -----END CERTIFICATE-----</code></pre>
 <p>We can see that the session was extended by some extra keys - we can see the new keys <code>access_policy</code> and <code>creator</code>:</p>
 <ul>
 <li>The <code>access_policy</code> determines who can read or updated this policy.</li>
 <li>The <code>creator</code> is the certificate of the creator. Only an entity that knows the private key can read or update this session.</li>
 </ul>
 <p>The public/private key pair is automatically generated by the SCONE CLI. One can print this ID by executing:</p>
-<div class="highlight"><pre><span></span><code>scone self show-certificate 
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone self show-certificate </code></pre>
 <p>This will print the same certificate as we see in the session that we have read (see above).</p>
 <p><strong>Note</strong> that the private key of the SCONE CLI is in clear text in the filesystem. This is sufficient for development but not for production systems. For production, we recommend to store the keys inside of a CAS instance and provide access to the keys via an authenticator that computes OTPs, i.e., One Time Passwords. We show in a later step on how to do this. Alternatively, we also support hardware keys which support OpenGPG keys and signing.</p>
 <h3 id="executing-a-program-in-context-of-a-policy">Executing a program in context of a policy</h3>
 <p>We will now execute the program with the context of the policy that we created above:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/scone-print-arg-env /work/scone-print-arg-env
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_CONFIG_ID=$SESSION/scone-print-arg-env /work/scone-print-arg-env</code></pre>
 <p>This program executes in simulation mode and is not attested. This is permitted since we set the attestation mode to <code>none</code>. Therefore, the output contains several warnings that we will address in a later step:</p>
-<div class="highlight"><pre><span></span><code><span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/enclave/dispatch.c:140:print_runtime_info<span class="o">()</span>: Application runs <span class="k">in</span> SGX simulation mode. Its memory can be <span class="nb">read</span> by the untrusted system! This is not secure!
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> scone_rrt::implementation::eai rust-crates/scone_rrt/src/implementation/eai.rs:246:Unable to connect to LAS at default <span class="s1">&#39;las&#39;</span> address <span class="o">(</span>Resolution of LAS address las:18766 failed<span class="o">)</span>- enclave won<span class="s1">&#39;t be able to attest itself</span>
-<span class="s1">[SCONE|WARN] src/syscall/syscall.c:31:__scone_ni_syscall(): system call: membarrier, number 324 is not supported</span>
-<span class="s1">[SCONE|WARN] src/process/init.c:415:__scone_apply_secure_config(): Ignoring `SCONE_PWD` environment variable and host provided process working directory.</span>
-<span class="s1">    Applying process working directory from service&#39;</span>s session configuration <span class="o">(</span>/<span class="o">)</span>
+<pre class="highlight"><code class="language-bash">[SCONE|WARN] src/enclave/dispatch.c:140:print_runtime_info(): Application runs in SGX simulation mode. Its memory can be read by the untrusted system! This is not secure!
+[SCONE|WARN] scone_rrt::implementation::eai rust-crates/scone_rrt/src/implementation/eai.rs:246:Unable to connect to LAS at default 'las' address (Resolution of LAS address las:18766 failed)- enclave won't be able to attest itself
+[SCONE|WARN] src/syscall/syscall.c:31:__scone_ni_syscall(): system call: membarrier, number 324 is not supported
+[SCONE|WARN] src/process/init.c:415:__scone_apply_secure_config(): Ignoring `SCONE_PWD` environment variable and host provided process working directory.
+    Applying process working directory from service's session configuration (/)
 argv: ./scone-print-arg-env arg1 arg2 arg3
-environ:
-<span class="nv">env3</span><span class="o">=</span>enclave
-<span class="nv">env1</span><span class="o">=</span>running
-<span class="nv">SCONE_MODE</span><span class="o">=</span>auto
-<span class="nv">env2</span><span class="o">=</span><span class="k">in</span>
-</code></pre></div>
-<p>We see that the arguments and the environment variables are defined as defined in the policy. Defining arguments on the command line has no impact:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">env1</span><span class="o">=</span>we <span class="nv">env2</span><span class="o">=</span>cannot <span class="nv">env3</span><span class="o">=</span>overwrite <span class="nv">env4</span><span class="o">=</span>environment <span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/scone-print-arg-env /work/scone-print-arg-env variables
-</code></pre></div>
-<p>will result in the same output:</p>
-<div class="highlight"><pre><span></span><code>argv: ./scone-print-arg-env arg1 arg2 arg3
 environ:
 env3=enclave
 env1=running
 SCONE_MODE=auto
-env2=in
-</code></pre></div>
+env2=in</code></pre>
+<p>We see that the arguments and the environment variables are defined as defined in the policy. Defining arguments on the command line has no impact:</p>
+<pre class="highlight"><code class="language-bash">env1=we env2=cannot env3=overwrite env4=environment SCONE_CONFIG_ID=$SESSION/scone-print-arg-env /work/scone-print-arg-env variables</code></pre>
+<p>will result in the same output:</p>
+<pre class="highlight"><code class="language-text">argv: ./scone-print-arg-env arg1 arg2 arg3
+environ:
+env3=enclave
+env1=running
+SCONE_MODE=auto
+env2=in</code></pre>
 <p>Note that the command name is the one of the policy: we specified command name <code>./scone-print-arg-env</code> but we execute
 command <code>/work/scone-print-arg-env</code>. When switching on attestation, we ensure that the hash value of the command is correct and we do not check at what location the command is stored in the filesystem.</p>
 <h3 id="changing-the-policy">Changing the policy</h3>
 <p>We need to change the policy in case we want to change the arguments, the environment variables or if we want to enable attestation. Let us first change the policy.</p>
-<div class="highlight"><pre><span></span><code>cat &gt; session2.yaml <span class="s">&lt;&lt;EOF</span>
-<span class="s"># Name of the session - this must be unique!</span>
-<span class="s"># The creation will fail in case session already exists</span>
-<span class="s">name: $SESSION</span>
-<span class="s"># Policies are versioned using semantic versioning. For this example,</span>
-<span class="s"># we use version 0.3.10</span>
-<span class="s">version: 0.3.10</span>
+<pre class="highlight"><code class="language-bash">cat &gt; session2.yaml &lt;&lt;EOF
+# Name of the session - this must be unique!
+# The creation will fail in case session already exists
+name: $SESSION
+# Policies are versioned using semantic versioning. For this example,
+# we use version 0.3.10
+version: 0.3.10
 
-<span class="s"># the security section defines how to attest applications</span>
-<span class="s">security:</span>
+# the security section defines how to attest applications
+security:
 
-<span class="s"># We disable attestation first since we might not have</span>
-<span class="s"># access to SGX or a LAS, see</span>
-<span class="s">#    https://sconedocs.github.io/CAS_session_lang_0_3/#disabling-attestation</span>
-<span class="s">  attestation:</span>
-<span class="s">    mode: none</span>
+# We disable attestation first since we might not have
+# access to SGX or a LAS, see
+#    https://sconedocs.github.io/CAS_session_lang_0_3/#disabling-attestation
+  attestation:
+    mode: none
 
-<span class="s">services:</span>
-<span class="s">   - name: scone-print-arg-env</span>
-<span class="s">     command: ./scone-print-arg-env our second try using an updated policy</span>
-<span class="s">     environment:</span>
-<span class="s">        SCONE_MODE: auto</span>
-<span class="s">        env1: running</span>
-<span class="s">        env2: in</span>
-<span class="s">        env3: enclave</span>
-<span class="s">     pwd: /</span>
-<span class="s">EOF</span>
-</code></pre></div>
+services:
+   - name: scone-print-arg-env
+     command: ./scone-print-arg-env our second try using an updated policy
+     environment:
+        SCONE_MODE: auto
+        env1: running
+        env2: in
+        env3: enclave
+     pwd: /
+EOF</code></pre>
 <p>We can now create a new version of the session by using command <code>scone session update</code> to update
 the session:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR2</span><span class="o">=</span><span class="k">$(</span>scone session update session2.yaml<span class="k">)</span>
-<span class="nb">echo</span> <span class="nv">$PREDECESSOR2</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export PREDECESSOR2=$(scone session update session2.yaml)
+echo $PREDECESSOR2</code></pre>
 <p>When executing the program again, i.e., executing</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/scone-print-arg-env /work/scone-print-arg-env
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_CONFIG_ID=$SESSION/scone-print-arg-env /work/scone-print-arg-env</code></pre>
 <p>we see that the updated policy is used, i.e., the new output is:</p>
-<div class="highlight"><pre><span></span><code>...
+<pre class="highlight"><code class="language-bash">...
 argv: ./scone-print-arg-env our second try using an updated policy
 environ:
-<span class="nv">SCONE_MODE</span><span class="o">=</span>auto
-<span class="nv">env2</span><span class="o">=</span><span class="k">in</span>
-<span class="nv">env3</span><span class="o">=</span>enclave
-<span class="nv">env1</span><span class="o">=</span>running
-</code></pre></div>
+SCONE_MODE=auto
+env2=in
+env3=enclave
+env1=running</code></pre>
 <p>We can now read the policy again as follows:</p>
-<div class="highlight"><pre><span></span><code>scone session <span class="nb">read</span> <span class="nv">$SESSION</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone session read $SESSION</code></pre>
 <p>The output contains a new key <code>predecessor</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.3.10</span><span class="w"></span>
-<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secure-arguments-example-sim-mode-28845-15903</span><span class="w"></span>
-<span class="nt">predecessor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fa0ae54922f783c02affca2ff88101683abea458c1041819e9f002ebe2fa94c1</span><span class="w"></span>
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">version: 0.3.10
+name: secure-arguments-example-sim-mode-28845-15903
+predecessor: fa0ae54922f783c02affca2ff88101683abea458c1041819e9f002ebe2fa94c1
+services:
+...</code></pre>
 <p>We can see that the predecessor contains the same field as the hash value that we stored in
 environment variable <code>PREDECESSOR</code>.</p>
 
@@ -4620,7 +4586,7 @@ environment variable <code>PREDECESSOR</code>.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/4_quickstart/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3299,7 +3299,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4043,9 +4043,8 @@
 <h2 id="prerequisites">Prerequisites</h2>
 <p>We assume that you have <a href="../2_operator_installation/">installed the SCONE Operator</a> and in the process, also the image pull secrets <a href="https://sconedocs.github.io/registry/#create-an-access-token"><code>sconeapps</code> and <code>scone-operator-pull</code></a>.</p>
 <p>You can check and <code>--reconcile</code> the state as follows:</p>
-<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - <span class="se">\</span>
---reconcile --verbose
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller | bash -s - \
+--reconcile --verbose</code></pre>
 <p>This will deploy the <code>SGXPlugin</code> and the <code>LAS</code>.</p>
 <h3 id="create-custom-resources-sgxplugin-and-las">Create Custom Resources: SGXPlugin and LAS</h3>
 <p>!!! note "The <code>operator_controller</code> will overwrite any changes to custom resource <code>LAS LAS</code> or <code>SGXPlugin SGXPlugin</code> the next time it is called with <code>--reconcile</code> or <code>--update</code>. Consider to change the   </p>
@@ -4055,22 +4054,18 @@
 <li><code>SCONE LAS</code> (Local Attestation Service) to perform local attestation</li>
 </ul>
 <p>You can create the Kubernetes namespace <code>scone-systems</code> and deploy the SCONE SGX Plugin and SCONE LAS in this namespace with one command:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/base_and_cas.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/base_and_cas.yaml</code></pre>
 <p>The SCONE operator will ensure that the SGX plugin and LAS are kept running and are automatically updated. The SCONE operator itself would need to be updated via its helm chart.   </p>
 <h3 id="independent-deployment-of-sgx-plugin-and-las">Independent Deployment of SGX Plugin and LAS</h3>
 <p>If you want to decouple the deployment of the SGX Plugin and LAS, we provide some basic manifest for each resource. One can install the SGX Plugin with <code>kubectl</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl create -f https://raw.githubusercontent.com/scontain/operator-samples/main/base_v1beta1_sgxplugin.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl create -f https://raw.githubusercontent.com/scontain/operator-samples/main/base_v1beta1_sgxplugin.yaml</code></pre>
 <p>LAS from the included sample manifests:</p>
-<div class="highlight"><pre><span></span><code>kubectl create -f https://raw.githubusercontent.com/scontain/operator-samples/main/base_v1beta1_las.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl create -f https://raw.githubusercontent.com/scontain/operator-samples/main/base_v1beta1_las.yaml</code></pre>
 <p>These two manifests contain reasonable defaults and should work without any modifications for most deployments. This setup can be used in production. </p>
 <p>The default Kubernetes namespace for the SGX Plugin and LAS is the namespace of the SCONE Operator. The default Kubernetes namespace of the SCONE Operator is <code>scone-systems</code>. If the defaults do not fit your requirements, you can customize the manifests described in the <a href="../3_resource_definitions/">SCONE Custom Resource Definitions</a>.</p>
 <h3 id="create-cas-for-development">Create CAS for Development</h3>
 <p>To install SCONE CAS for development, you can :</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/services_v1beta1_cas.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/services_v1beta1_cas.yaml</code></pre>
 <p>This CAS will run in production mode and use a persistent volume for its database but does not support a fail-over to a different host.</p>
 <div class="admonition note">
 <p class="admonition-title">No Fail-Over to other nodes</p>
@@ -4110,7 +4105,7 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/2_operator_installation/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3442,7 +3442,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4280,15 +4280,13 @@
 <p>Once a CR is created, deleted, or updated, the corresponding controller is notified, and reconciling the CR is started. To summarize, the reconciler, i.e., the controller, checks the current state of the CR, compares it to the desired state (i.e., its configuration), and takes the necessary action to change the current state into the desired state. This action either automatically (for example, if it was an update of the CR) or explicitly results in the reconciliation being triggered again. This process continues until the two states are equal.</p>
 <h2 id="tldr">TL'DR</h2>
 <p>A simple <code>operator_controller</code> script deploys and updates the SCONE Operator. In case you use the SCONE image registry, you would need to deploy image pull secrets. For this, you would need to set environment variables:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">REGISTRY_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># username of the registry service account</span>
-<span class="nb">export</span> <span class="nv">REGISTRY_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-access-toke&gt; <span class="c1"># read access token</span>
-<span class="nb">export</span> <span class="nv">REGISTRY_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># email address of the service account</span>
-<span class="nb">export</span> <span class="nv">DCAP_KEY</span><span class="o">=</span><span class="s2">&quot;00000000000000000000000000000000&quot;</span> <span class="c1"># replace by your Intel DCAP API - keep as is on Azure</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export REGISTRY_USERNAME=&lt;your-name&gt; # username of the registry service account
+export REGISTRY_ACCESS_TOKEN=&lt;your-access-toke&gt; # read access token
+export REGISTRY_EMAIL=&lt;your-email&gt; # email address of the service account
+export DCAP_KEY="00000000000000000000000000000000" # replace by your Intel DCAP API - keep as is on Azure</code></pre>
 <p>You can get the DCAP API Key from <a href="https://api.portal.trustedservices.intel.com/provisioning-certification">Intel</a>. Your access token needs to be able to read the registry: for more details, please see the section <a href="https://sconedocs.github.io/registry/#create-an-access-token">Create an Access Token</a>.</p>
 <p>You can now deploy or update the SCONE operator as follows:</p>
-<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - --reconcile --update --plugin --verbose --dcap-api <span class="s2">&quot;</span><span class="nv">$DCAP_KEY</span><span class="s2">&quot;</span> --secret-operator  --username <span class="nv">$REGISTRY_USERNAME</span> --access-token <span class="nv">$REGISTRY_ACCESS_TOKEN</span> --email <span class="nv">$REGISTRY_EMAIL</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller | bash -s - --reconcile --update --plugin --verbose --dcap-api "$DCAP_KEY" --secret-operator  --username $REGISTRY_USERNAME --access-token $REGISTRY_ACCESS_TOKEN --email $REGISTRY_EMAIL</code></pre>
 <p>Flags:</p>
 <ul>
 <li>
@@ -4319,13 +4317,13 @@ By setting flag <code>--reconcile</code>, the operator deploys and reconciles th
 </ul>
 <p>Typically, you want to keep all versions the same. Upgrading of the SCONE operator, SCONE SGXPlugin, and the SCONE LAS can be done via the operator controller using flag <code>--update</code>.  A SCONE CAS needs to be updated using our <a href="https://sconedocs.github.io/5_kubectl/"><code>kubectl provision</code> plugin</a>.  </p>
 <h2 id="operator-controller-reference">Operator Controller Reference</h2>
-<div class="highlight"><pre><span></span><code>Usage:
+<pre class="highlight"><code class="language-text">Usage:
   operator_controller [OPTIONS]
 
 Objectives:
   - Checks if the SCONE operator and all its dependencies are available.
-  - Tries to fix any issues it discovers if flag &#39;--reconcile&#39; is set.
-  - Tries to update all components in case flag &#39;--update&#39; is set (even if everything is ok).
+  - Tries to fix any issues it discovers if flag '--reconcile' is set.
+  - Tries to update all components in case flag '--update' is set (even if everything is ok).
   - Creates a namespace for a service if flag --create NAMESPACE is set.
   - If the --verify-image-signatures is provided, or if the Scontain container image repository
     is used, the signatures of the images used are verified.
@@ -4340,11 +4338,11 @@ Options:
                   independently if they need fixing.
     -n | --namespace NAMESPACE
                   The Kubernetes namespace in which the SCONE operator should be deployed on the cluster.
-                  Default value: &quot;scone-system&quot;
+                  Default value: "scone-system"
     -c | --create NAMESPACE
-                  Create namespace &quot;NAMESPACE&quot; for provisioning SCONE CAS (or another service).
+                  Create namespace "NAMESPACE" for provisioning SCONE CAS (or another service).
     --username REGISTRY_USERNAME
-                  To create/update/fix the pull secrets (&#39;sconeapps&#39; and &#39;scone-operator-pull&#39;), 
+                  To create/update/fix the pull secrets ('sconeapps' and 'scone-operator-pull'), 
                   one needs to specify the user name, access token, and email of the registry.
                   Signup for an account: https://sconedocs.github.io/registry/
     --access-token REGISTRY_ACCESS_TOKEN
@@ -4355,7 +4353,7 @@ Options:
                   Include the kubectl plugin in the reconciliation and updates.
     --plugin-path PATH
                   Path where we should write the kubectl plugin binary. The path must be writeable.
-                  Default value: &quot;/Users/christoffetzer/.local/bin/kubectl-provision&quot;
+                  Default value: "/Users/christoffetzer/.local/bin/kubectl-provision"
                   The prefix of the default value is the last path on your shell $PATH that is writeable. 
                   If none is writeable and you set --plugin, you must specify --plugin-path PATH.
     --secret-operator
@@ -4397,7 +4395,7 @@ You can overwrite the defaults by exporting these environment variables before e
 
 ## Manual Deployment of the Operator
 
-!!! note &quot;Use the Operator Controller to deploy the SCONE Operator&quot;
+!!! note "Use the Operator Controller to deploy the SCONE Operator"
     We do not recommend installing the SCONE Operator manually. This description explains the individual steps that need to be performed in case you want to customize the Operator Controller.
 
 We need to install a set of prerequisites to install the SCONE Operator. After the SCONE operator is up and running, each of the custom resources `SGXPlugin`, `LAS`, and `CAS` can be installed separately by deploying and creating a custom resource.
@@ -4406,7 +4404,7 @@ We need to install a set of prerequisites to install the SCONE Operator. After t
 
 The first step is to ensure you have access to your Kubernetes cluster.
 
-!!! note &quot;KUBECONFIG&quot;
+!!! note "KUBECONFIG"
     We assume you can access your Kubernetes cluster through your `$HOME/.kube/config` file or the `KUBECONFIG` environment variable.
 
 ### `cert-manager`
@@ -4414,18 +4412,15 @@ The first step is to ensure you have access to your Kubernetes cluster.
 The `cert-manager` is a prerequisite of the SCONE operator. You can check if the `cert-manager` is installed using `kubectl`:
 
 ```bash
-kubectl get pods -A | grep cert-manager
-</code></pre></div>
+kubectl get pods -A | grep cert-manager</code></pre>
 <p>If no <code>cert-manager</code> pod is running,  you can install <code>cert-manager</code> using <code>kubectl</code> or <code>helm</code>. Our recommendation, however, is to install the latest release using <code>kubectl</code> as follows:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.yaml</code></pre>
 <p>Please refer to the <a href="https://cert-manager.io/docs/installation/">official installation instructions</a> for up-to-date version information.</p>
 <p>Alternatively, you can install it with the SCONE operator <a href="#cert-manager">using <code>helm</code></a>: it can be installed using command line flags of the <code>helm install</code> command.</p>
 <h3 id="operator-namespace">Operator Namespace</h3>
 <p>Now you are ready to deploy the SCONE operator using the image you just created. Deploying the operator can be done using <code>helm</code>.  With <code>helm</code>, you can specify the desired namespace on the command line.</p>
 <p>By default, we use the namespace <code>scone-system</code>. You can create the namespace by executing the following:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/namespace.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/namespace.yaml</code></pre>
 <h3 id="pull-secret">Pull Secret</h3>
 <div class="admonition note">
 <p class="admonition-title">Pull Secret</p>
@@ -4433,57 +4428,50 @@ kubectl get pods -A | grep cert-manager
 </div>
 <p>The SCONE operator image is stored in a private Docker Hub repo. Hence, to deploy this image, one needs to pass the image pull credentials to Kubernetes. To do so, you must create the Kubernetes secret <code>scone-operator-pull</code>.</p>
 <p>You could first define your credentials which include the generation of an access token to  <a href="https://sconedocs.github.io/registry/#create-an-access-token"><code>read_registry</code></a> and set environment variables:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">REGISTRY_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># username of the registry service account</span>
-<span class="nb">export</span> <span class="nv">REGISTRY_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-access-toke&gt; <span class="c1"># read access token</span>
-<span class="nb">export</span> <span class="nv">REGISTRY_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># email address of the service account</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export REGISTRY_USERNAME=&lt;your-name&gt; # username of the registry service account
+export REGISTRY_ACCESS_TOKEN=&lt;your-access-toke&gt; # read access token
+export REGISTRY_EMAIL=&lt;your-email&gt; # email address of the service account</code></pre>
 <p>And then, create a Kubernetes secrets <code>scone-operator-pull</code> and <code>sconeapps</code>. In a simple setup, these secrets contain the same token. You need to define a secret per registry if you use multiple registries. Often one might use a different registry for the base SCONE images (Plugin, LAS, CAS) and the application images (e.g., MariaDB, Nginx, etc.) </p>
-<div class="highlight"><pre><span></span><code>kubectl create secret docker-registry scone-operator-pull <span class="se">\</span>
-   --docker-server<span class="o">=</span>registry.scontain.com <span class="se">\</span>
-   --docker-username<span class="o">=</span><span class="nv">$REGISTRY_USERNAME</span> <span class="se">\</span>
-   --docker-password<span class="o">=</span><span class="nv">$REGISTRY_ACCESS_TOKEN</span> <span class="se">\</span>
-   --docker-email<span class="o">=</span><span class="nv">$REGISTRY_EMAIL</span> <span class="se">\</span>
-   --namespace scone-system
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl create secret docker-registry scone-operator-pull \
+   --docker-server=registry.scontain.com \
+   --docker-username=$REGISTRY_USERNAME \
+   --docker-password=$REGISTRY_ACCESS_TOKEN \
+   --docker-email=$REGISTRY_EMAIL \
+   --namespace scone-system</code></pre>
 <p>and</p>
-<div class="highlight"><pre><span></span><code>kubectl create secret docker-registry sconeapps <span class="se">\</span>
-   --docker-server<span class="o">=</span>registry.scontain.com <span class="se">\</span>
-   --docker-username<span class="o">=</span><span class="nv">$REGISTRY_USERNAME</span> <span class="se">\</span>
-   --docker-password<span class="o">=</span><span class="nv">$REGISTRY_ACCESS_TOKEN</span> <span class="se">\</span>
-   --docker-email<span class="o">=</span><span class="nv">$REGISTRY_EMAIL</span> <span class="se">\</span>
-   --namespace scone-system
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl create secret docker-registry sconeapps \
+   --docker-server=registry.scontain.com \
+   --docker-username=$REGISTRY_USERNAME \
+   --docker-password=$REGISTRY_ACCESS_TOKEN \
+   --docker-email=$REGISTRY_EMAIL \
+   --namespace scone-system</code></pre>
 <h3 id="deploy-the-scone-operator">Deploy the SCONE Operator</h3>
 <div class="admonition note scone operator releases">
 <p class="admonition-title">Note</p>
 <p>You can find the up-to-date list of SCONE operator releases here: <a href="https://github.com/scontain/operator/releases">SCONE operator releases</a>.</p>
 </div>
 <p>Now deploy your SCONE operator either using <code>helm</code>:</p>
-<div class="highlight"><pre><span></span><code>helm install scone-operator https://github.com/scontain/operator/archive/refs/tags/v0.0.7.tar.gz --namespace scone-system
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install scone-operator https://github.com/scontain/operator/archive/refs/tags/v0.0.7.tar.gz --namespace scone-system</code></pre>
 <h3 id="automatically-injecting-pull-secrets">Automatically injecting Pull Secrets</h3>
 <p>The SCONE images require defining a pull secret. This can be inconvenient since a user would need to add the correct pull secret in each namespace that needs access to one of these images.
 Since the operator already defines this pull secret, one can automate the distribution of this secret to other namespaces with the help of a secrets operator.</p>
-<div class="highlight"><pre><span></span><code>helm repo add banzaicloud-stable https://kubernetes-charts.banzaicloud.com
-helm install imps banzaicloud-stable/imagepullsecrets -n scone-system
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm repo add banzaicloud-stable https://kubernetes-charts.banzaicloud.com
+helm install imps banzaicloud-stable/imagepullsecrets -n scone-system</code></pre>
 <p>Creating a secret injector for secret <code>sconeapps</code>, i.e., injecting into all namespaces that request this secret by copying form namespace <code>scone-system</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/secrets_operator.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/secrets_operator.yaml</code></pre>
 <h3 id="using-helm-to-install-the-cert-manager">Using <code>helm</code> to install the cert-manager</h3>
 <div class="admonition note">
 <p class="admonition-title">cert-manager</p>
 <p>cert-manager can be installed by adding the flag <code>--set cert-manager.enabled=true</code> to the above <code>helm install</code> command. However, care should be taken not to have more than one instance of cert-manager running in the same cluster since it also manages non-namespaced resources. You can customize where cert-manager is installed using the command line flag <code>--set cert-manager.namespace=somenamespace</code> and include the CRDs of the cert-manager in the installation using <code>--set cert-manager.installCRDs=true</code>. We recommend installing it as described above under <a href="#prerequisites">Prerequisites</a> and refer to the <a href="https://cert-manager.io/docs/installation/">official cert-manager documentation</a> for further information.</p>
 </div>
 <p>You can verify that the operator is running as it should using the following commands:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Check the state of the deployment of the operator</span>
+<pre class="highlight"><code class="language-bash"># Check the state of the deployment of the operator
 kubectl get deployments -n scone-system scone-controller-manager
-<span class="c1"># Check the state of the pod of the deployment</span>
-kubectl get pods -n scone-system -l control-plane<span class="o">=</span>controller-manager
-<span class="c1"># Check the log of the pod (use the name of the pod from the previous command)</span>
-<span class="nb">export</span> <span class="nv">CONTROLLERPOD</span><span class="o">=</span><span class="k">$(</span>kubectl get pods -n scone-system -l control-plane<span class="o">=</span>controller-manager <span class="p">|</span> grep scone-controller-manager <span class="p">|</span> awk <span class="s1">&#39;{ print $1 }&#39;</span><span class="k">)</span>
-kubectl logs -n scone-system <span class="nv">$CONTROLLERPOD</span>
-</code></pre></div>
+# Check the state of the pod of the deployment
+kubectl get pods -n scone-system -l control-plane=controller-manager
+# Check the log of the pod (use the name of the pod from the previous command)
+export CONTROLLERPOD=$(kubectl get pods -n scone-system -l control-plane=controller-manager | grep scone-controller-manager | awk '{ print $1 }')
+kubectl logs -n scone-system $CONTROLLERPOD</code></pre>
 <h3 id="default-images">Default Images</h3>
 <p>The SCONE Operator uses the following default images:</p>
 <table>
@@ -4527,41 +4515,33 @@ kubectl logs -n scone-system <span class="nv">$CONTROLLERPOD</span>
 <h3 id="image-pull-error">Image Pull Error</h3>
 <p>Sometimes, we see image pull errors when starting SCONE-related container images. For example,
 executing command</p>
-<div class="highlight"><pre><span></span><code>kubectl get pods -n scone-system
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl get pods -n scone-system</code></pre>
 <p>might result in the following output:</p>
-<div class="highlight"><pre><span></span><code>NAME                                               READY   STATUS             RESTARTS      AGE
-las-lxk95                                          <span class="m">0</span>/2     ImagePullBackOff   <span class="m">0</span>             25m
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">NAME                                               READY   STATUS             RESTARTS      AGE
+las-lxk95                                          0/2     ImagePullBackOff   0             25m</code></pre>
 <p>Please check that your pull secrets exists by executing</p>
-<div class="highlight"><pre><span></span><code>kubectl get secrets sconeapps scone-operator-pull -n scone-system
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl get secrets sconeapps scone-operator-pull -n scone-system</code></pre>
 <p>this should result in an output like this:</p>
-<div class="highlight"><pre><span></span><code>NAME                  TYPE                             DATA   AGE
-sconeapps             kubernetes.io/dockerconfigjson   <span class="m">1</span>      37m
-scone-operator-pull   kubernetes.io/dockerconfigjson   <span class="m">1</span>      37m
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">NAME                  TYPE                             DATA   AGE
+sconeapps             kubernetes.io/dockerconfigjson   1      37m
+scone-operator-pull   kubernetes.io/dockerconfigjson   1      37m</code></pre>
 <p>Most issues we have seen so far, were caused by expired pull secrets, i.e., the access token stored in the secrets had expired. You could check the validity of your token by logging into the registry using the command <code>docker login registry.scontain.com</code>.</p>
 <p>In case the two pull secrets do <strong>not</strong> exist, please check if the <strong>secret operator</strong> exists and is healthy.</p>
 <p>You can retrieve a new token with scope <code>read_registy</code> by visiting <code>gitlab.scontain.com</code>. The easiest way to update the token in a cluster is to reconciliate the SCONE operator. Please ensure the following environment variables are defined (see above for more details):</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">REGISTRY_USERNAME</span><span class="o">=</span>&lt;your-name&gt; <span class="c1"># username of the registry service account</span>
-<span class="nb">export</span> <span class="nv">REGISTRY_ACCESS_TOKEN</span><span class="o">=</span>&lt;your-access-toke&gt; <span class="c1"># read access token</span>
-<span class="nb">export</span> <span class="nv">REGISTRY_EMAIL</span><span class="o">=</span>&lt;your-email&gt; <span class="c1"># email address of the service account</span>
-<span class="nb">export</span> <span class="nv">DCAP_KEY</span><span class="o">=</span><span class="s2">&quot;00000000000000000000000000000000&quot;</span> <span class="c1"># replace by your Intel DCAP API - keep as is on Azure</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export REGISTRY_USERNAME=&lt;your-name&gt; # username of the registry service account
+export REGISTRY_ACCESS_TOKEN=&lt;your-access-toke&gt; # read access token
+export REGISTRY_EMAIL=&lt;your-email&gt; # email address of the service account
+export DCAP_KEY="00000000000000000000000000000000" # replace by your Intel DCAP API - keep as is on Azure</code></pre>
 <p>and execute</p>
-<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - --reconcile --update --plugin --verbose --dcap-api <span class="s2">&quot;</span><span class="nv">$DCAP_KEY</span><span class="s2">&quot;</span> --secret-operator  --username <span class="nv">$REGISTRY_USERNAME</span> --access-token <span class="nv">$REGISTRY_ACCESS_TOKEN</span> --email <span class="nv">$REGISTRY_EMAIL</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller | bash -s - --reconcile --update --plugin --verbose --dcap-api "$DCAP_KEY" --secret-operator  --username $REGISTRY_USERNAME --access-token $REGISTRY_ACCESS_TOKEN --email $REGISTRY_EMAIL</code></pre>
 <h3 id="scone-webhook-issues">SCONE Webhook Issues</h3>
 <p>One of the common problems during deployment of the SCONE Operator is related to the Kubernetes cert manager being not or incorrectly installed. This can result in errors related to the use of <em>webhooks</em> by the SCONE operator like this one:</p>
-<div class="highlight"><pre><span></span><code>Error from server <span class="o">(</span>InternalError<span class="o">)</span>: error when creating <span class="s2">&quot;.sgxplugin-manifest.yaml&quot;</span>: Internal error occurred: failed calling webhook <span class="s2">&quot;msgxplugin.kb.io&quot;</span>: failed to call webhook: Post <span class="s2">&quot;https://scone-webhook-service.scone-system.svc:443/mutate-base-scone-cloud-v1beta1-sgxplugin?timeout=10s&quot;</span>: context deadline exceeded
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">Error from server (InternalError): error when creating ".sgxplugin-manifest.yaml": Internal error occurred: failed calling webhook "msgxplugin.kb.io": failed to call webhook: Post "https://scone-webhook-service.scone-system.svc:443/mutate-base-scone-cloud-v1beta1-sgxplugin?timeout=10s": context deadline exceeded</code></pre>
 <p>In case you are using <code>minikube</code>, please start it  with embedded certificates:  <code>minikube start --embed-certs</code>. By default, the <code>operator_controller</code> script will deploy the cert manager and wait until the cert manager gets ready. It has a built in version like <code>https://github.com/cert-manager/cert-manager/releases/download/v1.12.4/cert-manager.yaml</code>. One can overwrite the default cert manager by defining environment variable <code>CERT_MANAGER</code>.</p>
 <p>If the script is interrupted before the cert manager is properly running, one might need to wait a few minutes for the cert manager to become ready before trying to start <code>operator_controller</code>  again. Please set flag <code>--update</code> to reinstall the cert-manager. The <code>operator_controller</code> script searches for an existing cert-manager by searching for a pod that contains string <code>cert-manager</code>. We might wrongly update the cert manager in case the cert-manager pod is not found.</p>
 <h3 id="las-unhealthy">LAS Unhealthy</h3>
 <p>Some applications change their user ID during startup. To be able to provide such applications with access to SGX, we probe periodically that all users can access the SGX device from within containers. The custom resource <code>las</code> will become unhealthy, in case access to SGX is restricted. You can determine the status of LAS by executing:</p>
-<div class="highlight"><pre><span></span><code>kubectl get las
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl get las</code></pre>
 <p>In case <code>las</code> is unhealthy, please check the diagnostic output of <code>kubectl describe las</code> for events and conditions that might have caused <code>las</code> to become unhealthy.</p>
 <p>Sometimes, reboots of servers and VMs can cause this if the default permissions are not properly set. To fix this issue, you might need to change the permissions of device <code>/dev/sgx_enclave</code>  to <code>0666</code> on the hosts and the Kubernetes VMs. Pods that have the wrong permissions set, should be restarted. Alternatively, one could also change the permissions of <code>/dev/sgx_enclave</code> inside of the pods.</p>
 
@@ -4633,7 +4613,7 @@ scone-operator-pull   kubernetes.io/dockerconfigjson   <span class="m">1</span> 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/network_shield/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3367,7 +3367,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4190,67 +4190,65 @@ Currently, the network shield can protect TCP connections and Unix sockets with 
 <p>A future version of the Network Shield will feature a more streamlined session integration focusing on service mesh architectures.</p>
 <h2 id="example">Example</h2>
 <p>Here are some examples of how to configure the network shield:</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD=protected</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">SCONE_NETWORK_SHIELD=protected
 
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_1=&quot;protected&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_1_PORT=&quot;TCP:8080&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_1_IDENTITY=&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----BEGIN PRIVATE KEY-----</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----END PRIVATE KEY-----</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----BEGIN CERTIFICATE-----</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----END CERTIFICATE-----</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_1_CLIENT_AUTH=&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----BEGIN CERTIFICATE-----</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----END CERTIFICATE-----</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">&quot;</span><span class="w"></span>
+SCONE_NETWORK_SHIELD_SERVER_1="protected"
+SCONE_NETWORK_SHIELD_SERVER_1_PORT="TCP:8080"
+SCONE_NETWORK_SHIELD_SERVER_1_IDENTITY="
+-----BEGIN PRIVATE KEY-----
+...
+-----END PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+"
+SCONE_NETWORK_SHIELD_SERVER_1_CLIENT_AUTH="
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+"
 
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_2=&quot;unprotected&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_2_PORT=&quot;TCP:443&quot;</span><span class="w"></span>
+SCONE_NETWORK_SHIELD_SERVER_2="unprotected"
+SCONE_NETWORK_SHIELD_SERVER_2_PORT="TCP:443"
 
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_3=&quot;protected&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_3_IDENTITY=&quot;[...]&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_3_CLIENT_AUTH=&quot;disabled&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_SERVER_3_PORT=&quot;unix:/var/run/myapp/unix_socket&quot;</span><span class="w"></span>
+SCONE_NETWORK_SHIELD_SERVER_3="protected"
+SCONE_NETWORK_SHIELD_SERVER_3_IDENTITY="[...]"
+SCONE_NETWORK_SHIELD_SERVER_3_CLIENT_AUTH="disabled"
+SCONE_NETWORK_SHIELD_SERVER_3_PORT="unix:/var/run/myapp/unix_socket"
 
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_1=&quot;protected&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_1_DESTINATION=&quot;TCP:db.mycluster.local:8080&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_1_DESTINATION_IP=&quot;192.168.4.19&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_1_IDENTITY=&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----BEGIN PRIVATE KEY-----</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----END PRIVATE KEY-----</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----BEGIN CERTIFICATE-----</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----END CERTIFICATE-----</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_1_SERVER_AUTH=&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----BEGIN CERTIFICATE-----</span><span class="w"></span>
-<span class="nn">...</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">-----END CERTIFICATE-----</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">&quot;</span><span class="w"></span>
+SCONE_NETWORK_SHIELD_CLIENT_1="protected"
+SCONE_NETWORK_SHIELD_CLIENT_1_DESTINATION="TCP:db.mycluster.local:8080"
+SCONE_NETWORK_SHIELD_CLIENT_1_DESTINATION_IP="192.168.4.19"
+SCONE_NETWORK_SHIELD_CLIENT_1_IDENTITY="
+-----BEGIN PRIVATE KEY-----
+...
+-----END PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+"
+SCONE_NETWORK_SHIELD_CLIENT_1_SERVER_AUTH="
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+"
 
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_2=&quot;unprotected&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_2_DESTINATION=&quot;TCP:log.mycluster.local:443&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_2_DESTINATION_IP=&quot;192.168.4.9&quot;</span><span class="w"></span>
+SCONE_NETWORK_SHIELD_CLIENT_2="unprotected"
+SCONE_NETWORK_SHIELD_CLIENT_2_DESTINATION="TCP:log.mycluster.local:443"
+SCONE_NETWORK_SHIELD_CLIENT_2_DESTINATION_IP="192.168.4.9"
 
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_3=&quot;protected&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_3_DESTINATION=&quot;unix:/var/run/myapp/unix_socket&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_3_SERVER_AUTH=&quot;[...]&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_3_SERVER_DNS_NAME=&quot;dns.name.from.certificate&quot;</span><span class="w"></span>
+SCONE_NETWORK_SHIELD_CLIENT_3="protected"
+SCONE_NETWORK_SHIELD_CLIENT_3_DESTINATION="unix:/var/run/myapp/unix_socket"
+SCONE_NETWORK_SHIELD_CLIENT_3_SERVER_AUTH="[...]"
+SCONE_NETWORK_SHIELD_CLIENT_3_SERVER_DNS_NAME="dns.name.from.certificate"
 
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_3=&quot;unprotected&quot;</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_CLIENT_3_DESTINATION=&quot;unix:/var/run/myapp/other_socket&quot;</span><span class="w"></span>
-</code></pre></div>
+SCONE_NETWORK_SHIELD_CLIENT_3="unprotected"
+SCONE_NETWORK_SHIELD_CLIENT_3_DESTINATION="unix:/var/run/myapp/other_socket"</code></pre>
 <p>We recommended to <a href="../CAS_session_lang_0_3/#secret-injection">inject</a> the certificates and private keys: one defines theses in the the secret section (e.g., secret named <code>mycertificate</code>) and then uses these as <code>$$SCONE::mycertificate:crt$$</code>. </p>
 <h2 id="example-2">Example 2</h2>
 <p>Consider that we want to ensure that a confidential service cannot communicate with any other services. For example, the service might read encrypted files and write encrypted files but is not expected nor permitted to communicate via the network. The network shield can enforce this with the following configuration:</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD = protected</span><span class="w"></span>
-<span class="l l-Scalar l-Scalar-Plain">SCONE_NETWORK_SHIELD_UNSUPPORTED_PROTOCOLS = refuse</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">SCONE_NETWORK_SHIELD = protected
+SCONE_NETWORK_SHIELD_UNSUPPORTED_PROTOCOLS = refuse</code></pre>
 <h2 id="limitations">Limitations</h2>
 <p><strong>Configuration and Certificates</strong>:</p>
 <ul>
@@ -4343,7 +4341,7 @@ Currently, the network shield can protect TCP connections and Unix sockets with 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

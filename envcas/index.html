@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/envcas/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3367,7 +3367,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4114,13 +4114,12 @@
 <ul>
 <li><code>/etc/envcas/config.yaml</code> is the configuration file. It contains the following sections:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nt">program</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">path/to/native/binary</span><span class="w"></span>
-<span class="nt">injected_file</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/envcas/original_injected_file1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/injected_file1</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/envcas/original_injected_file2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/injected_file2</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">program:  path/to/native/binary
+injected_file:
+  - from: /etc/envcas/original_injected_file1
+    to: /path/to/injected_file1
+  - from: /etc/envcas/original_injected_file2
+    to: /path/to/injected_file2</code></pre>
 <p>The program is the binary that should be executed and the injected files, the
 <code>from</code> is the file injected by CAS into <code>envcas</code> and that is copied to a certain location indicated by <code>to</code>. We assume that all directories on the <code>to</code> path exists, i.e., <code>envcas</code> will fail to write the files in case the path does not exists.</p>
 <p>This configuration files is typically defined within the policy of <code>envcas</code>.</p>
@@ -4140,104 +4139,96 @@
 <li>see service <code>with_otp</code> to see how to configure with an OTP. The OTP secret can be defined as a secret. We explicitly define it in the session. Typically, we would import this secret from another session to limit who can see the secret in the clear.</li>
 </ul>
 <p>Our policy (<code>session.yaml</code>) could look as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$SESSION</span><span class="w"></span>
-<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.3.10&quot;</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">name: $SESSION
+version: "0.3.10"
 
-<span class="nt">security</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">tolerate</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">debug-mode</span><span class="p p-Indicator">,</span><span class="nv">hyperthreading</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">outdated-tcb</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">ignore_advisories</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="w"></span>
+security:
+  attestation:
+    tolerate: [debug-mode,hyperthreading, outdated-tcb]
+    ignore_advisories: "*"
 
-<span class="nt">images</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas_image</span><span class="w"></span>
-<span class="w">    </span><span class="nt">injection_files</span><span class="p">:</span><span class="w"></span>
-<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/envcas/config.yaml</span><span class="w"></span>
-<span class="w">       </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">          </span><span class="no">program:  /bin/bash</span><span class="w"></span>
-<span class="w">          </span><span class="no">injection_files:</span><span class="w"></span>
-<span class="w">            </span><span class="no">- from: /etc/envcas/injected_file1</span><span class="w"></span>
-<span class="w">              </span><span class="no">to: /work/out1</span><span class="w"></span>
-<span class="w">            </span><span class="no">- from: /etc/envcas/injected_file2</span><span class="w"></span>
-<span class="w">              </span><span class="no">to: /work/out2</span><span class="w"></span>
-<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/envcas/injected_file1</span><span class="w"></span>
-<span class="w">       </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">          </span><span class="no">Secret=&quot;$$SCONE::example_secret$$&quot;</span><span class="w"></span>
-<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/envcas/injected_file2</span><span class="w"></span>
-<span class="w">       </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">          </span><span class="no">Secret=$$SCONE::example2_secret$$</span><span class="w"></span>
+images:
+  - name: envcas_image
+    injection_files:
+     - path: /etc/envcas/config.yaml
+       content: |
+          program:  /bin/bash
+          injection_files:
+            - from: /etc/envcas/injected_file1
+              to: /work/out1
+            - from: /etc/envcas/injected_file2
+              to: /work/out2
+     - path: /etc/envcas/injected_file1
+       content: |
+          Secret="$$SCONE::example_secret$$"
+     - path: /etc/envcas/injected_file2
+       content: |
+          Secret=$$SCONE::example2_secret$$
 
-<span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas</span><span class="w"></span>
-<span class="w">     </span><span class="nt">image_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas_image</span><span class="w"></span>
-<span class="w">     </span><span class="nt">mrenclaves</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">$MRENCLAVE</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="w">     </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas -c &#39;cat /work/out1&#39;</span><span class="w"></span>
-<span class="w">     </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">SCONE_MODE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hw</span><span class="w"></span>
-<span class="w">        </span><span class="nt">SCONE_LOG</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ERROR</span><span class="w"></span>
-<span class="w">     </span><span class="nt">pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w"></span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">with_otp</span><span class="w"></span>
-<span class="w">     </span><span class="nt">image_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas_image</span><span class="w"></span>
-<span class="w">     </span><span class="nt">attestation</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">mrenclave</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;$MRENCLAVE&quot;</span><span class="w"></span>
-<span class="w">     </span><span class="nt">one_time_password_shared_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::otp_secret$$</span><span class="w"></span>
-<span class="w">     </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">envcas -c &#39;cat /work/out1&#39;</span><span class="w"></span>
-<span class="w">     </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">SCONE_MODE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hw</span><span class="w"></span>
-<span class="w">        </span><span class="nt">SCONE_LOG</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ERROR</span><span class="w"></span>
-<span class="w">     </span><span class="nt">pwd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w"></span>
+services:
+   - name: envcas
+     image_name: envcas_image
+     mrenclaves: [$MRENCLAVE]
+     command: envcas -c 'cat /work/out1'
+     environment:
+        SCONE_MODE: hw
+        SCONE_LOG: ERROR
+     pwd: /
+   - name: with_otp
+     image_name: envcas_image
+     attestation:
+        mrenclave: "$MRENCLAVE"
+     one_time_password_shared_secret: $$SCONE::otp_secret$$
+     command: envcas -c 'cat /work/out1'
+     environment:
+        SCONE_MODE: hw
+        SCONE_LOG: ERROR
+     pwd: /
 
-<span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example_secret</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ascii</span><span class="w"></span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example2_secret</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span><span class="w"></span>
-<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">otp_secret</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ascii</span><span class="w"></span>
-<span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">JJBFGV2ZGNCFARKIKBFTGUCYKBNFKVQK</span><span class="w"></span>
-</code></pre></div>
+secrets:
+  - name: example_secret
+    kind: ascii
+    size: 32
+  - name: example2_secret
+    kind: binary
+    size: 64
+  - name: otp_secret
+    kind: ascii
+    value: JJBFGV2ZGNCFARKIKBFTGUCYKBNFKVQK</code></pre>
 <p>One can instantiate the environment variables in <code>session.yaml</code> and then upload this policy as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /work
+<pre class="highlight"><code class="language-bash">cd /work
 
-<span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>edge.scone-cas.cf
-<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">172</span>.17.0.1
-<span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span>envcas-example-<span class="nv">$RANDOM</span>-<span class="nv">$RANDOM</span>
-<span class="nb">export</span> <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="k">$(</span>docker run --rm -v <span class="nv">$PWD</span>:/work registry.scontain.com/edge/envcas sh -c <span class="s2">&quot;SCONE_HASH=1 /bin/envcas&quot;</span><span class="k">)</span>
+export SCONE_CAS_ADDR=edge.scone-cas.cf
+export SCONE_LAS_ADDR=172.17.0.1
+export SESSION=envcas-example-$RANDOM-$RANDOM
+export MRENCLAVE=$(docker run --rm -v $PWD:/work registry.scontain.com/edge/envcas sh -c "SCONE_HASH=1 /bin/envcas")
 
-scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> --only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S
-scone session create -e <span class="nv">SESSION</span><span class="o">=</span><span class="nv">$SESSION</span> -e <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="nv">$MRENCLAVE</span> session.yaml
+scone cas attest $SCONE_CAS_ADDR --only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S
+scone session create -e SESSION=$SESSION -e MRENCLAVE=$MRENCLAVE session.yaml
 
-<span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/envcas /bin/envcas
-</code></pre></div>
+SCONE_CONFIG_ID=$SESSION/envcas /bin/envcas</code></pre>
 <p>The binary <code>envcas</code> is part of image <code>registry.scontain.com/edge/envcas</code>. You can run it as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/envcas /bin/envcas
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_CONFIG_ID=$SESSION/envcas /bin/envcas</code></pre>
 <p>In this example, we would output the generated secret, i.e., the output could look as follows:</p>
-<div class="highlight"><pre><span></span><code>Secret=&quot;`Y&#39;/c&#39;fV],=G9JJHdJz9(6HaZ&gt;&gt;t}x}Y&quot;
-</code></pre></div>
+<pre class="highlight"><code class="language-text">Secret="`Y'/c'fV],=G9JJHdJz9(6HaZ&gt;&gt;t}x}Y"</code></pre>
 <p>A runnable example can be found <a href="https://github.com/scontain/envcas-example/tree/main/example-bash">in here</a>.</p>
 <h2 id="using-otps">Using OTPs</h2>
 <p>To require an OTP, you would define a service like <code>with_otp</code>. Note. In this case, you would not define service <code>envcas</code> to avoid that one can circumvent using an OTP.</p>
 <p>The OTP is enabled by defining the key <code>one_time_password_shared_secret</code> in the service description:</p>
-<div class="highlight"><pre><span></span><code><span class="w">     </span><span class="nt">one_time_password_shared_secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::otp_secret$$</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">     one_time_password_shared_secret: $$SCONE::otp_secret$$</code></pre>
 <p>The OTP secret is defined in the secret section. In this example, we define with an explicit value. As we mentioned above, our recommendation is to import this from another session to limit visibility of this secret.</p>
 <p>To run binary <code>envcas</code> as service <code>with_otp</code>, we need to add an OTP to the `SCONE_CONFIG_ID':</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTP</span><span class="o">=</span>... <span class="c1"># define OTP using an authenticator</span>
-<span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/with_otp@<span class="nv">$OTP</span> /bin/envcas
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export OTP=... # define OTP using an authenticator
+SCONE_CONFIG_ID=$SESSION/with_otp@$OTP /bin/envcas</code></pre>
 <p>If the OTP is correct, the output might look as follows:</p>
-<div class="highlight"><pre><span></span><code>Secret=&quot;=0r|GdtX9lGS*HtR/U&#39;^U&#39;PPH)H^\T&lt;{&quot;
-</code></pre></div>
+<pre class="highlight"><code class="language-text">Secret="=0r|GdtX9lGS*HtR/U'^U'PPH)H^\T&lt;{"</code></pre>
 <p>If the OTP would be incorrect or already used, the output might look as follows:</p>
-<div class="highlight"><pre><span></span><code>[SCONE|FATAL] src/process/init.c:302:__scone_prepare_secure_config(): Could not initialize enclave state: Attestation failed
+<pre class="highlight"><code class="language-text">[SCONE|FATAL] src/process/init.c:302:__scone_prepare_secure_config(): Could not initialize enclave state: Attestation failed
   Caused by: CAS sent an attestation/configuration error: Failed to retrieve service attestation configuration
   Caused by: A One-time Password was already used within this time-step. Please try again in the next time-step
 Note: Connecting to CAS at edge.scone-cas.cf (port 18765) using service ID envcas-example-31925-25152/with_otp@964428
 [SCONE|ERROR] tools/starter/signal.c:70:die_by_signal(): Enclave terminated due to signal: Aborted
-Aborted (core dumped)
-</code></pre></div>
+Aborted (core dumped)</code></pre>
 <p>The example for OTP usage is in the same policy as the Bash one, <a href="https://github.com/scontain/envcas-example/tree/main/example-bash">in here</a>.</p>
 
               
@@ -4308,7 +4299,7 @@ Aborted (core dumped)
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

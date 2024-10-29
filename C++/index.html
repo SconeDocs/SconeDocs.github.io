@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/C%2B%2B/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3374,7 +3374,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4120,46 +4120,41 @@
 <p>This page focuses on the SCONE C++ cross compiler <strong>scone g++</strong> (a.k.a. <strong>scone-g++</strong>). This cross compiler is based on g++ and hence, the command line options are the same as those of g++. Determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a></p>
 <h2 id="image">Image</h2>
 <p>Ensure that you have the newest SCONE cross compiler image and determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>:</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/crosscompilers
+<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/crosscompilers
 determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/crosscompilers
-</code></pre></div>
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
 <p>In case you do not have an SGX driver installed, no device will be mounted and
 applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <h2 id="help">Help</h2>
 <p>If you need some help, just execute in the container:</p>
-<div class="highlight"><pre><span></span><code>$ scone g++ --help
-Usage: x86_64-linux-musl-g++ <span class="o">[</span>options<span class="o">]</span> file...
+<pre class="highlight"><code class="language-bash">$ scone g++ --help
+Usage: x86_64-linux-musl-g++ [options] file...
 Options:
-...
-</code></pre></div>
+...</code></pre>
 <h2 id="example">Example</h2>
 <p>Let's try to compile a simple program:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; sqrt.cc <span class="s">&lt;&lt; EOF</span>
-<span class="s">#include &lt;iostream&gt;</span>
-<span class="s">#include &lt;cmath&gt;</span>
+<pre class="highlight"><code class="language-bash">cat &gt; sqrt.cc &lt;&lt; EOF
+#include &lt;iostream&gt;
+#include &lt;cmath&gt;
 
-<span class="s">using namespace std;</span>
+using namespace std;
 
-<span class="s">int main() {</span>
-<span class="s">    int x = 0;</span>
-<span class="s">    while(x &lt; 10) {</span>
-<span class="s">        double y = sqrt((double)x);</span>
-<span class="s">        cout &lt;&lt; &quot;The square root of &quot; &lt;&lt; x &lt;&lt; &quot; is &quot; &lt;&lt; y &lt;&lt; endl;</span>
-<span class="s">        x++;</span>
-<span class="s">    }</span>
-<span class="s">    return 0;</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+int main() {
+    int x = 0;
+    while(x &lt; 10) {
+        double y = sqrt((double)x);
+        cout &lt;&lt; "The square root of " &lt;&lt; x &lt;&lt; " is " &lt;&lt; y &lt;&lt; endl;
+        x++;
+    }
+    return 0;
+}
+EOF</code></pre>
 <p>We compile the program with <strong>scone gcc</strong> or <strong>scone-gcc</strong>:</p>
-<div class="highlight"><pre><span></span><code>scone g++ sqrt.cc -o sqrt
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone g++ sqrt.cc -o sqrt</code></pre>
 <p>Let's execute the binary and switch on debug outputs:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./sqrt
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_VERSION=1 ./sqrt</code></pre>
 <p>The output will look like:</p>
-<div class="highlight"><pre><span></span><code>xport SCONE_QUEUES=4
+<pre class="highlight"><code>xport SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -4188,8 +4183,7 @@ The square root of 5 is 2.23607
 The square root of 6 is 2.44949
 The square root of 7 is 2.64575
 The square root of 8 is 2.82843
-The square root of 9 is 3
-</code></pre></div>
+The square root of 9 is 3</code></pre>
 <h2 id="debugging">Debugging</h2>
 <p>You can use <strong>scone-gdb</strong> to debug your applications when running inside of an enclave. For some more details
 on how to use the debugger, please read how to <a href="../GO/#debugging">debug GO</a> programs.</p>
@@ -4264,7 +4258,7 @@ on how to use the debugger, please read how to <a href="../GO/#debugging">debug 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

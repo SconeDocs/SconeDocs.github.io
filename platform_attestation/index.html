@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/platform_attestation/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3346,7 +3346,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4064,97 +4064,88 @@
 <p>During the installation, we will attest and verify the SCONE Quoting Enclaves and the SCONE CAS to ensure that we can trust the enclaves. </p>
 <h2 id="example">Example</h2>
 <p>We use the simple <code>print-arg-env</code> application to show how to perform platform-based attestation:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; print-arg-env.c <span class="s">&lt;&lt;EOF</span>
-<span class="s">#include &lt;stdio.h&gt;</span>
+<pre class="highlight"><code class="language-bash">cat &gt; print-arg-env.c &lt;&lt;EOF
+#include &lt;stdio.h&gt;
 
-<span class="s">extern char **__environ;</span>
+extern char **__environ;
 
-<span class="s">int main (int argc, char **argv) {</span>
-<span class="s">    printf(&quot;argv:&quot;);</span>
-<span class="s">    for (int i = 0; i &lt; argc; i++) {</span>
-<span class="s">        printf(&quot; %s&quot;, argv[i]);</span>
-<span class="s">    }</span>
-<span class="s">    printf(&quot;\n&quot;);</span>
+int main (int argc, char **argv) {
+    printf("argv:");
+    for (int i = 0; i &lt; argc; i++) {
+        printf(" %s", argv[i]);
+    }
+    printf("\n");
 
-<span class="s">    char** envp = __environ;</span>
-<span class="s">    printf(&quot;environ:\n&quot;);</span>
-<span class="s">    while (*envp != NULL) {</span>
-<span class="s">        printf(&quot;%s\n&quot;, *envp);</span>
-<span class="s">        envp++;</span>
-<span class="s">    }</span>
-<span class="s">    return 42;</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+    char** envp = __environ;
+    printf("environ:\n");
+    while (*envp != NULL) {
+        printf("%s\n", *envp);
+        envp++;
+    }
+    return 42;
+}
+EOF</code></pre>
 <p>We use the function <a href="../sgxinstall/#determine-sgx-device"><code>determine_sgx_device</code></a> to determine the name of the SGX device. We pass the SGX device to the cross-compiler container:</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> --network<span class="o">=</span>host -it -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/work registry.scontain.com/sconecuratedimages/crosscompilers bash
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+docker run $MOUNT_SGXDEVICE --network=host -it -v `pwd`:/work registry.scontain.com/sconecuratedimages/crosscompilers bash</code></pre>
 <p>Inside the container, we first compile the program with the help of the cross-compiler:</p>
-<div class="highlight"><pre><span></span><code>scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env
+<pre class="highlight"><code class="language-bash">scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env
 
-<span class="nb">cd</span> /work
-</code></pre></div>
+cd /work</code></pre>
 <p>You need to create a file <code>identity.pem</code> with the signer key outside of this container:  see Section <a href="../scone-signer-example/">scone-signer-example</a> for details. After copying <code>identity.pem</code> into the container, we sign the program for production as follows:</p>
-<div class="highlight"><pre><span></span><code>scone-signer sign --production scone-print-arg-env -k identity.pem 
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone-signer sign --production scone-print-arg-env -k identity.pem </code></pre>
 <p>We determine <code>MRENCLAVE</code> of the program:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="sb">`</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./scone-print-arg-env<span class="sb">`</span>
-<span class="nb">echo</span> MRENCLAVE of scone-print-arg-env is <span class="nv">$MRENCLAVE</span>
-<span class="sb">````</span>
+<pre class="highlight"><code class="language-bash">export MRENCLAVE=`SCONE_HASH=1 ./scone-print-arg-env`
+echo MRENCLAVE of scone-print-arg-env is $MRENCLAVE
+````
 
-We assume we have a <span class="nb">local</span> CAS that we need to attest first. In this demo, we assume we can initially attest and verify the CAS:   
+We assume we have a local CAS that we need to attest first. In this demo, we assume we can initially attest and verify the CAS:   
 
-<span class="sb">```</span>bash
-<span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">172</span>.17.0.1
-scone cas attest <span class="nv">$SCONE_CAS_ADDR</span>
-</code></pre></div>
+```bash
+export SCONE_CAS_ADDR=172.17.0.1
+scone cas attest $SCONE_CAS_ADDR</code></pre>
 <p>We need to determine the public keys of the SCONE QEs. We explain in Section <a href="../helm_las/#determining-the-platform-ids">Determining the Platform IDs</a> how to determine these in the context of Kubernetes clusters:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PLATFORM</span><span class="o">=</span>...
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export PLATFORM=...</code></pre>
 <p>We can now create a SCONE policy that uses the platform-based attestation. We need to declare that we trust the SCONE QEs. Moreover, we only permit the enclave to run on one of the platforms of these trusted QEs:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR</span><span class="o">=</span><span class="s2">&quot;~&quot;</span>
-<span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span>secure-arguments-example-<span class="nv">$RANDOM</span>-<span class="nv">$RANDOM</span>
-<span class="nb">echo</span> <span class="nv">$SESSION</span>
+<pre class="highlight"><code class="language-bash">export PREDECESSOR="~"
+export SESSION=secure-arguments-example-$RANDOM-$RANDOM
+echo $SESSION
 
-cat &gt; session.yml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: $SESSION</span>
-<span class="s">version: 0.3</span>
-<span class="s">predecessor: $PREDECESSOR</span>
+cat &gt; session.yml &lt;&lt;EOF
+name: $SESSION
+version: 0.3
+predecessor: $PREDECESSOR
 
-<span class="s">security:</span>
-<span class="s">  attestation:</span>
-<span class="s">    trusted_scone_qe_pubkeys: [&quot;$PLATFORM&quot;]</span>
+security:
+  attestation:
+    trusted_scone_qe_pubkeys: ["$PLATFORM"]
 
-<span class="s">services:</span>
-<span class="s">   - name: scone-print-arg-env</span>
-<span class="s">     attestation:</span>
-<span class="s">       mrenclave: [$MRENCLAVE]</span>
-<span class="s">     platforms: [$PLATFORM]</span>
-<span class="s">     command: ./scone-print-arg-env arg1 arg2 arg3</span>
-<span class="s">     environment:</span>
-<span class="s">        SCONE_MODE: hw</span>
-<span class="s">        SCONE_LOG: ERROR</span>
-<span class="s">        env1: running</span>
-<span class="s">        env2: in</span>
-<span class="s">        env3: env3</span>
-<span class="s">     pwd: /</span>
-<span class="s">EOF</span>
-<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">172</span>.17.0.1
-<span class="nb">export</span> <span class="nv">PREDECESSOR</span><span class="o">=</span><span class="k">$(</span>scone session create session.yml<span class="k">)</span>
-</code></pre></div>
+services:
+   - name: scone-print-arg-env
+     attestation:
+       mrenclave: [$MRENCLAVE]
+     platforms: [$PLATFORM]
+     command: ./scone-print-arg-env arg1 arg2 arg3
+     environment:
+        SCONE_MODE: hw
+        SCONE_LOG: ERROR
+        env1: running
+        env2: in
+        env3: env3
+     pwd: /
+EOF
+export SCONE_LAS_ADDR=172.17.0.1
+export PREDECESSOR=$(scone session create session.yml)</code></pre>
 <p>We can now execute the program as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/scone-print-arg-env ./scone-print-arg-env
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_CONFIG_ID=$SESSION/scone-print-arg-env ./scone-print-arg-env</code></pre>
 <p>The output would look as follows:</p>
-<div class="highlight"><pre><span></span><code>argv: ./scone-print-arg-env arg1 arg2 arg3
+<pre class="highlight"><code class="language-text">argv: ./scone-print-arg-env arg1 arg2 arg3
 environ:
 env1=running
 env2=in
 SCONE_MODE=hw
 SCONE_LOG=ERROR
-env3=enclave
-</code></pre></div>
+env3=enclave</code></pre>
 
               
             </article>
@@ -4224,7 +4215,7 @@ env3=enclave
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

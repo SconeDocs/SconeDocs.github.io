@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/sconeapps_memcached/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3439,7 +3439,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4262,61 +4262,52 @@ be <code>5-0-0.scone-cas.cf</code>. You can overwrite these defaults by setting 
 <p>See <a href="../secure_document_management/">secure document management</a> for details about how to create a policy that defines TLS certificates for <code>memcached</code>.</p>
 <h3 id="install-the-chart_1">Install the chart</h3>
 <p>To deploy memcached SCONE with the default parameters to your Kubernetes cluster:</p>
-<div class="highlight"><pre><span></span><code>helm install my-memcached sconeapps/memcached
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install my-memcached sconeapps/memcached</code></pre>
 <p>Have a look at the <a href="#parameters">Parameters</a> section for a complete list of parameters this chart supports.</p>
 <h3 id="sgx-device">SGX device</h3>
 <p>By default, this helm chart uses the <a href="../helm_sgxdevplugin/">SCONE SGX Plugin</a>. Hence, it sets the resource limits of CAS as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">sgx.intel.com/enclave</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">resources:
+  limits:
+    sgx.intel.com/enclave: 1</code></pre>
 <p>Alternatively, set <code>useSGXDevPlugin</code> to <code>azure</code> (e.g., <code>--useSGXDevPlugin=azure</code>) to support Azure's SGX Device Plugin. Since Azure requires the amount of EPC memory allocated to your application to be specified, the parameter <code>sgxEpcMem</code> (SGX EPC memory in MiB) becomes required too (e.g., <code>--set useSGXDevPlugin=azure --set sgxEpcMem=16</code>).</p>
 <p>In case you do not want to use the SGX plugin, you can remove the resource limit and explicitly mount the local SGX device into your container by setting:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">extraVolumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-isgx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">hostPath</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">extraVolumes:
+  - name: dev-isgx
+    hostPath:
+      path: /dev/isgx
 
-<span class="nt">extraVolumeMounts</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-isgx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span><span class="w"></span>
-</code></pre></div>
+extraVolumeMounts:
+  - name: dev-isgx
+    path: /dev/isgx</code></pre>
 <p>Please note that mounting the local SGX device into your container requires privileged mode, which will grant your container access to ALL host devices. To enable privileged mode, set <code>securityContext</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">securityContext</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">privileged</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">securityContext:
+  privileged: true</code></pre>
 <h3 id="testing-your-chart">Testing your chart</h3>
 <p>To test that the memcached is working as expected, simply run:</p>
-<div class="highlight"><pre><span></span><code>kubectl --namespace default port-forward svc/my-memcached <span class="m">11211</span>:11211 <span class="p">&amp;</span>
-<span class="nb">echo</span> stats <span class="p">|</span> nc <span class="m">127</span>.0.0.1 <span class="m">11211</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl --namespace default port-forward svc/my-memcached 11211:11211 &amp;
+echo stats | nc 127.0.0.1 11211</code></pre>
 <p>You should see something like:</p>
-<div class="highlight"><pre><span></span><code>STAT pid <span class="m">1</span>
-STAT uptime <span class="m">28</span>
-STAT <span class="nb">time</span> <span class="m">1608215390</span>
-STAT version <span class="m">1</span>.6.7
+<pre class="highlight"><code class="language-bash">STAT pid 1
+STAT uptime 28
+STAT time 1608215390
+STAT version 1.6.7
 ...
-END
-</code></pre></div>
+END</code></pre>
 <h2 id="accessing-your-memcached">Accessing your memcached</h2>
 <p>This chart supports two service types for memcached: <code>ClusterIP</code> and <code>NodePort</code>.</p>
 <h3 id="clusterip">ClusterIP</h3>
 <p>If <code>service.type</code> is set to "ClusterIP", a headless service will be created for memcached, which means that each memcached instance can only be accessed from within the cluster, through its internal DNS name (e.g., <code>RELEASE-memcached-scone-7dbb5d97c7-ktt78</code>).</p>
 <p>You can access the pod as follows:</p>
-<div class="highlight"><pre><span></span><code>kubectl --namespace default port-forward svc/my-memcached <span class="m">11211</span>:11211 <span class="p">&amp;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl --namespace default port-forward svc/my-memcached 11211:11211 &amp;</code></pre>
 <h3 id="nodeport">NodePort</h3>
 <p>You can also set <code>service.type</code> to <code>NodePort</code>, and the memcached instance will be exposed to the outside through the same port in every worker node. By default, the port is randomly assigned by Kubernetes. You can define a custom port by setting <code>service.nodePort</code>, but keep in mind that this port must be available (service creation will fail otherwise).</p>
 <p>You can then access the memcached as follows:</p>
 <p>Get the application URL by running these commands:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">NODE_PORT</span><span class="o">=</span><span class="k">$(</span>kubectl get --namespace default -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.spec.ports[0].nodePort}&quot;</span> services my-memcached-memcached-scone<span class="k">)</span>
-<span class="nb">export</span> <span class="nv">NODE_IP</span><span class="o">=</span><span class="k">$(</span>kubectl get nodes --namespace default -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.items[0].status.addresses[0].address}&quot;</span><span class="k">)</span>
-<span class="nb">echo</span> http://<span class="nv">$NODE_IP</span>:<span class="nv">$NODE_PORT</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services my-memcached-memcached-scone)
+export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+echo http://$NODE_IP:$NODE_PORT</code></pre>
 <p>You can then manually check that the memcached is working by:</p>
-<div class="highlight"><pre><span></span><code>curl -o /dev/null -s -w <span class="s2">&quot;%{http_code}&quot;</span> http://<span class="nv">$NODE_IP</span>:<span class="nv">$NODE_PORT</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl -o /dev/null -s -w "%{http_code}" http://$NODE_IP:$NODE_PORT</code></pre>
 <p>It should then return <code>200</code></p>
 <p>Internal DNS entries (e.g., <code>RELEASE-memcached-scone-7dbb5d97c7-ktt78</code>) will still be created, so you can use them when contacting memcached from inside the cluster.</p>
 <h2 id="parameters">Parameters</h2>
@@ -4549,12 +4540,10 @@ END
 </table>
 <h3 id="set-parameters">Set Parameters</h3>
 <p>Specify each parameter using the <code>--set key=value[,key=value]</code> argument to <code>helm install</code>. For example,</p>
-<div class="highlight"><pre><span></span><code><span class="go">helm install my-release --set scone.attestation.MEMCACHEDConfigID=my_name_space/memcached_policy,scone.attestation.cas=cas.example.com sconeapps/memcached</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">helm install my-release --set scone.attestation.MEMCACHEDConfigID=my_name_space/memcached_policy,scone.attestation.cas=cas.example.com sconeapps/memcached</code></pre>
 <p>The above command sets the policy to <code>my_name_space/memcached_policy</code> and using the CAS <code>cas.example.com</code>.</p>
 <p>Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,</p>
-<div class="highlight"><pre><span></span><code><span class="go">helm install my-release -f values.yaml sconeapps/memcached</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-console">helm install my-release -f values.yaml sconeapps/memcached</code></pre>
 <div class="admonition tip">
 <p class="admonition-title">One can use the default <code>values.yaml</code> in the SconeApps repo</p>
 </div>
@@ -4627,7 +4616,7 @@ END
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

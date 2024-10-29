@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/sconeapps_maxscale/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3412,7 +3412,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4211,31 +4211,27 @@
 </ul>
 <h3 id="install-the-chart_1">Install the chart</h3>
 <p>Deploy MaxScale with the default parameters to your Kubernetes cluster by executing:</p>
-<div class="highlight"><pre><span></span><code>helm install my-maxscale sconeapps/maxscale
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install my-maxscale sconeapps/maxscale</code></pre>
 <p>MaxScale will be deployed as a <strong>Deployment</strong>, meaning that each replica will behave exactly the same way. Optionally, an HAProxy Ingress controller can be deployed to balance the incoming requests across all the MaxScale replicas.</p>
 <p>Have a look at the <a href="#parameters">Parameters</a> section for a complete list of parameters this chart supports.</p>
 <h4 id="sgx-device">SGX device</h4>
 <p>By default, this helm chart uses the <a href="../helm_sgxdevplugin/">SCONE SGX Plugin</a>. Hence, it sets the resource limits of CAS as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">sgx.intel.com/enclave</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">resources:
+  limits:
+    sgx.intel.com/enclave: 1</code></pre>
 <p>Alternatively, set <code>useSGXDevPlugin</code> to <code>azure</code> (e.g., <code>--useSGXDevPlugin=azure</code>) to support Azure's SGX Device Plugin. Since Azure requires the amount of EPC memory allocated to your application to be specified, the parameter <code>sgxEpcMem</code> (SGX EPC memory in MiB) becomes required too (e.g., <code>--set useSGXDevPlugin=azure --set sgxEpcMem=16</code>).</p>
 <p>In case you do not want to use the SGX plugin, you can remove the resource limit and explicitly mount the local SGX device into your container by setting:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">extraVolumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-isgx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">hostPath</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span><span class="w"></span>
+<pre class="highlight"><code class="language-yaml">extraVolumes:
+  - name: dev-isgx
+    hostPath:
+      path: /dev/isgx
 
-<span class="nt">extraVolumeMounts</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-isgx</span><span class="w"></span>
-<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span><span class="w"></span>
-</code></pre></div>
+extraVolumeMounts:
+  - name: dev-isgx
+    path: /dev/isgx</code></pre>
 <p>Please note that mounting the local SGX device into your container requires privileged mode, which will grant your container access to ALL host devices. To enable privileged mode, set <code>securityContext</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">securityContext</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">privileged</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">securityContext:
+  privileged: true</code></pre>
 <h3 id="parameters">Parameters</h3>
 <p>A complete list of parameters this chart supports.</p>
 <table>
@@ -4522,7 +4518,7 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

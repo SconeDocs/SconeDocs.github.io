@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/encrypted_vol/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3381,7 +3381,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4142,259 +4142,233 @@
 </ul>
 <h2 id="writing-a-file">Writing a file</h2>
 <p>Let us start a crosscompiler container. We first determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span>  --network<span class="o">=</span>host -it -v <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/work registry.scontain.com/sconecuratedimages/crosscompilers bash
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+docker run $MOUNT_SGXDEVICE  --network=host -it -v `pwd`:/work registry.scontain.com/sconecuratedimages/crosscompilers bash</code></pre>
 <p>We create a simple C program to store arguments passed via environment variables into a file:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /work
-cat &gt; fprint-arg-env.c <span class="s">&lt;&lt;EOF</span>
-<span class="s">#include &lt;stdio.h&gt;</span>
-<span class="s">#include &lt;stdlib.h&gt;</span>
+<pre class="highlight"><code class="language-bash">cd /work
+cat &gt; fprint-arg-env.c &lt;&lt;EOF
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
 
-<span class="s">extern char **__environ;</span>
+extern char **__environ;
 
-<span class="s">int main (int argc, char **argv) {</span>
-<span class="s">    FILE *fp = fopen(&quot;/volume/output.txt&quot;, &quot;w&quot;);</span>
-<span class="s">    fprintf(fp, &quot;argv:&quot;);</span>
-<span class="s">    for (int i = 0; i &lt; argc; i++) {</span>
-<span class="s">        fprintf(fp, &quot; %s&quot;, argv[i]);</span>
-<span class="s">    }</span>
-<span class="s">    fprintf(fp, &quot;\n&quot;);</span>
+int main (int argc, char **argv) {
+    FILE *fp = fopen("/volume/output.txt", "w");
+    fprintf(fp, "argv:");
+    for (int i = 0; i &lt; argc; i++) {
+        fprintf(fp, " %s", argv[i]);
+    }
+    fprintf(fp, "\n");
 
-<span class="s">    char** envp = __environ;</span>
-<span class="s">    fprintf(fp, &quot;environ:\n&quot;);</span>
-<span class="s">    while (*envp != NULL) {</span>
-<span class="s">        fprintf(fp, &quot;%s\n&quot;, *envp);</span>
-<span class="s">        envp++;</span>
-<span class="s">    }</span>
-<span class="s">    fclose(fp);</span>
-<span class="s">    return 0;</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+    char** envp = __environ;
+    fprintf(fp, "environ:\n");
+    while (*envp != NULL) {
+        fprintf(fp, "%s\n", *envp);
+        envp++;
+    }
+    fclose(fp);
+    return 0;
+}
+EOF</code></pre>
 <p>Let us now compile the program:</p>
-<div class="highlight"><pre><span></span><code>scone-gcc fprint-arg-env.c -g -O3 -o fprint-arg-env
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone-gcc fprint-arg-env.c -g -O3 -o fprint-arg-env</code></pre>
 <p>We can execute the program as follows:</p>
-<div class="highlight"><pre><span></span><code>mkdir -p /volume
-./fprint-arg-env
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">mkdir -p /volume
+./fprint-arg-env</code></pre>
 <p>This creates file: <code>/volume/output.txt</code>. We can look into this file an
 see that this file is <strong>not</strong> encrpted:</p>
-<div class="highlight"><pre><span></span><code>cat /volume/output.txt 
+<pre class="highlight"><code class="language-bash">cat /volume/output.txt 
 argv: ./fprint-arg-env
 environ:
-<span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">172</span>.30.0.1
-...
-</code></pre></div>
+SCONE_LAS_ADDR=172.30.0.1
+...</code></pre>
 <p>While this program runs inside of an enclave, it does not encrypt files by default.
 We need to enable this via a policy.</p>
 <h2 id="creating-a-policy">Creating a policy</h2>
 <p>Our objective is to create a policy that encrypts the written file. We assign this policy the following name:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span>fprint-arg-env-<span class="nv">$RANDOM</span>-<span class="nv">$RANDOM</span>
-<span class="nb">echo</span> <span class="nv">$SESSION</span>
-<span class="nb">export</span> <span class="nv">MRENCLAVE</span><span class="o">=</span><span class="sb">`</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./fprint-arg-env<span class="sb">`</span>
-<span class="nb">echo</span> <span class="nv">$MRENCLAVE</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SESSION=fprint-arg-env-$RANDOM-$RANDOM
+echo $SESSION
+export MRENCLAVE=`SCONE_HASH=1 ./fprint-arg-env`
+echo $MRENCLAVE</code></pre>
 <p>We protect the execution of this program with a OTP (One Time Password). We store the secret in environment variable <code>OTP</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTPSECRET</span><span class="o">=</span>... <span class="c1"># base32 encoded without trailing =</span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>cat &gt; session.yaml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: $SESSION</span>
-<span class="s">version: 0.3</span>
+<pre class="highlight"><code class="language-bash">export OTPSECRET=... # base32 encoded without trailing =</code></pre>
+<pre class="highlight"><code class="language-bash">cat &gt; session.yaml &lt;&lt;EOF
+name: $SESSION
+version: 0.3
 
-<span class="s">security:</span>
-<span class="s">  attestation:</span>
-<span class="s">    tolerate: [debug-mode, hyperthreading, outdated-tcb]</span>
-<span class="s">    ignore_advisories: &quot;*&quot;</span>
-<span class="s">    one_time_password_shared_secret: $OTPSECRET</span>
+security:
+  attestation:
+    tolerate: [debug-mode, hyperthreading, outdated-tcb]
+    ignore_advisories: "*"
+    one_time_password_shared_secret: $OTPSECRET
 
-<span class="s">volumes:</span>
-<span class="s">  - name: my_encrypted_volume</span>
+volumes:
+  - name: my_encrypted_volume
 
-<span class="s">images:</span>
-<span class="s">  - name: my_image</span>
-<span class="s">    volumes:</span>
-<span class="s">      - name: my_encrypted_volume</span>
-<span class="s">        path: /volume</span>
+images:
+  - name: my_image
+    volumes:
+      - name: my_encrypted_volume
+        path: /volume
 
-<span class="s">services:</span>
-<span class="s">   - name: fprint-arg-env</span>
-<span class="s">     image_name: my_image</span>
-<span class="s">     mrenclaves: [$MRENCLAVE]</span>
-<span class="s">     command: ./fprint-arg-env need to pass your OTP</span>
-<span class="s">     environment:</span>
-<span class="s">        SCONE_MODE: hw</span>
-<span class="s">        env1: version</span>
-<span class="s">        env2: 3</span>
-<span class="s">        env3: otp-variant</span>
-<span class="s">     pwd: /</span>
-<span class="s">EOF</span>
-</code></pre></div>
+services:
+   - name: fprint-arg-env
+     image_name: my_image
+     mrenclaves: [$MRENCLAVE]
+     command: ./fprint-arg-env need to pass your OTP
+     environment:
+        SCONE_MODE: hw
+        env1: version
+        env2: 3
+        env3: otp-variant
+     pwd: /
+EOF</code></pre>
 <p>Set the CAS and LAS host names / IP addresses:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf
-<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">172</span>.30.0.1
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SCONE_CAS_ADDR=scone-cas.cf
+export SCONE_LAS_ADDR=172.30.0.1</code></pre>
 <p>We first need to attest CAS:</p>
-<div class="highlight"><pre><span></span><code>scone cas attest <span class="nv">$SCONE_CAS_ADDR</span> --only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone cas attest $SCONE_CAS_ADDR --only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S</code></pre>
 <p>before we can create the session:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR</span><span class="o">=</span><span class="k">$(</span>scone session create session.yaml<span class="k">)</span>
-<span class="nb">echo</span> <span class="nv">$PREDECESSOR</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export PREDECESSOR=$(scone session create session.yaml)
+echo $PREDECESSOR</code></pre>
 <p>We can now execute the program as follows - note this requires access to an authenticator to compute the OTP:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTP</span><span class="o">=</span>...
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export OTP=...</code></pre>
 <p>before we can actually start the program. We need to set the policy name that guides this execution. This is specified with
 environment variable <code>SCONE_CONFIG_ID</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/fprint-arg-env@<span class="nv">$OTP</span> ./fprint-arg-env 
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_CONFIG_ID=$SESSION/fprint-arg-env@$OTP ./fprint-arg-env </code></pre>
 <p>The output will contain some warnings</p>
-<div class="highlight"><pre><span></span><code>[SCONE|WARN] src/enclave/dispatch.c:197:print_version(): Application runs in SGX debug mode.
+<pre class="highlight"><code class="language-text">[SCONE|WARN] src/enclave/dispatch.c:197:print_version(): Application runs in SGX debug mode.
     Its memory can be read from outside the enclave with a debugger! This is not secure!
 [SCONE|WARN] src/syscall/syscall.c:31:__scone_ni_syscall(): system call: membarrier, number 324 is not supported
 [SCONE|WARN] src/process/init.c:722:__scone_apply_secure_config(): Ignoring `SCONE_PWD` environment variable and host provided process working directory.
-    Applying process working directory from service&#39;s session configuration (/)
-</code></pre></div>
+    Applying process working directory from service's session configuration (/)</code></pre>
 <p>since we do not run in production mode.</p>
 <p>We can now try to dump the file <code>/volume/output.txt</code> and see that the file is now encrypted:</p>
-<div class="highlight"><pre><span></span><code>cat /volume/output.txt 
-?f˭??Y?B?ľ<span class="p">|</span>?yڥxK?<span class="o">{</span>??I?d????k??!&gt;??3T<span class="s2">&quot;????D&quot;</span>S??V??.?:D??????<span class="o">}</span>?!?+I...
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cat /volume/output.txt 
+?f˭??Y?B?ľ|?yڥxK?{??I?d????k??!&gt;??3T"????D"S??V??.?:D??????}?!?+I...</code></pre>
 <h2 id="reading-the-encrypted-file">Reading the encrypted file</h2>
 <p>We can now try to decrypt the file with a second program:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> /work
-cat &gt; print_file.c <span class="s">&lt;&lt;EOF</span>
-<span class="s">#include &lt;stdio.h&gt;</span>
-<span class="s">#include &lt;stdlib.h&gt;</span>
+<pre class="highlight"><code class="language-bash">cd /work
+cat &gt; print_file.c &lt;&lt;EOF
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
 
-<span class="s">int main() {</span>
-<span class="s">    FILE *fp = fopen(&quot;/volume/output.txt&quot;, &quot;rb&quot;);</span>
-<span class="s">    fseek(fp, 0, SEEK_END);</span>
-<span class="s">    long fsize = ftell(fp);</span>
-<span class="s">    fseek(fp, 0, SEEK_SET);  /* same as rewind(f); */</span>
+int main() {
+    FILE *fp = fopen("/volume/output.txt", "rb");
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);  /* same as rewind(f); */
 
-<span class="s">    char *string = malloc(fsize + 1);</span>
-<span class="s">    fread(string, fsize, 1, fp);</span>
-<span class="s">    fclose(fp);</span>
+    char *string = malloc(fsize + 1);
+    fread(string, fsize, 1, fp);
+    fclose(fp);
 
-<span class="s">    string[fsize] = 0;</span>
-<span class="s">    printf(&quot;File content:\n%s&quot;, string);</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+    string[fsize] = 0;
+    printf("File content:\n%s", string);
+}
+EOF</code></pre>
 <p>We can compile the program</p>
-<div class="highlight"><pre><span></span><code>scone-gcc print_file.c -g -O3 -o print_file
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone-gcc print_file.c -g -O3 -o print_file</code></pre>
 <p>and run it and we will only see encrypted content:</p>
-<div class="highlight"><pre><span></span><code>?f˭??Y?B?ľ|?yڥxK?{??I?d????k??!&gt;??3T&quot;????D&quot;S??V??.?:D??????}?!?+I...
-</code></pre></div>
+<pre class="highlight"><code class="language-text">?f˭??Y?B?ľ|?yڥxK?{??I?d????k??!&gt;??3T"????D"S??V??.?:D??????}?!?+I...</code></pre>
 <h2 id="extending-the-policy">Extending the Policy</h2>
 <p>We need to grant the program access to the policy. Let us extend the policy accordingly:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">MRENCLAVE2</span><span class="o">=</span><span class="sb">`</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> ./print_file<span class="sb">`</span>
-<span class="nb">echo</span> <span class="nv">$MRENCLAVE2</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export MRENCLAVE2=`SCONE_HASH=1 ./print_file`
+echo $MRENCLAVE2</code></pre>
 <p>We can now define the extended policy:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; session2.yaml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: $SESSION</span>
-<span class="s">version: 0.3</span>
-<span class="s">predecessor: $PREDECESSOR</span>
+<pre class="highlight"><code class="language-bash">cat &gt; session2.yaml &lt;&lt;EOF
+name: $SESSION
+version: 0.3
+predecessor: $PREDECESSOR
 
-<span class="s">security:</span>
-<span class="s">  attestation:</span>
-<span class="s">    tolerate: [debug-mode, hyperthreading, outdated-tcb]</span>
-<span class="s">    ignore_advisories: &quot;*&quot;</span>
-<span class="s">    one_time_password_shared_secret: $OTPSECRET</span>
+security:
+  attestation:
+    tolerate: [debug-mode, hyperthreading, outdated-tcb]
+    ignore_advisories: "*"
+    one_time_password_shared_secret: $OTPSECRET
 
-<span class="s">volumes:</span>
-<span class="s">  - name: my_encrypted_volume</span>
+volumes:
+  - name: my_encrypted_volume
 
-<span class="s">images:</span>
-<span class="s">  - name: my_image</span>
-<span class="s">    volumes:</span>
-<span class="s">      - name: my_encrypted_volume</span>
-<span class="s">        path: /volume</span>
+images:
+  - name: my_image
+    volumes:
+      - name: my_encrypted_volume
+        path: /volume
 
-<span class="s">services:</span>
-<span class="s">   - name: fprint-arg-env</span>
-<span class="s">     image_name: my_image</span>
-<span class="s">     mrenclaves: [$MRENCLAVE]</span>
-<span class="s">     command: ./fprint-arg-env need to pass your OTP</span>
-<span class="s">     environment:</span>
-<span class="s">        SCONE_MODE: hw</span>
-<span class="s">        env1: version</span>
-<span class="s">        env2: 3</span>
-<span class="s">        env3: otp-variant</span>
-<span class="s">     pwd: /</span>
-<span class="s">   - name: print_file</span>
-<span class="s">     image_name: my_image</span>
-<span class="s">     mrenclaves: [$MRENCLAVE2]</span>
-<span class="s">     command: ./print_file</span>
-<span class="s">     pwd: /</span>
-<span class="s">EOF</span>
-</code></pre></div>
+services:
+   - name: fprint-arg-env
+     image_name: my_image
+     mrenclaves: [$MRENCLAVE]
+     command: ./fprint-arg-env need to pass your OTP
+     environment:
+        SCONE_MODE: hw
+        env1: version
+        env2: 3
+        env3: otp-variant
+     pwd: /
+   - name: print_file
+     image_name: my_image
+     mrenclaves: [$MRENCLAVE2]
+     command: ./print_file
+     pwd: /
+EOF</code></pre>
 <p>We update the session:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR2</span><span class="o">=</span><span class="k">$(</span>scone session update session2.yaml<span class="k">)</span>
-<span class="nb">echo</span> <span class="nv">$PREDECESSOR2</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export PREDECESSOR2=$(scone session update session2.yaml)
+echo $PREDECESSOR2</code></pre>
 <p>and can now execute <code>print_file</code> with the correct OPT:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTP</span><span class="o">=</span>...
-<span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/print_file@<span class="nv">$OTP</span> ./print_file 
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export OTP=...
+SCONE_CONFIG_ID=$SESSION/print_file@$OTP ./print_file </code></pre>
 <p>The output will look as follows:</p>
-<div class="highlight"><pre><span></span><code>File content:
+<pre class="highlight"><code class="language-text">File content:
 argv: ./fprint-arg-env need to pass your OTP
 environ:
 env3=otp-variant
 SCONE_MODE=hw
 env1=version
-env2=3
-</code></pre></div>
+env2=3</code></pre>
 <h2 id="running-without-attestation">Running without attestation</h2>
 <p>In case you do not have access to a SGX-capable CPU, you can run this code also in <em>simulation</em> mode. For this to work, we need to change our policy to say that we do not want to perform the attestation of the CPU and the code:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; session3.yaml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: $SESSION</span>
-<span class="s">version: 0.3</span>
-<span class="s">predecessor: $PREDECESSOR2</span>
+<pre class="highlight"><code class="language-bash">cat &gt; session3.yaml &lt;&lt;EOF
+name: $SESSION
+version: 0.3
+predecessor: $PREDECESSOR2
 
-<span class="s">security:</span>
-<span class="s">  attestation:</span>
-<span class="s">    mode: none</span>
-<span class="s">    one_time_password_shared_secret: $OTPSECRET</span>
+security:
+  attestation:
+    mode: none
+    one_time_password_shared_secret: $OTPSECRET
 
-<span class="s">volumes:</span>
-<span class="s">  - name: my_encrypted_volume</span>
+volumes:
+  - name: my_encrypted_volume
 
-<span class="s">images:</span>
-<span class="s">  - name: my_image</span>
-<span class="s">    volumes:</span>
-<span class="s">      - name: my_encrypted_volume</span>
-<span class="s">        path: /volume</span>
+images:
+  - name: my_image
+    volumes:
+      - name: my_encrypted_volume
+        path: /volume
 
-<span class="s">services:</span>
-<span class="s">   - name: fprint-arg-env</span>
-<span class="s">     image_name: my_image</span>
-<span class="s">     command: ./fprint-arg-env need to pass your OTP</span>
-<span class="s">     environment:</span>
-<span class="s">        SCONE_MODE: hw</span>
-<span class="s">        env1: version</span>
-<span class="s">        env2: 3</span>
-<span class="s">        env3: otp-variant</span>
-<span class="s">     pwd: /</span>
-<span class="s">   - name: print_file</span>
-<span class="s">     image_name: my_image</span>
-<span class="s">     command: ./print_file</span>
-<span class="s">     pwd: /</span>
-<span class="s">EOF</span>
-</code></pre></div>
+services:
+   - name: fprint-arg-env
+     image_name: my_image
+     command: ./fprint-arg-env need to pass your OTP
+     environment:
+        SCONE_MODE: hw
+        env1: version
+        env2: 3
+        env3: otp-variant
+     pwd: /
+   - name: print_file
+     image_name: my_image
+     command: ./print_file
+     pwd: /
+EOF</code></pre>
 <p>We update the session:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">PREDECESSOR3</span><span class="o">=</span><span class="k">$(</span>scone session update session2.yaml<span class="k">)</span>
-<span class="nb">echo</span> <span class="nv">$PREDECESSOR3</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export PREDECESSOR3=$(scone session update session2.yaml)
+echo $PREDECESSOR3</code></pre>
 <p>And we can now run the code in simulation mode:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTP</span><span class="o">=</span>...
-<span class="nv">SCONE_MODE</span><span class="o">=</span>SIM <span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/print_file@<span class="nv">$OTP</span> ./print_file 
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export OTP=...
+SCONE_MODE=SIM SCONE_CONFIG_ID=$SESSION/print_file@$OTP ./print_file </code></pre>
 
               
             </article>
@@ -4464,7 +4438,7 @@ env2=3
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

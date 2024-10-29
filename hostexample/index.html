@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/hostexample/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3360,7 +3360,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4094,26 +4094,22 @@
 <p>In this example, we assume that you run on a host and have <a href="../sgxinstall/">installed the Intel SGX driver</a> and a <a href="../dockerinstall/">docker engine</a>. Driver installation is not strictly necessary: without the driver, the program will be automatically be executed in simulation mode on the host. </p>
 <h2 id="detailed-description">Detailed Description</h2>
 <p>We first need to start a container which includes the SCONE crosscompiler which is based on Ubuntu<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>:</p>
-<div class="highlight"><pre><span></span><code>docker run -it -v <span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/src registry.scontain.com/sconecuratedimages/crosscompilers:ubuntu
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run -it -v "$PWD":/src registry.scontain.com/sconecuratedimages/crosscompilers:ubuntu</code></pre>
 <p>We map the local directory of the host into the container (via option <em>-v</em>) to be able to executed the generated binary on the host.</p>
 <p>Now execute the following command inside the container to create the hello world program:</p>
-<div class="highlight"><pre><span></span><code><span class="n">cd</span><span class="w"> </span><span class="o">/</span><span class="n">src</span><span class="w"></span>
-<span class="n">cat</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">helloworld</span><span class="p">.</span><span class="n">c</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">EOF</span><span class="w"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-<span class="n">EOF</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-C">cd /src
+cat &gt; helloworld.c &lt;&lt; EOF
+#include &lt;stdio.h&gt;
+int main() {
+    printf("Hello World\n");
+}
+EOF</code></pre>
 <p>Compile the program with:
-<div class="highlight"><pre><span></span><code>gcc -o helloworld helloworld.c
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">gcc -o helloworld helloworld.c</code></pre></p>
 <p>You can run this program with some debug output in the container:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_VERSION=1 ./helloworld</code></pre>
 <p>This will print something like:</p>
-<div class="highlight"><pre><span></span><code>export SCONE_QUEUES=4
+<pre class="highlight"><code>export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -4133,8 +4129,7 @@ Branch: master
 Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl
 
 Enclave hash: 2805aa551a1019d86f33b6f14774a18792a5a3cc483d002782c9d851d851bf5a
-Hello World
-</code></pre></div>
+Hello World</code></pre>
 <p>The output shows that SCONE is running in <strong>simulation mode</strong>: "<em>export SCONE_MODE=sim</em>"</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -4142,27 +4137,23 @@ Hello World
 </div>
 <h2 id="execution-on-host">Execution on host</h2>
 <p>Now, exit the container by executing:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">exit</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">exit</code></pre>
 <p>On the host, you can now execute the generated <strong>helloworld</strong> program<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.
 First, we need to ensure that there exists a <a href="../SCONE_ENV/#scone-configuration-file">SCONE configuration file</a>. We store this in
 the local directory:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; sgx-musl.conf <span class="s">&lt;&lt; EOF</span>
-<span class="s">Q 1</span>
-<span class="s">e -1 0 0</span>
-<span class="s">s -1 0 0</span>
-<span class="s">EOF</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cat &gt; sgx-musl.conf &lt;&lt; EOF
+Q 1
+e -1 0 0
+s -1 0 0
+EOF</code></pre>
 <p>Now, we start the program with debug messages and using the configuration file in the local directory:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>/sgx-musl.conf <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_CONFIG="$PWD"/sgx-musl.conf SCONE_VERSION=1 ./helloworld</code></pre>
 <p>In case your host has the Intel sgx driver installed, the output will show that it is executed in hardware mode on the host:</p>
-<div class="highlight"><pre><span></span><code>...
+<pre class="highlight"><code>...
 export SCONE_MODE=hw
 ...
 Enclave hash: 2805aa551a1019d86f33b6f14774a18792a5a3cc483d002782c9d851d851bf5a
-Hello World
-</code></pre></div>
+Hello World</code></pre>
 <p>If you do not have the sgx driver installed, the program runs in simulation mode.</p>
 <div class="footnote">
 <hr />
@@ -4244,7 +4235,7 @@ Hello World
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

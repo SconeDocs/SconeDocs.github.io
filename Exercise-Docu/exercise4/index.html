@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/Exercise-Docu/exercise4/">
       
       <link rel="icon" href="../../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3381,7 +3381,7 @@
   
     <li class="md-nav__item">
       <a href="../../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4134,11 +4134,9 @@
 <p>We now want to update the namespace from version "0.2" to session "0.3". We also want to be explicit about who gets access to this policy with the help of an <a href="https://sconedocs.github.io/CAS_session_lang_0_3/#access-control">access policy</a>. Only entities that know the private keys for a given public key can access the namespace.</p>
 <h2 id="task-1">Task 1</h2>
 <p>First, retrieve the policy and compute the hash value as you did in the last assignment. Use the computed hash value as a predecessor in the updated policy.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">predecessor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$PREDECESSOR</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">predecessor: $PREDECESSOR</code></pre>
 <p>Second, update the namespace policy to use version "0.3".</p>
-<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0.3&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">version: "0.3"</code></pre>
 <p>Third, create an explicit access policy that only grants you permission to read and update the policy. Moreover, only your own key should be able to create policies in this namespace.</p>
 <h2 id="task-2">Task 2</h2>
 <p>One potential problem is that a policy is briefly modified to grant access to a program or entity temporarily. After this access has been used, the policy is changed back to the old version of the policy. SCONE CAS keeps the complete history of a policy. Given the current policy, one can use the <code>predecessor</code> field to retrieve the predecessor of the policy. Eventually, we will retrieve a version of the policy with an empty predecessor. This is the first policy with this name.</p>
@@ -4146,15 +4144,14 @@
 <p>The second task is to retrieve and print all versions of your namespace.</p>
 <h2 id="background">Background</h2>
 <p>The default access policy of a namespace is as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">access_policy</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">read</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">  </span><span class="nt">update</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">  </span><span class="nt">create_sessions</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CREATOR</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">access_policy:
+  read:
+    - CREATOR
+  update:
+    - CREATOR
+  create_sessions:
+    - CREATOR
+    - </code></pre>
 <p>This means that the public key used to create this policy/namespace can be used to read this policy, update this policy, or create sessions in this namespace.</p>
 <p>To retrieve a policy with a given hash, we can use the following URL: <code>https://cas:8081/v1/sessions/${NS}?hash=${PRED}</code>. Where <code>$NS</code> contains the name of the policy and <code>$PRED</code> its hash. We can start with the <code>$PRED</code> being the hash of the current policy. We retrieve this policy and extract the value of the <code>predecessor</code> field. We then repeat these steps until no predecessor is defined.</p>
 <p>Note that extracting fields in Yaml is not as well supported as extracting fields from Json. One way to extract this is to use a simple Python program. Also, to retrieve the session from SCONE CAS, you need a client certificate that grants you read access to the policy. Also, provide the CAS certificate to <code>curl</code> to prevent potential man-in-the-middle attacks.</p>
@@ -4236,7 +4233,7 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.5413a266.min.js"></script>

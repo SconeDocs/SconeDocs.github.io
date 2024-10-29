@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/aks/flask_demo/">
       
       <link rel="icon" href="../../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3433,7 +3433,7 @@
   
     <li class="md-nav__item">
       <a href="../../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4288,7 +4288,7 @@ workflow</strong> in the sense that we use a generic script to transform an exis
 <li>we generate a certificate (<code>flask</code>) with the help of CA <code>api_ca_cert</code> and assign it a DNS name <code>api</code>.</li>
 </ul>
 <p>The SCONE policy is based on Yaml and the <a href="https://github.com/scontain/flask_example/blob/master/flask-template.yml">flask policy</a> contains the following section to define these secrets:</p>
-<div class="highlight"><pre><span></span><code>secrets:
+<pre class="highlight"><code class="language-YML">secrets:
     - name: api_ca_key
       kind: private-key
     - name: api_ca_cert
@@ -4302,26 +4302,23 @@ workflow</strong> in the sense that we use a generic script to transform an exis
       private_key: flask_key
       issuer: api_ca_cert
       dns:
-        - api
-</code></pre></div>
+        - api</code></pre>
 <p>The private keys and certificates are expected at certain locations in the file system. SCONE permits to map these secrets into the filesystem of the Flask-based service: these files are only visible to the service inside of an SGX enclave after a successful attestation (see below) and in particular, not visible on the outside i.e., in the filesystem of the container.</p>
 <p>To map the private keys and certificates into the filesystem of a service, we specify in the policy which secrets are visible to a service at which path. In the <a href="https://github.com/scontain/flask_example/blob/master/flask-template.yml">flask policy</a> this is done as follows:</p>
-<div class="highlight"><pre><span></span><code>images:
+<pre class="highlight"><code class="language-YML">images:
    - name: flask_restapi_image
      injection_files:
         - path: /tls/flask.crt
           content: $$SCONE::flask.crt$$
         - path: /tls/flask.key
-          content: $$SCONE::flask.key$$
-</code></pre></div>
+          content: $$SCONE::flask.key$$</code></pre>
 <p>And in the Python program, one can just access these files as normal files. One can create an SSL context (see <a href="https://github.com/scontain/flask_example/blob/master/rest_api.py">code</a>):</p>
-<div class="highlight"><pre><span></span><code>    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">4996</span><span class="p">,</span> <span class="n">threaded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="p">((</span><span class="s2">&quot;/tls/flask.crt&quot;</span><span class="p">,</span> <span class="s2">&quot;/tls/flask.key&quot;</span><span class="p">)))</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-Python">    app.run(host='0.0.0.0', port=4996, threaded=True, ssl_context=(("/tls/flask.crt", "/tls/flask.key")))</code></pre>
 <p>While we do not show how to enforce client authentication of the REST API, we show how to do this for Redis in the next section.</p>
 <h2 id="tls-based-mutual-attestation">TLS-based Mutual Attestation</h2>
 <p>The communication between the Flask-based service, say, <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and Redis instance, say, <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> is encrypted via TLS. Actually, we make sure that the service <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and instance <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> <strong>attest</strong> each other. Attestation means that <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> ensures that <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> satisfies all requirements specified in <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span>'s security policy and <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> ensures that <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> satisfies all the requirements of <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>'s policy. Of course, this should be done without changing the code of neither <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> nor <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span>. In case <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> are using TLS with client authentication, this is straightforward to enforce. (If this is not the case, please contact us for an alternative.)</p>
 <p>To ensure mutual attestation, the operator of Redis defines a <a href="https://github.com/scontain/flask_example/blob/master/redis-template.yml">policy</a> in which it defines a certification authority (<code>redis_ca_cert</code>) and defines both a Redis certificate (<code>redis_ca_cert</code>) as well as a Redis client certificate (<code>redis_client_cert</code>). The client certificate and the private key (<code>redis_client_key</code>) are exported to the policy of the Flask service <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>. The policy for this looks like this:</p>
-<div class="highlight"><pre><span></span><code>secrets:
+<pre class="highlight"><code class="language-yml">secrets:
   - name: redis_key
     kind: private-key
   - name: redis # automatically generate Redis server certificate
@@ -4346,12 +4343,11 @@ workflow</strong> in the sense that we use a generic script to transform an exis
     kind: x509-ca
     private_key: redis_ca_key
     export:
-    - session: $FLASK_SESSION # export the session CA certificate to client session
-</code></pre></div>
+    - session: $FLASK_SESSION # export the session CA certificate to client session</code></pre>
 <p>Note that <code>$FLASK_SESSION</code> is replaced by the unique name of the policy of <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>. The security
 policies are in this example on the same <a href="../../helm_cas/">SCONE CAS (Configuration and Attestation Service)</a>. In more complex scenarios, the policies could also be stored on separate SCONE CAS instances operated by different entities.</p>
 <p>The flask service can import the Redis CA certificate, client certificate and private key as follows:</p>
-<div class="highlight"><pre><span></span><code>secrets:
+<pre class="highlight"><code class="language-yml">secrets:
     - name: redis_client_key
       import:
         session: $REDIS_SESSION
@@ -4363,10 +4359,9 @@ policies are in this example on the same <a href="../../helm_cas/">SCONE CAS (Co
     - name: redis_ca_cert
       import:
         session: $REDIS_SESSION
-        secret: redis_ca_cert
-</code></pre></div>
+        secret: redis_ca_cert</code></pre>
 <p>These secrets are made available to the Flask-based service in the filesystem (i.e., files <code>/tls/redis-ca.crt</code>, <code>/tls/client.crt</code> and <code>/tls/client.key</code>) via the following entries in its security policy:</p>
-<div class="highlight"><pre><span></span><code>images:
+<pre class="highlight"><code class="language-yml">images:
    - name: flask_restapi_image
      injection_files:
         - path: /tls/redis-ca.crt
@@ -4374,105 +4369,86 @@ policies are in this example on the same <a href="../../helm_cas/">SCONE CAS (Co
         - path: /tls/client.crt
           content: $$SCONE::redis_client_cert.crt$$
         - path: /tls/client.key
-          content: $$SCONE::redis_client_cert.key$$
-</code></pre></div>
+          content: $$SCONE::redis_client_cert.key$$</code></pre>
 <p>Note that before uploading a policy to SCONE CAS, one first attests that one indeed communicates with a genuine SCONE CAS running inside of a production enclave. This is done with the help of a <a href="../helm_cas/#attesting-scone-cas">SCONE CAS CLI</a>.</p>
 <h2 id="code">Code</h2>
 <p>The source code of this example is open source and available on GitHub:</p>
-<div class="highlight"><pre><span></span><code>git clone https://github.com/scontain/flask_example.git
-<span class="nb">cd</span> flask_example
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">git clone https://github.com/scontain/flask_example.git
+cd flask_example</code></pre>
 <h2 id="run-service-on-local-computer">Run Service On Local Computer</h2>
 <p>You can use <code>docker-compose</code> to run this example on your local SGX-enabled computer as follows.
 You first generate an encrypted image using script <code>create_image.sh</code>. This generates some environment variables that are stored in file <code>myenv</code> and are loaded via <code>source myenv</code>. The service and Redis are started with <code>docker-compose up</code>.</p>
-<div class="highlight"><pre><span></span><code>./create_image.sh
-<span class="nb">source</span> myenv
-docker-compose up
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./create_image.sh
+source myenv
+docker-compose up</code></pre>
 <p>We use a public instance of SCONE CAS in this example.</p>
 <h3 id="testing-the-service">Testing the service</h3>
 <p>Retrieve the API certificate from CAS:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">source</span> myenv
-curl -k -X GET <span class="s2">&quot;https://</span><span class="si">${</span><span class="nv">SCONE_CAS_ADDR</span><span class="p">-cas</span><span class="si">}</span><span class="s2">:8081/v1/values/session=</span><span class="nv">$FLASK_SESSION</span><span class="s2">&quot;</span> <span class="p">|</span> jq -r .values.api_ca_cert.value &gt; cacert.pem
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">source myenv
+curl -k -X GET "https://${SCONE_CAS_ADDR-cas}:8081/v1/values/session=$FLASK_SESSION" | jq -r .values.api_ca_cert.value &gt; cacert.pem</code></pre>
 <p>Since the API certificates are issued to the hostname "api", we have to use it. You can rely on cURL's --resolve option to point to the actual address (you can also edit your /etc/hosts file).</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">URL</span><span class="o">=</span>https://api:4996
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>curl --cacert cacert.pem -X POST <span class="si">${</span><span class="nv">URL</span><span class="si">}</span>/patient/patient_3 -d <span class="s2">&quot;fname=Jane&amp;lname=Doe&amp;address=&#39;123 Main Street&#39;&amp;city=Richmond&amp;state=Washington&amp;ssn=123-223-2345&amp;email=nr@aaa.com&amp;dob=01/01/2010&amp;contactphone=123-234-3456&amp;drugallergies=&#39;Sulpha, Penicillin, Tree Nut&#39;&amp;preexistingconditions=&#39;diabetes, hypertension, asthma&#39;&amp;dateadmitted=01/05/2010&amp;insurancedetails=&#39;Primera Blue Cross&#39;&quot;</span> --resolve api:4996:127.0.0.1
-curl --cacert cacert.pem -X GET <span class="si">${</span><span class="nv">URL</span><span class="si">}</span>/patient/patient_3 --resolve api:4996:127.0.0.1
-curl --cacert cacert.pem -X GET <span class="si">${</span><span class="nv">URL</span><span class="si">}</span>/score/patient_3 --resolve api:4996:127.0.0.1
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export URL=https://api:4996</code></pre>
+<pre class="highlight"><code class="language-bash">curl --cacert cacert.pem -X POST ${URL}/patient/patient_3 -d "fname=Jane&amp;lname=Doe&amp;address='123 Main Street'&amp;city=Richmond&amp;state=Washington&amp;ssn=123-223-2345&amp;email=nr@aaa.com&amp;dob=01/01/2010&amp;contactphone=123-234-3456&amp;drugallergies='Sulpha, Penicillin, Tree Nut'&amp;preexistingconditions='diabetes, hypertension, asthma'&amp;dateadmitted=01/05/2010&amp;insurancedetails='Primera Blue Cross'" --resolve api:4996:127.0.0.1
+curl --cacert cacert.pem -X GET ${URL}/patient/patient_3 --resolve api:4996:127.0.0.1
+curl --cacert cacert.pem -X GET ${URL}/score/patient_3 --resolve api:4996:127.0.0.1</code></pre>
 <p>The output might look as follows:</p>
-<div class="highlight"><pre><span></span><code>$ curl --cacert cacert.pem -X POST https://localhost:4996/patient/patient_3 -d &quot;fname=Jane&amp;lname=Doe&amp;address=&#39;123 Main Street&#39;&amp;city=Richmond&amp;state=Washington&amp;ssn=123-223-2345&amp;email=nr@aaa.com&amp;dob=01/01/2010&amp;contactphone=123-234-3456&amp;drugallergies=&#39;Sulpha, Penicillin, Tree Nut&#39;&amp;preexistingconditions=&#39;diabetes, hypertension, asthma&#39;&amp;dateadmitted=01/05/2010&amp;insurancedetails=&#39;Primera Blue Cross&#39;&quot; --resolve api:4996:127.0.0.1
-{&quot;address&quot;:&quot;&#39;123 Main Street&#39;&quot;,&quot;city&quot;:&quot;Richmond&quot;,&quot;contactphone&quot;:&quot;123-234-3456&quot;,&quot;dateadmitted&quot;:&quot;01/05/2010&quot;,&quot;dob&quot;:&quot;01/01/2010&quot;,&quot;drugallergies&quot;:&quot;&#39;Sulpha, Penicillin, Tree Nut&#39;&quot;,&quot;email&quot;:&quot;nr@aaa.com&quot;,&quot;fname&quot;:&quot;Jane&quot;,&quot;id&quot;:&quot;patient_3&quot;,&quot;insurancedetails&quot;:&quot;&#39;Primera Blue Cross&#39;&quot;,&quot;lname&quot;:&quot;Doe&quot;,&quot;preexistingconditions&quot;:&quot;&#39;diabetes, hypertension, asthma&#39;&quot;,&quot;score&quot;:0.1168424489618366,&quot;ssn&quot;:&quot;123-223-2345&quot;,&quot;state&quot;:&quot;Washington&quot;}
+<pre class="highlight"><code class="language-txt">$ curl --cacert cacert.pem -X POST https://localhost:4996/patient/patient_3 -d "fname=Jane&amp;lname=Doe&amp;address='123 Main Street'&amp;city=Richmond&amp;state=Washington&amp;ssn=123-223-2345&amp;email=nr@aaa.com&amp;dob=01/01/2010&amp;contactphone=123-234-3456&amp;drugallergies='Sulpha, Penicillin, Tree Nut'&amp;preexistingconditions='diabetes, hypertension, asthma'&amp;dateadmitted=01/05/2010&amp;insurancedetails='Primera Blue Cross'" --resolve api:4996:127.0.0.1
+{"address":"'123 Main Street'","city":"Richmond","contactphone":"123-234-3456","dateadmitted":"01/05/2010","dob":"01/01/2010","drugallergies":"'Sulpha, Penicillin, Tree Nut'","email":"nr@aaa.com","fname":"Jane","id":"patient_3","insurancedetails":"'Primera Blue Cross'","lname":"Doe","preexistingconditions":"'diabetes, hypertension, asthma'","score":0.1168424489618366,"ssn":"123-223-2345","state":"Washington"}
 $ curl --cacert cacert.pem -X GET localhost:4996/patient/patient_3 --resolve api:4996:127.0.0.1
-{&quot;address&quot;:&quot;&#39;123 Main Street&#39;&quot;,&quot;city&quot;:&quot;Richmond&quot;,&quot;contactphone&quot;:&quot;123-234-3456&quot;,&quot;dateadmitted&quot;:&quot;01/05/2010&quot;,&quot;dob&quot;:&quot;01/01/2010&quot;,&quot;drugallergies&quot;:&quot;&#39;Sulpha, Penicillin, Tree Nut&#39;&quot;,&quot;email&quot;:&quot;nr@aaa.com&quot;,&quot;fname&quot;:&quot;Jane&quot;,&quot;id&quot;:&quot;patient_3&quot;,&quot;insurancedetails&quot;:&quot;&#39;Primera Blue Cross&#39;&quot;,&quot;lname&quot;:&quot;Doe&quot;,&quot;preexistingconditions&quot;:&quot;&#39;diabetes, hypertension, asthma&#39;&quot;,&quot;score&quot;:0.1168424489618366,&quot;ssn&quot;:&quot;123-223-2345&quot;,&quot;state&quot;:&quot;Washington&quot;}
+{"address":"'123 Main Street'","city":"Richmond","contactphone":"123-234-3456","dateadmitted":"01/05/2010","dob":"01/01/2010","drugallergies":"'Sulpha, Penicillin, Tree Nut'","email":"nr@aaa.com","fname":"Jane","id":"patient_3","insurancedetails":"'Primera Blue Cross'","lname":"Doe","preexistingconditions":"'diabetes, hypertension, asthma'","score":0.1168424489618366,"ssn":"123-223-2345","state":"Washington"}
 $ curl --cacert cacert.pem -X GET localhost:4996/score/patient_3 --resolve api:4996:127.0.0.1
-{&quot;id&quot;:&quot;patient_3&quot;,&quot;score&quot;:0.2781606437899131}
-</code></pre></div>
+{"id":"patient_3","score":0.2781606437899131}</code></pre>
 <h2 id="execution-on-a-kubernetes-cluster-and-aks">Execution on a Kubernetes Cluster and AKS</h2>
 <p>You can run this example on a Kubernetes cluster or Azure Kubernetes Service (AKS).</p>
 <h3 id="install-scone-services">Install SCONE services</h3>
 <p>Get access to <code>SconeApps</code> (see <a href="https://sconedocs.github.io/helm/">https://sconedocs.github.io/helm/</a>):</p>
-<div class="highlight"><pre><span></span><code>helm repo add sconeapps https://<span class="si">${</span><span class="nv">GH_TOKEN</span><span class="si">}</span>@raw.githubusercontent.com/scontain/sconeapps/master/
-helm repo update
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm repo add sconeapps https://${GH_TOKEN}@raw.githubusercontent.com/scontain/sconeapps/master/
+helm repo update</code></pre>
 <p>Give SconeApps access to the private docker images (see <a href="../../helm/">the helm docs</a>):</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>...
-<span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>...
-<span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>...
+<pre class="highlight"><code class="language-bash">export SCONE_HUB_USERNAME=...
+export SCONE_HUB_ACCESS_TOKEN=...
+export SCONE_HUB_EMAIL=...
 
-kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
-</code></pre></div>
+kubectl create secret docker-registry sconeapps --docker-server=registry.scontain.com --docker-username=$SCONE_HUB_USERNAME --docker-password=$SCONE_HUB_ACCESS_TOKEN --docker-email=$SCONE_HUB_EMAIL</code></pre>
 <p>Start LAS and CAS service:</p>
-<div class="highlight"><pre><span></span><code>helm install las sconeapps/las --set service.hostPort<span class="o">=</span><span class="nb">true</span>
-helm install cas sconeapps/cas
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install las sconeapps/las --set service.hostPort=true
+helm install cas sconeapps/cas</code></pre>
 <p>Install the SGX device plugin for Kubernetes:</p>
-<div class="highlight"><pre><span></span><code>helm install sgxdevplugin sconeapps/sgxdevplugin
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install sgxdevplugin sconeapps/sgxdevplugin</code></pre>
 <h3 id="run-the-application">Run the application</h3>
 <p>Start by creating a Docker image and setting its name. Remember to specify a repository to which you are allowed to push:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">IMAGE</span><span class="o">=</span>registry.scontain.com/sconecuratedimages/application:v0.4 <span class="c1"># please change to an image that you can push</span>
+<pre class="highlight"><code class="language-bash">export IMAGE=registry.scontain.com/sconecuratedimages/application:v0.4 # please change to an image that you can push
 ./create_image.sh
-<span class="nb">source</span> myenv
-docker push <span class="nv">$IMAGE</span>
-</code></pre></div>
+source myenv
+docker push $IMAGE</code></pre>
 <p>Use the Helm chart in <a href="https://github.com/scontain/flask_example/tree/master/deploy/helm"><code>deploy/helm</code></a> to deploy the application to a Kubernetes cluster.</p>
-<div class="highlight"><pre><span></span><code>helm install api-v1 deploy/helm <span class="se">\</span>
-   --set <span class="nv">image</span><span class="o">=</span><span class="nv">$IMAGE</span> <span class="se">\</span>
-   --set scone.cas<span class="o">=</span><span class="nv">$SCONE_CAS_ADDR</span> <span class="se">\</span>
-   --set scone.flask_session<span class="o">=</span><span class="nv">$FLASK_SESSION</span>/flask_restapi <span class="se">\</span>
-   --set scone.redis_session<span class="o">=</span><span class="nv">$REDIS_SESSION</span>/redis <span class="se">\</span>
-   --set service.type<span class="o">=</span>LoadBalancer
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install api-v1 deploy/helm \
+   --set image=$IMAGE \
+   --set scone.cas=$SCONE_CAS_ADDR \
+   --set scone.flask_session=$FLASK_SESSION/flask_restapi \
+   --set scone.redis_session=$REDIS_SESSION/redis \
+   --set service.type=LoadBalancer</code></pre>
 <p><strong>NOTE</strong>: Setting <code>service.type=LoadBalancer</code> will allow the application to get traffic from the internet (through a managed LoadBalancer).</p>
 <h3 id="test-the-application">Test the application</h3>
 <p>After all resources are <code>Running</code>, you can test the API via Helm:</p>
-<div class="highlight"><pre><span></span><code>helm <span class="nb">test</span> api-v1
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm test api-v1</code></pre>
 <p>Helm will run a pod with a couple of pre-set queries to check if the API is working properly.</p>
 <h3 id="access-the-application">Access the application</h3>
 <p>If the application is exposed to the world through a service of the type LoadBalancer, you can retrieve its CA certificate from CAS:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">source</span> myenv
-curl -k -X GET <span class="s2">&quot;https://</span><span class="si">${</span><span class="nv">SCONE_CAS_ADDR</span><span class="p">-cas</span><span class="si">}</span><span class="s2">:8081/v1/values/session=</span><span class="nv">$FLASK_SESSION</span><span class="s2">&quot;</span> <span class="p">|</span> jq -r .values.api_ca_cert.value &gt; cacert.pem
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">source myenv
+curl -k -X GET "https://${SCONE_CAS_ADDR-cas}:8081/v1/values/session=$FLASK_SESSION" | jq -r .values.api_ca_cert.value &gt; cacert.pem</code></pre>
 <p>Retrieve the service public IP address:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SERVICE_IP</span><span class="o">=</span><span class="k">$(</span>kubectl get svc --namespace default api-v1-example --template <span class="s2">&quot;{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}&quot;</span><span class="k">)</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SERVICE_IP=$(kubectl get svc --namespace default api-v1-example --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}")</code></pre>
 <p>Since the API certificates are issued to the hostname "api", we have to use it. You can rely on cURL's --resolve option to point to the actual address (you can also edit your /etc/hosts file).</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">URL</span><span class="o">=</span>https://api
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export URL=https://api</code></pre>
 <p>Now you can perform queries such as:</p>
-<div class="highlight"><pre><span></span><code>curl --cacert cacert.pem -X POST <span class="si">${</span><span class="nv">URL</span><span class="si">}</span>/patient/patient_3 -d <span class="s2">&quot;fname=Jane&amp;lname=Doe&amp;address=&#39;123 Main Street&#39;&amp;city=Richmond&amp;state=Washington&amp;ssn=123-223-2345&amp;email=nr@aaa.com&amp;dob=01/01/2010&amp;contactphone=123-234-3456&amp;drugallergies=&#39;Sulpha, Penicillin, Tree Nut&#39;&amp;preexistingconditions=&#39;diabetes, hypertension, asthma&#39;&amp;dateadmitted=01/05/2010&amp;insurancedetails=&#39;Primera Blue Cross&#39;&quot;</span> --resolve api:443:<span class="si">${</span><span class="nv">SERVICE_IP</span><span class="si">}</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl --cacert cacert.pem -X POST ${URL}/patient/patient_3 -d "fname=Jane&amp;lname=Doe&amp;address='123 Main Street'&amp;city=Richmond&amp;state=Washington&amp;ssn=123-223-2345&amp;email=nr@aaa.com&amp;dob=01/01/2010&amp;contactphone=123-234-3456&amp;drugallergies='Sulpha, Penicillin, Tree Nut'&amp;preexistingconditions='diabetes, hypertension, asthma'&amp;dateadmitted=01/05/2010&amp;insurancedetails='Primera Blue Cross'" --resolve api:443:${SERVICE_IP}</code></pre>
 <h3 id="clean-up">Clean up</h3>
-<div class="highlight"><pre><span></span><code>helm delete cas
+<pre class="highlight"><code class="language-bash">helm delete cas
 helm delete las
 helm delete sgxdevplugin
 helm delete api-v1
-kubectl delete pod api-v1-example-test-api
-</code></pre></div>
+kubectl delete pod api-v1-example-test-api</code></pre>
 <p>Next, we introduce the different sconified Python versions that we support.</p>
 
               
@@ -4543,7 +4519,7 @@ kubectl delete pod api-v1-example-test-api
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/cas-backup-controller-quick-start/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3346,7 +3346,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4065,144 +4065,135 @@
 <ul>
 <li>Deploy LAS to the target Kubernetes cluster.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>helm install las sconeapps/las <span class="se">\</span>
-    --set <span class="nv">image</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/sconecuratedimages/kubernetes:las.microsoft-azure-scone5&quot;</span> <span class="se">\</span>
-    --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install las sconeapps/las \
+    --set image="registry.scontain.com/sconecuratedimages/kubernetes:las.microsoft-azure-scone5" \
+    --set useSGXDevPlugin="azure"</code></pre>
 <ul>
 <li>Deploy CAS to the target Kubernetes cluster. Make sure to enable CAS database persistence (<code>--set persistence.enabled=true</code>).</li>
 </ul>
-<div class="highlight"><pre><span></span><code>helm install cas sconeapps/cas <span class="se">\</span>
-    --set <span class="nv">image</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/sconecuratedimages/services:cas-scone5&quot;</span> <span class="se">\</span>
-    --set persistence.enabled<span class="o">=</span><span class="s2">&quot;true&quot;</span> <span class="se">\</span>
-    --set persistence.storageClass<span class="o">=</span><span class="s2">&quot;managed&quot;</span> <span class="se">\</span>
-    --set service.type<span class="o">=</span><span class="s2">&quot;LoadBalancer&quot;</span> <span class="se">\</span>
-    --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install cas sconeapps/cas \
+    --set image="registry.scontain.com/sconecuratedimages/services:cas-scone5" \
+    --set persistence.enabled="true" \
+    --set persistence.storageClass="managed" \
+    --set service.type="LoadBalancer" \
+    --set useSGXDevPlugin="azure"</code></pre>
 <ul>
 <li>Retrieve the CAS key hash and provisioning token from the CAS pod logs.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">CAS_KEY_HASH</span><span class="o">=</span><span class="k">$(</span>kubectl logs cas-0 <span class="p">|</span> grep <span class="s2">&quot;CAS key hash&quot;</span> <span class="p">|</span> awk <span class="s1">&#39; { print $7 } &#39;</span><span class="k">)</span>
-<span class="nb">export</span> <span class="nv">CAS_PROVISIONING_TOKEN</span><span class="o">=</span><span class="k">$(</span>kubectl logs cas-0 <span class="p">|</span> grep <span class="s2">&quot;CAS provisioning token&quot;</span> <span class="p">|</span> awk <span class="s1">&#39; { print $7 } &#39;</span><span class="k">)</span>
-<span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="k">$(</span>kubectl get svc --namespace default cas --template <span class="s2">&quot;{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}&quot;</span><span class="k">)</span>
-<span class="nb">export</span> <span class="nv">MY_POLICY_NAME</span><span class="o">=</span><span class="s2">&quot;my-cas-backup-controller-</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
+<pre class="highlight"><code class="language-bash">export CAS_KEY_HASH=$(kubectl logs cas-0 | grep "CAS key hash" | awk ' { print $7 } ')
+export CAS_PROVISIONING_TOKEN=$(kubectl logs cas-0 | grep "CAS provisioning token" | awk ' { print $7 } ')
+export SCONE_CAS_ADDR=$(kubectl get svc --namespace default cas --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}")
+export MY_POLICY_NAME="my-cas-backup-controller-$RANDOM"
 mkdir -p owner-config
-cat &gt; owner-config/config.toml <span class="s">&lt;&lt;EOF</span>
-<span class="s">[api_identity]</span>
-<span class="s">common_name = &quot;mycas&quot;</span>
-<span class="s">alt_names = [&quot;mycas&quot;, &quot;cas&quot;, &quot;cas.default&quot;, &quot;localhost&quot;, &quot;$SCONE_CAS_ADDR&quot;]</span>
+cat &gt; owner-config/config.toml &lt;&lt;EOF
+[api_identity]
+common_name = "mycas"
+alt_names = ["mycas", "cas", "cas.default", "localhost", "$SCONE_CAS_ADDR"]
 
-<span class="s">[dcap]</span>
-<span class="s">subscription_key = &quot;00000000000000000000000000000000&quot;</span>
-<span class="s">EOF</span>
-</code></pre></div>
+[dcap]
+subscription_key = "00000000000000000000000000000000"
+EOF</code></pre>
 <ul>
 <li>The CAS owner is identified by a PKCS#8 private key. This identity gives the owner power to upgrade and perform backups. The key must be protected and can be generated as follows:</li>
 </ul>
-<div class="highlight"><pre><span></span><code>mkdir -p identity
-openssl genrsa -out identity/keypair.pem <span class="m">2048</span>
-openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in identity/keypair.pem -out identity/pkcs8.key
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">mkdir -p identity
+openssl genrsa -out identity/keypair.pem 2048
+openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in identity/keypair.pem -out identity/pkcs8.key</code></pre>
 <ul>
 <li>Start a SCONE CLI container locally to provision CAS and create policies.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>docker run -it --rm <span class="se">\</span>
-    --network<span class="o">=</span>host <span class="se">\</span>
-    -v <span class="nv">$PWD</span>/identity:/identity <span class="se">\</span>
-    -v <span class="nv">$PWD</span>/owner-config:/owner-config <span class="se">\</span>
-    -e <span class="nv">SCONE_CLI_CONFIG</span><span class="o">=</span><span class="s2">&quot;/identity/config.json&quot;</span> <span class="se">\</span>
-    -e <span class="nv">CAS_KEY_HASH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_KEY_HASH</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -e <span class="nv">CAS_PROVISIONING_TOKEN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_PROVISIONING_TOKEN</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -e <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -e <span class="nv">MY_POLICY_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MY_POLICY_NAME</span><span class="s2">&quot;</span> <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run -it --rm \
+    --network=host \
+    -v $PWD/identity:/identity \
+    -v $PWD/owner-config:/owner-config \
+    -e SCONE_CLI_CONFIG="/identity/config.json" \
+    -e CAS_KEY_HASH="$CAS_KEY_HASH" \
+    -e CAS_PROVISIONING_TOKEN="$CAS_PROVISIONING_TOKEN" \
+    -e SCONE_CAS_ADDR="$SCONE_CAS_ADDR" \
+    -e MY_POLICY_NAME="$MY_POLICY_NAME" \
+    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5</code></pre>
 <ul>
 <li>Inside of the SCONE CLI container, provision CAS. The owner identity and CLI configuration will be persisted to your local machine (at <code>./identity/config.json</code>).</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ scone cas provision <span class="nv">$SCONE_CAS_ADDR</span> <span class="se">\</span>
-    -c <span class="nv">$CAS_KEY_HASH</span> <span class="se">\</span>
-    --token <span class="nv">$CAS_PROVISIONING_TOKEN</span> <span class="se">\</span>
-    --config-file /owner-config/config.toml <span class="se">\</span>
+<pre class="highlight"><code class="language-bash">$ scone cas provision $SCONE_CAS_ADDR \
+    -c $CAS_KEY_HASH \
+    --token $CAS_PROVISIONING_TOKEN \
+    --config-file /owner-config/config.toml \
     with-attestation -GCS --only_for_testing-debug --only_for_testing-ignore-signer --only_for_testing-trust-any
-This <span class="nb">command</span> will provision and claim ownership of a CAS.
+This command will provision and claim ownership of a CAS.
     The ownership will be bound to the cryptographic identity used during this provisioning.
-    Holding the owner<span class="s1">&#39;s identity is necessary to change CAS settings, register backups, and upgrade to new CAS versions.</span>
-<span class="s1">    Please be sure to store the owner&#39;</span>s identity securely.
-    Note: If no identity is specified on the <span class="nb">command</span> line, the identity stored <span class="k">in</span> the CLI configuration file is used.
+    Holding the owner's identity is necessary to change CAS settings, register backups, and upgrade to new CAS versions.
+    Please be sure to store the owner's identity securely.
+    Note: If no identity is specified on the command line, the identity stored in the CLI configuration file is used.
 This tool seems to run inside of a container.
-    Please be extra careful that the owner<span class="err">&#39;</span>s identity is not lost when the container is removed!
+    Please be extra careful that the owner's identity is not lost when the container is removed!
 CAS owner configuration contains IAS API credentials. Going to attempt to attest CAS using the EPID quote.
 CAS owner configuration includes DCAP API credentials. Going to try to attest and verify CAS using the DCAP quote.
 CAS localhost at https://localhost:8081/ is trustworthy
-Done, CAS configuration was successfully provisioned. You are now the owner of the CAS.
-</code></pre></div>
+Done, CAS configuration was successfully provisioned. You are now the owner of the CAS.</code></pre>
 <p>Do not exit the CLI container just yet.</p>
 <ul>
 <li>The CAS Backup Controller runs the SCONE CLI on your behalf to register backups. To do this securely, we must create a policy that contains the CLI configuration and owner identity. For development this might look like this:</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">CLI_OWNER_CONFIG</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>sed <span class="s1">&#39;s/^/          /&#39;</span> /identity/config.json<span class="k">)</span><span class="s2">&quot;</span>
-<span class="nb">export</span> <span class="nv">SCONE_CLI_MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span> scone cas<span class="k">)</span><span class="s2">&quot;</span>
-cat &gt; /identity/session.yaml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: $MY_POLICY_NAME</span>
-<span class="s">version: &quot;0.3&quot;</span>
+<pre class="highlight"><code class="language-bash">export CLI_OWNER_CONFIG="$(sed 's/^/          /' /identity/config.json)"
+export SCONE_CLI_MRENCLAVE="$(SCONE_HASH=1 scone cas)"
+cat &gt; /identity/session.yaml &lt;&lt;EOF
+name: $MY_POLICY_NAME
+version: "0.3"
 
-<span class="s">security:</span>
-<span class="s">  attestation:</span>
-<span class="s">    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed]</span>
-<span class="s">    ignore_advisories: &quot;*&quot;</span>
+security:
+  attestation:
+    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed]
+    ignore_advisories: "*"
 
-<span class="s">services:</span>
-<span class="s">  - name: register</span>
-<span class="s">    image_name: cli</span>
-<span class="s">    mrenclaves: [$SCONE_CLI_MRENCLAVE]</span>
-<span class="s">    command: &quot;scone cas register-backup @@3&quot;</span>
-<span class="s">    environment:</span>
-<span class="s">      SCONE_MODE: hw</span>
-<span class="s">      SCONE_LOG: error</span>
-<span class="s">      SCONE_CLI_CONFIG: /etc/owner-identity.json</span>
-<span class="s">      \@\@SCONE_LAS_ADDR: &quot;&quot;</span>
-<span class="s">    pwd: /</span>
+services:
+  - name: register
+    image_name: cli
+    mrenclaves: [$SCONE_CLI_MRENCLAVE]
+    command: "scone cas register-backup @@3"
+    environment:
+      SCONE_MODE: hw
+      SCONE_LOG: error
+      SCONE_CLI_CONFIG: /etc/owner-identity.json
+      \@\@SCONE_LAS_ADDR: ""
+    pwd: /
 
-<span class="s">images:</span>
-<span class="s">  - name: cli</span>
-<span class="s">    injection_files:</span>
-<span class="s">      - path: /etc/owner-identity.json</span>
-<span class="s">        content: |</span>
-<span class="s">$CLI_OWNER_CONFIG</span>
-<span class="s">EOF</span>
+images:
+  - name: cli
+    injection_files:
+      - path: /etc/owner-identity.json
+        content: |
+$CLI_OWNER_CONFIG
+EOF
 
 scone session create /identity/session.yaml
-<span class="nb">exit</span>
-</code></pre></div>
+exit</code></pre>
 <ul>
 <li>Deploy CAS Backup Controller with the appropriate policy name.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>helm install cbc sconeappsee/cas-backup-controller <span class="se">\</span>
-    --set <span class="nv">cas</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --set <span class="nv">session</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MY_POLICY_NAME</span><span class="s2">/register&quot;</span> <span class="se">\</span>
-    --set <span class="nv">useSGXDevPlugin</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install cbc sconeappsee/cas-backup-controller \
+    --set cas="$SCONE_CAS_ADDR" \
+    --set session="$MY_POLICY_NAME/register" \
+    --set useSGXDevPlugin="azure"</code></pre>
 <ul>
 <li>Check the logs of the CAS Backup Controller pod for successful and failed registrations.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>$ kubectl logs -l app.kubernetes.io/name<span class="o">=</span>cas-backup-controller --tail -1
-<span class="m">2022</span>-07-21 <span class="m">22</span>:42:16,254 INFO: Using session cas-backup-controller-e2e/register
-<span class="m">2022</span>-07-21 <span class="m">22</span>:42:16,256 INFO: Starting controller...
-<span class="m">2022</span>-07-21 <span class="m">22</span>:42:16,305 INFO: Backup CAS resources will be named <span class="s1">&#39;cas-backup&#39;</span>-&lt;node_name&gt;
-<span class="m">2022</span>-07-21 <span class="m">22</span>:42:16,305 INFO: Selecting LAS pods that match selector app.kubernetes.io/name<span class="o">=</span>las on namespace kube-system
-<span class="m">2022</span>-07-21 <span class="m">22</span>:42:16,350 INFO: Provisioning backup CAS on node aks-confcompool2-21345908-vmss000000: cas-backup-aks-confcompool2-21345908-vmss000000
+<pre class="highlight"><code class="language-bash">$ kubectl logs -l app.kubernetes.io/name=cas-backup-controller --tail -1
+2022-07-21 22:42:16,254 INFO: Using session cas-backup-controller-e2e/register
+2022-07-21 22:42:16,256 INFO: Starting controller...
+2022-07-21 22:42:16,305 INFO: Backup CAS resources will be named 'cas-backup'-&lt;node_name&gt;
+2022-07-21 22:42:16,305 INFO: Selecting LAS pods that match selector app.kubernetes.io/name=las on namespace kube-system
+2022-07-21 22:42:16,350 INFO: Provisioning backup CAS on node aks-confcompool2-21345908-vmss000000: cas-backup-aks-confcompool2-21345908-vmss000000
 Backup CAS registered
-<span class="m">2022</span>-07-21 <span class="m">22</span>:42:29,437 INFO: Successfully registered backup on node aks-confcompool2-21345908-vmss000000
-<span class="m">2022</span>-07-21 <span class="m">22</span>:42:29,504 INFO: Provisioning backup CAS on node aks-confcompool2-21345908-vmss000001: cas-backup-aks-confcompool2-21345908-vmss000001
+2022-07-21 22:42:29,437 INFO: Successfully registered backup on node aks-confcompool2-21345908-vmss000000
+2022-07-21 22:42:29,504 INFO: Provisioning backup CAS on node aks-confcompool2-21345908-vmss000001: cas-backup-aks-confcompool2-21345908-vmss000001
 Backup CAS registered
-<span class="m">2022</span>-07-21 <span class="m">22</span>:43:02,107 INFO: Successfully registered backup on node aks-confcompool2-21345908-vmss000001
-<span class="m">2022</span>-07-21 <span class="m">22</span>:43:44,070 INFO: Nodes with registered CAS backups <span class="o">(</span>check logs <span class="k">for</span> failed registrations<span class="o">)</span>:
-<span class="o">{</span>
-    <span class="s2">&quot;aks-confcompool2-21345908-vmss000000&quot;</span>: true,
-    <span class="s2">&quot;aks-confcompool2-21345908-vmss000001&quot;</span>: <span class="nb">true</span>
-<span class="o">}</span>
-</code></pre></div>
+2022-07-21 22:43:02,107 INFO: Successfully registered backup on node aks-confcompool2-21345908-vmss000001
+2022-07-21 22:43:44,070 INFO: Nodes with registered CAS backups (check logs for failed registrations):
+{
+    "aks-confcompool2-21345908-vmss000000": true,
+    "aks-confcompool2-21345908-vmss000001": true
+}</code></pre>
 
               
             </article>
@@ -4272,7 +4263,7 @@ Backup CAS registered
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/dapps/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3454,7 +3454,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4392,8 +4392,8 @@ a security policies.  We call such a security policy a  <strong>session</strong>
 </center></p>
 <p>To address this issue, we provide a way to have individually encrypted volumes for each session. In other words, each client of a trusted DApp can customize the image by providing input and output volumes and only the instance of this client can access these volumes. <strong>No other client nor the image generator can access the keys and hence, these volumes</strong>.</p>
 <p>A client generates these keys (in the CLI). A <strong>session</strong> specifies these keys. A session is typically derived from a <strong>session template</strong> (more about session language <a href="../CAS_session_lang_0_3/">here</a>). The session template of the <strong>copy DApp</strong> looks like this:</p>
-<div class="highlight"><pre><span></span><code>name: $SESSION
-version: &quot;0.3&quot;
+<pre class="highlight"><code class="language-yml">name: $SESSION
+version: "0.3"
 
 services:
    - name: application
@@ -4423,8 +4423,7 @@ images:
 security:
   attestation:
     tolerate: [debug-mode, hyperthreading, outdated-tcb]
-    ignore_advisories: &quot;*&quot;
-</code></pre></div>
+    ignore_advisories: "*"</code></pre>
 <p>Note that in most cases you can start from a generic session template and you do not need to worry about the syntax and all the details of session descriptions.
 The session templates of trusted DApps look very similar to the session template above.
 The three differences are that</p>
@@ -4435,28 +4434,26 @@ The three differences are that</p>
 </ul>
 <h2 id="building-an-dapp">Building an DApp</h2>
 <p>The <a href="https://github.com/scontain/copy_dapp">source code of this application</a>, you can retrieve from</p>
-<div class="highlight"><pre><span></span><code>git clone https://github.com/scontain/copy_dapp.git
-<span class="nb">cd</span> copy_dapp
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">git clone https://github.com/scontain/copy_dapp.git
+cd copy_dapp</code></pre>
 <p>The source code of the trusted copy DApp is file <a href="https://github.com/scontain/copy_dapp/blob/master/copy_files.c"><em>copy_files.c</em></a>.</p>
 <p>We build this program with the help of the standard
 <strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile below). For convenience,
 we provide an Alpine image (i.e., registry.scontain.com/sconecuratedimages/muslgcc) that has <strong>gcc</strong> preinstalled.</p>
-<p><div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/muslgcc</span>
+<p><pre class="highlight"><code class="language-Dockerfile">FROM registry.scontain.com/sconecuratedimages/muslgcc
 
-<span class="k">COPY</span><span class="w"> </span>copy_files.c  /
+COPY copy_files.c  /
 
-<span class="c"># compile with vanilla gcc</span>
-<span class="k">RUN</span><span class="w"> </span>gcc -Wall copy_files.c -o /copy_files
+# compile with vanilla gcc
+RUN gcc -Wall copy_files.c -o /copy_files
 
-<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime</span>
+FROM registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime
 
-<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span><span class="m">0</span> /copy_files /application
+COPY --from=0 /copy_files /application
 
-<span class="k">RUN</span><span class="w"> </span>apk add curl bash unzip zip
+RUN apk add curl bash unzip zip
 
-<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/application.sh&quot;</span><span class="p">]</span>
-</code></pre></div>
+ENTRYPOINT ["/application.sh"]</code></pre>
 To run the application inside of an enclave, we need the SCONE
 runtime environment. This runtime is part of image <strong>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime</strong>.
 Moreover, this image contains a script <strong>/application.sh</strong> that pulls
@@ -4468,8 +4465,7 @@ is built by the script <code>build-image.sh</code>. This script also determines
 <h2 id="testing">Testing</h2>
 <p>We now show how to test the trusted copy DApp. After building the image
 by executing</p>
-<div class="highlight"><pre><span></span><code>./build-image.sh
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./build-image.sh</code></pre>
 <p>We can execute this image on an SGX-capable host. This host has to have the SCONE local attestation service (LAS) and Docker installed. We describe in the <a href="../sgxinstall/">installation section</a> on how to install SGX driver and how to install LAS <a href="../LASIntro/">here</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Compatibility of LAS and CAS</p>
@@ -4482,64 +4478,53 @@ We create an INPUTS directory and store files there.
 We also create OUTPUTS directory, KEYS directory to hold generated keys and ZIP
 to hold temporary files. We also copy the session template generated when building the
 container image.</p>
-<div class="highlight"><pre><span></span><code>mkdir -p EXAMPLE
-<span class="nb">cd</span> EXAMPLE
+<pre class="highlight"><code class="language-bash">mkdir -p EXAMPLE
+cd EXAMPLE
 mkdir -p KEYS INPUTS OUTPUTS ZIP
-<span class="nb">echo</span> <span class="s2">&quot;Hello world&quot;</span> &gt; INPUTS/f1.txt
-<span class="nb">echo</span> <span class="s2">&quot;Hello together&quot;</span> &gt; INPUTS/f2.txt
-cp ../copy_dapp.yml KEYS/
-</code></pre></div>
+echo "Hello world" &gt; INPUTS/f1.txt
+echo "Hello together" &gt; INPUTS/f2.txt
+cp ../copy_dapp.yml KEYS/</code></pre>
 <h3 id="step-1">Step 1</h3>
 <p>We encrypt these files and push the zipped up files for now to <strong>free.keep.sh</strong>.</p>
 <p>Let's execute the first step of encrypting the files and pushing these to the transfer service:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/INPUTS:/inputs registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli encryptedpush --application registry.scontain.com/sconecuratedimages/dapps:copy_demo -t /conf/copy_dapp.yml<span class="k">)</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">CMD=$(docker run -t --rm -v $PWD/KEYS:/conf -v $PWD/INPUTS:/inputs registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli encryptedpush --application registry.scontain.com/sconecuratedimages/dapps:copy_demo -t /conf/copy_dapp.yml)
+</code></pre>
 <p>Let's look at the output:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="nv">$CMD</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">echo $CMD</code></pre>
 <p>should result in an output like:</p>
-<div class="highlight"><pre><span></span><code> --sessionID <span class="m">84424401249649941281869427</span>/application --secretManagementService <span class="m">150</span>.165.85.86 --url https://free.keep.sh/NKHVjALFjubbHUNs/scone-upload.zip
-</code></pre></div>
+<pre class="highlight"><code class="language-bash"> --sessionID 84424401249649941281869427/application --secretManagementService 150.165.85.86 --url https://free.keep.sh/NKHVjALFjubbHUNs/scone-upload.zip</code></pre>
 <p>You can look in your browser at the URL to see the uploaded files!</p>
 <h3 id="step-2">Step 2</h3>
 <p>Before running this application on the iExec platform, we might
 want to test it on some SGX-capable host.</p>
 <p>Ensure that the newest image is loaded on <strong>host</strong>. This step is only needed if it is expected that the image has changed
 since <strong>docker run</strong> does not pull/update the image.</p>
-<div class="highlight"><pre><span></span><code>ssh <span class="nv">$host</span> docker pull registry.scontain.com/sconecuratedimages/dapps:copy_demo
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">ssh $host docker pull registry.scontain.com/sconecuratedimages/dapps:copy_demo</code></pre>
 <p>Ensure that you are executing a bash shell (execute <code>bash</code>).
 We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 Now, execute the command on <strong>host</strong> and we ask it to be pushed to <strong>free.keep.sh</strong>:</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-<span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh <span class="nv">$host</span> docker run -t <span class="nv">$MOUNT_SGXDEVICE</span> --network host --rm registry.scontain.com/sconecuratedimages/dapps:copy_demo <span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>  --push free.keep.sh<span class="k">)</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+URL=$(ssh $host docker run -t $MOUNT_SGXDEVICE --network host --rm registry.scontain.com/sconecuratedimages/dapps:copy_demo ${CMD//[$'\t\r\n']}  --push free.keep.sh)</code></pre>
 <p>Let's look at the output:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">echo</span> <span class="nv">$URL</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">echo $URL</code></pre>
 <p>this results in an output like:</p>
-<div class="highlight"><pre><span></span><code>https://free.keep.sh/0JitkN1PLHDHba1X/outputs.zip
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">https://free.keep.sh/0JitkN1PLHDHba1X/outputs.zip</code></pre>
 <p>You can now download this (if running a <strong>bash</strong> shell) </p>
-<div class="highlight"><pre><span></span><code>curl -L --output ZIP/encryptedOutputFiles.zip <span class="si">${</span><span class="nv">URL</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl -L --output ZIP/encryptedOutputFiles.zip ${URL//[$'\t\r\n']}</code></pre>
 <h3 id="step-3">Step 3</h3>
-<div class="highlight"><pre><span></span><code>docker run -t --rm -v <span class="nv">$PWD</span>/KEYS:/conf -v <span class="nv">$PWD</span>/ZIP:/encryptedOutputs -v <span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli decrypt
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run -t --rm -v $PWD/KEYS:/conf -v $PWD/ZIP:/encryptedOutputs -v $PWD/OUTPUTS:/decryptedOutputs registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli decrypt</code></pre>
 <p>We can now look at the files in OUTPUTS directory:</p>
-<div class="highlight"><pre><span></span><code>cat OUTPUTS/f1.txt
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cat OUTPUTS/f1.txt</code></pre>
 <p>results in  <code>Hello world</code> and</p>
-<div class="highlight"><pre><span></span><code>cat OUTPUTS/f2.txt
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cat OUTPUTS/f2.txt</code></pre>
 <p>results in  <code>Hello together</code>.</p>
 <h2 id="clis">CLIs</h2>
 <p>Now that you know how our example works, it is time to present you CLIs that we ship with our images. These CLIs have enough options that you can configure them in according to your needs.</p>
 <p>A CLI included into <strong>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli</strong>
-<div class="highlight"><pre><span></span><code>scone.sh: a utility to either push encrypted files or decrypt result files
-<span class="o">(</span>C<span class="o">)</span> Scontain.com, <span class="m">2023</span>. See https://sconedocs.github.io
+<pre class="highlight"><code class="language-bash">scone.sh: a utility to either push encrypted files or decrypt result files
+(C) Scontain.com, 2023. See https://sconedocs.github.io
 
-Usage: decrypt <span class="o">[</span>options<span class="o">]</span>
+Usage: decrypt [options]
      --help   This usage statement
 
 Encrypt mode:
@@ -4547,11 +4532,11 @@ Encrypt mode:
      -a, --application  APP
            name of remote application that should be executed
      -s, --secretManagementService ADDRESS
-           IP address or name of SCONE secret management service <span class="o">[</span>default <span class="m">150</span>.165.85.86<span class="o">]</span>
+           IP address or name of SCONE secret management service [default 150.165.85.86]
      -t, --sessiontemplate PATH
-           <span class="nb">read</span> session template from <span class="nb">local</span> path like /conf/sessiontemplate
+           read session template from local path like /conf/sessiontemplate
      -r,  --remoteFileSystem TRANSFER
-           hostname and port of service used to transfer files <span class="o">[</span>default: free.keep.sh<span class="o">]</span>
+           hostname and port of service used to transfer files [default: free.keep.sh]
      -k, --insecure
            permits insecure SSL connections with remoteFileSystem
      -v,  --verbose
@@ -4566,18 +4551,17 @@ Decrypt mode:
      --help
            decrypt usage statement
 
-  Example: decrypt
-</code></pre></div></p>
+  Example: decrypt</code></pre></p>
 <p>And a CLI included into <strong>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime</strong></p>
-<div class="highlight"><pre><span></span><code>application.sh a utility to demonstrate how to push volumes to remote applications
-<span class="o">(</span>C<span class="o">)</span> Scontain.com, <span class="m">2021</span>. See https://sconedocs.github.io
+<pre class="highlight"><code class="language-bash">application.sh a utility to demonstrate how to push volumes to remote applications
+(C) Scontain.com, 2021. See https://sconedocs.github.io
 
      -s, --secretManagementService ADDRESS
-           IP address or name of SCONE secret management service <span class="o">[</span>default <span class="o">]</span>
+           IP address or name of SCONE secret management service [default ]
      -u, --url URL
-           <span class="nb">read</span> session template from <span class="nb">local</span> path like /conf/sessiontemplate
+           read session template from local path like /conf/sessiontemplate
      -p,  --push TRANSFER_SERVICE
-           hostname and port of service used to push encrypted output files <span class="o">[</span>default: free.keep.sh<span class="o">]</span>
+           hostname and port of service used to push encrypted output files [default: free.keep.sh]
      -s,  --sessionID SESSION
            ID of the session uploaded to secretManagementService
      -k, --insecure
@@ -4587,8 +4571,7 @@ Decrypt mode:
      --help
            application.sh usage statement
 
-  Example: application.sh --sessionID <span class="m">60534003595811684552131953</span>/application --secretManagementService <span class="m">150</span>.165.85.86  --url https://free.keep.sh/KmdrBEvGKM66Jd04/scone-upload.zip --push free.keep.sh
-</code></pre></div>
+  Example: application.sh --sessionID 60534003595811684552131953/application --secretManagementService 150.165.85.86  --url https://free.keep.sh/KmdrBEvGKM66Jd04/scone-upload.zip --push free.keep.sh</code></pre>
 
               
             </article>
@@ -4658,7 +4641,7 @@ Decrypt mode:
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

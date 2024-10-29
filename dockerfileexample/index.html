@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/dockerfileexample/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3344,7 +3344,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4071,27 +4071,24 @@ Build your <a href="../multistagebuild/">container images with a multi-stage bui
 contain your binaries when you push your images to a public repository.</p>
 </div>
 <p>Here is the dockerfile:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; Dockerfile <span class="s">&lt;&lt; EOF</span>
-<span class="s">FROM registry.scontain.com/sconecuratedimages/crosscompilers</span>
+<pre class="highlight"><code class="language-bash">cat &gt; Dockerfile &lt;&lt; EOF
+FROM registry.scontain.com/sconecuratedimages/crosscompilers
 
-<span class="s">RUN echo  &quot;#include &lt;stdio.h&gt;&quot; &gt; helloworld.c \</span>
-<span class="s">   &amp;&amp; echo &quot;int main() {&quot; &gt;&gt; helloworld.c \</span>
-<span class="s">   &amp;&amp; echo &quot;printf(\&quot;Hello World!\n\&quot;); }&quot; &gt;&gt; helloworld.c</span>
+RUN echo  "#include &lt;stdio.h&gt;" &gt; helloworld.c \
+   &amp;&amp; echo "int main() {" &gt;&gt; helloworld.c \
+   &amp;&amp; echo "printf(\"Hello World!\n\"); }" &gt;&gt; helloworld.c
 
-<span class="s">RUN gcc -o helloworld helloworld.c</span>
+RUN gcc -o helloworld helloworld.c
 
-<span class="s">CMD bash -c &quot;SCONE_VERSION=1 /helloworld&quot;</span>
-<span class="s">EOF</span>
-</code></pre></div>
+CMD bash -c "SCONE_VERSION=1 /helloworld"
+EOF</code></pre>
 <p>Let's generate an image (<strong>helloworld</strong>) with this Dockerfile: </p>
-<div class="highlight"><pre><span></span><code>docker build --pull -t helloworld .
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker build --pull -t helloworld .</code></pre>
 <p>Determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>. Let's run the image as follows:</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> --rm helloworld
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+docker run $MOUNT_SGXDEVICE --rm helloworld</code></pre>
 <p>The output will look like this:</p>
-<div class="highlight"><pre><span></span><code>export SCONE_QUEUES=4
+<pre class="highlight"><code class="language-text">export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -4111,8 +4108,7 @@ Branch: master
 Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl
 
 Enclave hash: 597cdef086651d46652cab78a89386b790ed058427ce1a5feacc3da7bc731902
-Hello World!
-</code></pre></div>
+Hello World!</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In case you do not have an SGX driver installed, the run will fail. Run the program in <a href="../firstcontainer/">simulation mode</a> by executing <em>docker run --rm helloworld</em></p>
@@ -4188,7 +4184,7 @@ Hello World!
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

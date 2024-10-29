@@ -15,11 +15,11 @@
         <link rel="canonical" href="https://sconedocs.github.io/mono/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
-        <title>Mono - Confidential Computing</title>
+        <title>C# - Confidential Computing</title>
       
     
     
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Mono
+              C#
             
           </span>
         </div>
@@ -3190,11 +3190,66 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="./" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          C#
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         C#
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#image" class="md-nav__link">
+    Image
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debug-output" class="md-nav__link">
+    Debug Output
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3314,12 +3369,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Mono
+          C#
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Mono
+        C#
       </a>
       
         
@@ -4091,43 +4146,37 @@
 <p>SCONE supports the <a href="https://www.mono-project.com/">mono platform</a>, i.e., the cross platform, open source .NET framework. Hence, SCONE  now also supports C#.</p>
 <h2 id="image">Image</h2>
 <p>Ensure that you have the newest mono image and determine you <a href="../sgxinstall/#determine-sgx-device">SGX device</a>:</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/mono
+<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/mono
 determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/mono
-</code></pre></div>
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/mono</code></pre>
 <p>In case you do not have an SGX driver installed, no device will be mounted and
 applications will run in <span data-tooltip="The application does not run inside of an enclave. Instead it is executed in native mode. Still all SCONE software executes. We do, however, not support attestation in SIM mode.">SIM mode</span>.</p>
 <h2 id="example">Example</h2>
 <p>Let's try to compile a simple program:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; hello.cs <span class="s">&lt;&lt;EOF</span>
-<span class="s">using System;</span>
+<pre class="highlight"><code class="language-bash">cat &gt; hello.cs &lt;&lt;EOF
+using System;
 
-<span class="s">public class HelloWorld</span>
-<span class="s">{</span>
-<span class="s">    public static void Main(string[] args)</span>
-<span class="s">    {</span>
-<span class="s">        Console.WriteLine (&quot;Hello Mono World&quot;);</span>
-<span class="s">    }</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+public class HelloWorld
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine ("Hello Mono World");
+    }
+}
+EOF</code></pre>
 <p>We compile the program with <strong>csc</strong> inside the container:</p>
-<div class="highlight"><pre><span></span><code>csc hello.cs
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">csc hello.cs</code></pre>
 <p>Note that his compilation already happens inside of SGX enclaves.</p>
 <p>Let's execute the binary and switch on debug outputs:</p>
-<div class="highlight"><pre><span></span><code>mono hello.exe
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">mono hello.exe</code></pre>
 <p>The output will look like:</p>
-<div class="highlight"><pre><span></span><code>Hello Mono World
-</code></pre></div>
+<pre class="highlight"><code class="language-text">Hello Mono World</code></pre>
 <h2 id="debug-output">Debug Output</h2>
 <p>You can show the configuration of SCONE by setting <code>SCONE_VERSION=1</code>, i.e.,
 if you execute</p>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> mono hello.exe
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_VERSION=1 mono hello.exe</code></pre>
 <p>the output will look like this:</p>
-<div class="highlight"><pre><span></span><code>export SCONE_QUEUES=4
+<pre class="highlight"><code class="language-text">export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -4146,8 +4195,7 @@ Revision: 6da648645ce29121d24c40c9c18404cc43194f80 (Fri May 29 20:56:17 2020 +00
 Branch: master
 
 Enclave hash: fa29f3914117757bbd4e091f90c357ae92b4c4b6b9bfa80b21c32e66fe60ee26
-Hello Mono World
-</code></pre></div>
+Hello Mono World</code></pre>
 
               
             </article>
@@ -4217,7 +4265,7 @@ Hello Mono World
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/k8s_dashboard/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3353,7 +3353,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4085,29 +4085,24 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 </div>
 <h2 id="installation">Installation</h2>
 <p>Install the dashboard with <code>kubectl</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml</code></pre>
 <p>Start the <code>kubectl</code> proxy:</p>
-<div class="highlight"><pre><span></span><code>kubectl proxy
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl proxy</code></pre>
 <p>The dashboard can now be viewed at:</p>
 <p><a href="http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/">http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/</a></p>
 <p>You need a token to use the dashboard. You can create the token to be able to log into the dashboard as follows:</p>
 <ul>
 <li>Create a Cluster Admin service account (if you have not done so)</li>
 </ul>
-<div class="highlight"><pre><span></span><code>kubectl create serviceaccount dashboard -n default
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl create serviceaccount dashboard -n default</code></pre>
 <ul>
 <li>Add the cluster binding rules to your dashboard account</li>
 </ul>
-<div class="highlight"><pre><span></span><code>kubectl create clusterrolebinding dashboard-admin -n default --clusterrole<span class="o">=</span>cluster-admin --serviceaccount<span class="o">=</span>default:dashboard
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl create clusterrolebinding dashboard-admin -n default --clusterrole=cluster-admin --serviceaccount=default:dashboard</code></pre>
 <ul>
 <li>Get the token</li>
 </ul>
-<div class="highlight"><pre><span></span><code>kubectl get secret <span class="k">$(</span>kubectl get serviceaccount dashboard -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.secrets[0].name}&quot;</span><span class="k">)</span> -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data.token}&quot;</span> <span class="p">|</span> base64 --decode
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl get secret $(kubectl get serviceaccount dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode</code></pre>
 <h2 id="application-monitoring">Application Monitoring</h2>
 <p>In the Kubernetes dashboard you can monitor various workload characteristics and identify issues in the workload. Like in this case, some services did not start:</p>
 <p><center>
@@ -4182,7 +4177,7 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

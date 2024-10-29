@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/5_kubectl/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3454,7 +3454,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4298,12 +4298,10 @@
 </div>
 <h2 id="tldr">TL;DR</h2>
 <p>The <code>provision</code> of CAS is performed using a <code>kubectl</code> plugin. This script is deployed or reconciled as part of the SCONE <code>operator_controller</code> deployment. You can ensure that it is deployed by executing:</p>
-<div class="highlight"><pre><span></span><code>curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller <span class="p">|</span> bash -s - <span class="se">\</span>
---reconcile --plugin --verbose
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller | bash -s - \
+--reconcile --plugin --verbose</code></pre>
 <p>To deploy a CAS instance named <code>mycas</code> in production mode in the default namespace, execute the following:</p>
-<div class="highlight"><pre><span></span><code>kubectl provision cas mycas --verbose
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl provision cas mycas --verbose</code></pre>
 <p>This will deploy a CAS release in the default Kubernetes namespace. It starts</p>
 <ul>
 <li>a <strong>primary</strong> CAS instance with the name 'mycas',</li>
@@ -4322,8 +4320,7 @@
 <li>the database is stored in a persistent volume,</li>
 <li>automatic database snapshots, and liveness probes, you can use the SCONE <code>kubectl plugin:</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code>kubectl provision cas CAS_NAME <span class="o">[</span>--namespace NAMESPACE<span class="o">]</span> <span class="o">[</span>--dcap-api APIKEY<span class="o">]</span> <span class="o">[</span>--verbose<span class="o">]</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl provision cas CAS_NAME [--namespace NAMESPACE] [--dcap-api APIKEY] [--verbose]</code></pre>
 <ul>
 <li>
 <p>If a <code>--namespace NAMESPACE</code> is provided, the CAS is installed in Kubernetes namespace <code>NAMESPACE</code>. Otherwise, CAS is installed in the default namespace. If the specified namespace does not exist, the plugin will terminate with an error. Ensure that the namespace has the pull secret </p>
@@ -4344,8 +4341,7 @@
 <p>This command will deploy and provision a CAS in the Kubernetes cluster that automatically fails over in case the CAS crashes or the CAS does not start up on a particular node.</p>
 <h2 id="cas-upgrade-upgrade-version">CAS Upgrade: <code>--upgrade &lt;VERSION&gt;</code></h2>
 <p>Upgrading a CAS to a new software version, requires to follow a set of upgrade steps. These steps are performed by the <code>kubectl provision</code> plugin when the flag <code>--upgrade &lt;VERSION&gt;</code> is set. Consider that you run CAS instance <code>mycas</code> of version <code>5.8.0</code> and you want to upgrade to version <code>5.8.1</code>. You would execute:</p>
-<div class="highlight"><pre><span></span><code>kubectl provision cas mycas --upgrade <span class="m">5</span>.8.1 --verbose
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl provision cas mycas --upgrade 5.8.1 --verbose</code></pre>
 <p>This upgrades the version to the new version and restarts.</p>
 <h3 id="details-of-the-upgrade-process">Details of the Upgrade Process</h3>
 <p>To upgrade a CAS instance, we need to perform the following steps:</p>
@@ -4380,44 +4376,35 @@ Database snapshots are a safer option than copying the database files directly, 
 <h2 id="create-a-vault-instance">Create a Vault Instance</h2>
 <p>To deploy a Vault instance  <code>myvault</code> in a namespace <code>mynamespace</code>, you could first define environment variables, and
 then create the vault with the help of the <code>kubectl provision</code> plugin:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">VAULT_NAME</span><span class="o">=</span><span class="s2">&quot;myvault&quot;</span>
-<span class="nb">export</span> <span class="nv">NAMESPACE</span><span class="o">=</span><span class="s2">&quot;mynamespace&quot;</span>
+<pre class="highlight"><code class="language-bash">export VAULT_NAME="myvault"
+export NAMESPACE="mynamespace"
 
-kubectl provision vault <span class="nv">$VAULT_NAME</span> -n <span class="nv">$NAMESPACE</span> --verbose
-</code></pre></div>
+kubectl provision vault $VAULT_NAME -n $NAMESPACE --verbose</code></pre>
 <p>This command will assign this vault a random <code>OWNER_ID</code> - this is a mechanism to ensure that each
 vault instance is associated with a unique CAS namespace (even if we had already provisioned a Vault with the same name in the same namespace).</p>
 <p>You can query the state of your Vault by executing the following:</p>
-<div class="highlight"><pre><span></span><code>kubectl get vault <span class="nv">$VAULT_NAME</span> -n <span class="nv">$NAMESPACE</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl get vault $VAULT_NAME -n $NAMESPACE</code></pre>
 <p>For getting a more detailed description of the Vault, you can execute the following:</p>
-<div class="highlight"><pre><span></span><code>kubectl get vault <span class="nv">$VAULT_NAME</span> -n <span class="nv">$NAMESPACE</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl get vault $VAULT_NAME -n $NAMESPACE</code></pre>
 <h3 id="vault-demo-client">Vault Demo Client</h3>
 <p>To give a confidential vault client access to Vault, you first
 need to determine your owner id. We can query Kubernetes to determine the owner ID:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OWNER_ID</span><span class="o">=</span><span class="k">$(</span>kubectl get vault <span class="nv">$VAULT_NAME</span> -n <span class="nv">$NAMESPACE</span> -ojsonpath<span class="o">=</span><span class="s1">&#39;{.spec.server.extraEnvironmentVars.OWNER_ID}&#39;</span><span class="k">)</span>
-<span class="nb">echo</span> <span class="nb">export</span> <span class="nv">OWNER_ID</span><span class="o">=</span><span class="nv">$OWNER_ID</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export OWNER_ID=$(kubectl get vault $VAULT_NAME -n $NAMESPACE -ojsonpath='{.spec.server.extraEnvironmentVars.OWNER_ID}')
+echo export OWNER_ID=$OWNER_ID</code></pre>
 <p>We can now create a client CAS policy using the kubectl plugin:</p>
-<div class="highlight"><pre><span></span><code>kubectl provision vault <span class="nv">$VAULT_NAME</span> <span class="nv">$NAMESPACE</span> --vault-client
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl provision vault $VAULT_NAME $NAMESPACE --vault-client</code></pre>
 <p>This will use the policy from <a href="https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.5/vault-demo-client-policy.yaml">https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.5/vault-demo-client-policy.yaml</a>. You can download this policy and modify it for the confidential Vault clients that need to get access to this Vault instance.</p>
 <p>You can execute the demo client as follows. Log into the Vault container:</p>
-<div class="highlight"><pre><span></span><code>kubectl <span class="nb">exec</span> -it <span class="nv">$VAULT_NAME</span> -- bash
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl exec -it $VAULT_NAME -- bash</code></pre>
 <p>You can determine the "OWNER_ID", i.e., a random ID that identifies this vault as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OWNER_ID</span><span class="o">=</span><span class="k">$(</span>kubectl get vault <span class="nv">$VAULT_NAME</span> -n <span class="nv">$NAMESPACE</span> -ojsonpath<span class="o">=</span><span class="s1">&#39;{.spec.server.extraEnvironmentVars.OWNER_ID}&#39;</span><span class="k">)</span>
-<span class="nb">echo</span> <span class="s2">&quot;export OWNER_ID=</span><span class="nv">$OWNER_ID</span><span class="s2">&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export OWNER_ID=$(kubectl get vault $VAULT_NAME -n $NAMESPACE -ojsonpath='{.spec.server.extraEnvironmentVars.OWNER_ID}')
+echo "export OWNER_ID=$OWNER_ID"</code></pre>
 <p>And run the Vault CLI inside of this container:</p>
-<div class="highlight"><pre><span></span><code>kubectl <span class="nb">exec</span> -it <span class="nv">$VAULT_NAME</span>-0 -n <span class="nv">$NAMESPACE</span> -- bash -c <span class="s2">&quot;SCONE_CONFIG_ID=owner-</span><span class="nv">$OWNER_ID</span><span class="s2">/demo-client/get-kv-secret SCONE_HEAP=1G vault&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl exec -it $VAULT_NAME-0 -n $NAMESPACE -- bash -c "SCONE_CONFIG_ID=owner-$OWNER_ID/demo-client/get-kv-secret SCONE_HEAP=1G vault"</code></pre>
 <p>This will output a key/value pair retrieved from this Vault instance.</p>
 <h2 id="upgrade-of-vault">Upgrade of Vault</h2>
 <p>Upgrading a Vault instance to a new software version requires to follow a set of upgrade steps. These steps are performed by the <code>kubectl provision</code> plugin when the flag <code>--upgrade &lt;VERSION&gt;</code> is set. Consider that you run Vault instance <code>myvault</code> of version <code>5.8.0</code>, and you want to upgrade to version <code>5.8.1</code>. You would execute the following:</p>
-<div class="highlight"><pre><span></span><code>kubectl provision vault mycas --upgrade <span class="m">5</span>.8.1 --verbose
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl provision vault mycas --upgrade 5.8.1 --verbose</code></pre>
 <p>This upgrades the vault to this version and restarts the vault.</p>
 <h2 id="configuration-options">Configuration Options</h2>
 <h3 id="attestation-dcap-api-api-key">Attestation: <code>--dcap-api &lt;API KEY&gt;</code></h3>
@@ -4433,7 +4420,8 @@ need to determine your owner id. We can query Kubernetes to determine the owner 
 <p>When a CAS starts up the first time, it is <em>unprovisioned</em>, i.e., it has no owner yet. This CAS does not accept any requests until it is provisioned. During provisioning, one sets the owner of the CAS. A CAS can be only one owner, i.e., only the first provisioning of a CAS will succeed.</p>
 <p>The owner of a CAS cannot access any secrets or policies of the CAS. The owner can determine which nodes can take over the CAS in case of a failure. The owner can also decide when to upgrade the CAS, i.e., install a new version of the CAS. <code>kubectl provision</code> supports updates with the help of option <code>--upgrade</code>.</p>
 <h2 id="reference-kubectl-provision">Reference: <code>kubectl provision</code></h2>
-<div class="highlight"><pre><span></span><code>Usage:
+<pre class="highlight"><code class="language-text">
+Usage:
   kubectl provision SVC [NAME] [--namespace &lt;kubernetes-namespace&gt;] [--dcap-api &lt;API Key&gt;] [--owner-config &lt;owner config&gt;] [--verbose] [--help]
 
 Arguments:
@@ -4452,16 +4440,16 @@ Arguments:
 Options:
     -n | --namespace
                   The Kubernetes namespace in which the service should be deployed on the cluster.
-                  Default value: &quot;default&quot;
+                  Default value: "default"
     --dcap-api | -d
                   DCAP API Key - define this if your cloud provider does not provide DCAP caching service. 
-                  The default value is &quot;00000000000000000000000000000000&quot;, i.e., this only works if your cloud provider provides us with the necessary attestation collaterals.
+                  The default value is "00000000000000000000000000000000", i.e., this only works if your cloud provider provides us with the necessary attestation collaterals.
     --owner-config | -o
                   Provide a specific owner config when provisioning the CAS instance.
                   By default, we provision for a NodePort. We currently do not support
                   providing an owner config for LoadBalancer services.
     --target
-                  Specify target directory for generated manifests and owner IDs. Default path=&quot;/Users/christoffetzer/.cas&quot;.
+                  Specify target directory for generated manifests and owner IDs. Default path="/Users/christoffetzer/.cas".
     --no-backup
                   Create and provision a cas with the backup-controller disabled.
     -v | --verbose
@@ -4492,7 +4480,7 @@ Options:
                   - SVC==cas, it prints the CAS Key, the CAS Software Key and the CAS encryption key.
                   - SVC==vault, it prints the public key of the Vault.
     --cas
-                  When provisioning vault, we use the specified cas. If not specified, we use CAS &#39;cas&#39;.
+                  When provisioning vault, we use the specified cas. If not specified, we use CAS 'cas'.
                   For now, the CAS must be in the same Kubernetes cluster and the same namespace as the vault.
     --image-overwrite &lt;IMAGE&gt;
                   Replace the CAS image by the given image - mainly used for testing.
@@ -4502,10 +4490,10 @@ Options:
                   Take a snapshot of the encrypted CAS database and store in local filesystem.
     --cas-database-recovery &lt;SNAPSHOT&gt;
                   Create a new CAS instance and start with existing CAS database in directory &lt;SNAPSHOT&gt;.
-    --set-tolerations &quot;&lt;TOLERATIONS&gt;&quot;
+    --set-tolerations "&lt;TOLERATIONS&gt;"
                   Sets the tolerations, separated by spaces, that we permit when attesting SCONE CAS.
                   Overwrites environment variable SGX_TOLERATIONS. Default is --accept-configuration-needed --accept-group-out-of-date --accept-sw-hardening-needed
-                  Example: &quot;--accept-group-out-of-date --accept-sw-hardening-needed --accept-configuration-needed&quot;
+                  Example: "--accept-group-out-of-date --accept-sw-hardening-needed --accept-configuration-needed"
                   See https://sconedocs.github.io/CAS_cli/#scone-cas-attest for more details.
     --upgrade &lt;VERSION&gt;
                   Perform software upgrade of CAS or Vault. 
@@ -4519,23 +4507,22 @@ Options:
                   Print version (5.8.0-rc.8) and exit.
 
 Current Configuration: 
-  - VERSION=&quot;5.8.0-rc.8&quot;
-  - MANIFESTS_URL=&quot;https://raw.githubusercontent.com/scontain/manifests/main&quot;
-  - IMAGE_REPO=&quot;registry.scontain.com/scone.cloud&quot;
-  - IMAGE_PREFIX=&quot;&quot;
-  - NAMESPACE=&quot;default&quot;
-  - DCAP_KEY=&quot;aecd5ebb682346028d60c36131eb2d92&quot;
-  - TARGET_DIR=&quot;/Users/christoffetzer/.cas&quot;
-  - VAULT_MANIFEST_URL=&quot;https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault.yaml&quot; # Vault Manifest
-  - VAULT_VERIFIER_MANIFEST_URL=&quot;https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault-verifier.yaml&quot; # Vault Verifier Manifest
-  - VAULT_POLICY_URL=&quot;https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault-policy.yaml&quot; # CAS policy for Vault
-  - VAULT_VERIFY_POLICY_URL=&quot;https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault-verify-policy.yaml&quot; # CAS verification policy for Vault
-  - VAULT_DEMO_CLIENT_POLICY_URL=&quot;https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault-demo-client-policy.yaml&quot; # demo policy for a Vault client
-  - CAS_MANIFEST_URL=&quot;https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/cas.yaml&quot;
-  - CAS_PROVISIONING_URL=&quot;https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/cas_provisioning.yaml&quot;
-  - CAS_BACKUP_POLICY_URL=&quot;https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/backup_policy.yaml&quot;
-  - SGX_TOLERATIONS=&quot;--accept-configuration-needed --accept-group-out-of-date --accept-sw-hardening-needed --isvprodid 41316 --isvsvn 5 --mrsigner 195e5a6df987d6a515dd083750c1ea352283f8364d3ec9142b0d593988c6ed2d&quot;
-</code></pre></div>
+  - VERSION="5.8.0-rc.8"
+  - MANIFESTS_URL="https://raw.githubusercontent.com/scontain/manifests/main"
+  - IMAGE_REPO="registry.scontain.com/scone.cloud"
+  - IMAGE_PREFIX=""
+  - NAMESPACE="default"
+  - DCAP_KEY="aecd5ebb682346028d60c36131eb2d92"
+  - TARGET_DIR="/Users/christoffetzer/.cas"
+  - VAULT_MANIFEST_URL="https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault.yaml" # Vault Manifest
+  - VAULT_VERIFIER_MANIFEST_URL="https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault-verifier.yaml" # Vault Verifier Manifest
+  - VAULT_POLICY_URL="https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault-policy.yaml" # CAS policy for Vault
+  - VAULT_VERIFY_POLICY_URL="https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault-verify-policy.yaml" # CAS verification policy for Vault
+  - VAULT_DEMO_CLIENT_POLICY_URL="https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/vault-demo-client-policy.yaml" # demo policy for a Vault client
+  - CAS_MANIFEST_URL="https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/cas.yaml"
+  - CAS_PROVISIONING_URL="https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/cas_provisioning.yaml"
+  - CAS_BACKUP_POLICY_URL="https://raw.githubusercontent.com/scontain/manifests/main/5.8.0-rc.8/backup_policy.yaml"
+  - SGX_TOLERATIONS="--accept-configuration-needed --accept-group-out-of-date --accept-sw-hardening-needed --isvprodid 41316 --isvsvn 5 --mrsigner 195e5a6df987d6a515dd083750c1ea352283f8364d3ec9142b0d593988c6ed2d"</code></pre>
 
               
             </article>
@@ -4605,7 +4592,7 @@ Current Configuration:
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

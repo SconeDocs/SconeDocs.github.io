@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/print-arg-env-p2/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3375,7 +3375,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4128,35 +4128,29 @@
 <p>Depending on the context, you might use the variant that is most convenient for you.</p>
 <h3 id="determine-the-hash-by-reading-the-policy">Determine the hash by reading the policy</h3>
 <p>The SCONE CLI contains a command to print the hash of a policy. You can execute this as follows:</p>
-<div class="highlight"><pre><span></span><code>scone session <span class="nb">read</span> <span class="nv">$SESSION</span> &gt; session_read.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone session read $SESSION &gt; session_read.yaml</code></pre>
 <p>To determine the hash value of this policy, we can execute the following:</p>
-<div class="highlight"><pre><span></span><code>scone session calculate-hash  session_read.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone session calculate-hash  session_read.yaml</code></pre>
 <p>This will print the same hash value as we seen above, i.e.,</p>
-<div class="highlight"><pre><span></span><code>39ae54974c6892f7a3ee1492175fc092f50b31f9ed9f45e721125fcc332ef3c2
-</code></pre></div>
+<pre class="highlight"><code class="language-text">39ae54974c6892f7a3ee1492175fc092f50b31f9ed9f45e721125fcc332ef3c2</code></pre>
 <h3 id="determine-the-hash-with-existing-policy-file">Determine the hash with existing policy file</h3>
 <p>We can determine the hash value based on the policy that we uploaded to the CAS.
 If we still have this policy in our filesystem we can use this file instead.
 The hash value of a policy depends on how we uploaded / created the policy.
 A simple call to <code>scone session calculate-hash</code> will fail:</p>
-<div class="highlight"><pre><span></span><code>scone session calculate-hash session.yaml
-Cannot calculate session hash! The session, explicitly or through the default access policy, references its creator. If not explicitly specified <span class="k">in</span> the session, the creator is automatically assigned to the identity uploading the session. You may use --with-self-as-creator to pretend you created the session, or remove all creator references.
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone session calculate-hash session.yaml
+Cannot calculate session hash! The session, explicitly or through the default access policy, references its creator. If not explicitly specified in the session, the creator is automatically assigned to the identity uploading the session. You may use --with-self-as-creator to pretend you created the session, or remove all creator references.</code></pre>
 <p>Since the SCONE CLI uploads a session with TLS by default, we can compute the session hash as follows:</p>
-<div class="highlight"><pre><span></span><code>scone session calculate-hash session.yaml  --with-self-as-creator tls
-39ae54974c6892f7a3ee1492175fc092f50b31f9ed9f45e721125fcc332ef3c2
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone session calculate-hash session.yaml  --with-self-as-creator tls
+39ae54974c6892f7a3ee1492175fc092f50b31f9ed9f45e721125fcc332ef3c2</code></pre>
 <h3 id="verifying-a-policy">Verifying a Policy</h3>
 <p>Another way to determine the session hash is to verify the session. In this case, we have a local copy of the policy
 in the filesystem and we connect to CAS to ensure that this is still the up-to-date policy, i.e., it has not been updated yet.</p>
 <p>We can use the original policy stored in <code>session.yaml</code> or the session that we read from CAS, i.e., <code>session_read.yaml</code>.</p>
-<div class="highlight"><pre><span></span><code>scone session verify session.yaml 
+<pre class="highlight"><code class="language-bash">scone session verify session.yaml 
 39ae54974c6892f7a3ee1492175fc092f50b31f9ed9f45e721125fcc332ef3c2
 scone session verify session_read.yaml 
-39ae54974c6892f7a3ee1492175fc092f50b31f9ed9f45e721125fcc332ef3c
-</code></pre></div>
+39ae54974c6892f7a3ee1492175fc092f50b31f9ed9f45e721125fcc332ef3c</code></pre>
 
               
             </article>
@@ -4226,7 +4220,7 @@ scone session verify session_read.yaml
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

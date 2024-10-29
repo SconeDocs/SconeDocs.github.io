@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/workshop/hands_on_2/">
       
       <link rel="icon" href="../../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3408,7 +3408,7 @@
   
     <li class="md-nav__item">
       <a href="../../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4233,26 +4233,21 @@
 <ol>
 <li>Build the service OCI container image (for each service):</li>
 </ol>
-<div class="highlight"><pre><span></span><code>sconectl apply -f service.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">sconectl apply -f service.yaml</code></pre>
 <ol>
 <li>Build and upload the security policies for all services of the application using:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>sconectl apply -f mesh.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">sconectl apply -f mesh.yaml</code></pre>
 <ol>
 <li>The second step generates a <code>helm</code> chart and you can start this application by executing:</li>
 </ol>
-<div class="highlight"><pre><span></span><code>helm install flaskredis target/helm
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install flaskredis target/helm</code></pre>
 <p>That's it! You can now inspect the output with <code>kubectl</code> (assuming you have  <code>kubectl</code> command completion installed):</p>
-<div class="highlight"><pre><span></span><code>kubectl logs flaskredis&lt;TAB&gt;
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl logs flaskredis&lt;TAB&gt;</code></pre>
 <p>But in case you are interested in what is going on under the hood, we explain the steps in some more details below.</p>
 <h2 id="setup">Setup</h2>
 <p>We have implemented <code>sconectl</code> in Rust. In case, you have Rust already installed, just execute:</p>
-<div class="highlight"><pre><span></span><code>cargo install sconectl
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cargo install sconectl</code></pre>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p><strong>Note</strong>: You can run script <code>run.sh</code> to set up / update your rust environment and to  install <code>sconectl</code> with the help of Rust. It will also execute the remaining steps of this tutorial.</p>
 <p>In case you install manually, errors might appear since Rust is not installed or out-of-date. If this <code>cargo</code> would fail, ensure that</p>
@@ -4280,7 +4275,7 @@
 <li>we generate a certificate (<code>flask</code>) with the help of CA <code>api_ca_cert</code> and assign it a dns name <code>api</code>.</li>
 </ul>
 <p>The SCONE policy is based on Yaml and the <code>redis</code> policy contains the following section to define these secrets:</p>
-<div class="highlight"><pre><span></span><code>secrets:
+<pre class="highlight"><code class="language-YML">secrets:
     - name: api_ca_key
       kind: private-key
     - name: api_ca_cert
@@ -4294,26 +4289,23 @@
       private_key: flask_key
       issuer: api_ca_cert
       dns:
-        - api
-</code></pre></div>
+        - api</code></pre>
 <p>The private keys and certificates are expected at certain locations in the file system. SCONE permits to map these secrets into the filesystem of the Flask-based service: these files are only  visible to the service inside of an SGX enclave after a successful attestation (see below) and in particular, not visible on the outside i.e., in the filesystem of the container.</p>
 <p>To map the private keys and certificates into the filesystem of a service, we specify in the policy which secrets are visible to a service at which path. In the <a href="https://github.com/scontain/flask_example/blob/master/flask-template.yaml">flask policy</a> this is done as follows:</p>
-<div class="highlight"><pre><span></span><code>images:
+<pre class="highlight"><code class="language-YML">images:
    - name: flask_restapi_image
      injection_files:
         - path: /tls/flask.crt
           content: $$SCONE::flask.crt$$
         - path: /tls/flask.key
-          content: $$SCONE::flask.key$$
-</code></pre></div>
+          content: $$SCONE::flask.key$$</code></pre>
 <p>And in the Python program, one can just access these files as normal files. One can create a SSL context (see <a href="https://github.com/scontain/flask_example/blob/master/rest_api.py">code</a>):</p>
-<div class="highlight"><pre><span></span><code>    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">4996</span><span class="p">,</span> <span class="n">threaded</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="p">((</span><span class="s2">&quot;/tls/flask.crt&quot;</span><span class="p">,</span> <span class="s2">&quot;/tls/flask.key&quot;</span><span class="p">)))</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-Python">    app.run(host='0.0.0.0', port=4996, threaded=True, ssl_context=(("/tls/flask.crt", "/tls/flask.key")))</code></pre>
 <p>While we do not show how to enforce client authentication of the REST API, we show how to do this for Redis in the next section.</p>
 <h3 id="tls-based-mutual-attestation">TLS-based Mutual Attestation</h3>
 <p>The communication between the Flask-based service, say, <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and Redis instance, say, <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> is encrypted via TLS. Actually, we make sure that the service <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and instance <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> <strong>attest</strong> each other. Attestation means that <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> ensures that <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> satisfies all requirements specified in <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span>'s security policy and <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> ensures that <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> satisfies all the requirements of <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>'s policy. Of course, this should be done without changing the code of neither <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> nor <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span>. In case that <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span> and <span class="arithmatex"><span class="MathJax_Preview">R</span><script type="math/tex">R</script></span> are using TLS with client authentication, this is straightforward to enforce. (If this is not the case, please contact us for an alternative.)</p>
 <p>To ensure mutual attestation, the operator of Redis defines a <a href="https://github.com/scontain/flask_example/blob/master/redis-template.yaml">policy</a> in which it defines a certification authority (<code>redis_ca_cert</code>) and defines both a Redis certificate (<code>redis_ca_cert</code>) as well as a Redis client certificate (<code>redis_client_cert</code>). The client certificate and the private key (<code>redis_client_key</code>) are exported to the policy of the Flask service <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>. The policy for this looks like this:</p>
-<div class="highlight"><pre><span></span><code>secrets:
+<pre class="highlight"><code class="language-yml">secrets:
   - name: redis_key
     kind: private-key
   - name: redis # automatically generate Redis server certificate
@@ -4338,12 +4330,11 @@
     kind: x509-ca
     private_key: redis_ca_key
     export:
-    - session: $FLASK_SESSION # export the session CA certificate to client session
-</code></pre></div>
+    - session: $FLASK_SESSION # export the session CA certificate to client session</code></pre>
 <p>Note that <code>$FLASK_SESSION</code> is replaced by the unique name of the policy of <span class="arithmatex"><span class="MathJax_Preview">S</span><script type="math/tex">S</script></span>. The security
 policies are in this example on the same <a href="../../helm_cas/">SCONE CAS (Configuration and Attestation Service)</a>. In more complex scenarios, the policies could also be stored on separate SCONE CAS instances operated by different entities.</p>
 <p>The flask service can import the Redis CA certificate, client certificate and private key as follows:</p>
-<div class="highlight"><pre><span></span><code>secrets:
+<pre class="highlight"><code class="language-yml">secrets:
     - name: redis_client_key
       import:
         session: $REDIS_SESSION
@@ -4355,10 +4346,9 @@ policies are in this example on the same <a href="../../helm_cas/">SCONE CAS (Co
     - name: redis_ca_cert
       import:
         session: $REDIS_SESSION
-        secret: redis_ca_cert
-</code></pre></div>
+        secret: redis_ca_cert</code></pre>
 <p>These secrets are made available to the Flask-based service in the filesystem (i.e., files <code>/tls/redis-ca.crt</code>, <code>/tls/client.crt</code> and <code>/tls/client.key</code>) via the following entries in its security policy:</p>
-<div class="highlight"><pre><span></span><code>images:
+<pre class="highlight"><code class="language-yml">images:
    - name: flask_restapi_image
      injection_files:
         - path: /tls/redis-ca.crt
@@ -4366,8 +4356,7 @@ policies are in this example on the same <a href="../../helm_cas/">SCONE CAS (Co
         - path: /tls/client.crt
           content: $$SCONE::redis_client_cert.crt$$
         - path: /tls/client.key
-          content: $$SCONE::redis_client_cert.key$$
-</code></pre></div>
+          content: $$SCONE::redis_client_cert.key$$</code></pre>
 
               
             </article>
@@ -4437,7 +4426,7 @@ policies are in this example on the same <a href="../../helm_cas/">SCONE CAS (Co
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.5413a266.min.js"></script>

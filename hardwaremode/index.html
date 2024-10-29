@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/hardwaremode/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3353,7 +3353,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4081,9 +4081,8 @@ Actually, the only change is to <strong>give the container access to the SGX dev
 <h2 id="detailed-description">Detailed Description</h2>
 <p>We first need to start a container which includes the SCONE crosscompiler and
 give the container access to the Intel SGX driver. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>:</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/crosscompilers
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
 <div class="admonition warning">
 <p class="admonition-title">The docker engine and the Intel SGX driver must be installed.</p>
 <p>Read about how to <a href="../dockerinstall/">install a docker engine</a> and to <a href="../sgxinstall/">install the Intel SGX driver</a>.
@@ -4093,29 +4092,25 @@ If your hosts have already a Intel SGX driver installed, you are all set.
 Hardware mode is only supported in Linux, since the Intel SGX driver is only available on Linux.</p>
 </div>
 <p>Now execute the following command inside the container to create the hello world program:</p>
-<div class="highlight"><pre><span></span><code><span class="n">cat</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">helloworld</span><span class="p">.</span><span class="n">c</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">EOF</span><span class="w"></span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-<span class="n">EOF</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-C">cat &gt; helloworld.c &lt;&lt; EOF
+#include &lt;stdio.h&gt;
+int main() {
+    printf("Hello World\n");
+}
+EOF</code></pre>
 <p>Compile the program with:
-<div class="highlight"><pre><span></span><code>gcc -o helloworld helloworld.c
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">gcc -o helloworld helloworld.c</code></pre></p>
 <p>You can run this program:</p>
-<div class="highlight"><pre><span></span><code>./helloworld
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./helloworld</code></pre>
 <p>This will print <em>Hello World</em>. </p>
 <p>Since we  have given the container access to the SGX driver, this runs in <strong>hardware mode</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Use this mode only for development and debugging</p>
 <p>The program <strong>runs inside of a hardware enclave</strong>. However, the enclave is in debug mode, i.e., one can actually introspect the content of the enclave.</p>
 </div>
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> ./helloworld
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">SCONE_VERSION=1 ./helloworld</code></pre>
 <p>This will print something like:</p>
-<div class="highlight"><pre><span></span><code>export SCONE_QUEUES=4
+<pre class="highlight"><code class="language-text">export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -4135,24 +4130,20 @@ Branch: master
 Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl
 
 Enclave hash: 9d601c360ce9b6100e35dc42ec2800c1c20478328a0d4450d8d5163c00289dea
-Hello World
-</code></pre></div>
+Hello World</code></pre>
 <p>The output shows that SCONE is running in <strong>hardware mode</strong>: <em>export SCONE_MODE=hw</em></p>
 <h2 id="background-info">Background Info</h2>
 <p>For ease of use, we create all Docker images such that applications run inside of enclaves if enclaves are available (<a href="../SCONE_ENV/#run-mode"><strong>AUTO</strong> mode</a>). If SGX is not available, they run in simulation mode, i.e., outside of an enclave but all SCONE software is running. To disable simulation mode, you can set environment variable <strong>SCONE_MODE=HW</strong>:</p>
-<div class="highlight"><pre><span></span><code>docker run <span class="nv">$MOUNT_SGXDEVICE</span> -e <span class="s2">&quot;SCONE_MODE=HW&quot;</span> -it registry.scontain.com/sconecuratedimages/crosscompilers
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run $MOUNT_SGXDEVICE -e "SCONE_MODE=HW" -it registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
 <p>If you would start your container in hardware mode but forget to give it access to the sgx device, i.e.,</p>
-<div class="highlight"><pre><span></span><code>docker run -e <span class="s2">&quot;SCONE_MODE=HW&quot;</span> -it registry.scontain.com/sconecuratedimages/crosscompilers
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run -e "SCONE_MODE=HW" -it registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
 <p>compilation of the <em>helloworld</em> will succeed  but running the <em>helloworld</em> program will fail:</p>
-<div class="highlight"><pre><span></span><code>bash-4.4# echo $SCONE_MODE
+<pre class="highlight"><code class="language-text">bash-4.4# echo $SCONE_MODE
 HW
 bash-4.4# ls -l /dev/isgx
 ls: /dev/isgx: No such file or directory
 bash-4.4# ./helloworld
-[SCONE|ERROR] ./tools/starter-exec.c:993:_dl_main(): Could not create enclave: Error opening SGX device
-</code></pre></div>
+[SCONE|ERROR] ./tools/starter-exec.c:993:_dl_main(): Could not create enclave: Error opening SGX device</code></pre>
 <p>When running your software in operations, you would force the programs to run inside of enclaves: this can be enforced with the help of SCONE <a href="../cas_intro/">configuration and attestation service</a>. </p>
 <div class="admonition info">
 <p class="admonition-title">Environment Variables</p>
@@ -4227,7 +4218,7 @@ bash-4.4# ./helloworld
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/workshop/details/">
       
       <link rel="icon" href="../../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3374,7 +3374,7 @@
   
     <li class="md-nav__item">
       <a href="../../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4157,7 +4157,7 @@
 <li><code>command</code>:  this is the command line. This is protected to ensure that an adversary cannot change the arguments of our program. Changing the arguments would permit the adversary, for example, to print the value of the environment variables.</li>
 <li><code>copy</code>: a list of files or directories to copy into the image.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>apiVersion: scone/5.8
+<pre class="highlight"><code class="language-yml">apiVersion: scone/5.8
 kind: genservice
 
 # define environment variables
@@ -4171,7 +4171,7 @@ environment:
     - name: SCONE_LOG
       value: error
     - name: API_PASSWORD
-      value: &quot;$$SCONE::password$$&quot;  # get from CAS
+      value: "$$SCONE::password$$"  # get from CAS
   global:     # values defined/overwritten in Meshfile
     - name: API_USER  # get value from Meshfile
 
@@ -4189,8 +4189,7 @@ build:
   pwd: /python
   command: python3 print_env.py
   copy:
-    - print_env.py
-</code></pre></div>
+    - print_env.py</code></pre>
 <p><img alt="Confidential Secret Generation" src="../generateSecrets.png" /></p>
 <blockquote>
 <p><strong>NOTE:</strong> You do not need a service manifest for
@@ -4212,14 +4211,14 @@ Typically, we use a secret called <code>sconeapps</code>,</p>
 <li><code>name</code>: is a unique name of this service</li>
 <li><code>image</code>: is the name of the image.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>apiVersion: scone/5.8
+<pre class="highlight"><code class="language-yml">apiVersion: scone/5.8
 kind: mesh
 
 cas:
   - name: cas # cas used to store the policy of this application
-    alias: [&quot;image&quot;, &quot;security&quot;, &quot;access&quot;, &quot;attestation&quot;] # use alias in case CAS instance has multiple roles
+    alias: ["image", "security", "access", "attestation"] # use alias in case CAS instance has multiple roles
     cas_url: edge.scone-cas.cf  # exported as {{cas_cas_cas_url}}
-    tolerance: &quot;--only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S&quot;
+    tolerance: "--only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S"
 
 policy:
   namespace: myPythonApp    # namespace on CAS instance `cas`
@@ -4235,8 +4234,7 @@ env:
 
 services:
   - name: pythonapp
-    image: registry.scontain.com/cicd/python_hello_user:latest
-</code></pre></div>
+    image: registry.scontain.com/cicd/python_hello_user:latest</code></pre>
 <h2 id="artifacts">Artifacts</h2>
 <p>We use different services to store the generated artifacts:</p>
 <ul>
@@ -4319,7 +4317,7 @@ services:
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.5413a266.min.js"></script>

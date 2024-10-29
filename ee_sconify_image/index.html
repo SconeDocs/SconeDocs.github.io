@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/ee_sconify_image/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3610,7 +3610,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4623,84 +4623,75 @@
 <p><img alt="Sconify Image Workflow" src="../img/scone_workflow.svg#fullwidth" /></p>
 <p>As shown, Sconify Image sconifies the native binary, and copies the sconified binary to the encrypted image. Further, Sconify Image encrypts the service's code and data files, and copies these encrypted files to the encrypted image as well. During the sconification of the image, Sconify Image creates a security policy containing metadata to decrypt the encrypted files and to check the files integrity. This policy also contains additional information, e.g., the native images environment and working directory. Sconify Image uploads this policy to an <a href="../attestation/">attested</a> <a href="CASOverview">SCONE CAS</a>. After Sconify Image finishes this process, we can run a confidential container from the encrypted image. Upon execution, the SCONE CAS attests the service to ensure its trustworthiness. After a successful attestation, the CAS sends the service the secrets specified in the policy, which enable the service to execute as expected.</p>
 <p>We continue by showing a possible implementation of this workflow. The Dockerfile of the Flask service may look as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">alpine:3.10</span>
-<span class="k">ENV</span><span class="w"> </span>LANG C.UTF-8
-<span class="k">COPY</span><span class="w"> </span>rest_api.py /app/rest_api.py
-<span class="k">COPY</span><span class="w"> </span>flask.key /tls/flask.key
-<span class="k">COPY</span><span class="w"> </span>flask.crt /tls/flask.crt
-<span class="k">COPY</span><span class="w"> </span>requirements.txt /app/requirements.txt
-<span class="k">RUN</span><span class="w"> </span>apk add --no-cache openssl ca-certificates pkgconfig wget python3 python3-dev <span class="se">\</span>
-    <span class="o">&amp;&amp;</span> ln -s /usr/bin/pip3 /usr/local/bin/pip <span class="se">\</span>
-    <span class="o">&amp;&amp;</span> ln -s /usr/bin/pip3 /usr/bin/pip <span class="se">\</span>
-    <span class="o">&amp;&amp;</span> pip3 install -r /app/requirements.txt
-<span class="k">CMD</span><span class="w"> </span>python3 -B /app/rest_api.py
-</code></pre></div>
+<pre class="highlight"><code class="language-Dockerfile">FROM alpine:3.10
+ENV LANG C.UTF-8
+COPY rest_api.py /app/rest_api.py
+COPY flask.key /tls/flask.key
+COPY flask.crt /tls/flask.crt
+COPY requirements.txt /app/requirements.txt
+RUN apk add --no-cache openssl ca-certificates pkgconfig wget python3 python3-dev \
+    &amp;&amp; ln -s /usr/bin/pip3 /usr/local/bin/pip \
+    &amp;&amp; ln -s /usr/bin/pip3 /usr/bin/pip \
+    &amp;&amp; pip3 install -r /app/requirements.txt
+CMD python3 -B /app/rest_api.py</code></pre>
 <p>To then use Sconify Image, we must select resources relevant for sconification. We see that the program code is in <code>/app</code>, and the data files that the service uses are in <code>/tls</code>. Further, our service runs in Python. Upon inspection, e.g., with <code>$(which python3)</code>, we find that our binary is located at <code>/usr/bin/python3.7</code>. We specify this information:
-<div class="highlight"><pre><span></span><code><span class="nv">PROTECT_DIR_1</span><span class="o">=</span><span class="s2">&quot;/app&quot;</span>
-<span class="nv">PROTECT_DIR_2</span><span class="o">=</span><span class="s2">&quot;/tls&quot;</span>
-<span class="nv">BINARY</span><span class="o">=</span><span class="s2">&quot;/usr/bin/python3.7&quot;</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">PROTECT_DIR_1="/app"
+PROTECT_DIR_2="/tls"
+BINARY="/usr/bin/python3.7"</code></pre></p>
 <p>Let us assume that the native image is named <code>my-repo/my-native-flask</code>. Further, we specify the name for the finished encrypted image for later use: <code>my-repo/my-encrypted-flask</code>.
-<div class="highlight"><pre><span></span><code><span class="nv">NATIVE_IMAGE</span><span class="o">=</span><span class="s2">&quot;my-repo/my-native-flask&quot;</span>
-<span class="nv">ENCRYPTED_IMAGE</span><span class="o">=</span><span class="s2">&quot;my-repo/my-encrypted-flask&quot;</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">NATIVE_IMAGE="my-repo/my-native-flask"
+ENCRYPTED_IMAGE="my-repo/my-encrypted-flask"</code></pre></p>
 <div class="admonition note">
 <p class="admonition-title">Push encrypted images automatically</p>
 <p>To push the encrypted image automatically, set <code>--push-image</code>. Please make sure to name your image appropriately (e.g., <code>ENCRYPTED_IMAGE="registry/repo/tag"</code>) and to provide the correct Docker credentials to the Sconify Image container, so that it can push to the specified repository. You can do so by mounting a Docker credential file inside of the Sconify Image container through a volume: <code>-v $HOME/.docker/config.json:/root/.docker/config.json</code>.</p>
 </div>
 <p>We also decide on information for using the SCONE infrastructure. We select a CAS to upload our policy, in this case the <a href="../public-CAS/">public CAS</a> <code>scone-cas.cf</code>. We additionally specify the name of a <a href="../glossary/#local-attestation-service-las">LAS</a>. Further, we set a name for the session we wish to upload: <code>my-flask-session</code>, as well as a name for the flask service within the session: <code>my-flask-service</code>. And finally, we set a namespace  <a href="../namespace/">CAS namespace</a> to bundle this session with further sessions we may create in our workflow: <code>my-workflow-namespace-$RANDOM</code>.
-<div class="highlight"><pre><span></span><code><span class="nv">CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;scone-cas.cf&quot;</span>
-<span class="nv">LAS_ADDR</span><span class="o">=</span><span class="s2">&quot;localhost:18766&quot;</span>
-<span class="nv">SERVICE</span><span class="o">=</span><span class="s2">&quot;my-flask-service&quot;</span>
-<span class="nv">SESSION</span><span class="o">=</span><span class="s2">&quot;my-flask-session&quot;</span>
-<span class="nv">NAMESPACE</span><span class="o">=</span><span class="s2">&quot;my-workflow-namespace-</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">CAS_ADDR="scone-cas.cf"
+LAS_ADDR="localhost:18766"
+SERVICE="my-flask-service"
+SESSION="my-flask-session"
+NAMESPACE="my-workflow-namespace-$RANDOM"</code></pre></p>
 <p>We now require the <a href="../SCONE_ENV/">SCONE environment variables</a> with which we run our service:
-<div class="highlight"><pre><span></span><code><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="s2">&quot;1G&quot;</span>
-<span class="nv">SCONE_STACK</span><span class="o">=</span><span class="s2">&quot;4M&quot;</span>
-<span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="s2">&quot;2&quot;</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">SCONE_HEAP="1G"
+SCONE_STACK="4M"
+SCONE_ALLOW_DLOPEN="2"</code></pre></p>
 <p>Finally, to attest the CAS and upload a policy, we need access to the SGX device. Hence, we determine the SGX device (<a href="../sgxinstall/#determine-sgx-device">see determining SGX device</a>). The SGX device allows Sconify Image to attest the SCONE CAS.
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device</code></pre>
 Typically, we use the <a href="../CAS_cli/">SCONE CLI</a> to attest the CAS and upload sessions. Yet, Sconify Image executes these tasks automatically.</p>
 <p>With all this information, we can run the Sconify Image tool:
-<div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
-    sconify_image --from<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NATIVE_IMAGE</span><span class="s2">&quot;</span> --to<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ENCRYPTED_IMAGE</span><span class="s2">&quot;</span> --cas-debug <span class="se">\</span>
-    --dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_1</span><span class="s2">&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_2</span><span class="s2">&quot;</span> <span class="se">\ </span><span class="c1"># includes all subdirs as well</span>
-    --binary<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BINARY</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --cas<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ADDR</span><span class="s2">&quot;</span> --las<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$LAS_ADDR</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --service-name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SERVICE</span><span class="s2">&quot;</span> --name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SESSION</span><span class="s2">&quot;</span> --namespace<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NAMESPACE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --create-namespace <span class="se">\</span>
-    --heap<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_HEAP</span><span class="s2">&quot;</span> --stack<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_STACK</span><span class="s2">&quot;</span> --dlopen<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_ALLOW_DLOPEN</span><span class="s2">&quot;</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">docker run --rm --device="$SGXDEVICE" \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image \
+    sconify_image --from="$NATIVE_IMAGE" --to="$ENCRYPTED_IMAGE" --cas-debug \
+    --dir="$PROTECT_DIR_1" --dir="$PROTECT_DIR_2" \ # includes all subdirs as well
+    --binary="$BINARY" \
+    --cas="$CAS_ADDR" --las="$LAS_ADDR" \
+    --service-name="$SERVICE" --name="$SESSION" --namespace="$NAMESPACE" \
+    --create-namespace \
+    --heap="$SCONE_HEAP" --stack="$SCONE_STACK" --dlopen="$SCONE_ALLOW_DLOPEN"</code></pre></p>
 <div class="admonition note">
 <p class="admonition-title">Running in Production Mode</p>
 <p>For production, we must remove <code>--cas-debug</code> to ensure the CAS runs in production mode, and sign the binary with a production key: <code>--scone-signer=PRIVATE_KEY_PATH</code></p>
 </div>
 <p>Upon successful execution, the tool then returns the name of the session (<code>"$NAMESPACE/$SESSION"</code>), and the encrypted image under the name <code>"$ENCRYPTED_IMAGE"</code> will have been created. The encrypted image also contains the <code>CAS_ADDR</code> and <code>LAS_ADDR</code>, as well as the <a href="../SCONE_ENV/#scone-configuration-file"><code>SCONE_CONFIG_ID</code></a>. As such, we can then simply run the service, and it will utilize existing SCONE infrastructure without the need for further specification:
-<div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="nv">$ENCRYPTED_IMAGE</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">docker run --rm --device="$SGXDEVICE" $ENCRYPTED_IMAGE</code></pre></p>
 <h3 id="scone-binary-file-system">SCONE Binary File System</h3>
 <p>Using the <a href="../binary_fs/">SCONE Binary File System</a> (binary-fs), we can embed the service's files into the binary. This embedding extends the protection of the SGX enclave to the binary-fs. Further, the enclave's measurement (MRENCLAVE) then reflects the file system state.
 As such, the usage of binary-fs changes the process of Sconify Image sconification. The updated process is as follows:</p>
 <p><img alt="Sconify Image Workflow Binary FS" src="../img/scone_workflow_binary_fs.svg#fullwidth" /></p>
 <p>As pictured, we must specify <strong>all</strong> files the service may access. This includes service libraries. As we use Python, Sconify Image includes the Python library be default. Thus, we must only make minimal changes to the command from before. To enable the binary-fs sconifcation mode, we must set <code>--binary-fs</code>. To specify directories to include in the binary-fs, we select them using <code>--fs-dir</code>. This option recursively includes all subdirectories as well. We can select individual files to include as well with <code>--fs-file</code>.
 We may require access to files containing system specific data, which are not avaible at the time of binary-fs creation. These files may include networking files, such as <code>/etc/resolv.conf</code> or <code>/etc/hosts</code>. To access such files which reside outside of the binary-fs on the host, we may use the <code>--host-path</code> option. Note that files included with this option are <strong>not protected</strong>. The modified Sconify Image command could look as follows:</p>
-<div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
-    sconify_image --from<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NATIVE_IMAGE</span><span class="s2">&quot;</span> --to<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ENCRYPTED_IMAGE</span><span class="s2">&quot;</span> --cas-debug <span class="se">\</span>
-    --fs-dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_1</span><span class="s2">&quot;</span> --fs-dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_2</span><span class="s2">&quot;</span> --binary<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BINARY</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --cas<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ADDR</span><span class="s2">&quot;</span> --las<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$LAS_ADDR</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --host-path<span class="o">=</span><span class="s2">&quot;/etc/resolv.conf&quot;</span> --host-path<span class="o">=</span><span class="s2">&quot;/etc/hosts&quot;</span> <span class="se">\</span>
-    --service-name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SERVICE</span><span class="s2">&quot;</span> --name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SESSION</span><span class="s2">&quot;</span> --namespace<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NAMESPACE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --create-namespace <span class="se">\</span>
-    --heap<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_HEAP</span><span class="s2">&quot;</span> --stack<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_STACK</span><span class="s2">&quot;</span> --dlopen<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_ALLOW_DLOPEN</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --binary-fs
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run --rm --device="$SGXDEVICE" \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image \
+    sconify_image --from="$NATIVE_IMAGE" --to="$ENCRYPTED_IMAGE" --cas-debug \
+    --fs-dir="$PROTECT_DIR_1" --fs-dir="$PROTECT_DIR_2" --binary="$BINARY" \
+    --cas="$CAS_ADDR" --las="$LAS_ADDR" \
+    --host-path="/etc/resolv.conf" --host-path="/etc/hosts" \
+    --service-name="$SERVICE" --name="$SESSION" --namespace="$NAMESPACE" \
+    --create-namespace \
+    --heap="$SCONE_HEAP" --stack="$SCONE_STACK" --dlopen="$SCONE_ALLOW_DLOPEN" \
+    --binary-fs</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Service Library Inclusion</p>
 <p>For supported services, we include service libraries into the binary file system by default. To view supported service, run <code>docker run --rm registry.scontain.com/sconecuratedimages/sconecli:sconify-image sconify_image --help</code></p>
@@ -4712,24 +4703,21 @@ We may require access to files containing system specific data, which are not av
 <p>In both Sconification variations, Sconify Image copies shared object dependencies of the binary into the encrypted image by default. Otherwise, the image container cannot execute the binary, as the shared object dependencies can not be loaded if they do not exist in the container's host file system. With binary-fs, the shared object dependencies loaded by the binary do not have to be included in the binary-fs. To include dependencies into the host file system of the encrypted image, we can use the <code>--plain</code> options.</p>
 <h3 id="acquiring-policy-access">Acquiring Policy Access</h3>
 <p>Before uploading a session to the SCONE CAS, Sconify Image generates a private key. Sconify Image then generates a corresponding public key. While uploading the session to the SCONE CAS, Sconify Image sends the CAS this public key. Sconify Image can then use this public / private key pair to identify itself to the CAS. The CAS binds the public key to Sconify Image's session, such that only holders of the corresponding private key may read and update the session. We may wish to read and update our session after Sconify Image is finished with the sconification process. Thus, we can retrieve Sconify Image's private key. We achieve this extraction by using a docker volume when running Sconify Image. We thereby mount the volume to the directory where Sconify Image stores, among other CAS relevant information, the private key (<code>~/.cas/config.json</code>):
-<div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -v <span class="nv">$PWD</span>/private-sconify-image-key:/root/.cas <span class="se">\ </span><span class="c1"># PRIVATE KEY VOLUME</span>
-    -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
-    sconify_image ...
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run --rm --device="$SGXDEVICE" \
+    -v $PWD/private-sconify-image-key:/root/.cas \ # PRIVATE KEY VOLUME
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image \
+    sconify_image ...</code></pre>
 We can then use the <code>config.json</code> in other containers to read and update the session:
-<div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
-  -v <span class="nv">$PWD</span>/private-sconify-image-key:/root/.cas my-scone-image
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">docker run --rm --device="$SGXDEVICE" \
+  -v $PWD/private-sconify-image-key:/root/.cas my-scone-image</code></pre></p>
 <h3 id="acquire-sconify-image-resources">Acquire Sconify Image Resources</h3>
 <p>During the sconification process, Sconify Image generates the encrypted image's Dockerfile and session. To collect these resources, we add a volume to Sconify Image. Sconify Image stores resources in <code>/build-resources</code>:
-<div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -v <span class="nv">$PWD</span>/sconify-image-resources:/build-resources <span class="se">\ </span><span class="c1"># RESOURCE COLLECTION VOLUME</span>
-    -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
-    sconify_image ...
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run --rm --device="$SGXDEVICE" \
+    -v $PWD/sconify-image-resources:/build-resources \ # RESOURCE COLLECTION VOLUME
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image \
+    sconify_image ...</code></pre>
 With these resources, we may rebuild the image ourselves. These resources are invaluable for debugging images created by Sconify Image.</p>
 <h3 id="cicd-workflow">CI/CD Workflow</h3>
 <p>In a typical workflow, one would perform the sconification of an image as part of the CI/CD pipeline: One would test the native image first, sconify the image and test the sconified image again. After a successful test, the binary would be pushed to a container image repository.</p>
@@ -4739,8 +4727,7 @@ With these resources, we may rebuild the image ourselves. These resources are in
 <p>By default, Sconify Image adds a symlink for supported services to the Dockerfile. To illustrate, if the binary to sconify is a Python 3 binary, such as <code>/usr/bin/python3.7</code>, Sconify Image will add a symlink: <code>ln -s /usr/bin/python3.7 /usr/bin/python3</code>. To disable this behavior, the option <code>--disable-binary-symlink-detection</code> may be specified.</p>
 <h4 id="disable-copying-of-shared-object-dependencies">Disable Copying of Shared Object Dependencies</h4>
 <p>Binaries require shared object dependencies to be executed. We can view these dependencies with:
-<div class="highlight"><pre><span></span><code>ldd &lt;path-to-binary&gt;
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">ldd &lt;path-to-binary&gt;</code></pre>
 As we copy the binary to a different image than the native image, some shared object dependencies may not be present. As such, the binary may not be executable. To prevent this, Sconify Image, by default, copies all shared object dependencies of the binary from the native image to the encrypted image. To disable this behavior, we can use the <code>--disable-copy-shared-object-dependencies</code> option. As mentioned, this option may cause the binary to not be executable. To still enable that the binary is executable, shared object dependencies not available in the BASE_IMAGE must be specified with <code>--plain-file</code>.</p>
 <h4 id="disable-copying-of-service-libraries">Disable Copying of Service Libraries</h4>
 <p>Some services require certain service libraries to function. To illustrate, Python 3 usually requires a service library, e.g. <code>/usr/lib/python3.7</code>. Without the service library, the execution of the service may fail. As such, for supported services, Sconify Image attempts to find the service libraries within the native image and copy them to the encrypted image. For fspf sconification, the service libraries are plainly copied to the encypted image. In binary-fs sconification, Sconify Image includes the service libraries in the binary file system. To disable this behavior, e.g., to protect the service library with fspf, we use the option <code>--disable-copy-service-libraries</code>.</p>
@@ -4768,17 +4755,13 @@ As we copy the binary to a different image than the native image, some shared ob
 <h3 id="volumes">Volumes</h3>
 <p>With the option <code>--volume=NAME:PATH:[[FROM_SESSION]:[TO_SESSION]]</code>, we can easily create and access SCONE volumes. We set the volume name with <code>NAME</code> and the mount path into the encrypted image with <code>PATH</code>.
 To simply create a volume:
-<div class="highlight"><pre><span></span><code>--volume<span class="o">=</span><span class="s2">&quot;my_vol:/vol/simple-vol&quot;</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">--volume="my_vol:/vol/simple-vol"</code></pre></p>
 <p>Optionally, volumes can be <strong>either</strong> imported or exported from or to other sessions, using <code>FROM_SESSION</code> and <code>TO_SESSION</code>, respectively. To import a volume <code>my_in_vol</code> from session <code>import-session</code>, we can use:
-<div class="highlight"><pre><span></span><code>--volume<span class="o">=</span><span class="s2">&quot;my_in_vol:/vol/in-vol:import-session:&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">--volume="my_in_vol:/vol/in-vol:import-session:"</code></pre>
 To export the volume <code>my_out_vol</code> to session <code>export-session</code>, we can use:
-<div class="highlight"><pre><span></span><code>--volume<span class="o">=</span><span class="s2">&quot;my_out_vol:/vol/out-vol/::export-session&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">--volume="my_out_vol:/vol/out-vol/::export-session"</code></pre>
 Exporting to multiple sessions is also possible:
-<div class="highlight"><pre><span></span><code>--volume<span class="o">=</span><span class="s2">&quot;my_many_out_vol:/vol/many-out-vol::policy-1:policy-2:policy-3&quot;</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">--volume="my_many_out_vol:/vol/many-out-vol::policy-1:policy-2:policy-3"</code></pre></p>
 <!-- TODO implement and then document
 
 ### Secrets
@@ -4809,30 +4792,26 @@ TODO:
 <li>DaemonSet: intended to run with exactly one replica per node in the cluster (e.g., node agents, device plugins).</li>
 </ul>
 <p>Extending the previous Flask service example, which should run as a Kubernetes <code>Deployment</code>, we set:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">WORKLOAD_TYPE</span><span class="o">=</span><span class="s2">&quot;deployment&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export WORKLOAD_TYPE="deployment"</code></pre>
 <p>Generated charts are by default saved to <code>/sconify-helm</code>, so we add a volume to save the charts locally: <code>-v $PWD/charts:/sconify-helm</code>. The charts will be saved to a local directory called <code>charts</code>. The output directory can be configured through <code>--k8s-helm-output-dir=$DIR</code> option.</p>
 <p>Finally, since the Kubernetes cluster needs to pull the sconified image before running it, we add <code>--push-image</code> and mount Docker credentials inside the container <code>-v $HOME/.docker/config.json:/root/.docker/config.json</code> , so <code>sconify_images</code> can push the images automatically. You can also push the images yourself after the sconification process is done.</p>
-<div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    -v <span class="nv">$HOME</span>/.docker/config.json:/root/.docker/config.json <span class="se">\</span>
-    -v <span class="nv">$PWD</span>/charts:/sconify-helm <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
-    sconify_image --from<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NATIVE_IMAGE</span><span class="s2">&quot;</span> --to<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ENCRYPTED_IMAGE</span><span class="s2">&quot;</span> --cas-debug <span class="se">\</span>
-    --dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_1</span><span class="s2">&quot;</span> --dir<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PROTECT_DIR_2</span><span class="s2">&quot;</span> --binary<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BINARY</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --cas<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ADDR</span><span class="s2">&quot;</span> --las<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$LAS_ADDR</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --service-name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SERVICE</span><span class="s2">&quot;</span> --name<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SESSION</span><span class="s2">&quot;</span> --namespace<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$NAMESPACE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --create-namespace <span class="se">\</span>
-    --heap<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_HEAP</span><span class="s2">&quot;</span> --stack<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_STACK</span><span class="s2">&quot;</span> --dlopen<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_ALLOW_DLOPEN</span><span class="s2">&quot;</span> <span class="se">\</span>
-    --push-image <span class="se">\</span>
-    --k8s-helm-workload-type<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$WORKLOAD_TYPE</span><span class="s2">&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run --rm --device="$SGXDEVICE" \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v $HOME/.docker/config.json:/root/.docker/config.json \
+    -v $PWD/charts:/sconify-helm \
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image \
+    sconify_image --from="$NATIVE_IMAGE" --to="$ENCRYPTED_IMAGE" --cas-debug \
+    --dir="$PROTECT_DIR_1" --dir="$PROTECT_DIR_2" --binary="$BINARY" \
+    --cas="$CAS_ADDR" --las="$LAS_ADDR" \
+    --service-name="$SERVICE" --name="$SESSION" --namespace="$NAMESPACE" \
+    --create-namespace \
+    --heap="$SCONE_HEAP" --stack="$SCONE_STACK" --dlopen="$SCONE_ALLOW_DLOPEN" \
+    --push-image \
+    --k8s-helm-workload-type="$WORKLOAD_TYPE"</code></pre>
 <p>After the sconification process is finished, the generated chart can be installed as follows (using the defaults inherited from <code>sconify_image</code>):</p>
-<div class="highlight"><pre><span></span><code>helm install my-flask-api charts/<span class="nv">$SERVICE</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install my-flask-api charts/$SERVICE</code></pre>
 <p>You can customize parameter values via <code>--set</code> option in <code>helm install</code>. For example, to deploy the Flask service with 5 replicas, and specifying an <a href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/">imagePullSecret</a> so that Kubernetes can pull images from a private registry:</p>
-<div class="highlight"><pre><span></span><code>helm install my-flask-api charts/<span class="nv">$SERVICE</span> --set <span class="nv">replicaCount</span><span class="o">=</span><span class="m">5</span> --set imagePullSecrets<span class="o">[</span><span class="m">0</span><span class="o">]</span>.name<span class="o">=</span>my-secret
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install my-flask-api charts/$SERVICE --set replicaCount=5 --set imagePullSecrets[0].name=my-secret</code></pre>
 <p>Charts generated by Sconify Image also include documentation. Refer to the documentation to see the full list of parameters accepted by the chart.</p>
 <div class="admonition note">
 <p class="admonition-title">Kubernetes Naming Constraints</p>
@@ -4844,12 +4823,11 @@ TODO:
 <h2 id="signing-options">Signing Options</h2>
 <h3 id="scone-signer">Scone Signer</h3>
 <p>Sconify Image can also sign binaries of images during sconification, using the <a href="../scone-signer/">scone signer</a>. Only signed binaries may run in production mode. Signing binaries requires an Intel verified private key. To use the scone signer, add the option <code>--scone-signer=PRIVATE_KEY_PATH</code>, whereby the <code>PRIVATE_KEY_PATH</code> is the patch to the private key <strong>accessible by the container</strong>. We give the container access with a volume. A corresponding command can look as follows:
-<div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -v <span class="nv">$PWD</span>/my-private-key.pem:/my-private-key.pem <span class="se">\ </span><span class="c1"># SUPPLY CONTAINER THE KEY</span>
-    -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
-    sconify_image ... --scone-signer<span class="o">=</span>/my-private-key.pem
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">docker run --rm --device="$SGXDEVICE" \
+    -v $PWD/my-private-key.pem:/my-private-key.pem \ # SUPPLY CONTAINER THE KEY
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image \
+    sconify_image ... --scone-signer=/my-private-key.pem</code></pre></p>
 <p>We squash the image after building, such that the Docker build history does not expose information of the key. The key itself is never <code>COPY</code>ed into the image. We use it with the <code>DOCKER_BUILDKIT</code> <code>--secret</code> option.</p>
 <!--### Docker Trust Sign
 TODO fix Docker Trust Sign -> https://scone.cf/scone/subtree-scone/-/issues/1095
@@ -4859,22 +4837,19 @@ Sconify Image also supports signing images with Content trust in Docker.-->
 <h3 id="identity">Identity</h3>
 <p>Sconify Image can also use <strong>identity files</strong> to create and access namespaces and sessions. An identity file must contain a PEM-encoded PKCS#8 private key followed by a X.509v3 certificate. These identity files serve as <a href="../CAS_session_lang_0_3/#access-control">access control</a>.</p>
 <p>We can either generate an identity file with:
-<div class="highlight"><pre><span></span><code>openssl genpkey -out identity-private-key.pem -algorithm EC -pkeyopt ec_paramgen_curve:P-256
-openssl req -x509 -key <span class="s2">&quot;identity-private-key.pem&quot;</span> -out <span class="s2">&quot;identity.crt.pem&quot;</span> -days <span class="m">31</span> -nodes -sha256 -subj <span class="s2">&quot;/CN=Generated Test Certificate&quot;</span> -reqexts SAN -extensions SAN -config &lt;<span class="o">(</span>cat /etc/ssl/openssl.cnf &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;[SAN]\nsubjectAltName=DNS:www.scontain.com,DNS:localhost&#39;</span><span class="o">))</span>
+<pre class="highlight"><code class="language-bash">openssl genpkey -out identity-private-key.pem -algorithm EC -pkeyopt ec_paramgen_curve:P-256
+openssl req -x509 -key "identity-private-key.pem" -out "identity.crt.pem" -days 31 -nodes -sha256 -subj "/CN=Generated Test Certificate" -reqexts SAN -extensions SAN -config &lt;(cat /etc/ssl/openssl.cnf &lt;(printf '[SAN]\nsubjectAltName=DNS:www.scontain.com,DNS:localhost'))
 cat identity-private-key.pem &gt; identity.pem
-cat identity.crt.pem &gt;&gt; identity.pem
-</code></pre></div></p>
+cat identity.crt.pem &gt;&gt; identity.pem</code></pre></p>
 <p>Or we can extract it from a scone client which already uploaded a session, to acquire its identity and access rights:
-<div class="highlight"><pre><span></span><code><span class="c1"># within client container</span>
-<span class="nb">printf</span> <span class="s1">&#39;%b&#39;</span> <span class="s2">&quot;</span><span class="k">$(</span>cat <span class="nv">$HOME</span>/.cas/config.json <span class="p">|</span> jq .identity <span class="p">|</span> tr -d <span class="s1">&#39;&quot;&#39;</span><span class="k">)</span><span class="s2">&quot;</span> &gt; identity.pem
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash"># within client container
+printf '%b' "$(cat $HOME/.cas/config.json | jq .identity | tr -d '"')" &gt; identity.pem</code></pre></p>
 <p>We can then use this identity file in Sconify Image, to upload our session to e.g. a preexisting namespace, created by another client. We use the <code>--identity=FILE</code> option for this:
-<div class="highlight"><pre><span></span><code>docker run --rm --device<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SGXDEVICE</span><span class="s2">&quot;</span> <span class="se">\</span>
-    -v <span class="nv">$PWD</span>/identity.pem:/identity.pem <span class="se">\ </span><span class="c1"># SUPPLY THE IDENTITY TO CONTAINER</span>
-    -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    registry.scontain.com/sconecuratedimages/sconecli:sconify-image <span class="se">\</span>
-    sconify_image ... --identity<span class="o">=</span>identity.pem
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">docker run --rm --device="$SGXDEVICE" \
+    -v $PWD/identity.pem:/identity.pem \ # SUPPLY THE IDENTITY TO CONTAINER
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    registry.scontain.com/sconecuratedimages/sconecli:sconify-image \
+    sconify_image ... --identity=identity.pem</code></pre></p>
 <h3 id="disable-default-session-upload-behavior">Disable Default Session Upload Behavior</h3>
 <h4 id="disable-session-upload">Disable Session Upload</h4>
 <p>By default, Sconify Image uploads the session it generates. To disable any session uploading and CAS attestation, we can use the option <code>--disable-session-upload</code>. Sconify Image thereby still generates a session in <code>/build-resources</code>, yet does not upload it to any CAS. As such, Sconify Image does not require a CAS or LAS connection in this mode.</p>
@@ -4883,7 +4858,7 @@ cat identity.crt.pem &gt;&gt; identity.pem
 <h4 id="disable-session-security-attestation">Disable Session Security Attestation</h4>
 <p>By default, sessions uploaded by Sconify Image requires the service that wishes to utilize them to be attested by the CAS. This attestation requires the presence of a LAS. To enable a session to be usable by any service, we can disable the services attesation with <code>--disable-session-security-attestation</code>. This option is not secure, as it allows the session to be used by any service. This usability may expose secrets and secure configuration.</p>
 <h2 id="all-supported-options">All Supported Options</h2>
-<div class="highlight"><pre><span></span><code>The following options are supported:
+<pre class="highlight"><code>The following options are supported:
 
   -h, --help               display this help and exit
 
@@ -4893,14 +4868,14 @@ REQUIRED:
   --binary=BINARY          binary of the native image (which is to be sconified)
 
 OPTIONAL:
-  --name=SESSION           name of the CAS policy session (default: TO_IMAGE \ &#39;/&#39;)
+  --name=SESSION           name of the CAS policy session (default: TO_IMAGE \ '/')
   --base=BASE_IMAGE        set the base image used to generate the encrypted
                              image (default=alpine:3.10)
   --command=SESSION_CMD    set the command in the session to be securely
                              executed, e.g., 
-                             &#39;/my-app/my-binary /my-app/secret-foo.txt&#39;. 
+                             '/my-app/my-binary /my-app/secret-foo.txt'. 
                              (default: ENTRYPOINT + CMD of native image)
-  --env=&quot;KEY=VALUE&quot;    set additional env variables to include in the 
+  --env="KEY=VALUE"    set additional env variables to include in the 
                              session, in addition to env vars from native image
   --cli=CLI_IMAGE          set the SCONE CLI image (default=registry.scontain.com/sconecuratedimages/sconecli:sconify-image)
   --service-name=SERVICE_NAME      set the name of the service within the
@@ -4950,7 +4925,7 @@ OPTIONAL:
                              will be used. An identity file must contain a PEM-encoded
                              PKCS#8 private key. MUST BE MAPPED TO CONTAINER WITH
                              VOLUME (-v).
-  --push-image             push the sconified Docker image (&#39;--to&#39;).
+  --push-image             push the sconified Docker image ('--to').
                              Please note that a valid Docker credentials file MUST be provided in its
                              default location (~/.docker/config.json). For example, you can mount it to
                              the sconify container with a volume (-v):
@@ -4964,7 +4939,7 @@ ATTESTATION:
                              to run on platforms with an insecure Trusted Computing Base (TCB).
                              Allows for `tolerate`: hyperthreading, insecure-igpu,
                              outdated-tcb, software-hardening-needed, insecure-configuration.
-                             For `ignore_advisories`: &quot;*&quot; (all)
+                             For `ignore_advisories`: "*" (all)
                              See https://sconedocs.github.io/CAS_session_lang_0_3/#tolerating-hardware-attestation-issues.
   --allow-debug-mode       Sets the `debug-mode` toleration in the generated
                              session. Thereby allows the sconified service to run on
@@ -5016,7 +4991,7 @@ BINARY FILE SYSTEM (binary fs):
                              BINARIES (see sconedocs.github.io/binary_fs/)
   --fs-dir=DIRECTORY       add a directory to the binary-fs; one option per dir
   --fs-file=FILE           specify certain files to include in the binary fs. 
-                             Useful if including the file&#39;s directory makes the
+                             Useful if including the file's directory makes the
                              binary fs too large.
   --crosscompiler=CROSSCOMPILER_IMAGE    scone crosscompiler image for compiling
                              binary-fs of executable. Only used when binary-fs
@@ -5044,8 +5019,8 @@ KUBERNETES:
                                       BE ENCRYPTED OR INTEGRITY-PROTECTED BY SCONE. For encrypted volumes, use
                                       --volume instead.
   --k8s-helm-manifests=PATH         render Kubernetes manifests from the generated Helm chart and save them to PATH.
-  --k8s-helm-set=&quot;PARAM=VALUE&quot;    set default values in generated chart parameters. Parameter &quot;PARAM&quot; (must be a valid
-                                      YAML path) will be assigned the default value &quot;VALUE&quot; (must be a valid string).
+  --k8s-helm-set="PARAM=VALUE"    set default values in generated chart parameters. Parameter "PARAM" (must be a valid
+                                      YAML path) will be assigned the default value "VALUE" (must be a valid string).
                                       Refer to the generated documentation to see all supported parameters.
 
 AZURE INTEGRATION:
@@ -5066,10 +5041,9 @@ SCONE ENV VARS:
                            (default: log level of SCONE runtime)
 
 DEBUG:
-  -x, --debug              enables &#39;set -x&#39; (commands are printed)
+  -x, --debug              enables 'set -x' (commands are printed)
   -v, --verbose            prints created build artifacts (Dockerfile, session)
-  --no-color               disable colored output (useful for execution in scripts)
-</code></pre></div>
+  --no-color               disable colored output (useful for execution in scripts)</code></pre>
 
               
             </article>
@@ -5139,7 +5113,7 @@ DEBUG:
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

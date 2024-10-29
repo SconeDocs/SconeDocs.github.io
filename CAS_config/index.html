@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/CAS_config/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3434,7 +3434,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4245,17 +4245,15 @@
 <p>The availability configuration encompasses file paths and network interfaces - everything that is necessary in order to start a CAS instance. The configuration is read from a <a href="https://en.wikipedia.org/wiki/TOML">TOML</a>-formatted file.</p>
 <p>This part of the configuration is not security-sensitive. It does not take part in remote attestation, is stored unencrypted, and can be changed by the CAS operator at any time.</p>
 <h3 id="example-configuration-file">Example Configuration File</h3>
-<div class="highlight"><pre><span></span><code><span class="k">[database]</span><span class="w"></span>
-<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/etc/cas/cas.db&quot;</span><span class="w"></span>
+<pre class="highlight"><code class="language-toml">[database]
+path = "/etc/cas/cas.db"
 
-<span class="k">[api]</span><span class="w"></span>
-<span class="n">api_listen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.0.0:8081&quot;</span><span class="w"></span>
-<span class="n">enclave_listen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.0.0:18765&quot;</span><span class="w"></span>
-</code></pre></div>
+[api]
+api_listen = "0.0.0.0:8081"
+enclave_listen = "0.0.0.0:18765"</code></pre>
 <h3 id="database">Database</h3>
 <p>CAS stores its data in an SQLite database, the location of which is determined in by the <code>database.path</code> option of the configuration:</p>
-<div class="highlight"><pre><span></span><code><span class="n">database</span><span class="p">.</span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;/etc/cas/database.sqlite&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-toml">database.path = "/etc/cas/database.sqlite"</code></pre>
 <p>The database is always encrypted to protected the confidentiality of the contained secrets.
 The database encryption key is stored as cipher text in a separate file with the same filename, but ending with <code>.key-store</code>.</p>
 <div class="admonition note">
@@ -4281,10 +4279,9 @@ Any slightly invested attacker could easily extract the key with a debugger.</p>
 <p>These configuration options will determine on which network interfaces and ports CAS will listen for incoming connection.
 Interfaces are defined with values satisfying <a href="https://doc.rust-lang.org/std/net/enum.SocketAddr.html#impl-FromStr"><code>std::net::SocketAddr</code>'s <code>FromStr</code> implementation</a>.</p>
 <p>The client API is configured via the <code>api_listen</code> option while the enclave interface is configured through the <code>enclave_listen</code> option:</p>
-<div class="highlight"><pre><span></span><code><span class="k">[api]</span><span class="w"></span>
-<span class="n">enclave_listen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.0.0:18765&quot;</span><span class="w"></span>
-<span class="n">api_listen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;0.0.0.0:8080&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-toml">[api]
+enclave_listen = "0.0.0.0:18765"
+api_listen = "0.0.0.0:8080"</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>A configuration with an IP address of <code>0.0.0.0</code> will make the CAS listen on any available network interface.</p>
@@ -4299,35 +4296,33 @@ Interfaces are defined with values satisfying <a href="https://doc.rust-lang.org
 <p>Please refer to the <a href="../CAS_cli-intro/#cas-provisioning-and-configuration">SCONE CLI documentation</a> for a full description. The configuration file is usually provided in <a href="https://en.wikipedia.org/wiki/TOML">TOML</a> format.</p>
 <h3 id="example-configuration-file_1">Example Configuration File</h3>
 <p>The following file can be used for a development environment:</p>
-<div class="highlight"><pre><span></span><code><span class="k">[api_identity]</span><span class="w"></span>
-<span class="n">common_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cas&quot;</span><span class="w"></span>
-<span class="n">alt_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;cas&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;localhost&quot;</span><span class="p">]</span><span class="w"></span>
-<span class="n">country_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;DE&quot;</span><span class="w"></span>
-<span class="n">org_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;scontain GmbH&quot;</span><span class="w"></span>
-<span class="n">state_or_province</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Saxony&quot;</span><span class="w"></span>
-<span class="n">locality</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Dresden&quot;</span><span class="w"></span>
-<span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;info@scontain.com&quot;</span><span class="w"></span>
+<pre class="highlight"><code class="language-toml">[api_identity]
+common_name = "cas"
+alt_names = ["cas", "localhost"]
+country_name = "DE"
+org_name = "scontain GmbH"
+state_or_province = "Saxony"
+locality = "Dresden"
+email = "info@scontain.com"
 
-<span class="k">[ias]</span><span class="w"></span>
-<span class="n">spid</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;32C2D32CD4F1C873625BBE65D973A702&quot;</span><span class="w"></span>
-<span class="n">linkable_quotes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
-<span class="n">sp_key</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1c8b569cffd94a85ad11342bfad5a3ad&quot;</span><span class="w"></span>
-<span class="n">base_uri</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://api.trustedservices.intel.com/sgx/dev/attestation/v3&quot;</span><span class="w"></span>
+[ias]
+spid            = "32C2D32CD4F1C873625BBE65D973A702"
+linkable_quotes = true
+sp_key          = "1c8b569cffd94a85ad11342bfad5a3ad"
+base_uri        = "https://api.trustedservices.intel.com/sgx/dev/attestation/v3"
 
-<span class="k">[dcap]</span><span class="w"></span>
-<span class="n">subscription_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;00000000000000000000000000000000&quot;</span><span class="w"></span>
-</code></pre></div>
+[dcap]
+subscription_key = "00000000000000000000000000000000"</code></pre>
 <h3 id="api-identity">API Identity</h3>
 <p>Contents of the TLS end-entity server and client certificate presented by CAS can be configured in the <code>api.identity</code> section:</p>
-<div class="highlight"><pre><span></span><code><span class="k">[api.identity]</span><span class="w"></span>
-<span class="n">common_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cas&quot;</span><span class="w"></span>
-<span class="n">alt_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;cas&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;localhost&quot;</span><span class="p">]</span><span class="w"></span>
-<span class="n">country_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;DE&quot;</span><span class="w"></span>
-<span class="n">org_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;scontain GmbH&quot;</span><span class="w"></span>
-<span class="n">state_or_province</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Saxony&quot;</span><span class="w"></span>
-<span class="n">locality</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Dresden&quot;</span><span class="w"></span>
-<span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;info@scontain.com&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-toml">[api.identity]
+common_name = "cas"
+alt_names = ["cas", "localhost"]
+country_name = "DE"
+org_name = "scontain GmbH"
+state_or_province = "Saxony"
+locality = "Dresden"
+email = "info@scontain.com"</code></pre>
 <p>This section is not mandatory. If not specified, default values listed above will be used.
 In case the section is provided in the configuration file, it must contain at least <code>common_name</code> field.</p>
 <h3 id="ias-client">IAS Client</h3>
@@ -4348,34 +4343,30 @@ CAS supports Rev4 and Rev5 IAS authentication (choose either one, not both):</p>
   Refer to the <a href="#private-keys">section about private keys</a> information regarding private key encoding.</li>
 <li>If you're using a Rev5 subscription key to authenticate your account, specify it under the <code>sp_key</code> option.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="k">[ias]</span><span class="w"></span>
-<span class="n">spid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;2EC5BE64E242BCC9E4670D49E5C7091E&quot;</span><span class="w"></span>
-<span class="n">linkable_quotes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
-<span class="n">base_url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://test-as.sgx.trustedservices.intel.com:443/attestation/sgx/v3&quot;</span><span class="w"></span>
-<span class="n">identity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;</span>
-<span class="s">-----BEGIN PRIVATE KEY-----</span>
-<span class="s">...</span>
-<span class="s">-----END PRIVATE KEY-----</span>
-<span class="s">-----BEGIN CERTIFICATE-----</span>
-<span class="s">...</span>
-<span class="s">-----END CERTIFICATE-----</span>
-<span class="s">&quot;&quot;&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-toml">[ias]
+spid = "2EC5BE64E242BCC9E4670D49E5C7091E"
+linkable_quotes = true
+base_url = "https://test-as.sgx.trustedservices.intel.com:443/attestation/sgx/v3"
+identity = """
+-----BEGIN PRIVATE KEY-----
+...
+-----END PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+"""</code></pre>
 <h3 id="intel-provisioning-certification-service-for-ecdsa-attestation-client-dcap">Intel Provisioning Certification Service for ECDSA Attestation Client (DCAP)</h3>
 <p>The <a href="https://api.portal.trustedservices.intel.com/provisioning-certification">Intel Provisioning Certification Service for ECDSA Attestation Client</a> enables CAS to verify DCAP quotes created by the Intel Quoting Enclave. DCAP quotes can be used as an alternative to EPID quotes for remote attestation of program enclaves. Configuring a DCAP client credential is optional.</p>
 <p>The configuration encompasses a subscription key. This key is provided to you when you enroll with Intel's Provisioning Certification Service.</p>
-<div class="highlight"><pre><span></span><code><span class="k">[dcap]</span><span class="w"></span>
-<span class="n">subscription_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;00000000000000000000000000000000&quot;</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-toml">[dcap]
+subscription_key = "00000000000000000000000000000000"</code></pre>
 <h3 id="private-keys">Private Keys</h3>
 <p>We support PKCS#8 encoded private keys.
 By default, <code>openssl</code> will encode elliptic curve keys in the incompatible format specified in <a href="http://www.secg.org/">SEC 1: Elliptic Curve Cryptography</a>.
 You can use the <code>openssl</code> cli to convert these keys into <a href="https://tools.ietf.org/html/rfc5208">PKCS#8</a>:</p>
-<div class="highlight"><pre><span></span><code>openssl pkcs8 -in pkey.pem -topk8 --nocrypt -out pkey.pkcs8.pem
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">openssl pkcs8 -in pkey.pem -topk8 --nocrypt -out pkey.pkcs8.pem</code></pre>
 <p>PKCS#1-encoded private keys, e.g. key with <code>------BEGIN RSA PRIVATE KEY-----</code>, can be converted into PKCS#8 with the following command:</p>
-<div class="highlight"><pre><span></span><code>openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in pkcs1.key -out pkcs8.key
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in pkcs1.key -out pkcs8.key</code></pre>
 
               
             </article>
@@ -4445,7 +4436,7 @@ You can use the <code>openssl</code> cli to convert these keys into <a href="htt
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

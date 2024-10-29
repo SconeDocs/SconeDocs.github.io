@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/Running_Java_Applications_in_Scone_with_remote_attestation/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3373,7 +3373,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4117,285 +4117,266 @@
 <h2 id="requirements">Requirements</h2>
 <p>The following steps assume that you have a running CAS container and a running LAS server and know its addresses.</p>
 <p>Some of the latest containers for CAS and LAS are available at</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/services:cas
-docker pull registry.scontain.com/sconecuratedimages/kubernetes:las
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/services:cas
+docker pull registry.scontain.com/sconecuratedimages/kubernetes:las</code></pre>
 <p>but the <code>service</code>  repository requires a commercial subscription. You can use our <a href="../public-CAS/">public CAS instance</a> at domain <code>scone-cas.cf</code> instead.</p>
 <p>Make sure the sgx driver and  docker is installed and running correctly by doing the java hello world sample. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/apps:openjdk-8-alpine
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/apps:openjdk-8-alpine</code></pre>
 <p>or, in case the container does not start the bash command automatically:</p>
-<div class="highlight"><pre><span></span><code>docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/apps:openjdk-8-alpine /bin/sh
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/apps:openjdk-8-alpine /bin/sh</code></pre>
 <p>For Java 11 or Java 15 instead of Java 8:</p>
-<div class="highlight"><pre><span></span><code>docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/apps:openjdk-11-alpine /bin/sh
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it registry.scontain.com/sconecuratedimages/apps:openjdk-15-alpine /bin/sh
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/apps:openjdk-11-alpine /bin/sh
+docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/apps:openjdk-15-alpine /bin/sh</code></pre>
 <p>We provide a quick hello-world sample in Java</p>
-<div class="highlight"><pre><span></span><code>cat &gt; HelloWorld.java <span class="s">&lt;&lt; EOF</span>
-<span class="s">import java.util.Map;</span>
-<span class="s">public class HelloWorld {</span>
-<span class="s">    public static void main(String[] args) {</span>
-<span class="s">        System.out.println(&quot;Hello World&quot;);</span>
-<span class="s">        Map&lt;String, String&gt; env = System.getenv();</span>
-<span class="s">        for (String envName : env.keySet()) {</span>
-<span class="s">            System.out.format(&quot;%s=%s%n&quot;, envName, env.get(envName));</span>
-<span class="s">        }</span>
-<span class="s">    }</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cat &gt; HelloWorld.java &lt;&lt; EOF
+import java.util.Map;
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+        Map&lt;String, String&gt; env = System.getenv();
+        for (String envName : env.keySet()) {
+            System.out.format("%s=%s%n", envName, env.get(envName));
+        }
+    }
+}
+EOF</code></pre>
 <p>Compile it, by executing:</p>
-<div class="highlight"><pre><span></span><code>javac HelloWorld.java
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">javac HelloWorld.java</code></pre>
 <p>Expected output:</p>
-<div class="highlight"><pre><span></span><code># javac HelloWorld.java
+<pre class="highlight"><code class="language-text"># javac HelloWorld.java
 Picked up JAVA_TOOL_OPTIONS: -Xmx256m
-#
-</code></pre></div>
+#</code></pre>
 <p>You need to set some environment variables:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf  <span class="c1"># we use the public CAS service</span>
-<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1 <span class="c1"># we must run a local LAS service</span>
-<span class="nb">export</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span>   <span class="c1"># show the SCONE version</span>
-<span class="nb">export</span> <span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span>   <span class="c1"># maximum LOG level</span>
-java HelloWorld
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SCONE_CAS_ADDR=scone-cas.cf  # we use the public CAS service
+export SCONE_LAS_ADDR=127.0.0.1 # we must run a local LAS service
+export SCONE_VERSION=1   # show the SCONE version
+export SCONE_LOG=7   # maximum LOG level
+java HelloWorld</code></pre>
 <p>Expected output after 2-3 minutes with a NUC and 8GB memory. Note that if you have a CPU that supports EDMM (Enclave dynamic memory management), the startup times will be much quicker.</p>
-<div class="highlight"><pre><span></span><code><span class="o">/</span> <span class="err">#</span> <span class="n">export</span> <span class="n">SCONE_VERSION</span><span class="o">=</span><span class="mi">1</span>
-<span class="o">/</span> <span class="err">#</span> <span class="n">export</span> <span class="n">SCONE_LOG</span><span class="o">=</span><span class="mi">7</span>
-<span class="o">/</span> <span class="err">#</span> <span class="n">java</span> <span class="n">HelloWorld</span>
-<span class="n">export</span> <span class="n">SCONE_QUEUES</span><span class="o">=</span><span class="mi">4</span>
-<span class="n">export</span> <span class="n">SCONE_SLOTS</span><span class="o">=</span><span class="mi">256</span>
-<span class="n">export</span> <span class="n">SCONE_SIGPIPE</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">export</span> <span class="n">SCONE_MMAP32BIT</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">export</span> <span class="n">SCONE_SSPINS</span><span class="o">=</span><span class="mi">100</span>
-<span class="n">export</span> <span class="n">SCONE_SSLEEP</span><span class="o">=</span><span class="mi">4000</span>
-<span class="n">export</span> <span class="n">SCONE_LOG</span><span class="o">=</span><span class="mi">7</span>
-<span class="n">export</span> <span class="n">SCONE_HEAP</span><span class="o">=</span><span class="mi">4294967296</span>
-<span class="n">export</span> <span class="n">SCONE_STACK</span><span class="o">=</span><span class="mi">2097152</span>
-<span class="n">export</span> <span class="n">SCONE_CONFIG</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">sgx</span><span class="o">-</span><span class="n">musl</span><span class="p">.</span><span class="na">conf</span>
-<span class="n">export</span> <span class="n">SCONE_ESPINS</span><span class="o">=</span><span class="mi">10000</span>
-<span class="n">export</span> <span class="n">SCONE_MODE</span><span class="o">=</span><span class="n">hw</span>
-<span class="n">export</span> <span class="n">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="n">yes</span> <span class="p">(</span><span class="n">unprotected</span><span class="p">)</span>
-<span class="n">export</span> <span class="n">SCONE_MPROTECT</span><span class="o">=</span><span class="n">yes</span>
-<span class="n">musl</span> <span class="n">version</span><span class="p">:</span> <span class="mf">1.1.24</span>
-<span class="nl">Revision</span><span class="p">:</span> <span class="n">efb2bdadba60c120f36864a1d675c4c4ca35ed69</span> <span class="p">(</span><span class="n">Tue</span> <span class="n">Apr</span> <span class="mi">28</span> <span class="mo">06</span><span class="p">:</span><span class="mi">29</span><span class="p">:</span><span class="mi">26</span> <span class="mi">2020</span> <span class="o">+</span><span class="mo">0000</span><span class="p">)</span>
-<span class="nl">Branch</span><span class="p">:</span> <span class="mi">6</span><span class="n">ab648c20350b71cfeb8468001e8ebd78779870a</span>
+<pre class="highlight"><code class="language-Java">/ # export SCONE_VERSION=1
+/ # export SCONE_LOG=7
+/ # java HelloWorld
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_LOG=7
+export SCONE_HEAP=4294967296
+export SCONE_STACK=2097152
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_ESPINS=10000
+export SCONE_MODE=hw
+export SCONE_ALLOW_DLOPEN=yes (unprotected)
+export SCONE_MPROTECT=yes
+musl version: 1.1.24
+Revision: efb2bdadba60c120f36864a1d675c4c4ca35ed69 (Tue Apr 28 06:29:26 2020 +0000)
+Branch: 6ab648c20350b71cfeb8468001e8ebd78779870a
 
-<span class="n">Enclave</span> <span class="n">hash</span><span class="p">:</span> <span class="mi">7954791612</span><span class="n">f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">syscall</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">698</span><span class="p">:</span><span class="n">__scone_syscall_unshielded</span><span class="p">():</span> <span class="n">system</span> <span class="n">call</span><span class="p">:</span> <span class="n">SYS_membarrier</span><span class="p">,</span> <span class="n">number</span> <span class="mi">324</span> <span class="n">is</span> <span class="n">not</span> <span class="n">implemented</span><span class="p">.</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">syscall</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">698</span><span class="p">:</span><span class="n">__scone_syscall_unshielded</span><span class="p">():</span> <span class="n">system</span> <span class="n">call</span><span class="p">:</span> <span class="n">SYS_membarrier</span><span class="p">,</span> <span class="n">number</span> <span class="mi">324</span> <span class="n">is</span> <span class="n">not</span> <span class="n">implemented</span><span class="p">.</span>
-<span class="n">Picked</span> <span class="n">up</span> <span class="n">JAVA_TOOL_OPTIONS</span><span class="p">:</span> <span class="o">-</span><span class="n">Xmx256m</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">shielding</span><span class="o">/</span><span class="n">proc_fs</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">368</span><span class="p">:</span><span class="n">_proc_fs_open</span><span class="p">():</span> <span class="n">open</span><span class="p">:</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">self</span><span class="o">/</span><span class="n">mountinfo</span> <span class="n">is</span> <span class="n">not</span> <span class="n">supported</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">shielding</span><span class="o">/</span><span class="n">proc_fs</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">368</span><span class="p">:</span><span class="n">_proc_fs_open</span><span class="p">():</span> <span class="n">open</span><span class="p">:</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">self</span><span class="o">/</span><span class="n">maps</span> <span class="n">is</span> <span class="n">not</span> <span class="n">supported</span>
-<span class="n">OpenJDK</span> <span class="mi">64</span><span class="o">-</span><span class="n">Bit</span> <span class="n">Server</span> <span class="n">VM</span> <span class="n">warning</span><span class="p">:</span> <span class="n">Can</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">detect</span> <span class="n">primordial</span> <span class="n">thread</span> <span class="n">stack</span> <span class="n">location</span> <span class="o">-</span> <span class="n">find_vma</span> <span class="n">failed</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">144</span><span class="p">:</span><span class="n">mmap_anon</span><span class="p">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="p">.</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">144</span><span class="p">:</span><span class="n">mmap_anon</span><span class="p">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="p">.</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">144</span><span class="p">:</span><span class="n">mmap_anon</span><span class="p">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="p">.</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">144</span><span class="p">:</span><span class="n">mmap_anon</span><span class="p">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="p">.</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">144</span><span class="p">:</span><span class="n">mmap_anon</span><span class="p">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="p">.</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">144</span><span class="p">:</span><span class="n">mmap_anon</span><span class="p">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="p">.</span>
-<span class="o">[</span><span class="n">SCONE</span><span class="o">|</span><span class="n">WARN</span><span class="o">]</span> <span class="n">src</span><span class="o">/</span><span class="n">syscall</span><span class="o">/</span><span class="n">anon</span><span class="p">.</span><span class="na">c</span><span class="p">:</span><span class="mi">144</span><span class="p">:</span><span class="n">mmap_anon</span><span class="p">():</span> <span class="n">Protected</span> <span class="n">heap</span> <span class="n">memory</span> <span class="n">exhausted</span><span class="o">!</span> <span class="n">Set</span> <span class="n">SCONE_HEAP</span> <span class="n">environment</span> <span class="n">variable</span> <span class="n">to</span> <span class="n">increase</span> <span class="n">it</span><span class="p">.</span>
-<span class="n">Hello</span> <span class="n">World</span>
-<span class="n">PATH</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">bin</span><span class="p">:</span><span class="o">/</span><span class="n">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">bin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">bin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">bin</span>
-<span class="n">SCONE_VERSION</span><span class="o">=</span><span class="mi">1</span>
-<span class="n">SCONE_HEAP</span><span class="o">=</span><span class="mi">4</span><span class="n">G</span>
-<span class="n">SCONE_LOG</span><span class="o">=</span><span class="mi">7</span>
-<span class="n">SCONE_CAS_ADDR</span><span class="o">=</span><span class="n">scone</span><span class="o">-</span><span class="n">cas</span><span class="p">.</span><span class="na">cf</span>
-<span class="n">JAVA_HOME</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span>
-<span class="n">TERM</span><span class="o">=</span><span class="n">xterm</span>
-<span class="n">LANG</span><span class="o">=</span><span class="n">C</span><span class="p">.</span><span class="na">UTF</span><span class="o">-</span><span class="mi">8</span>
-<span class="n">SCONE_ALPINE</span><span class="o">=</span><span class="mi">1</span>
-<span class="n">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="mi">2</span>
-<span class="n">HOSTNAME</span><span class="o">=</span><span class="mi">86</span><span class="n">fd2f848e41</span>
-<span class="n">SCONE_MPROTECT</span><span class="o">=</span><span class="mi">1</span>
-<span class="n">SCONE_LAS_ADDR</span><span class="o">=</span><span class="mf">127.0.0.1</span>
-<span class="n">LD_LIBRARY_PATH</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">amd64</span><span class="o">/</span><span class="n">server</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">amd64</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">java</span><span class="o">-</span><span class="mf">1.8</span><span class="o">-</span><span class="n">openjdk</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="p">..</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">amd64</span>
-<span class="n">JAVA_TOOL_OPTIONS</span><span class="o">=-</span><span class="n">Xmx256m</span>
-<span class="n">PWD</span><span class="o">=/</span>
-<span class="n">HOME</span><span class="o">=/</span><span class="n">root</span>
-<span class="n">SHLVL</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">/</span> <span class="err">#</span>
-</code></pre></div>
+Enclave hash: 7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb
+[SCONE|WARN] src/syscall/syscall.c:698:__scone_syscall_unshielded(): system call: SYS_membarrier, number 324 is not implemented.
+[SCONE|WARN] src/syscall/syscall.c:698:__scone_syscall_unshielded(): system call: SYS_membarrier, number 324 is not implemented.
+Picked up JAVA_TOOL_OPTIONS: -Xmx256m
+[SCONE|WARN] src/shielding/proc_fs.c:368:_proc_fs_open(): open: /proc/self/mountinfo is not supported
+[SCONE|WARN] src/shielding/proc_fs.c:368:_proc_fs_open(): open: /proc/self/maps is not supported
+OpenJDK 64-Bit Server VM warning: Can't detect primordial thread stack location - find_vma failed
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+Hello World
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
+SCONE_VERSION=1
+SCONE_HEAP=4G
+SCONE_LOG=7
+SCONE_CAS_ADDR=scone-cas.cf
+JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
+TERM=xterm
+LANG=C.UTF-8
+SCONE_ALPINE=1
+SCONE_ALLOW_DLOPEN=2
+HOSTNAME=86fd2f848e41
+SCONE_MPROTECT=1
+SCONE_LAS_ADDR=127.0.0.1
+LD_LIBRARY_PATH=/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64
+JAVA_TOOL_OPTIONS=-Xmx256m
+PWD=/
+HOME=/root
+SHLVL=2
+/ #</code></pre>
 <h2 id="posting-a-scone-policy-to-configure-the-execution-inside-of-enclave">Posting a SCONE-Policy to configure the execution inside of Enclave</h2>
 <p>Using the CAS container to provision an execution inside of an enclave with environment variables etc. which were previously set.
 Therefore, the SCONE-Policy for Java executions must include the following parameters LD_LIBRARY_PATH and if necessary JAVA_TOOL_OPTIONS and the CLASSPATH of the required Java libraries:</p>
 <p>First, similar to the <a href="../cas_blender_example/">posting sessions tutorial</a>,
 we create a yaml file for java 1.8 openjdk</p>
-<div class="highlight"><pre><span></span><code>cat &gt; sessionJavaHelloWorld.yml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: java</span>
-<span class="s">services:</span>
-<span class="s">   - name: hello</span>
-<span class="s">     mrenclaves: [7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb] # MRENCLAVE = Enclave hash: from execution with SCONE_VERSION=1</span>
-<span class="s">     command: &quot;java HelloWorld&quot;</span>
-<span class="s">     pwd: /</span>
-<span class="s">     environment:</span>
-<span class="s">       LD_LIBRARY_PATH: &quot;/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64&quot;</span>
-<span class="s">       JAVA_TOOL_OPTIONS: &quot;-Xmx256m&quot;</span>
-<span class="s">       CLASSPATH: &quot;/&quot; # path to directory contained your code</span>
-<span class="s">       TMP_SECRET_VAR: &quot;This is a protected secret distributed by Scone CAS!&quot;</span>
-<span class="s">EOF</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cat &gt; sessionJavaHelloWorld.yml &lt;&lt;EOF
+name: java
+services:
+   - name: hello
+     mrenclaves: [7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb] # MRENCLAVE = Enclave hash: from execution with SCONE_VERSION=1
+     command: "java HelloWorld"
+     pwd: /
+     environment:
+       LD_LIBRARY_PATH: "/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64"
+       JAVA_TOOL_OPTIONS: "-Xmx256m"
+       CLASSPATH: "/" # path to directory contained your code
+       TMP_SECRET_VAR: "This is a protected secret distributed by Scone CAS!"
+EOF</code></pre>
 <p>We create client certificate and key material to identify this client:
-<div class="highlight"><pre><span></span><code>    mkdir -p conf
-    <span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-        openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key  -days <span class="m">31</span> -nodes -sha256 -subj <span class="s2">&quot;/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com&quot;</span> -reqexts SAN -extensions SAN -config &lt;<span class="o">(</span>cat /etc/ssl/openssl.cnf <span class="se">\</span>
-    &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;[SAN]\nsubjectAltName=DNS:www.scontain.com&#39;</span><span class="o">))</span>
-    <span class="k">fi</span>
-</code></pre></div></p>
+<pre class="highlight"><code class="language-bash">    mkdir -p conf
+    if [[ ! -f conf/client.crt || ! -f conf/client-key.key  ]] ; then
+        openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key  -days 31 -nodes -sha256 -subj "/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com" -reqexts SAN -extensions SAN -config &lt;(cat /etc/ssl/openssl.cnf \
+    &lt;(printf '[SAN]\nsubjectAltName=DNS:www.scontain.com'))
+    fi</code></pre></p>
 <p>Next, we will upload this session to CAS:</p>
-<div class="highlight"><pre><span></span><code>curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @sessionJavaHelloWorld.yml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @sessionJavaHelloWorld.yml -X POST https://$SCONE_CAS_ADDR:8081/session</code></pre>
 <p>Expected output (please ignore the 'not-supported' fields):</p>
-<div class="highlight"><pre><span></span><code>Created Session<span class="o">[</span><span class="nv">id</span><span class="o">=</span>b11ac009c564f6e0c8c2b61d7b4774e89f896e83ec09ef3f919bd420aa3ab252, <span class="nv">name</span><span class="o">=</span><span class="s1">&#39;not-supported&#39;</span>, <span class="nv">status</span><span class="o">=</span><span class="s1">&#39;not-supported&#39;</span><span class="o">]</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">Created Session[id=b11ac009c564f6e0c8c2b61d7b4774e89f896e83ec09ef3f919bd420aa3ab252, name='not-supported', status='not-supported']</code></pre>
 <p>If the output is not giving out an idea the session was not created. One possible reasons can be formatting errors like not using quotation marks ("java Helloworld") or single quotation marks ('java HelloWorld')</p>
 <p>If we have set up the SCONE_CAS_ADDR and SCONE_LAS_ADDR, we export the environment variable according to the policy's name "java" and the service "hello"</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="s2">&quot;java/hello&quot;</span>
-<span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="nv">$YOUR_CAS_ADDR</span>
-<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="nv">$YOUR_LAS_ADDR</span>
-<span class="nb">export</span> <span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span> 
-<span class="nb">export</span> <span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span> 
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SCONE_CONFIG_ID="java/hello"
+export SCONE_CAS_ADDR=$YOUR_CAS_ADDR
+export SCONE_LAS_ADDR=$YOUR_LAS_ADDR
+export SCONE_VERSION=1 
+export SCONE_LOG=7 </code></pre>
 <p>Now if we start the command  "java HelloWorld" again, we see the following output.</p>
-<div class="highlight"><pre><span></span><code>/ <span class="c1"># java HelloWorld</span>
-<span class="nb">export</span> <span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
-<span class="nb">export</span> <span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
-<span class="nb">export</span> <span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
-<span class="nb">export</span> <span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
-<span class="nb">export</span> <span class="nv">SCONE_LOG</span><span class="o">=</span><span class="m">7</span>
-<span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">4294967296</span>
-<span class="nb">export</span> <span class="nv">SCONE_STACK</span><span class="o">=</span><span class="m">2097152</span>
-<span class="nb">export</span> <span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
-<span class="nb">export</span> <span class="nv">SCONE_ESPINS</span><span class="o">=</span><span class="m">10000</span>
-<span class="nb">export</span> <span class="nv">SCONE_MODE</span><span class="o">=</span>hw
-<span class="nb">export</span> <span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>yes <span class="o">(</span>unprotected<span class="o">)</span>
-<span class="nb">export</span> <span class="nv">SCONE_MPROTECT</span><span class="o">=</span>yes
-musl version: <span class="m">1</span>.1.24
-Revision: efb2bdadba60c120f36864a1d675c4c4ca35ed69 <span class="o">(</span>Tue Apr <span class="m">28</span> <span class="m">06</span>:29:26 <span class="m">2020</span> +0000<span class="o">)</span>
+<pre class="highlight"><code class="language-bash">/ # java HelloWorld
+export SCONE_QUEUES=4
+export SCONE_SLOTS=256
+export SCONE_SIGPIPE=0
+export SCONE_MMAP32BIT=0
+export SCONE_SSPINS=100
+export SCONE_SSLEEP=4000
+export SCONE_LOG=7
+export SCONE_HEAP=4294967296
+export SCONE_STACK=2097152
+export SCONE_CONFIG=/etc/sgx-musl.conf
+export SCONE_ESPINS=10000
+export SCONE_MODE=hw
+export SCONE_ALLOW_DLOPEN=yes (unprotected)
+export SCONE_MPROTECT=yes
+musl version: 1.1.24
+Revision: efb2bdadba60c120f36864a1d675c4c4ca35ed69 (Tue Apr 28 06:29:26 2020 +0000)
 Branch: 6ab648c20350b71cfeb8468001e8ebd78779870a
 
 Enclave hash: 7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb
-<span class="o">[</span>SCONE<span class="p">|</span>INFO<span class="o">]</span> src/shielding/crypto.c:222:crypto_get_identity<span class="o">()</span>: Generated enclave certificate
-<span class="o">[</span>SCONE<span class="p">|</span>INFO<span class="o">]</span> src/shielding/eai_attestor.c:174:eai_attestor_init<span class="o">()</span>: Created TLS context to communicate with CAS
-<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/shielding/eai_attestor.c:288:eai_attestor_attest<span class="o">()</span>: Sending Attestation Request to LAS
-<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/shielding/eai_attestor.c:311:eai_attestor_attest<span class="o">()</span>: Got Quote from LAS
-<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/shielding/eai_attestor.c:324:eai_attestor_attest<span class="o">()</span>: Sending enclave hello message to CAS
-<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/shielding/eai_attestor.c:349:eai_attestor_attest<span class="o">()</span>: Successfully attested enclave via CAS
-<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/process/init.c:639:__scone_prepare_secure_config<span class="o">()</span>: Sending configuration request to CAS!
-<span class="o">[</span>SCONE<span class="p">|</span>DEBUG<span class="o">]</span> src/process/init.c:666:__scone_prepare_secure_config<span class="o">()</span>: Received configuration from CAS!
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/syscall.c:698:__scone_syscall_unshielded<span class="o">()</span>: system call: SYS_membarrier, number <span class="m">324</span> is not implemented.
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/syscall.c:698:__scone_syscall_unshielded<span class="o">()</span>: system call: SYS_membarrier, number <span class="m">324</span> is not implemented.
+[SCONE|INFO] src/shielding/crypto.c:222:crypto_get_identity(): Generated enclave certificate
+[SCONE|INFO] src/shielding/eai_attestor.c:174:eai_attestor_init(): Created TLS context to communicate with CAS
+[SCONE|DEBUG] src/shielding/eai_attestor.c:288:eai_attestor_attest(): Sending Attestation Request to LAS
+[SCONE|DEBUG] src/shielding/eai_attestor.c:311:eai_attestor_attest(): Got Quote from LAS
+[SCONE|DEBUG] src/shielding/eai_attestor.c:324:eai_attestor_attest(): Sending enclave hello message to CAS
+[SCONE|DEBUG] src/shielding/eai_attestor.c:349:eai_attestor_attest(): Successfully attested enclave via CAS
+[SCONE|DEBUG] src/process/init.c:639:__scone_prepare_secure_config(): Sending configuration request to CAS!
+[SCONE|DEBUG] src/process/init.c:666:__scone_prepare_secure_config(): Received configuration from CAS!
+[SCONE|WARN] src/syscall/syscall.c:698:__scone_syscall_unshielded(): system call: SYS_membarrier, number 324 is not implemented.
+[SCONE|WARN] src/syscall/syscall.c:698:__scone_syscall_unshielded(): system call: SYS_membarrier, number 324 is not implemented.
 Picked up JAVA_TOOL_OPTIONS: -Xmx256m
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/shielding/proc_fs.c:368:_proc_fs_open<span class="o">()</span>: open: /proc/self/mountinfo is not supported
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/shielding/proc_fs.c:368:_proc_fs_open<span class="o">()</span>: open: /proc/self/maps is not supported
-OpenJDK <span class="m">64</span>-Bit Server VM warning: Can<span class="err">&#39;</span>t detect primordial thread stack location - find_vma failed
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
-<span class="o">[</span>SCONE<span class="p">|</span>WARN<span class="o">]</span> src/syscall/anon.c:144:mmap_anon<span class="o">()</span>: Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/shielding/proc_fs.c:368:_proc_fs_open(): open: /proc/self/mountinfo is not supported
+[SCONE|WARN] src/shielding/proc_fs.c:368:_proc_fs_open(): open: /proc/self/maps is not supported
+OpenJDK 64-Bit Server VM warning: Can't detect primordial thread stack location - find_vma failed
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
+[SCONE|WARN] src/syscall/anon.c:144:mmap_anon(): Protected heap memory exhausted! Set SCONE_HEAP environment variable to increase it.
 Hello World
-<span class="nv">TMP_SECRET_VAR</span><span class="o">=</span>This is a protected secret distributed by Scone CAS!
-<span class="nv">CLASSPATH</span><span class="o">=</span>/
-<span class="nv">JAVA_TOOL_OPTIONS</span><span class="o">=</span>-Xmx256m
-<span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64
-/ <span class="c1">#</span>
-</code></pre></div>
+TMP_SECRET_VAR=This is a protected secret distributed by Scone CAS!
+CLASSPATH=/
+JAVA_TOOL_OPTIONS=-Xmx256m
+LD_LIBRARY_PATH=/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64
+/ #</code></pre>
 <p>Note that the content of TMP_SECRET_VAR came from the Scone policy which was posted earlier to the CAS.</p>
 <p>And we see the following logfiles in the containers of CAS (in case you are running a local copy):</p>
-<div class="highlight"><pre><span></span><code>ubuntu@kmaster:~$ docker logs cas_cas_1
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG rustls::server::hs<span class="o">]</span> decided upon suite SupportedCipherSuite <span class="o">{</span> suite: TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, kx: ECDHE, bulk: AES_256_GCM, hash: SHA384, sign: ECDSA, enc_key_len: <span class="m">32</span>, fixed_iv_len: <span class="m">4</span>, explicit_nonce_len: <span class="m">8</span>, hkdf_algorithm: Algorithm<span class="o">(</span>Algorithm<span class="o">(</span>SHA384<span class="o">))</span> <span class="o">}</span>
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG rustls::server::tls12<span class="o">]</span> Session saved
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Received length of next message
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Next message will be <span class="m">518</span> bytes long
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Protobuf message received completely, interpreting it...
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai<span class="o">]</span> Got message EnclaveMessage::EnclaveHello from enclave
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: In current state: Fresh got message: EnclaveMessage::EnclaveHello
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Processing enclave hello message
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: SconeQuote is valid, it has not been tampared with.
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z WARN  cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: CAS is running <span class="k">in</span> debug mode, simulation mode or w/o SCONE runtime: It will accept quotes from SCONE quoting enclaves running <span class="k">in</span> debug mode
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Hash of channel certificate: ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976, SGX reportdata: ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Secure channel terminates <span class="k">in</span> enclave: Hash of channel certifacte matches SGX reportdata
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: SconeQuote is signed by known and trusted quoting enclave: <span class="nb">true</span>
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Trust established into enclave integrity. Sending attestation <span class="nb">complete</span> message
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai<span class="o">]</span> Sending message Complete to enclave
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Waiting <span class="k">for</span> more data before decoding protobuf message
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Received length of next message
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Next message will be <span class="m">16</span> bytes long
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Protobuf message received completely, interpreting it...
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai<span class="o">]</span> Got message EnclaveMessage::ConfigRequest from enclave
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: In current state: Attested got message: EnclaveMessage::ConfigRequest
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Received configuration request <span class="k">for</span> config id javax2/hello
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG cas_backend::backend<span class="o">]</span> Got request <span class="k">for</span> service: hello <span class="k">in</span> session: javax2. Attificate is: SCONE<span class="o">(</span>
-        SCONEAttificate <span class="o">{</span>
-            identifier: <span class="s2">&quot;791f84651890514eefe32ecfe54a75d95475636f61180a6ca1765cbbee0253dd&quot;</span>,
-            certificate: <span class="s2">&quot;-----BEGIN CERTIFICATE-----\nMIIBZjCB6qADAgECAhEA9vVqCQoOsEgtQ7Lo09QqNjAMBggqhkjOPQQDAwUAMA0x\nCzAJBgNVBAYTAkRFMCAXDTE4MDkxNzE5MzAwMFoYDzIwNTAwMTAxMDEwMDAwWjAA\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEoavE7JGhE5YqrBV979f8NTxUzGURrDE2\naU3vuZukWkioO8g+3Ec+YaVMu0N3CWy0hnwKD4nyCr7criLlXhvRaxQdJdp6d+4b\nMJXGtrgvcF4I1ZAb17FJOHoUD9Q5IVKSoxcwFTATBgNVHREEDDAKgghlbmNsYXZl\nADAMBggqhkjOPQQDAwUAA2kAMGYCMQCusCCDg8EKrrP75FL5kUShjoG28dWsAMVN\nDfv2InlX5ZCATrZ3YwSl8+MfV1Key0sCMQDMaA+jVF+bqr82C9iIYZhr4vXCWUhI\njYVnKAo+/GP+pwwvNE7XZwPTXbEPdRoyrbw=\n-----END CERTIFICATE-----\n&quot;</span>,
-            report: SgxReportBody <span class="o">{</span>
-                cpusvn: <span class="s2">&quot;02020000000000000000000000000000&quot;</span>,
-                miscselect: <span class="s2">&quot;00000000&quot;</span>,
-                attributes: SgxAttributes <span class="o">{</span>
-                    flags: <span class="m">7</span>,
-                    xfrm: <span class="m">27</span>,
-                <span class="o">}</span>,
-                mrenclave: <span class="s2">&quot;7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb&quot;</span>,
-                mrsigner: <span class="s2">&quot;11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd&quot;</span>,
-                isvprodid: <span class="m">0</span>,
-                isvsvn: <span class="m">0</span>,
-                reportdata: <span class="s2">&quot;ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976&quot;</span>,
-            <span class="o">}</span>,
+<pre class="highlight"><code class="language-bash">ubuntu@kmaster:~$ docker logs cas_cas_1
+[2020-05-08T11:32:02Z DEBUG rustls::server::hs] decided upon suite SupportedCipherSuite { suite: TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, kx: ECDHE, bulk: AES_256_GCM, hash: SHA384, sign: ECDSA, enc_key_len: 32, fixed_iv_len: 4, explicit_nonce_len: 8, hkdf_algorithm: Algorithm(Algorithm(SHA384)) }
+[2020-05-08T11:32:02Z DEBUG rustls::server::tls12] Session saved
+[2020-05-08T11:32:02Z DEBUG eai::convert] Received length of next message
+[2020-05-08T11:32:02Z DEBUG eai::convert] Next message will be 518 bytes long
+[2020-05-08T11:32:02Z DEBUG eai::convert] Protobuf message received completely, interpreting it...
+[2020-05-08T11:32:02Z DEBUG eai] Got message EnclaveMessage::EnclaveHello from enclave
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): In current state: Fresh got message: EnclaveMessage::EnclaveHello
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Processing enclave hello message
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): SconeQuote is valid, it has not been tampared with.
+[2020-05-08T11:32:02Z WARN  cas::api::enclave::connection] V4(192.168.0.101:58584): CAS is running in debug mode, simulation mode or w/o SCONE runtime: It will accept quotes from SCONE quoting enclaves running in debug mode
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Hash of channel certificate: ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976, SGX reportdata: ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Secure channel terminates in enclave: Hash of channel certifacte matches SGX reportdata
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): SconeQuote is signed by known and trusted quoting enclave: true
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Trust established into enclave integrity. Sending attestation complete message
+[2020-05-08T11:32:02Z DEBUG eai] Sending message Complete to enclave
+[2020-05-08T11:32:02Z DEBUG eai::convert] Waiting for more data before decoding protobuf message
+[2020-05-08T11:32:02Z DEBUG eai::convert] Received length of next message
+[2020-05-08T11:32:02Z DEBUG eai::convert] Next message will be 16 bytes long
+[2020-05-08T11:32:02Z DEBUG eai::convert] Protobuf message received completely, interpreting it...
+[2020-05-08T11:32:02Z DEBUG eai] Got message EnclaveMessage::ConfigRequest from enclave
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): In current state: Attested got message: EnclaveMessage::ConfigRequest
+[2020-05-08T11:32:02Z DEBUG cas::api::enclave::connection] V4(192.168.0.101:58584): Received configuration request for config id javax2/hello
+[2020-05-08T11:32:02Z DEBUG cas_backend::backend] Got request for service: hello in session: javax2. Attificate is: SCONE(
+        SCONEAttificate {
+            identifier: "791f84651890514eefe32ecfe54a75d95475636f61180a6ca1765cbbee0253dd",
+            certificate: "-----BEGIN CERTIFICATE-----\nMIIBZjCB6qADAgECAhEA9vVqCQoOsEgtQ7Lo09QqNjAMBggqhkjOPQQDAwUAMA0x\nCzAJBgNVBAYTAkRFMCAXDTE4MDkxNzE5MzAwMFoYDzIwNTAwMTAxMDEwMDAwWjAA\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEoavE7JGhE5YqrBV979f8NTxUzGURrDE2\naU3vuZukWkioO8g+3Ec+YaVMu0N3CWy0hnwKD4nyCr7criLlXhvRaxQdJdp6d+4b\nMJXGtrgvcF4I1ZAb17FJOHoUD9Q5IVKSoxcwFTATBgNVHREEDDAKgghlbmNsYXZl\nADAMBggqhkjOPQQDAwUAA2kAMGYCMQCusCCDg8EKrrP75FL5kUShjoG28dWsAMVN\nDfv2InlX5ZCATrZ3YwSl8+MfV1Key0sCMQDMaA+jVF+bqr82C9iIYZhr4vXCWUhI\njYVnKAo+/GP+pwwvNE7XZwPTXbEPdRoyrbw=\n-----END CERTIFICATE-----\n",
+            report: SgxReportBody {
+                cpusvn: "02020000000000000000000000000000",
+                miscselect: "00000000",
+                attributes: SgxAttributes {
+                    flags: 7,
+                    xfrm: 27,
+                },
+                mrenclave: "7954791612f147832807e1290604c11a6cefb6ff12fb97a6b51530be5004aecb",
+                mrsigner: "11c4e150b76c2b145f7fadb6c30455e1046b9e6fbb75b49c6e13341ad8acc5bd",
+                isvprodid: 0,
+                isvsvn: 0,
+                reportdata: "ec4f96d3faba2fdbbed2c7e1140f7df066e03440943eae7e9ab439c4262c075c74a8199b2b230a7760580c7a4799af34649e94a854709b6b08c61d6d7abac976",
+            },
             scone_qe_pub_key: a470cda5245af18ef5d8d3e1b30982a3bc74848376ca4fd03237c0f342e97239,
-        <span class="o">}</span>,
-    <span class="o">)</span>
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z INFO  cas::api::enclave::connection<span class="o">]</span> V4<span class="o">(</span><span class="m">192</span>.168.0.101:58584<span class="o">)</span>: Provisioned configuration javax2/hello
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai<span class="o">]</span> Sending message Config to enclave
-<span class="o">[</span><span class="m">2020</span>-05-08T11:32:02Z DEBUG eai::convert<span class="o">]</span> Waiting <span class="k">for</span> more data before decoding protobuf message
-<span class="o">[</span><span class="m">2020</span>-05-08T11:34:50Z DEBUG eai::convert<span class="o">]</span> Waiting <span class="k">for</span> more data before decoding protobuf message
-<span class="o">[</span><span class="m">2020</span>-05-08T11:34:50Z WARN  cas::api::enclave<span class="o">]</span> Failure <span class="k">while</span> handling enclave connection: DisplayChain<span class="o">(</span>Error<span class="o">(</span>Msg<span class="o">(</span><span class="s2">&quot;Connection closed&quot;</span><span class="o">)</span>, State <span class="o">{</span> next_error: None, backtrace: InternalBacktrace <span class="o">{</span> backtrace: None <span class="o">}</span> <span class="o">}))</span>
-</code></pre></div>
+        },
+    )
+[2020-05-08T11:32:02Z INFO  cas::api::enclave::connection] V4(192.168.0.101:58584): Provisioned configuration javax2/hello
+[2020-05-08T11:32:02Z DEBUG eai] Sending message Config to enclave
+[2020-05-08T11:32:02Z DEBUG eai::convert] Waiting for more data before decoding protobuf message
+[2020-05-08T11:34:50Z DEBUG eai::convert] Waiting for more data before decoding protobuf message
+[2020-05-08T11:34:50Z WARN  cas::api::enclave] Failure while handling enclave connection: DisplayChain(Error(Msg("Connection closed"), State { next_error: None, backtrace: InternalBacktrace { backtrace: None } }))</code></pre>
 <p>And we see the following logfiles in the containers of LAS:</p>
-<div class="highlight"><pre><span></span><code>ubuntu@kmaster:~$ docker logs las_las_1
-jhi<span class="o">[</span><span class="m">8</span><span class="o">]</span>: --&gt; jhi start
-jhi<span class="o">[</span><span class="m">8</span><span class="o">]</span>: &lt;-- jhi start
-aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: <span class="o">[</span>ADMIN<span class="o">]</span>White List update requested
-aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: The server sock is 0x55c64a935e30
-aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: <span class="o">[</span>ADMIN<span class="o">]</span>White list update request successful <span class="k">for</span> Version: <span class="m">73</span>
-<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:01:42<span class="o">]</span> APP: Creating LAS target information message.
-aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: <span class="o">[</span>ADMIN<span class="o">]</span>EPID Provisioning initiated
-aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: The Request ID is f6131707e3714d359f33dca65dc72308
-aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: The Request ID is 23c495fac0b94c8984546fbddc0a75f3
-aesm_service<span class="o">[</span><span class="m">11</span><span class="o">]</span>: <span class="o">[</span>ADMIN<span class="o">]</span>EPID Provisioning successful
-<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:01:44<span class="o">]</span> STARTER: SCONE QE has MRENCLAVE D9A05D04E07CD75F4251D41A4D7F0FCA63BF392A19BEDE5C69A5BB60A94E376F
-<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:01:44<span class="o">]</span> STARTER: SCONE QE has public key A470CDA5245AF18EF5D8D3E1B30982A3BC74848376CA4FD03237C0F342E97239
-<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:01:44<span class="o">]</span> STARTER: LAS is listening on <span class="m">0</span>.0.0.0:18766
-<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:40:46<span class="o">]</span> CONNECTION_HANDLER: Received attestation request
-<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:40:46<span class="o">]</span> CONNECTION_HANDLER: Sent quote success: <span class="m">1</span>, type: <span class="m">3</span>, size: <span class="m">480</span>
-<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:40:46<span class="o">]</span> CONNECTION_HANDLER: Received attestation request
-<span class="o">[</span><span class="m">10000</span>:INFO@04.05.2020/11:40:46<span class="o">]</span> CONNECTION_HANDLER: Sent quote success: <span class="m">1</span>, type: <span class="m">2</span>, size: <span class="m">1116</span>
-<span class="o">[</span><span class="m">01000</span>:WARNING@04.05.2020/11:40:47<span class="o">]</span> RECV_FUNC: Connection closed <span class="k">while</span> reading message length.
-<span class="o">[</span><span class="m">01000</span>:WARNING@04.05.2020/11:40:47<span class="o">]</span> CONNECTION_HANDLER: Unable to decode received message. Terminating connection!
+<pre class="highlight"><code class="language-bash">ubuntu@kmaster:~$ docker logs las_las_1
+jhi[8]: --&gt; jhi start
+jhi[8]: &lt;-- jhi start
+aesm_service[11]: [ADMIN]White List update requested
+aesm_service[11]: The server sock is 0x55c64a935e30
+aesm_service[11]: [ADMIN]White list update request successful for Version: 73
+[10000:INFO@04.05.2020/11:01:42] APP: Creating LAS target information message.
+aesm_service[11]: [ADMIN]EPID Provisioning initiated
+aesm_service[11]: The Request ID is f6131707e3714d359f33dca65dc72308
+aesm_service[11]: The Request ID is 23c495fac0b94c8984546fbddc0a75f3
+aesm_service[11]: [ADMIN]EPID Provisioning successful
+[10000:INFO@04.05.2020/11:01:44] STARTER: SCONE QE has MRENCLAVE D9A05D04E07CD75F4251D41A4D7F0FCA63BF392A19BEDE5C69A5BB60A94E376F
+[10000:INFO@04.05.2020/11:01:44] STARTER: SCONE QE has public key A470CDA5245AF18EF5D8D3E1B30982A3BC74848376CA4FD03237C0F342E97239
+[10000:INFO@04.05.2020/11:01:44] STARTER: LAS is listening on 0.0.0.0:18766
+[10000:INFO@04.05.2020/11:40:46] CONNECTION_HANDLER: Received attestation request
+[10000:INFO@04.05.2020/11:40:46] CONNECTION_HANDLER: Sent quote success: 1, type: 3, size: 480
+[10000:INFO@04.05.2020/11:40:46] CONNECTION_HANDLER: Received attestation request
+[10000:INFO@04.05.2020/11:40:46] CONNECTION_HANDLER: Sent quote success: 1, type: 2, size: 1116
+[01000:WARNING@04.05.2020/11:40:47] RECV_FUNC: Connection closed while reading message length.
+[01000:WARNING@04.05.2020/11:40:47] CONNECTION_HANDLER: Unable to decode received message. Terminating connection!
 ...multiple log entries
-<span class="o">[</span><span class="m">10000</span>:INFO@08.05.2020/11:38:27<span class="o">]</span> CONNECTION_HANDLER: Received attestation request
-<span class="o">[</span><span class="m">10000</span>:INFO@08.05.2020/11:38:27<span class="o">]</span> CONNECTION_HANDLER: Sent quote success: <span class="m">1</span>, type: <span class="m">3</span>, size: <span class="m">480</span>
-<span class="o">[</span><span class="m">01000</span>:WARNING@08.05.2020/11:38:27<span class="o">]</span> RECV_FUNC: Connection closed <span class="k">while</span> reading message length.
-<span class="o">[</span><span class="m">01000</span>:WARNING@08.05.2020/11:38:27<span class="o">]</span> CONNECTION_HANDLER: Unable to decode received message. Terminating connection!
-</code></pre></div>
+[10000:INFO@08.05.2020/11:38:27] CONNECTION_HANDLER: Received attestation request
+[10000:INFO@08.05.2020/11:38:27] CONNECTION_HANDLER: Sent quote success: 1, type: 3, size: 480
+[01000:WARNING@08.05.2020/11:38:27] RECV_FUNC: Connection closed while reading message length.
+[01000:WARNING@08.05.2020/11:38:27] CONNECTION_HANDLER: Unable to decode received message. Terminating connection!</code></pre>
 <h2 id="common-errors">Common errors</h2>
 <h3 id="missing-ld_library_path">Missing LD_LIBRARY_PATH</h3>
 <p>If the system is started without the default LD_LIBRARY_PATH and the SCONE-Policy is missing its environment variable the output will be:</p>
-<div class="highlight"><pre><span></span><code>[SCONE|ERROR] src/syscall/execve.c:108:syscall_SYS_execve(): execve is only supported after a vfork (vfork is not active!) 
+<pre class="highlight"><code class="language-text">[SCONE|ERROR] src/syscall/execve.c:108:syscall_SYS_execve(): execve is only supported after a vfork (vfork is not active!) 
 No error information
 Error: trying to exec /usr/lib/jvm/java-1.8-openjdk/jre/bin/java.
-Check if file exists and permissions are set correctly.
-</code></pre></div>
+Check if file exists and permissions are set correctly.</code></pre>
 <p>The solution is settings the LD_LIBRARY_PATH according to the posting session example given above:</p>
-<div class="highlight"><pre><span></span><code>LD_LIBRARY_PATH: <span class="s2">&quot;/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/.</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">LD_LIBRARY_PATH: "/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/.</code></pre>
 <p>Author: Hendrik</p>
 
               
@@ -4466,7 +4447,7 @@ Check if file exists and permissions are set correctly.
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

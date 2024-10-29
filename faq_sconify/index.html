@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/faq_sconify/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3364,7 +3364,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4101,65 +4101,59 @@
 <h2 id="credentials">Credentials</h2>
 <p>To build and deploy sconified images, you need to set up your credentials correctly to pull images. To do so,
 you probably want to put the following definitions in some script:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GH_TOKEN</span><span class="o">=</span>                 <span class="c1"># GitHub Token for SconeApps - see https://sconedocs.github.io/helm/</span>
-<span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>   <span class="c1"># Scontain Registry Token - see https://sconedocs.github.io/helm</span>
-<span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>       <span class="c1"># Scontain Registry User name - see https://sconedocs.github.io/helm</span>
-<span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>          <span class="c1"># Scontain Registry User name - see https://sconedocs.github.io/helm</span>
+<pre class="highlight"><code class="language-bash">export GH_TOKEN=                 # GitHub Token for SconeApps - see https://sconedocs.github.io/helm/
+export SCONE_HUB_ACCESS_TOKEN=   # Scontain Registry Token - see https://sconedocs.github.io/helm
+export SCONE_HUB_USERNAME=       # Scontain Registry User name - see https://sconedocs.github.io/helm
+export SCONE_HUB_EMAIL=          # Scontain Registry User name - see https://sconedocs.github.io/helm
 
-<span class="nb">export</span> <span class="nv">GH_TOKEN</span><span class="o">=</span><span class="si">${</span><span class="nv">GH_TOKEN</span><span class="p">:?</span><span class="s2">&quot;GH_TOKEN is not set! Please set to a valid github token.&quot;</span><span class="si">}</span>
-<span class="nb">export</span> <span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span><span class="si">${</span><span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="p">:?</span><span class="s2">&quot;SCONE_HUB_ACCESS_TOKEN is not set! Please set to a valid registry.scontain.com token.&quot;</span><span class="si">}</span>
-<span class="nb">export</span> <span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span><span class="si">${</span><span class="nv">SCONE_HUB_USERNAME</span><span class="p">:?</span><span class="s2">&quot;SCONE_HUB_USERNAME is not set! Please set to a valid username for registry.scontain.com&quot;</span><span class="si">}</span>
-<span class="nb">export</span> <span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span><span class="si">${</span><span class="nv">SCONE_HUB_EMAIL</span><span class="p">:?</span><span class="s2">&quot;SCONE_HUB_EMAIL is not set! Please set to a valid username for registry.scontain.com&quot;</span><span class="si">}</span>
+export GH_TOKEN=${GH_TOKEN:?"GH_TOKEN is not set! Please set to a valid github token."}
+export SCONE_HUB_ACCESS_TOKEN=${SCONE_HUB_ACCESS_TOKEN:?"SCONE_HUB_ACCESS_TOKEN is not set! Please set to a valid registry.scontain.com token."}
+export SCONE_HUB_USERNAME=${SCONE_HUB_USERNAME:?"SCONE_HUB_USERNAME is not set! Please set to a valid username for registry.scontain.com"}
+export SCONE_HUB_EMAIL=${SCONE_HUB_EMAIL:?"SCONE_HUB_EMAIL is not set! Please set to a valid username for registry.scontain.com"}
 
-<span class="nb">export</span> <span class="nv">PULL_SECRET_NAME</span><span class="o">=</span>sconeapps
-<span class="nb">export</span> <span class="nv">MY_DOCKER_REPOSITORY</span><span class="o">=</span>...
-<span class="nb">export</span> <span class="nv">K8S_IMAGE_PULL_SECRET</span><span class="o">=</span>regcred
-</code></pre></div>
+export PULL_SECRET_NAME=sconeapps
+export MY_DOCKER_REPOSITORY=...
+export K8S_IMAGE_PULL_SECRET=regcred</code></pre>
 <p>To deploy the SCONE SGX Plugin and the SCONE Local Attestation Service (LAS) as well as other SconeApps, 
 you would need to create a Kubernetes secret for accessing the SCONE registry (<a href="../helm/">more info</a>):</p>
-<div class="highlight"><pre><span></span><code>kubectl create secret docker-registry sconeapps --docker-server<span class="o">=</span>registry.scontain.com --docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span> --docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span> --docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
-kubectl create secret docker-registry <span class="nv">$K8S_IMAGE_PULL_SECRET</span> --docker-server<span class="o">=</span><span class="nv">$MY_DOCKER_REPOSITORY</span> --docker-username<span class="o">=</span><span class="s2">&quot;</span>$<span class="s2">...&quot;</span> --docker-password<span class="o">=</span><span class="s2">&quot;</span>$<span class="s2">...&quot;</span> --docker-email<span class="o">=</span><span class="s2">&quot;</span>$<span class="s2">...&quot;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl create secret docker-registry sconeapps --docker-server=registry.scontain.com --docker-username=$SCONE_HUB_USERNAME --docker-password=$SCONE_HUB_ACCESS_TOKEN --docker-email=$SCONE_HUB_EMAIL
+kubectl create secret docker-registry $K8S_IMAGE_PULL_SECRET --docker-server=$MY_DOCKER_REPOSITORY --docker-username="$..." --docker-password="$..." --docker-email="$..."</code></pre>
 <h2 id="apple-macos">Apple MacOS</h2>
 <p>When executing <code>sconify_image</code> on MacOS, you might experience some issue regarding docker credentials.</p>
 <h3 id="error-docker-credential-osxkeychain-not-found">Error <code>docker-credential-osxkeychain</code> not found</h3>
 <p>During sconification on MacOS, an error related to credentials might occur. This error might manifest itself in the
 log as follows (you need to switch on verbose and debug mode):</p>
-<div class="highlight"><pre><span></span><code>#3        error: &quot;rpc error: code = Unknown desc = error getting credentials - err: exec: \&quot;docker-credential-osxkeychain\&quot;: executable file not found in $PATH, out: ``&quot;
+<pre class="highlight"><code class="language-text">#3        error: "rpc error: code = Unknown desc = error getting credentials - err: exec: \"docker-credential-osxkeychain\": executable file not found in $PATH, out: ``"
 
-failed to solve with frontend dockerfile.v0: failed to solve with frontend gateway.v0: rpc error: code = Unknown desc = error getting credentials - err: exec: &quot;docker-credential-osxkeychain&quot;: executable file not found in $PATH, out: ``
-# syntax=docker/dockerfile:1.2
-</code></pre></div>
+failed to solve with frontend dockerfile.v0: failed to solve with frontend gateway.v0: rpc error: code = Unknown desc = error getting credentials - err: exec: "docker-credential-osxkeychain": executable file not found in $PATH, out: ``
+# syntax=docker/dockerfile:1.2</code></pre>
 <p>To mitigate this error, you need to change your config on MacOS:</p>
-<div class="highlight"><pre><span></span><code>vi <span class="nv">$HOME</span>/.docker/config.json
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">vi $HOME/.docker/config.json</code></pre>
 <p>This might look like this:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;credsStore&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;osxkeychain&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;auths&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;registry.scontain.com&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<pre class="highlight"><code class="language-json">{
+  "credsStore" : "osxkeychain",
+  "auths" : {
+    "registry.scontain.com" : {
 
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;gitlab.scontain.com&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+    },
+    "gitlab.scontain.com" : {
 
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;experimental&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;disabled&quot;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</code></pre></div>
+    }
+  },
+  "experimental" : "disabled"
+}</code></pre>
 <p>and you might want to change this to</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;auths&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;registry.scontain.com&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<pre class="highlight"><code class="language-json">{
+  "auths" : {
+    "registry.scontain.com" : {
 
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;gitlab.scontain.com&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+    },
+    "gitlab.scontain.com" : {
 
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;experimental&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;disabled&quot;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</code></pre></div>
+    }
+  },
+  "experimental" : "disabled"
+}</code></pre>
 <p>to mitigate this error.</p>
 
               
@@ -4230,7 +4224,7 @@ failed to solve with frontend dockerfile.v0: failed to solve with frontend gatew
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

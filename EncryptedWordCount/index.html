@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/EncryptedWordCount/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3374,7 +3374,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4126,7 +4126,7 @@ and output files in one or more <strong>encrypted volumes</strong> mapped into t
 </center></p>
 <div class="admonition warning">
 <p class="admonition-title">This Python image that we use is not intended for production usage</p>
-<p><em>The Python libraries in the Python base image  **are not encrypted*</em>. Moreover, the Python engine runs inside of a debug enclave. <a href="mailto:info@scontain.com">Contact us</a>, if you need a production-ready Python engine with encrypted Python libraries.*</p>
+<p><em>The Python libraries in the Python base image  <strong>are not encrypted</strong>. Moreover, the Python engine runs inside of a debug enclave. <a href="mailto:info@scontain.com">Contact us</a>, if you need a production-ready Python engine with encrypted Python libraries.</em></p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">You require access to the images</p>
@@ -4134,27 +4134,24 @@ and output files in one or more <strong>encrypted volumes</strong> mapped into t
 </div>
 <h2 id="getting-the-code">Getting the Code</h2>
 <p>After you gotten access to the repos, you can get the code via:</p>
-<div class="highlight"><pre><span></span><code>git clone https://github.com/scontain/EncryptedWordCount.git
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">git clone https://github.com/scontain/EncryptedWordCount.git</code></pre>
 <p>and then enter directory <code>EncryptedWordCount</code></p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> EncryptedWordCount
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cd EncryptedWordCount</code></pre>
 <h2 id="files">Files</h2>
 <p>The Python source code and the input file is stored in directory <code>native-files/</code>. The <code>wordcount.py</code> code is just some very simple
 Python code to count the frequency of words in a given file:</p>
-<div class="highlight"><pre><span></span><code><span class="ch">#!/usr/bin/python</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">file</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;r+&quot;</span><span class="p">)</span>
+<pre class="highlight"><code class="language-python">#!/usr/bin/python
+import sys
+file=open(sys.argv[1],"r+")
 
-<span class="n">wordcount</span><span class="o">=</span><span class="p">{}</span>
-<span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
-    <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">wordcount</span><span class="p">:</span>
-        <span class="n">wordcount</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">wordcount</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">wordcount</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-</code></pre></div>
+wordcount={}
+for word in file.read().split():
+    if word not in wordcount:
+        wordcount[word] = 1
+    else:
+        wordcount[word] += 1
+for k,v in wordcount.items():
+    print(k, v)</code></pre>
 <h2 id="creating-image-with-encrypted-wordcount">Creating Image with Encrypted <code>wordcount</code></h2>
 <p>The repository includes a script <code>create_image.sh</code> that</p>
 <ul>
@@ -4167,8 +4164,7 @@ Python code to count the frequency of words in a given file:</p>
 <li>access to the security policy is controlled via a self-generated key pair</li>
 </ul>
 <p>Perform all of the above steps by executing the following shell script:</p>
-<div class="highlight"><pre><span></span><code>./create_image.sh
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./create_image.sh</code></pre>
 <p>This creates an image <code>encryptedwordcount</code> stored in the local registry and
 a policy (a.k.a. session) in a SCONE Configuration and Attestation Service (CAS) running on a remote site.</p>
 <p><em>We assume in this demo that the creation of the <code>wordcount</code> image is performed on a trusted host.</em> 
@@ -4176,13 +4172,11 @@ The execution of the <code>wordcount</code> can be performed on an untrusted hos
 same host.</p>
 <h2 id="running-the-wordcount-image">Running the <code>wordcount</code> image</h2>
 <p>First, read some environment variables set by <code>./create_image.sh</code></p>
-<div class="highlight"><pre><span></span><code><span class="nb">source</span> myenv
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">source myenv</code></pre>
 <p>and then start the <code>wordcount.py</code> with <code>docker-compose</code>:</p>
-<div class="highlight"><pre><span></span><code>docker-compose up
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker-compose up</code></pre>
 <p>You will see quite some log output ending with</p>
-<div class="highlight"><pre><span></span><code>...
+<pre class="highlight"><code class="language-txt">...
 python_1  | scone 1
 python_1  | region. 3
 python_1  | Hence, 1
@@ -4195,14 +4189,12 @@ python_1  | region: 1
 python_1  | the 19
 python_1  | path. 1
 python_1  | document. 1
-encryptedwordcount_python_1 exited with code 0
-</code></pre></div>
+encryptedwordcount_python_1 exited with code 0</code></pre>
 <p>Stop the compose file with control-C.</p>
 <p>You can run it again by executing <code>docker-compose up</code> again.</p>
 <h2 id="cleanup">Cleanup</h2>
 <p>Cleanup afterwards by executing:</p>
-<div class="highlight"><pre><span></span><code>./cleanup.sh
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./cleanup.sh</code></pre>
 <p>before starting it with <code>./create_image.sh</code> and <code>docker-compose up</code> again.</p>
 <p>Note: Please read <a href="../hello_world_kubernetes/">Hello World tutorial</a> to learn more about the technical details.</p>
 
@@ -4274,7 +4266,7 @@ encryptedwordcount_python_1 exited with code 0
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/aks_integration/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3405,7 +3405,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4204,24 +4204,23 @@
 </div>
 <h3 id="example">Example</h3>
 <p>In a CAS policy, one can define aad-tokens as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ad_token_1</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aad-token</span><span class="w"></span>
-<span class="w">      </span><span class="nt">tenant_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">e7cac514-f1aa-4e0d-b207-50b1d9a89d21</span><span class="w"></span>
-<span class="w">      </span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3f2c210e-83b4-4217-9eee-4f747d8aeeb3</span><span class="w"></span>
-<span class="w">      </span><span class="nt">application_secret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dHmbyTBF4JNAN3JJobeD&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ad_token_2</span><span class="w"></span>
-<span class="w">      </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aad-token</span><span class="w"></span>
-<span class="w">      </span><span class="nt">tenant_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">e7cac514-f1aa-4e0d-b207-50b1d9a89d21</span><span class="w"></span>
-<span class="w">      </span><span class="nt">client_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3f2c210e-83b4-4217-9eee-4f747d8aeeb3</span><span class="w"></span>
-<span class="w">      </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"></span>
-<span class="w">        </span><span class="no">-----BEGIN PRIVATE KEY-----</span><span class="w"></span>
-<span class="w">        </span><span class="no">MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCbkIjwCh2zXbUs</span><span class="w"></span>
-<span class="w">        </span><span class="no">...</span><span class="w"></span>
-<span class="w">        </span><span class="no">s5is0+EmTLXoWCqftUG5RQ==</span><span class="w"></span>
-<span class="w">        </span><span class="no">-----END PRIVATE KEY-----</span><span class="w"></span>
-<span class="w">      </span><span class="nt">certificate_thumbprint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">B033DB596639F3CA02D6537055E85B8EFE060756</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+    - name: ad_token_1
+      kind: aad-token
+      tenant_id: e7cac514-f1aa-4e0d-b207-50b1d9a89d21
+      client_id: 3f2c210e-83b4-4217-9eee-4f747d8aeeb3
+      application_secret: "dHmbyTBF4JNAN3JJobeD"
+    - name: ad_token_2
+      kind: aad-token
+      tenant_id: e7cac514-f1aa-4e0d-b207-50b1d9a89d21
+      client_id: 3f2c210e-83b4-4217-9eee-4f747d8aeeb3
+      private_key: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCbkIjwCh2zXbUs
+        ...
+        s5is0+EmTLXoWCqftUG5RQ==
+        -----END PRIVATE KEY-----
+      certificate_thumbprint: B033DB596639F3CA02D6537055E85B8EFE060756</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Protecting the credentials to retrieve the AAD Token</p>
 <p>To protect the credentials define within a policy P, policy P defines who can read P. In quite a few cases, one wants to permit that anybody can read policy <strong>P</strong>. However, one does not want to expose the credentials to retrieve, say, the aad-token <code>ad_token_1</code>.  Our recommendation is to define the credentials to retrieve <code>ad_token_1</code> in a second CAS policy, say, <strong>P2</strong>. Policy <strong>P2</strong> specifies the credentials for <code>ad_token_1</code> and exports <code>ad_token_1</code> to policy <strong>P</strong>. One can define  <strong>P2</strong> such that <strong>nobody</strong> can read <strong>P2</strong>. Policy <strong>P</strong> imports <code>ad_token_1</code> from <strong>P2</strong>. Policy <strong>P2</strong> could state that anybody can read <strong>P2</strong>: a reader would only learn the name <code>ad_token_1</code>, but it would not be able to read token <code>ad_token_1</code> nor the credentials used to retrieve <code>ad_token_1</code>.</p>
@@ -4241,17 +4240,16 @@
 <li>an <a href="#aad-token"><code>aad-token</code> secret</a> authorized to access this vault</li>
 </ul>
 <h3 id="example_1">Example</h3>
-<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_encryption_key</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span><span class="w"></span>
-<span class="w">    </span><span class="nt">import_akv</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">vault</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myvaultname.vault.azure.net</span><span class="w"></span>
-<span class="w">      </span><span class="nt">secret_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">abc</span><span class="w"></span>
-<span class="w">      </span><span class="nt">token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::db-aad-token$$</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db-aad-token</span><span class="w"></span>
-<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aad-token</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-yaml">secrets:
+  - name: db_encryption_key
+    kind: binary
+    import_akv:
+      vault: myvaultname.vault.azure.net
+      secret_name: abc
+      token: $$SCONE::db-aad-token$$
+  - name: db-aad-token
+    kind: aad-token
+    ...</code></pre>
 <p><strong><code>import_akv</code> Parameters:</strong></p>
 <ul>
 <li><code>vault</code>: The address of the key vault to use (required)</li>
@@ -4339,7 +4337,7 @@ PKCS#12-encoded certificates, on the other hand, will be represented as plain te
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

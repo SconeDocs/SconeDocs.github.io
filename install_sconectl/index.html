@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/install_sconectl/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3387,7 +3387,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4148,39 +4148,37 @@
 <p>Right now, we assume that  <code>sconectl</code> executes on MacOs or Linux machine. For Windows, please use a Linux VM. Moreover, we assume that you have <code>docker</code> installed. In future, we plan to support Windows natively and replace <code>docker</code> by <code>podman</code>.</p>
 </div>
 <p>As part of our <a href="https://github.com/scontain/scone_mesh_tutorial"><code>scone_mesh_tutorial</code></a>, you can  execute script <a href="https://github.com/scontain/scone_mesh_tutorial/blob/main/check_prerequisites.sh"><code>check_prerequisites.sh</code></a> to check if you have all prerequisites. It will also install <code>sconectl</code> if needed but only if some of the required dependencies are already installed. In case you already cloned <code>scone_mesh_tutorial</code>, just execute in your cloned copy:</p>
-<div class="highlight"><pre><span></span><code>./check_prerequisites.sh
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./check_prerequisites.sh</code></pre>
 <h2 id="manual-installation">Manual Installation</h2>
 <p>We have implemented <code>sconectl</code> in Rust. In case, you have Rust already installed, you can install <code>sconectl</code>  by executing:</p>
-<div class="highlight"><pre><span></span><code>cargo install sconectl
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">cargo install sconectl</code></pre>
 <p>In case, you have not yet installed <code>cargo</code>, you need to install Rust (see below).</p>
 <h2 id="installing-dependencies">Installing Dependencies</h2>
 <p>You could run the following script to set up / update your rust environment and to  install <code>sconectl</code> with the help of Rust:</p>
-<div class="highlight"><pre><span></span><code><span class="ch">#! /bin/bash</span>
+<pre class="highlight"><code class="language-bash">#! /bin/bash
 
-<span class="nb">set</span> -e  -x
+set -e  -x
 
-<span class="c1"># ensure we have access to sconectl</span>
+# ensure we have access to sconectl
 
-<span class="k">if</span> ! <span class="nb">command</span> -v sconectl <span class="p">&amp;</span>&gt; /dev/null
-<span class="k">then</span>
-    <span class="nb">echo</span> <span class="s2">&quot;No sconectl found! Installing sconectl!&quot;</span>
+if ! command -v sconectl &amp;&gt; /dev/null
+then
+    echo "No sconectl found! Installing sconectl!"
 
-    <span class="c1"># ensure we have access to a new Rust installation</span>
+    # ensure we have access to a new Rust installation
 
-    <span class="k">if</span> ! <span class="nb">command</span> -v rustup <span class="p">&amp;</span>&gt; /dev/null
-    <span class="k">then</span>
-        <span class="nb">echo</span> <span class="s2">&quot;No Rust found! Installing Rust!&quot;</span>
-        curl --proto <span class="s1">&#39;=https&#39;</span> --tlsv1.2 -sSf https://sh.rustup.rs <span class="p">|</span> sh
-    <span class="k">else</span>
-        <span class="nb">echo</span> <span class="s2">&quot;Ensuring Rust is up to date&quot;</span>
+    if ! command -v rustup &amp;&gt; /dev/null
+    then
+        echo "No Rust found! Installing Rust!"
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    else
+        echo "Ensuring Rust is up to date"
         rustup update
-    <span class="k">fi</span>
+    fi
 
     cargo install sconectl
-<span class="k">fi</span>
-</code></pre></div>
+fi
+</code></pre>
 <h2 id="rust-installation">Rust Installation</h2>
 <p>In case you install manually, errors might appear since Rust is not installed or out-of-date. If <code>cargo</code> would fail, ensure that</p>
 <ul>
@@ -4190,20 +4188,16 @@
 <p>If Rust is not yet installed or too old, you can use <a href="https://www.rust-lang.org/tools/install"><code>rustup</code></a> to install <code>Rust</code>.</p>
 <h2 id="checking-sconectl">Checking <code>sconectl</code></h2>
 <p>Depending what Manifest you apply, different command line options might be available. To get a list of options, for a given manifest, you can execute:</p>
-<div class="highlight"><pre><span></span><code>sconectl apply -f service.yml --help
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">sconectl apply -f service.yml --help</code></pre>
 <p>Note that a file <code>service.yml</code> is available as part of <code>scone_mesh_tutorial</code>.</p>
 <p>You can print which environment variables you can define and also their default values by executing:</p>
-<div class="highlight"><pre><span></span><code>sconectl apply -f service.yml -p
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">sconectl apply -f service.yml -p</code></pre>
 <h3 id="building-a-service-image">Building a Service Image</h3>
 <p>We can now apply a manifest as follows (and we do not want to push to the repo just yet):</p>
-<div class="highlight"><pre><span></span><code>sconectl apply -f service.yml --no-push
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">sconectl apply -f service.yml --no-push</code></pre>
 <h3 id="displaying-environment-variables">Displaying Environment Variables</h3>
 <p>We can show which variables must be defined in a <code>meshfile</code> using option <code>-p</code>:</p>
-<div class="highlight"><pre><span></span><code>sconectl apply -f mesh.yml -p
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">sconectl apply -f mesh.yml -p</code></pre>
 
               
             </article>
@@ -4273,7 +4267,7 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/scone-signer-example/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3346,7 +3346,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4076,198 +4076,187 @@
 </ul>
 <h2 id="example-program">Example Program</h2>
 <p>We create a simple, native C program.</p>
-<div class="highlight"><pre><span></span><code>cat &gt; print-arg-env.c <span class="s">&lt;&lt;EOF</span>
-<span class="s">#include &lt;stdio.h&gt;</span>
+<pre class="highlight"><code class="language-bash">cat &gt; print-arg-env.c &lt;&lt;EOF
+#include &lt;stdio.h&gt;
 
-<span class="s">extern char **__environ;</span>
+extern char **__environ;
 
-<span class="s">int main (int argc, char **argv) {</span>
-<span class="s">    printf(&quot;argv:&quot;);</span>
-<span class="s">    for (int i = 0; i &lt; argc; i++) {</span>
-<span class="s">        printf(&quot; %s&quot;, argv[i]);</span>
-<span class="s">    }</span>
-<span class="s">    printf(&quot;\n&quot;);</span>
+int main (int argc, char **argv) {
+    printf("argv:");
+    for (int i = 0; i &lt; argc; i++) {
+        printf(" %s", argv[i]);
+    }
+    printf("\n");
 
-<span class="s">    char** envp = __environ;</span>
-<span class="s">    printf(&quot;environ:\n&quot;);</span>
-<span class="s">    while (*envp != NULL) {</span>
-<span class="s">        printf(&quot;%s\n&quot;, *envp);</span>
-<span class="s">        envp++;</span>
-<span class="s">    }</span>
-<span class="s">    return 0;</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+    char** envp = __environ;
+    printf("environ:\n");
+    while (*envp != NULL) {
+        printf("%s\n", *envp);
+        envp++;
+    }
+    return 0;
+}
+EOF</code></pre>
 <p>We also create a new signer key for signing the confidential applications as follows:</p>
-<div class="highlight"><pre><span></span><code>openssl genrsa -3 -out <span class="s2">&quot;identity.pem&quot;</span> <span class="m">3072</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">openssl genrsa -3 -out "identity.pem" 3072</code></pre>
 <p>We create a policy template for debug mode as follows (see also <a href="../print-arg-env/">Example</a>].</p>
-<div class="highlight"><pre><span></span><code>cat &gt; session.yaml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: \$SESSION</span>
-<span class="s">version: 0.3</span>
+<pre class="highlight"><code class="language-bash">cat &gt; session.yaml &lt;&lt;EOF
+name: \$SESSION
+version: 0.3
 
-<span class="s">security:</span>
-<span class="s">  attestation:</span>
-<span class="s">    tolerate: [debug-mode,hyperthreading, outdated-tcb]</span>
-<span class="s">    ignore_advisories: &quot;*&quot;</span>
-<span class="s">    one_time_password_shared_secret: \$OTPSECRET</span>
+security:
+  attestation:
+    tolerate: [debug-mode,hyperthreading, outdated-tcb]
+    ignore_advisories: "*"
+    one_time_password_shared_secret: \$OTPSECRET
 
-<span class="s">volumes:</span>
-<span class="s">  - name: my_encrypted_volume</span>
+volumes:
+  - name: my_encrypted_volume
 
-<span class="s">images:</span>
-<span class="s">  - name: my_image</span>
-<span class="s">    volumes:</span>
-<span class="s">      - name: my_encrypted_volume</span>
-<span class="s">        path: /volume</span>
+images:
+  - name: my_image
+    volumes:
+      - name: my_encrypted_volume
+        path: /volume
 
-<span class="s">services:</span>
-<span class="s">   - name: print-arg-env</span>
-<span class="s">     image_name: my_image</span>
-<span class="s">     mrenclaves: [\$MRENCLAVE]</span>
-<span class="s">     command: ./print-arg-env need to pass your OTP</span>
-<span class="s">     environment:</span>
-<span class="s">        SCONE_MODE: hw</span>
-<span class="s">        env1: version</span>
-<span class="s">        env2: 3</span>
-<span class="s">        env3: otp-variant</span>
-<span class="s">     pwd: /</span>
-<span class="s">EOF</span>
-</code></pre></div>
+services:
+   - name: print-arg-env
+     image_name: my_image
+     mrenclaves: [\$MRENCLAVE]
+     command: ./print-arg-env need to pass your OTP
+     environment:
+        SCONE_MODE: hw
+        env1: version
+        env2: 3
+        env3: otp-variant
+     pwd: /
+EOF</code></pre>
 <p>We create a script to upload this policy as part of a Dockerfile:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; upload_policy.sh <span class="s">&lt;&lt;EOF</span>
-<span class="s">#!/usr/bin/env bash</span>
+<pre class="highlight"><code class="language-bash">cat &gt; upload_policy.sh &lt;&lt;EOF
+#!/usr/bin/env bash
 
-<span class="s"># </span>
-<span class="s">export SCONE_HEAP=200M</span>
-<span class="s">export SCONE_STACK=1M</span>
-<span class="s">export SCONE_ALLOW_DLOPEN=0</span>
-<span class="s">export SCONE_MODE=hw</span>
-<span class="s">export SCONE_SYSLIBS=1</span>
-<span class="s">export SCONE_FSPF_MUTABLE=0</span>
-<span class="s">export SCONE_LOG=debug</span>
-<span class="s">export SCONE_MIN_HEAP=20M</span>
-<span class="s">export SCONE_TCS=8</span>
-<span class="s">export SCONE_MPROTECT=0</span>
-<span class="s">export SCONE_XFRM=3</span>
-<span class="s">export SCONE_ISVSVN=0</span>
-<span class="s">export SCONE_ISVPRODID=0</span>
-<span class="s">export SCONE_EXTENSIONS_PATH=&quot;&quot;</span>
+# 
+export SCONE_HEAP=200M
+export SCONE_STACK=1M
+export SCONE_ALLOW_DLOPEN=0
+export SCONE_MODE=hw
+export SCONE_SYSLIBS=1
+export SCONE_FSPF_MUTABLE=0
+export SCONE_LOG=debug
+export SCONE_MIN_HEAP=20M
+export SCONE_TCS=8
+export SCONE_MPROTECT=0
+export SCONE_XFRM=3
+export SCONE_ISVSVN=0
+export SCONE_ISVPRODID=0
+export SCONE_EXTENSIONS_PATH=""
 
-<span class="s">export MRENCLAVE=\$(SCONE_HASH=1 print-arg-env)</span>
-<span class="s">echo MRENCLAVE=\$MRENCLAVE</span>
-<span class="s">envsubst &lt; session.yaml &gt; session2.yaml</span>
-<span class="s">export SCONE_CAS_ADDR=scone-cas.cf</span>
-<span class="s">scone cas attest \$SCONE_CAS_ADDR --only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S</span>
-<span class="s">export PREDECESSOR2=\$(scone session create session2.yaml)</span>
-<span class="s">cat session2.yaml</span>
-<span class="s">EOF</span>
-chmod a+x upload_policy.sh
-</code></pre></div>
+export MRENCLAVE=\$(SCONE_HASH=1 print-arg-env)
+echo MRENCLAVE=\$MRENCLAVE
+envsubst &lt; session.yaml &gt; session2.yaml
+export SCONE_CAS_ADDR=scone-cas.cf
+scone cas attest \$SCONE_CAS_ADDR --only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S
+export PREDECESSOR2=\$(scone session create session2.yaml)
+cat session2.yaml
+EOF
+chmod a+x upload_policy.sh</code></pre>
 <p>We create a random session name as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SESSION</span><span class="o">=</span>sconified_program_<span class="nv">$RANDOM_$RANDOM</span>
-<span class="nb">echo</span> <span class="nv">Session</span><span class="o">=</span><span class="nv">$SESSION</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SESSION=sconified_program_$RANDOM_$RANDOM
+echo Session=$SESSION</code></pre>
 <p>We protect the execution of this program with a OTP (One Time Password). We store the secret in environment variable <code>OTP</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTPSECRET</span><span class="o">=</span>... <span class="c1"># base32 encoded without trailing =</span>
-<span class="nb">export</span> <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">172</span>.30.0.1 <span class="c1"># define the address of the LAS</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export OTPSECRET=... # base32 encoded without trailing =
+export SCONE_LAS_ADDR=172.30.0.1 # define the address of the LAS</code></pre>
 <p>Let us build everything with the help of a multi-stage Dockerfile, i.e.,</p>
 <ul>
 <li>the native program inside a container using a vanilla Alpine Linux container image</li>
 <li>sconifying the program, i.e. performing a binary transformation of the program to run inside an enclave and signing the image</li>
 <li>upload the policy for the image to a public CAS</li>
 </ul>
-<div class="highlight"><pre><span></span><code>cat &gt; Dockerfile <span class="s">&lt;&lt;EOF</span>
-<span class="s">FROM registry.scontain.com/sconecuratedimages/crosscompilers:alpine3.15 as crosscompiler</span>
+<pre class="highlight"><code class="language-bash">cat &gt; Dockerfile &lt;&lt;EOF
+FROM registry.scontain.com/sconecuratedimages/crosscompilers:alpine3.15 as crosscompiler
 
-<span class="s">FROM registry.scontain.com/sconecuratedimages/crosscompilers:alpine3.15 as signer</span>
+FROM registry.scontain.com/sconecuratedimages/crosscompilers:alpine3.15 as signer
 
-<span class="s">FROM alpine as builder</span>
+FROM alpine as builder
 
-<span class="s">COPY --from=signer /usr/local/bin/scone-signer /bin/scone-signer</span>
-<span class="s">COPY --from=crosscompiler /opt/scone/lib /opt/scone/lib</span>
-<span class="s">COPY identity.pem /identity.pem</span>
-<span class="s">COPY print-arg-env.c /work/print-arg-env.c</span>
-<span class="s">COPY upload_policy.sh /work/upload_policy.sh</span>
+COPY --from=signer /usr/local/bin/scone-signer /bin/scone-signer
+COPY --from=crosscompiler /opt/scone/lib /opt/scone/lib
+COPY identity.pem /identity.pem
+COPY print-arg-env.c /work/print-arg-env.c
+COPY upload_policy.sh /work/upload_policy.sh
 
-<span class="s">ENV SCONE_HEAP=200M</span>
-<span class="s">ENV SCONE_STACK=1M</span>
-<span class="s">ENV SCONE_ALLOW_DLOPEN=0</span>
-<span class="s">ENV SCONE_MODE=hw</span>
-<span class="s">ENV SCONE_SYSLIBS=1</span>
-<span class="s">ENV SCONE_VERSION=1</span>
-<span class="s">ENV SCONE_FSPF_MUTABLE=0</span>
-<span class="s">ENV SCONE_LOG=debug</span>
-<span class="s">ENV SCONE_MIN_HEAP=20M</span>
-<span class="s">ENV SCONE_TCS=8</span>
-<span class="s">ENV SCONE_MPROTECT=0</span>
-<span class="s">ENV SCONE_XFRM=3</span>
-<span class="s">ENV SCONE_ISVSVN=0</span>
-<span class="s">ENV SCONE_ISVPRODID=0</span>
-<span class="s">ENV SCONE_EXTENSIONS_PATH=&quot;&quot;</span>
+ENV SCONE_HEAP=200M
+ENV SCONE_STACK=1M
+ENV SCONE_ALLOW_DLOPEN=0
+ENV SCONE_MODE=hw
+ENV SCONE_SYSLIBS=1
+ENV SCONE_VERSION=1
+ENV SCONE_FSPF_MUTABLE=0
+ENV SCONE_LOG=debug
+ENV SCONE_MIN_HEAP=20M
+ENV SCONE_TCS=8
+ENV SCONE_MPROTECT=0
+ENV SCONE_XFRM=3
+ENV SCONE_ISVSVN=0
+ENV SCONE_ISVPRODID=0
+ENV SCONE_EXTENSIONS_PATH=""
 
-<span class="s">RUN apk update &amp;&amp; apk upgrade \</span>
-<span class="s"> &amp;&amp; apk add build-base \</span>
-<span class="s"> &amp;&amp; cd /work \</span>
-<span class="s"> &amp;&amp; gcc print-arg-env.c -o print-arg-env \</span>
-<span class="s"> &amp;&amp; scone-signer sign --sconify --verbose --key /identity.pem --env /work/print-arg-env \</span>
-<span class="s"> &amp;&amp; scone-signer info /work/print-arg-env</span>
-<span class="s"># &amp;&amp; scone-signer sign --sconify --production  --key /identity.pem --env /work/print-arg-env</span>
+RUN apk update &amp;&amp; apk upgrade \
+ &amp;&amp; apk add build-base \
+ &amp;&amp; cd /work \
+ &amp;&amp; gcc print-arg-env.c -o print-arg-env \
+ &amp;&amp; scone-signer sign --sconify --verbose --key /identity.pem --env /work/print-arg-env \
+ &amp;&amp; scone-signer info /work/print-arg-env
+# &amp;&amp; scone-signer sign --sconify --production  --key /identity.pem --env /work/print-arg-env
 
-<span class="s">FROM registry.scontain.com/sconecuratedimages/crosscompilers as policy_uploader</span>
-<span class="s">ARG OTPSECRET</span>
-<span class="s">ARG SESSION</span>
-<span class="s">ARG SCONE_CAS_ADDR</span>
+FROM registry.scontain.com/sconecuratedimages/crosscompilers as policy_uploader
+ARG OTPSECRET
+ARG SESSION
+ARG SCONE_CAS_ADDR
 
-<span class="s">COPY --from=builder /work/print-arg-env /bin/print-arg-env</span>
-<span class="s">COPY upload_policy.sh /work/upload_policy.sh</span>
-<span class="s">COPY session.yaml /work/session.yaml</span>
+COPY --from=builder /work/print-arg-env /bin/print-arg-env
+COPY upload_policy.sh /work/upload_policy.sh
+COPY session.yaml /work/session.yaml
 
-<span class="s">RUN cd /work &amp;&amp; ./upload_policy.sh</span>
+RUN cd /work &amp;&amp; ./upload_policy.sh
 
-<span class="s">FROM alpine as app</span>
-<span class="s">ARG SESSION</span>
-<span class="s">ARG SCONE_LAS_ADDR</span>
+FROM alpine as app
+ARG SESSION
+ARG SCONE_LAS_ADDR
 
-<span class="s">COPY --from=builder /work/print-arg-env /bin/print-arg-env</span>
-<span class="s">COPY --from=crosscompiler /opt/scone/lib /opt/scone/lib</span>
+COPY --from=builder /work/print-arg-env /bin/print-arg-env
+COPY --from=crosscompiler /opt/scone/lib /opt/scone/lib
 
-<span class="s">ENV SCONE_CONFIG_ID=\$SESSION/print-arg-env</span>
-<span class="s">ENV SCONE_CAS_ADDR=scone-cas.cf</span>
-<span class="s">ENV SCONE_LAS_ADDR=\$SCONE_LAS_ADDR</span>
+ENV SCONE_CONFIG_ID=\$SESSION/print-arg-env
+ENV SCONE_CAS_ADDR=scone-cas.cf
+ENV SCONE_LAS_ADDR=\$SCONE_LAS_ADDR
 
-<span class="s">ENV SCONE_HEAP=200M</span>
-<span class="s">ENV SCONE_STACK=1M</span>
-<span class="s">ENV SCONE_ALLOW_DLOPEN=0</span>
-<span class="s">ENV SCONE_MODE=hw</span>
-<span class="s">ENV SCONE_SYSLIBS=1</span>
-<span class="s">ENV SCONE_VERSION=1</span>
-<span class="s">ENV SCONE_FSPF_MUTABLE=0</span>
-<span class="s">ENV SCONE_LOG=debug</span>
-<span class="s">ENV SCONE_MIN_HEAP=20M</span>
-<span class="s">ENV SCONE_TCS=8</span>
-<span class="s">ENV SCONE_MPROTECT=0</span>
-<span class="s">ENV SCONE_XFRM=3</span>
-<span class="s">ENV SCONE_ISVSVN=0</span>
-<span class="s">ENV SCONE_ISVPRODID=0</span>
-<span class="s">ENV SCONE_EXTENSIONS_PATH=&quot;&quot;</span>
+ENV SCONE_HEAP=200M
+ENV SCONE_STACK=1M
+ENV SCONE_ALLOW_DLOPEN=0
+ENV SCONE_MODE=hw
+ENV SCONE_SYSLIBS=1
+ENV SCONE_VERSION=1
+ENV SCONE_FSPF_MUTABLE=0
+ENV SCONE_LOG=debug
+ENV SCONE_MIN_HEAP=20M
+ENV SCONE_TCS=8
+ENV SCONE_MPROTECT=0
+ENV SCONE_XFRM=3
+ENV SCONE_ISVSVN=0
+ENV SCONE_ISVPRODID=0
+ENV SCONE_EXTENSIONS_PATH=""
 
-<span class="s">CMD sh -c &quot;SCONE_CONFIG_ID=\$SCONE_CONFIG_ID@\$OTP /bin/print-arg-env&quot;</span>
-<span class="s">EOF</span>
-</code></pre></div>
+CMD sh -c "SCONE_CONFIG_ID=\$SCONE_CONFIG_ID@\$OTP /bin/print-arg-env"
+EOF</code></pre>
 <p>We can now build our image as follows</p>
-<div class="highlight"><pre><span></span><code>docker build --build-arg <span class="nv">SESSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SESSION</span><span class="s2">&quot;</span> --build-arg <span class="nv">OTPSECRET</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OTPSECRET</span><span class="s2">&quot;</span> --build-arg <span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_LAS_ADDR</span><span class="s2">&quot;</span> -t sconify_example .
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker build --build-arg SESSION="$SESSION" --build-arg OTPSECRET="$OTPSECRET" --build-arg SCONE_LAS_ADDR="$SCONE_LAS_ADDR" -t sconify_example .</code></pre>
 <p>We  determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device</code></pre>
 <p>To run the generated image, we need to first set the correct OTP using an authenticator:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">OTP</span><span class="o">=</span>...
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export OTP=...</code></pre>
 <p>and then run the container:</p>
-<div class="highlight"><pre><span></span><code>docker run <span class="nv">$MOUNT_SGXDEVICE</span> --network<span class="o">=</span>host -it --rm -e <span class="nv">OTP</span><span class="o">=</span><span class="nv">$OTP</span> sconify_example:latest
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker run $MOUNT_SGXDEVICE --network=host -it --rm -e OTP=$OTP sconify_example:latest</code></pre>
 
               
             </article>
@@ -4337,7 +4326,7 @@ chmod a+x upload_policy.sh
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

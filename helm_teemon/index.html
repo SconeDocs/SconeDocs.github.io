@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/helm_teemon/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3436,7 +3436,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4251,38 +4251,30 @@
 <p>If you haven't yet, please add this repo to Helm.</p>
 <h4 id="create-a-kubernetes-namespace-for-teemon">Create a Kubernetes namespace for TEEMON</h4>
 <p>You need to create a Kubernetes namespace for TEEMON. You can use one of our sample manifests to create namespace <code>teemon</code> and label it to automatically inject image pull secret <code>sconeapss</code> in this namespace:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/namespace-teemon.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/namespace-teemon.yaml</code></pre>
 <h4 id="set-grafana-credentials">Set Grafana credentials</h4>
 <p>By default, Grafana will create the user <code>admin</code> and use Kubernetes secret <code>teemon-grafana</code> as the password. You can create the user and password as follows:</p>
-<div class="highlight"><pre><span></span><code>kubectl create secret generic teemon-grafana --namespace teemon <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">user</span><span class="o">=</span>admin <span class="se">\</span>
-  --from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s1">&#39;ChangeThisPassword&#39;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl create secret generic teemon-grafana --namespace teemon \
+  --from-literal=user=admin \
+  --from-literal=password='ChangeThisPassword'</code></pre>
 <h4 id="install-the-chart">Install the chart</h4>
 <p>Use Helm to install TeeMon and all of its components (cAdvisor, SGX exporter, eBPF exporter, Prometheus and Grafana) in your cluster. We are deploying a Helm release called <code>teemon</code>, with default parameters:</p>
-<div class="highlight"><pre><span></span><code>helm install teemon sconeapps/teemon --namespace teemon
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install teemon sconeapps/teemon --namespace teemon</code></pre>
 <h4 id="customize-the-deploy">Customize the deploy</h4>
 <p>Helm allows you to configure different deploy parameters to adapt TeeMon to your needs (e.g. disable components, customize service ports, change service images). The default values are specified in <code>teemon/values.yaml</code>. You can customize this file or even have multiple files, each one defining a scenario, e.g.:</p>
-<div class="highlight"><pre><span></span><code>helm install my-production-teemon sconeapps/teemon -f /path/to/values-production.yaml
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install my-production-teemon sconeapps/teemon -f /path/to/values-production.yaml</code></pre>
 <p>You can also customize the deploy by passing <code>--set parameter=value</code> arguments to <code>helm install</code> command:</p>
-<div class="highlight"><pre><span></span><code>helm install my-custom-teemon sconeapps/teemon --set cadvisor.enabled<span class="o">=</span><span class="nb">false</span> --set grafana.service.nodePort<span class="o">=</span><span class="m">31197</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">helm install my-custom-teemon sconeapps/teemon --set cadvisor.enabled=false --set grafana.service.nodePort=31197</code></pre>
 <p>Have a look at the <a href="#parameters">Parameters</a> section for a complete list of parameters this chart supports.</p>
 <h3 id="data-source">Data Source</h3>
 <p>This chart automatically deploys a Prometheus service that collects metrics. These metrics are accessible by Grafana via this URL:</p>
-<div class="highlight"><pre><span></span><code>http://teemon-prometheus-server.teemon.svc.cluster.local
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">http://teemon-prometheus-server.teemon.svc.cluster.local</code></pre>
 <h3 id="grafana-and-prometheus-dashboards">Grafana and Prometheus Dashboards</h3>
 <p>You can connect to the Prometheus dashboard using verb <code>port-forward</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl port-forward service/teemon-prometheus-server  <span class="m">8082</span>:80  --namespace teemon
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl port-forward service/teemon-prometheus-server  8082:80  --namespace teemon</code></pre>
 <p>You can now view the Prometheus dashboard in your browser on <code>localhost:8082</code>.</p>
 <p>You can connect to the Grafana dashboard using verb <code>port-forward</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl port-forward service/teemon-grafana  <span class="m">8091</span>:3000  --namespace teemon
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl port-forward service/teemon-grafana  8091:3000  --namespace teemon</code></pre>
 <p>You can now view the Grafana dashboard in your browser on <code>localhost:8091</code>.</p>
 <h3 id="dashboards">Dashboards</h3>
 <p>You can view the Grafana dashboards in your browser as described above. You fist need to log into Grafana using the user <code>admin</code> and the password that you stored in the secret <code>teemon-grafana</code> (see above). The Grafana login screen looks something like this:</p>
@@ -4564,7 +4556,7 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

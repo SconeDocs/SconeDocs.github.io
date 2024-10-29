@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/Exercise-Docu/exercise1/">
       
       <link rel="icon" href="../../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3394,7 +3394,7 @@
   
     <li class="md-nav__item">
       <a href="../../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4190,42 +4190,37 @@ This means that SCONE CAS can verify the integrity of applications and services.
 <p>If you want to run and attest a production CAS running on up-to-date hardware, you might want to spin up a SCONE CAS instance on the Azure Marketplace.</p>
 <h2 id="secure-communication-with-scone-cas">Secure Communication with SCONE CAS</h2>
 <p>After attesting the CAS instance, you will be able to extract the CAS certificate from the SCONE CLI by executing:</p>
-<div class="highlight"><pre><span></span><code>scone cas show-certificate &gt; cas_cert.crt
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">scone cas show-certificate &gt; cas_cert.crt</code></pre>
 <p>You can see the information in the certificate with the command:</p>
-<div class="highlight"><pre><span></span><code>openssl x509 -in cas_cert.crt -text
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">openssl x509 -in cas_cert.crt -text</code></pre>
 <p>You can now use this certificate to connect securely with tools like <code>curl</code> to this SCONE CAS instance.</p>
 <p>We create a policy <code>example_session</code> that defines a value <code>example_value</code> that is exported to everybody via the field <code>export_public: true</code>:</p>
-<div class="highlight"><pre><span></span><code>name: example_session
-version: &quot;0.3&quot;
+<pre class="highlight"><code class="language-yml">name: example_session
+version: "0.3"
 predecessor: 1ffb67d636570ccae5b2e8f8a6c8c6f912f69cc1fe138443e69e42dc783793eb
 secrets:
   - name: example_value
     export_public: true
     kind: ascii
-    value: &quot;42&quot;
+    value: "42"
 access_policy:
   read:
     - CREATOR
   update:
-    - CREATOR
-</code></pre></div>
+    - CREATOR</code></pre>
 <p>You should now be able to retrieve the value of <code>example_value</code> via <code>curl</code> (or similar tool):</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">CAS_ADDR</span><span class="o">=</span>scone-cas.cf
-<span class="nb">export</span> <span class="nv">session_name</span><span class="o">=</span><span class="s2">&quot;example_session&quot;</span>
-<span class="nb">export</span> <span class="nv">value_name</span><span class="o">=</span><span class="s2">&quot;example_value&quot;</span>
+<pre class="highlight"><code class="language-bash">export CAS_ADDR=scone-cas.cf
+export session_name="example_session"
+export value_name="example_value"
 
-curl --cacert  cas_cert.crt  --connect-to cas:8081:<span class="nv">$CAS_ADDR</span>:8081 https://cas:8081/v1/values/session<span class="o">=</span><span class="si">${</span><span class="nv">session_name</span><span class="si">}</span>,secret<span class="o">=</span><span class="si">${</span><span class="nv">value_name</span><span class="si">}</span>
-</code></pre></div>
+curl --cacert  cas_cert.crt  --connect-to cas:8081:$CAS_ADDR:8081 https://cas:8081/v1/values/session=${session_name},secret=${value_name}</code></pre>
 <p>The output will be something like this:</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;42&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;expires&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;renew&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</code></pre></div>
+<pre class="highlight"><code class="language-json">{
+  "kind": "string",
+  "value": "42",
+  "expires": null,
+  "renew": null
+}</code></pre>
 <h2 id="solution">Solution</h2>
 <p>A solution for this task for <code>bash</code> is available in <a href="https://github.com/scontain/Exercise/tree/main/Exercise1">assignment 1</a>](<a href="https://github.com/scontain/Exercise/tree/main/Exercise1">https://github.com/scontain/Exercise/tree/main/Exercise1</a>).</p>
 <h2 id="screencast">Screencast</h2>
@@ -4235,22 +4230,20 @@ curl --cacert  cas_cert.crt  --connect-to cas:8081:<span class="nv">$CAS_ADDR</s
 <ul>
 <li>
 <p><strong>curl returns an error message like:</strong></p>
-<div class="highlight"><pre><span></span><code>curl --cacert  cas_cert.crt  --connect-to cas:8081:$CAS_ADDR:8081 https://cas:8081/v1/values/session=${session_name},secret=${value_name}
+<pre class="highlight"><code class="language-text">curl --cacert  cas_cert.crt  --connect-to cas:8081:$CAS_ADDR:8081 https://cas:8081/v1/values/session=${session_name},secret=${value_name}
 {
-&quot;msg&quot;: [
-    &quot;Failed to read value &#39;example_value&#39; of &#39;/session=example_sessionx&#39; requested by a public client&quot;,
-    &quot;Secret does not exist or is not visible for a public client&quot;
+"msg": [
+    "Failed to read value 'example_value' of '/session=example_sessionx' requested by a public client",
+    "Secret does not exist or is not visible for a public client"
 ]
-}
-</code></pre></div>
+}</code></pre>
 </li>
 </ul>
 <p>The session name is wrong or the value name is wrong or we have updated SCONE CAS and forgot to add the session <code>example_session</code>.</p>
 <ul>
 <li><strong>curl returns a cryptic error message:</strong></li>
 </ul>
-<div class="highlight"><pre><span></span><code>curl: (35) error:0DFFF006:asn1 encoding routines:CRYPTO_internal:EVP lib
-</code></pre></div>
+<pre class="highlight"><code class="language-text">curl: (35) error:0DFFF006:asn1 encoding routines:CRYPTO_internal:EVP lib</code></pre>
 <p>Check if this is caused by a wrong certificate by enabling flag <code>--verbose</code> of <code>curl</code>. Switching on verbose logging might is often a good approach. In this context, it still produces only cryptic information. Anyhow, this error is caused by providing the wrong certificate via <code>--cacert</code>.</p>
 <ul>
 <li>If you experience any additional issues, please let us know via <a href="mailto:info@scontain.com">email</a>. We will add the issue and a proposed solution to this troubleshooting section.</li>
@@ -4324,7 +4317,7 @@ curl --cacert  cas_cert.crt  --connect-to cas:8081:<span class="nv">$CAS_ADDR</s
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.5413a266.min.js"></script>

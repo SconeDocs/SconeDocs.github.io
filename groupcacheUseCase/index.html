@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/groupcacheUseCase/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3384,7 +3384,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4151,93 +4151,86 @@ second, please read how to build <a href="../multistagebuild/">container images 
 </div>
 <h2 id="building-groupcache-without-shielding">Building <strong>groupcache</strong> - without shielding</h2>
 <p>First, start a crosscompiler container. Determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>:</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-docker run <span class="nv">$MOUNT_SGXDEVICE</span> -it  registry.scontain.com/sconecuratedimages/crosscompilers
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+docker run $MOUNT_SGXDEVICE -it  registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
 <p>Second, install the <strong>go</strong> command to simplify the building of <strong>groupcache</strong>:</p>
-<div class="highlight"><pre><span></span><code>apk update
-apk add go git curl
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">apk update
+apk add go git curl</code></pre>
 <p>Now you can build the <strong>groupcache</strong> library as follows:</p>
-<div class="highlight"><pre><span></span><code>go get -compiler gccgo -u github.com/golang/groupcache
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">go get -compiler gccgo -u github.com/golang/groupcache</code></pre>
 <p>Note that flag <strong>-compiler gccgo</strong> is required to ensure that the scone-gccgo is used to compile <strong>groupcache</strong>.</p>
 <p><strong>That's it!</strong>  </p>
 <h3 id="example">Example</h3>
 <p>OK, we should show how to use group cache. We show this for a simple application from <a href="https://gist.github.com/fiorix/816117cfc7573319b72d">fiorix</a>:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; groupcache.go <span class="s">&lt;&lt; EOF</span>
-<span class="s">// Simple groupcache example: https://github.com/golang/groupcache</span>
-<span class="s">// Running 3 instances:</span>
-<span class="s">// go run groupcache.go -addr=:8080 -pool=http://127.0.0.1:8080,http://127.0.0.1:8081,http://127.0.0.1:8082</span>
-<span class="s">// go run groupcache.go -addr=:8081 -pool=http://127.0.0.1:8081,http://127.0.0.1:8080,http://127.0.0.1:8082</span>
-<span class="s">// go run groupcache.go -addr=:8082 -pool=http://127.0.0.1:8082,http://127.0.0.1:8080,http://127.0.0.1:8081</span>
-<span class="s">// Testing:</span>
-<span class="s">// curl localhost:8080/color?name=red</span>
-<span class="s">package main</span>
+<pre class="highlight"><code class="language-bash">cat &gt; groupcache.go &lt;&lt; EOF
+// Simple groupcache example: https://github.com/golang/groupcache
+// Running 3 instances:
+// go run groupcache.go -addr=:8080 -pool=http://127.0.0.1:8080,http://127.0.0.1:8081,http://127.0.0.1:8082
+// go run groupcache.go -addr=:8081 -pool=http://127.0.0.1:8081,http://127.0.0.1:8080,http://127.0.0.1:8082
+// go run groupcache.go -addr=:8082 -pool=http://127.0.0.1:8082,http://127.0.0.1:8080,http://127.0.0.1:8081
+// Testing:
+// curl localhost:8080/color?name=red
+package main
 
-<span class="s">import (</span>
-<span class="s">    &quot;errors&quot;</span>
-<span class="s">    &quot;flag&quot;</span>
-<span class="s">    &quot;log&quot;</span>
-<span class="s">    &quot;net/http&quot;</span>
-<span class="s">    &quot;strings&quot;</span>
-<span class="s">    &quot;context&quot;</span>
-<span class="s">    &quot;github.com/golang/groupcache&quot;</span>
-<span class="s">)</span>
+import (
+    "errors"
+    "flag"
+    "log"
+    "net/http"
+    "strings"
+    "context"
+    "github.com/golang/groupcache"
+)
 
-<span class="s">var Store = map[string][]byte{</span>
-<span class="s">    &quot;red&quot;:   []byte(&quot;#FF0000&quot;),</span>
-<span class="s">    &quot;green&quot;: []byte(&quot;#00FF00&quot;),</span>
-<span class="s">    &quot;blue&quot;:  []byte(&quot;#0000FF&quot;),</span>
-<span class="s">}</span>
+var Store = map[string][]byte{
+    "red":   []byte("#FF0000"),
+    "green": []byte("#00FF00"),
+    "blue":  []byte("#0000FF"),
+}
 
-<span class="s">var Group = groupcache.NewGroup(&quot;foobar&quot;, 64&lt;&lt;20, groupcache.GetterFunc(</span>
-<span class="s">    func(ctx context.Context, key string, dest groupcache.Sink) error {</span>
-<span class="s">        log.Println(&quot;looking up&quot;, key)</span>
-<span class="s">        v, ok := Store[key]</span>
-<span class="s">        if !ok {</span>
-<span class="s">            return errors.New(&quot;color not found&quot;)</span>
-<span class="s">        }</span>
-<span class="s">        dest.SetBytes(v)</span>
-<span class="s">        return nil</span>
-<span class="s">    },</span>
-<span class="s">))</span>
+var Group = groupcache.NewGroup("foobar", 64&lt;&lt;20, groupcache.GetterFunc(
+    func(ctx context.Context, key string, dest groupcache.Sink) error {
+        log.Println("looking up", key)
+        v, ok := Store[key]
+        if !ok {
+            return errors.New("color not found")
+        }
+        dest.SetBytes(v)
+        return nil
+    },
+))
 
-<span class="s">func main() {</span>
-<span class="s">    addr := flag.String(&quot;addr&quot;, &quot;:8080&quot;, &quot;server address&quot;)</span>
-<span class="s">    peers := flag.String(&quot;pool&quot;, &quot;http://localhost:8080&quot;, &quot;server pool list&quot;)</span>
-<span class="s">    flag.Parse()</span>
-<span class="s">    http.HandleFunc(&quot;/color&quot;, func(w http.ResponseWriter, r *http.Request) {</span>
-<span class="s">        color := r.FormValue(&quot;name&quot;)</span>
-<span class="s">        var b []byte</span>
-<span class="s">        err := Group.Get(nil, color, groupcache.AllocatingByteSliceSink(&amp;b))</span>
-<span class="s">        if err != nil {</span>
-<span class="s">            http.Error(w, err.Error(), http.StatusNotFound)</span>
-<span class="s">            return</span>
-<span class="s">        }</span>
-<span class="s">        w.Write(b)</span>
-<span class="s">        w.Write([]byte{&#39;\n&#39;})</span>
-<span class="s">    })</span>
-<span class="s">    p := strings.Split(*peers, &quot;,&quot;)</span>
-<span class="s">    pool := groupcache.NewHTTPPool(p[0])</span>
-<span class="s">    pool.Set(p...)</span>
-<span class="s">    http.ListenAndServe(*addr, nil)</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-</code></pre></div>
+func main() {
+    addr := flag.String("addr", ":8080", "server address")
+    peers := flag.String("pool", "http://localhost:8080", "server pool list")
+    flag.Parse()
+    http.HandleFunc("/color", func(w http.ResponseWriter, r *http.Request) {
+        color := r.FormValue("name")
+        var b []byte
+        err := Group.Get(nil, color, groupcache.AllocatingByteSliceSink(&amp;b))
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusNotFound)
+            return
+        }
+        w.Write(b)
+        w.Write([]byte{'\n'})
+    })
+    p := strings.Split(*peers, ",")
+    pool := groupcache.NewHTTPPool(p[0])
+    pool.Set(p...)
+    http.ListenAndServe(*addr, nil)
+}
+EOF</code></pre>
 <p>Let's compile this with <strong>scone-gccgo</strong>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_HEAP</span><span class="o">=</span>1G
-go build -compiler gccgo -buildmode<span class="o">=</span>exe -gccgoflags -g groupcache.go
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SCONE_HEAP=1G
+go build -compiler gccgo -buildmode=exe -gccgoflags -g groupcache.go</code></pre>
 <p>Run groupcache in the background:</p>
-<div class="highlight"><pre><span></span><code>./groupcache -addr<span class="o">=</span>:8080 -pool<span class="o">=</span>http://127.0.0.1:8080 <span class="p">&amp;</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">./groupcache -addr=:8080 -pool=http://127.0.0.1:8080 &amp;</code></pre>
 <p>And let's query groupcache:</p>
-<div class="highlight"><pre><span></span><code>curl localhost:8080/color?name<span class="o">=</span>green
-<span class="c1">#00FF00</span>
-curl localhost:8080/color?name<span class="o">=</span>red
-<span class="c1">#FF0000</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl localhost:8080/color?name=green
+#00FF00
+curl localhost:8080/color?name=red
+#FF0000</code></pre>
 <h2 id="shielding">Shielding</h2>
 <p>While the above code runs inside of an enclave, there are multiple security issues if that code would run in an untrusted environment:</p>
 <ul>
@@ -4354,7 +4347,7 @@ curl localhost:8080/color?name<span class="o">=</span>red
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

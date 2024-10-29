@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/kubeapps/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3436,7 +3436,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4282,45 +4282,39 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <h2 id="deploying-kubeapps">Deploying Kubeapps</h2>
 <p><code>sconeapps</code> is a private Helm repository. Hence, we need to grant you access and you need a GitHub token to access the <code>sconeapps</code> repo.</p>
 <p>Define an environment variable that contains this token:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">GH_TOKEN</span><span class="o">=</span>...
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export GH_TOKEN=...</code></pre>
 <p>Use the token to give <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
 deploy and manage SCONE-based confidential applications.">Kubeapps</span> access to the <code>sconeapps</code> repository:</p>
-<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$GH_TOKEN</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
-  <span class="nb">echo</span> <span class="s2">&quot;You need to set you github token: https://github.com/settings/tokens/new&quot;</span>
-<span class="k">else</span>
-  cat &gt; kubeapps_values.yml <span class="s">&lt;&lt;EOF</span>
-<span class="s">  apprepository:</span>
-<span class="s">    initialRepos:</span>
-<span class="s">      - name: sconeapps</span>
-<span class="s">        url: https://${GH_TOKEN}@raw.githubusercontent.com/scontain/sconeapps/master/</span>
-<span class="s">      - name: bitnami</span>
-<span class="s">        url: https://charts.bitnami.com/bitnami</span>
-<span class="s">EOF</span>
-<span class="k">fi</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">if [ -z "$GH_TOKEN" ] ; then
+  echo "You need to set you github token: https://github.com/settings/tokens/new"
+else
+  cat &gt; kubeapps_values.yml &lt;&lt;EOF
+  apprepository:
+    initialRepos:
+      - name: sconeapps
+        url: https://${GH_TOKEN}@raw.githubusercontent.com/scontain/sconeapps/master/
+      - name: bitnami
+        url: https://charts.bitnami.com/bitnami
+EOF
+fi</code></pre>
 <p>You can now start Kubeapps with the help of helm as follows:</p>
-<div class="highlight"><pre><span></span><code>helm repo add bitnami https://charts.bitnami.com/bitnami
+<pre class="highlight"><code class="language-bash">helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-kubectl create namespace  kubeapps <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&quot;Does namespace &#39;kubeapps&#39; already exists?&quot;</span>
-helm install -f kubeapps_values.yml kubeapps --namespace kubeapps bitnami/kubeapps --set <span class="nv">useHelm3</span><span class="o">=</span><span class="nb">true</span>
-</code></pre></div>
+kubectl create namespace  kubeapps || echo "Does namespace 'kubeapps' already exists?"
+helm install -f kubeapps_values.yml kubeapps --namespace kubeapps bitnami/kubeapps --set useHelm3=true</code></pre>
 <h2 id="port-forwarding">Port Forwarding</h2>
 <p>To display the dashboard on your browser, you need to forward the kubeapp port to your local machine. Say, you want to present this on <code>localhost:9090</code>, then you can forward the kubeapp port as follows:</p>
-<div class="highlight"><pre><span></span><code>kubectl port-forward -n kubeapps services/kubeapps <span class="m">9090</span>:80
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl port-forward -n kubeapps services/kubeapps 9090:80</code></pre>
 <p>The Kubeapps dashboard can now be viewed at:</p>
 <p><a href="http://localhost:9090/">http://localhost:9090/</a></p>
 <h2 id="access-control">Access Control</h2>
 <p>For production mode, you should define a role-based access control. For testing, you might want to create a simple service account:</p>
-<div class="highlight"><pre><span></span><code>kubectl create serviceaccount kubeapps-operator
-kubectl create clusterrolebinding kubeapps-operator --clusterrole<span class="o">=</span>cluster-admin --serviceaccount<span class="o">=</span>default:kubeapps-operator
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl create serviceaccount kubeapps-operator
+kubectl create clusterrolebinding kubeapps-operator --clusterrole=cluster-admin --serviceaccount=default:kubeapps-operator</code></pre>
 <p>To log into the <span data-tooltip="A dashboard to deploy and manage Kubernetes based applications. It can be used to
 deploy and manage SCONE-based confidential applications.">Kubeapps</span> dashboard, you need to determine the API Token:</p>
-<div class="highlight"><pre><span></span><code><span class="nv">APITOKEN</span><span class="o">=</span><span class="k">$(</span>kubectl get -n default secret <span class="k">$(</span>kubectl get -n default serviceaccount kubeapps-operator -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.secrets[].name}&#39;</span><span class="k">)</span> -o go-template<span class="o">=</span><span class="s1">&#39;{{.data.token | base64decode}}&#39;</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span><span class="k">)</span>
-<span class="nb">echo</span> <span class="nv">$APITOKEN</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">APITOKEN=$(kubectl get -n default secret $(kubectl get -n default serviceaccount kubeapps-operator -o jsonpath='{.secrets[].name}') -o go-template='{{.data.token | base64decode}}' &amp;&amp; echo)
+echo $APITOKEN</code></pre>
 <h2 id="deploying-a-confidential-memcached-with-the-kubeapps-dashboard">Deploying a confidential Memcached with the Kubeapps dashboard</h2>
 <h3 id="prerequisites">Prerequisites</h3>
 <ul>
@@ -4330,15 +4324,13 @@ deploy and manage SCONE-based confidential applications.">Kubeapps</span> dashbo
 <h3 id="upload-policies">Upload policies</h3>
 <p>To deploy Memcached with Kubeapps, you need to upload the policies to CAS first. In this example, we also use a Memcached client to see Memcached in action. In this case, the Memcached session exports a certificate and a key to be used by the client since the Memcached has TLS enabled.</p>
 <p>Submit the policies with the help of SCONE CLI:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">alias</span> <span class="nv">scone</span><span class="o">=</span><span class="s2">&quot;docker run -it --rm \</span>
-<span class="s2">    -v /var/run/docker.sock:/var/run/docker.sock \</span>
-<span class="s2">    -v \&quot;</span><span class="nv">$HOME</span><span class="s2">/.docker/config.json:/root/.docker/config.json\&quot; \</span>
-<span class="s2">    -v \&quot;\$PWD:/root\&quot; \</span>
-<span class="s2">    -w /root \</span>
-<span class="s2">    registry.scontain.com/community/cli &quot;</span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>scone ./upload_policies.sh
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">alias scone="docker run -it --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v \"$HOME/.docker/config.json:/root/.docker/config.json\" \
+    -v \"\$PWD:/root\" \
+    -w /root \
+    registry.scontain.com/community/cli "</code></pre>
+<pre class="highlight"><code class="language-bash">scone ./upload_policies.sh</code></pre>
 <h3 id="deploy-a-new-release-using-the-kubeapps-dashboard">Deploy a new release using the Kubeapps dashboard</h3>
 <p>Search for memcached in Kubeapps catalog.</p>
 <p><center>
@@ -4357,15 +4349,12 @@ deploy and manage SCONE-based confidential applications.">Kubeapps</span> dashbo
 </center></p>
 <h3 id="deploy-a-client-to-see-memcached-in-action">Deploy a client to see Memcached in action</h3>
 <p>Load the environment variables generated by the upload policies step.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">source</span> client_env
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">source client_env</code></pre>
 <p>Apply the Memcached client to see the Memcached in action.</p>
-<div class="highlight"><pre><span></span><code>envsubst &lt; client_deployment.yml <span class="p">|</span> kubectl apply -f -
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">envsubst &lt; client_deployment.yml | kubectl apply -f -</code></pre>
 <p>You can see the logs in using the following command.</p>
-<div class="highlight"><pre><span></span><code>kubectl logs -f <span class="k">$(</span>kubectl get pods -o<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.items[0].metadata.name}&#39;</span> <span class="se">\</span>
-    -l <span class="nv">app</span><span class="o">=</span>memcached-client<span class="k">)</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">kubectl logs -f $(kubectl get pods -o=jsonpath='{.items[0].metadata.name}' \
+    -l app=memcached-client)</code></pre>
 
               
             </article>
@@ -4435,7 +4424,7 @@ deploy and manage SCONE-based confidential applications.">Kubeapps</span> dashbo
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/SCONE_Curated_Images/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3299,7 +3299,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4054,38 +4054,31 @@
 <h1 id="login-in">Login in</h1>
 <p>Access to some SCONE images is restricted. First,  register a free account on <code>gitlab.scontain.com</code>.
 Second, log into to our Scontain registry via:</p>
-<div class="highlight"><pre><span></span><code>docker login registry.scontain.com
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker login registry.scontain.com</code></pre>
 <p>before you will be able to pull any of the private curated images.</p>
 <h1 id="scone-compilers">Scone Compilers</h1>
 <p>To run a local copy of the SCONE (cross-)compilers, just pull the appropriate image on your computer.</p>
 <h2 id="dynamically-linked-binaries">Dynamically-Linked Binaries</h2>
 <p>Even if you have no SGX CPU extension / no SGX driver installed on your computer,
 you can use a standard gcc compiler - as long as the requirements mentioned in <a href="../SCONE_toolchain/">SGX ToolChain</a> are satisfied.</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/muslgcc
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/muslgcc</code></pre>
 <p>Note that the binaries generated with the above image are just native binaries, i.e., they run <strong>outside of enclaves</strong>. To be able to run the binary inside of an enclave, you need to have installed the SCONE runtime library.</p>
 <p>To run a dynamically-linked binary, one needs a special runtime environment. We provide this in form of a (private) container image:</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/crosscompilers:runtime
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/crosscompilers:runtime</code></pre>
 <h2 id="statically-linked-binaries">Statically-Linked Binaries</h2>
 <p>To generate statically-linked secure binaries you need a cross compiler. You can pull
 this image from Docker hub (you need to be granted access rights for that):</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/crosscompilers
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
 <h1 id="scone-hello-world">Scone Hello World</h1>
 <p>You can pull the following (private) image. This image only runs in hardware mode:</p>
-<div class="highlight"><pre><span></span><code>docker pull registry.scontain.com/sconecuratedimages/helloworld
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/helloworld</code></pre>
 <p>You can run on the standard Docker engine - if you have the SGX driver installed. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<div class="highlight"><pre><span></span><code>determine_sgx_device
-&gt; docker run <span class="nv">$MOUNT_SGXDEVICE</span> registry.scontain.com/sconecuratedimages/helloworld
-Hello World
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">determine_sgx_device
+&gt; docker run $MOUNT_SGXDEVICE registry.scontain.com/sconecuratedimages/helloworld
+Hello World</code></pre>
 <p>If you do not have the SGX driver installed, you get an error message:</p>
-<div class="highlight"><pre><span></span><code>&gt; docker run <span class="nv">$MOUNT_SGXDEVICE</span> registry.scontain.com/sconecuratedimages/helloworld
-docker: Error response from daemon: linux runtime spec devices: error gathering device information <span class="k">while</span> adding custom device <span class="s2">&quot;/dev/isgx&quot;</span>: no such file or directory.
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">&gt; docker run $MOUNT_SGXDEVICE registry.scontain.com/sconecuratedimages/helloworld
+docker: Error response from daemon: linux runtime spec devices: error gathering device information while adding custom device "/dev/isgx": no such file or directory.</code></pre>
 <p>In this case, <a href="../sgxinstall/">install the SGX driver</a>. This installation will fail in case you disabled SGX in the BIOS or your CPU is not SGX-enabled.</p>
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/Y4RQGCkwCmxF1KqLLUp78FoQm"><img alt="asciicast" src="https://asciinema.org/a/Y4RQGCkwCmxF1KqLLUp78FoQm.png" /></a></p>
@@ -4131,7 +4124,7 @@ docker: Error response from daemon: linux runtime spec devices: error gathering 
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>

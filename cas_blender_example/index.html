@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://sconedocs.github.io/cas_blender_example/">
       
       <link rel="icon" href="../img/scone-favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-8.2.4">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.2.4">
     
     
       
@@ -3353,7 +3353,7 @@
   
     <li class="md-nav__item">
       <a href="../mono/" class="md-nav__link">
-        Mono
+        C#
       </a>
     </li>
   
@@ -4078,47 +4078,42 @@
 <p>We provide a <a href="../CAS_cli-intro/"><code>scone</code> command line interface</a> that can be executed inside of an enclave itself.
 It can perform an attestation of CAS as well as creating and verifying policies. Hence, we recommend to use the <code>scone</code> <span data-tooltip="A Command Line Interface (CLI) is a textual interface to a computer. It is useful for scripting (i.e., automation) and typically, used for system and service administration.">CLI</span>.  </p>
 <p>We assume that you already started a <a href="../CAS_for_development/">CAS instance</a> and a <a href="../LASIntro/">LAS instance</a> on your local host. Alternatively, you can use our <a href="../public-CAS/">public CAS instance</a> at domain <code>scone-cas.cf</code>. Hence, we set the address of CAS as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">127</span>.0.0.1
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SCONE_CAS_ADDR=127.0.0.1</code></pre>
 <p>If you use one of our <a href="../public-CAS/">public CAS instance</a>, set it as follows:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span>scone-cas.cf
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">export SCONE_CAS_ADDR=scone-cas.cf</code></pre>
 <h2 id="client-certificate">Client Certificate</h2>
 <p>To interact with CAS, we need to create a client certificate.  When we create a session, it is associated with the client certificate of the creator. Any access to this session requires that the client knows the private key of the client certificate.</p>
 <p>Let's create a client certificate without a password. Note that you would typically add a password!</p>
-<div class="highlight"><pre><span></span><code>    mkdir -p conf
-    <span class="k">if</span> <span class="o">[[</span> ! -f conf/client.crt <span class="o">||</span> ! -f conf/client-key.key  <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-      openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key <span class="se">\</span>
-      -days <span class="m">31</span> -nodes -sha256 <span class="se">\</span>
-      -subj <span class="s2">&quot;/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com&quot;</span> <span class="se">\</span>
-      -reqexts SAN -extensions SAN <span class="se">\</span>
-      -config &lt;<span class="o">(</span>cat /etc/ssl/openssl.cnf &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;[SAN]\nsubjectAltName=DNS:www.scontain.com&#39;</span><span class="o">))</span>
-    <span class="k">fi</span>
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">    mkdir -p conf
+    if [[ ! -f conf/client.crt || ! -f conf/client-key.key  ]] ; then
+      openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key \
+      -days 31 -nodes -sha256 \
+      -subj "/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com" \
+      -reqexts SAN -extensions SAN \
+      -config &lt;(cat /etc/ssl/openssl.cnf &lt;(printf '[SAN]\nsubjectAltName=DNS:www.scontain.com'))
+    fi</code></pre>
 <h2 id="hello-world-session">Hello World Session</h2>
 <p>Let's create a minimal session:</p>
-<div class="highlight"><pre><span></span><code>cat &gt; session.yml <span class="s">&lt;&lt;EOF</span>
-<span class="s">name: blender</span>
-<span class="s">digest: create</span>
+<pre class="highlight"><code class="language-bash">cat &gt; session.yml &lt;&lt;EOF
+name: blender
+digest: create
 
-<span class="s">services:</span>
-<span class="s">   - name: application</span>
-<span class="s">     image_name: registry.scontain.com/sconecuratedimages/iexec:blender</span>
-<span class="s">     mrenclaves: [96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2]</span>
-<span class="s">     command: blender -b /encryptedInputs/iexec-rlc.blend -o /encryptedOutputs/ -f 1</span>
-<span class="s">     pwd: /</span>
-<span class="s">     environment:</span>
-<span class="s">        SCONE_MODE: hw</span>
+services:
+   - name: application
+     image_name: registry.scontain.com/sconecuratedimages/iexec:blender
+     mrenclaves: [96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2]
+     command: blender -b /encryptedInputs/iexec-rlc.blend -o /encryptedOutputs/ -f 1
+     pwd: /
+     environment:
+        SCONE_MODE: hw
 
-<span class="s">images:</span>
-<span class="s">   - name: registry.scontain.com/sconecuratedimages/iexec:blender</span>
-<span class="s">     mrenclaves: [96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2]</span>
-<span class="s">     tags: [demo]</span>
-<span class="s">EOF</span>
-</code></pre></div>
+images:
+   - name: registry.scontain.com/sconecuratedimages/iexec:blender
+     mrenclaves: [96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2]
+     tags: [demo]
+EOF</code></pre>
 <p>We can now upload the session as follows:</p>
-<div class="highlight"><pre><span></span><code>    curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">    curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yml -X POST https://$SCONE_CAS_ADDR:8081/session</code></pre>
 <p>This results in an output similar like this:</p>
 <p><code>Created Session[id=00ed7ade-bba6-4d43-9135-51d0ca2da9ba, name=blender, status=Pending]</code></p>
 <div class="admonition warning">
@@ -4128,10 +4123,9 @@ It can perform an attestation of CAS as well as creating and verifying policies.
 </div>
 <p>In case the session with name <code>blender</code> already exists, you must chose a different session name.</p>
 <p>We can read the session as follows:</p>
-<div class="highlight"><pre><span></span><code>curl -k -s --cert conf/client.crt --key conf/client-key.key https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/session/blender
-</code></pre></div>
+<pre class="highlight"><code class="language-bash">curl -k -s --cert conf/client.crt --key conf/client-key.key https://$SCONE_CAS_ADDR:8081/session/blender</code></pre>
 <p>This will result in an output like this:</p>
-<div class="highlight"><pre><span></span><code>---
+<pre class="highlight"><code>---
 name: blender
 digest: 313c6c3b824f0a560c445c8ef0cf69781345aae753bdbeaedbfff15c5a348099
 board_members: []
@@ -4139,21 +4133,20 @@ board_policy:
   minimum: 0
   timeout: 30
 images:
-  - name: &quot;registry.scontain.com/sconecuratedimages/iexec:blender&quot;
+  - name: "registry.scontain.com/sconecuratedimages/iexec:blender"
     mrenclaves:
       - 96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2
     tags:
       - demo
 services:
   - name: application
-    image_name: &quot;registry.scontain.com/sconecuratedimages/iexec:blender&quot;
+    image_name: "registry.scontain.com/sconecuratedimages/iexec:blender"
     mrenclaves:
       - 96936b6760d1f59b18f2c1a3fa2be205a91d6667dfc6635e8d0bbc1687bc03f2
     environment:
       SCONE_MODE: hw
     command: blender -b /encryptedInputs/iexec-rlc.blend -o /encryptedOutputs/ -f 1
-    pwd: /
-</code></pre></div>
+    pwd: /</code></pre>
 
               
             </article>
@@ -4223,7 +4216,7 @@ services:
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.bd0b6b67.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.5413a266.min.js"></script>
