@@ -1524,8 +1524,29 @@
     Operator Controller Reference
   </a>
   
-    <nav class="md-nav" aria-label="Operator Controller Reference">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-deployment-of-the-operator" class="md-nav__link">
+    Manual Deployment of the Operator
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Deployment of the Operator">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-config" class="md-nav__link">
+    Kubernetes Config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cert-manager" class="md-nav__link">
+    cert-manager
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#operator-namespace" class="md-nav__link">
@@ -4153,8 +4174,29 @@
     Operator Controller Reference
   </a>
   
-    <nav class="md-nav" aria-label="Operator Controller Reference">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-deployment-of-the-operator" class="md-nav__link">
+    Manual Deployment of the Operator
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Deployment of the Operator">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kubernetes-config" class="md-nav__link">
+    Kubernetes Config
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cert-manager" class="md-nav__link">
+    cert-manager
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#operator-namespace" class="md-nav__link">
@@ -4286,7 +4328,8 @@ export REGISTRY_EMAIL=&lt;your-email&gt; # email address of the service account
 export DCAP_KEY="00000000000000000000000000000000" # replace by your Intel DCAP API - keep as is on Azure</code></pre>
 <p>You can get the DCAP API Key from <a href="https://api.portal.trustedservices.intel.com/provisioning-certification">Intel</a>. Your access token needs to be able to read the registry: for more details, please see the section <a href="https://sconedocs.github.io/registry/#create-an-access-token">Create an Access Token</a>.</p>
 <p>You can now deploy or update the SCONE operator as follows:</p>
-<pre class="highlight"><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/operator_controller | bash -s - --reconcile --update --plugin --verbose --dcap-api "$DCAP_KEY" --secret-operator  --username $REGISTRY_USERNAME --access-token $REGISTRY_ACCESS_TOKEN --email $REGISTRY_EMAIL</code></pre>
+<pre class="highlight"><code class="language-bash">export VERSION=5.8.1 # SCONE version of your choice
+curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/$VERSION/operator_controller | bash -s - --reconcile --update --plugin --verbose --dcap-api "$DCAP_KEY" --secret-operator  --username $REGISTRY_USERNAME --access-token $REGISTRY_ACCESS_TOKEN --email $REGISTRY_EMAIL</code></pre>
 <p>Flags:</p>
 <ul>
 <li>
@@ -4342,7 +4385,7 @@ Options:
     -c | --create NAMESPACE
                   Create namespace "NAMESPACE" for provisioning SCONE CAS (or another service).
     --username REGISTRY_USERNAME
-                  To create/update/fix the pull secrets ('sconeapps' and 'scone-operator-pull'), 
+                  To create/update/fix the pull secrets ('sconeapps' and 'scone-operator-pull'),
                   one needs to specify the user name, access token, and email of the registry.
                   Signup for an account: https://sconedocs.github.io/registry/
     --access-token REGISTRY_ACCESS_TOKEN
@@ -4354,7 +4397,7 @@ Options:
     --plugin-path PATH
                   Path where we should write the kubectl plugin binary. The path must be writeable.
                   Default value: "/Users/christoffetzer/.local/bin/kubectl-provision"
-                  The prefix of the default value is the last path on your shell $PATH that is writeable. 
+                  The prefix of the default value is the last path on your shell $PATH that is writeable.
                   If none is writeable and you set --plugin, you must specify --plugin-path PATH.
     --secret-operator
                   Check/Reconcile/Update the Secret Operator (used to inject Kubernetes Secrets into Kubernetes namespaces)
@@ -4378,41 +4421,35 @@ Options:
     --help
                   Output this usage information and exit.
 
-Default Configuration: 
-  - CERT_MANAGER=https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.yaml
+Default Configuration:
+  - CERT_MANAGER=https://github.com/cert-manager/cert-manager/releases/download/v1.16.0/cert-manager.yaml
   - DEFAULT_NAMESPACE=scone-system
-  - HELM_CHART=https://raw.githubusercontent.com/scontain/operator/main/scone-operator-5.8.0.tgz
-  - LAS_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0/las.yaml
-  - SGXPLUGIN_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0/sgxplugin.yaml
+  - HELM_CHART=https://raw.githubusercontent.com/scontain/operator/main/scone-operator-5.8.1.tgz
+  - LAS_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.1/las.yaml
+  - SGXPLUGIN_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.1/sgxplugin.yaml
   - REGISTRY=registry.scontain.com
   - IMAGE_REPO=registry.scontain.com/scone.cloud
-  - KUBECTLPLUGIN=https://raw.githubusercontent.com/scontain/SH/master/5.8.0/kubectl-provision
-  - SECRET_OPERATOR_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.0/secrets_operator.yaml
-  - IMPS_HELM_CHART=banzaicloud-stable/imagepullsecrets
-  - IMPS_HELM_REPO=banzaicloud-stable https://kubernetes-charts.banzaicloud.com
-  - VERSION=5.8.0
-You can overwrite the defaults by exporting these environment variables before executing this script.```
-
-## Manual Deployment of the Operator
-
-!!! note "Use the Operator Controller to deploy the SCONE Operator"
-    We do not recommend installing the SCONE Operator manually. This description explains the individual steps that need to be performed in case you want to customize the Operator Controller.
-
-We need to install a set of prerequisites to install the SCONE Operator. After the SCONE operator is up and running, each of the custom resources `SGXPlugin`, `LAS`, and `CAS` can be installed separately by deploying and creating a custom resource.
-
-### Kubernetes Config
-
-The first step is to ensure you have access to your Kubernetes cluster.
-
-!!! note "KUBECONFIG"
-    We assume you can access your Kubernetes cluster through your `$HOME/.kube/config` file or the `KUBECONFIG` environment variable.
-
-### `cert-manager`
-
-The `cert-manager` is a prerequisite of the SCONE operator. You can check if the `cert-manager` is installed using `kubectl`:
-
-```bash
-kubectl get pods -A | grep cert-manager</code></pre>
+  - KUBECTLPLUGIN=https://raw.githubusercontent.com/scontain/SH/master/5.8.1/kubectl-provision
+  - SECRET_OPERATOR_MANIFEST=https://raw.githubusercontent.com/scontain/manifests/main/5.8.1/secrets_operator.yaml
+  - IMPS_HELM_CHART=banzaicloud-mirror/imagepullsecrets
+  - IMPS_HELM_REPO=banzaicloud-mirror https://raw.githubusercontent.com/scontain/imps/refs/heads/registry
+  - VERSION=5.8.1
+You can overwrite the defaults by exporting these environment variables before executing this script.</code></pre>
+<h2 id="manual-deployment-of-the-operator">Manual Deployment of the Operator</h2>
+<div class="admonition note">
+<p class="admonition-title">Use the Operator Controller to deploy the SCONE Operator</p>
+<p>We do not recommend installing the SCONE Operator manually. This description explains the individual steps that need to be performed in case you want to customize the Operator Controller.</p>
+</div>
+<p>We need to install a set of prerequisites to install the SCONE Operator. After the SCONE operator is up and running, each of the custom resources <code>SGXPlugin</code>, <code>LAS</code>, and <code>CAS</code> can be installed separately by deploying and creating a custom resource.</p>
+<h3 id="kubernetes-config">Kubernetes Config</h3>
+<p>The first step is to ensure you have access to your Kubernetes cluster.</p>
+<div class="admonition note">
+<p class="admonition-title">KUBECONFIG</p>
+<p>We assume you can access your Kubernetes cluster through your <code>$HOME/.kube/config</code> file or the <code>KUBECONFIG</code> environment variable.</p>
+</div>
+<h3 id="cert-manager"><code>cert-manager</code></h3>
+<p>The <code>cert-manager</code> is a prerequisite of the SCONE operator. You can check if the <code>cert-manager</code> is installed using <code>kubectl</code>:</p>
+<pre class="highlight"><code class="language-bash">kubectl get pods -A | grep cert-manager</code></pre>
 <p>If no <code>cert-manager</code> pod is running,  you can install <code>cert-manager</code> using <code>kubectl</code> or <code>helm</code>. Our recommendation, however, is to install the latest release using <code>kubectl</code> as follows:</p>
 <pre class="highlight"><code class="language-bash">kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.10.1/cert-manager.yaml</code></pre>
 <p>Please refer to the <a href="https://cert-manager.io/docs/installation/">official installation instructions</a> for up-to-date version information.</p>
@@ -4455,8 +4492,8 @@ export REGISTRY_EMAIL=&lt;your-email&gt; # email address of the service account<
 <h3 id="automatically-injecting-pull-secrets">Automatically injecting Pull Secrets</h3>
 <p>The SCONE images require defining a pull secret. This can be inconvenient since a user would need to add the correct pull secret in each namespace that needs access to one of these images.
 Since the operator already defines this pull secret, one can automate the distribution of this secret to other namespaces with the help of a secrets operator.</p>
-<pre class="highlight"><code class="language-bash">helm repo add banzaicloud-stable https://kubernetes-charts.banzaicloud.com
-helm install imps banzaicloud-stable/imagepullsecrets -n scone-system</code></pre>
+<pre class="highlight"><code class="language-bash">helm repo add banzaicloud-mirror https://raw.githubusercontent.com/scontain/imps/refs/heads/registry
+helm install imps banzaicloud-mirror/imagepullsecrets -n scone-system</code></pre>
 <p>Creating a secret injector for secret <code>sconeapps</code>, i.e., injecting into all namespaces that request this secret by copying form namespace <code>scone-system</code>:</p>
 <pre class="highlight"><code class="language-bash">kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/secrets_operator.yaml</code></pre>
 <h3 id="using-helm-to-install-the-cert-manager">Using <code>helm</code> to install the cert-manager</h3>
