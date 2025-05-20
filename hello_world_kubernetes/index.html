@@ -1774,15 +1774,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#install-sgx-device-plugin" class="md-nav__link">
-    Install SGX device plugin
+  <a href="#set-yourself-a-workspace" class="md-nav__link">
+    Set yourself a workspace
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#set-yourself-a-workspace" class="md-nav__link">
-    Set yourself a workspace
+  <a href="#install-scone-operator" class="md-nav__link">
+    Install SCONE Operator
   </a>
   
 </li>
@@ -4150,15 +4150,15 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#install-sgx-device-plugin" class="md-nav__link">
-    Install SGX device plugin
+  <a href="#set-yourself-a-workspace" class="md-nav__link">
+    Set yourself a workspace
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#set-yourself-a-workspace" class="md-nav__link">
-    Set yourself a workspace
+  <a href="#install-scone-operator" class="md-nav__link">
+    Install SCONE Operator
   </a>
   
 </li>
@@ -4266,47 +4266,41 @@
 <p>This tutorial assumes that you have access to a Kubernetes cluster (through <code>kubectl</code>), and that you are deploying everything to a separate namespace, called <code>hello-scone</code>. Namespaces are a good way to separate resources, not to mention how it makes the clean-up process a lot easier at the end:</p>
 <pre class="highlight"><code class="language-bash">kubectl create namespace hello-scone</code></pre>
 <p>Don't forget to specify it by adding <code>-n hello-scone</code> to your <code>kubectl</code> commands.</p>
-<h5 id="install-sgx-device-plugin">Install SGX device plugin</h5>
-<p>SGX applications need access to the Intel SGX driver, a char device located at the host machine. The device name might differ depending on the driver implementation, but the most common ones are <code>/dev/sgx/enclave</code> (DCAP) and <code>/dev/isgx</code> (IAS/out-of-tree). Starting on 5.11, the Linux kernel includes the SGX devices at <code>/dev/sgx_enclave</code> and <code>/dev/sgx_provision</code>. If you are in a cluster context, you need the right device mounted into the container. NOTE: For IAS drivers, it can be quite difficult to get SGX to run: Please use DCAP-capable servers instead.</p>
-<p>We provide an SGX device plugin for Kubernetes, which lets you request the SGX driver through the <code>resource.limits</code> field (just like CPU or RAM). The device plugin handles different driver names transparently, and also allows your applications to run unprivileged (which is always good for security).</p>
-<p>The SGX device plugin can be easily installed with the help of Helm:</p>
-<pre class="highlight"><code class="language-bash">helm install sgxdevplugin sconeapps/sgxdevplugin</code></pre>
-<p>Please refer to <a href="https://sconedocs.github.io/helm_sgxdevplugin/">Kubernetes SGX plugin documentation</a> for more details and Helm setup instructions.</p>
-<p>This tutorial assumes that you have the SGX device plugin running on your cluster.</p>
+<h5 id="set-yourself-a-workspace">Set yourself a workspace</h5>
+<p>This tutorial generates a number of files, which need to be stored in a specific location. You may run the following commands in any directory of your choice; however, it is recommended to create a temporary directory to keep things organized.</p>
+<pre class="highlight"><code class="language-bash">cd $(mktemp -d)</code></pre>
+<h5 id="install-scone-operator">Install SCONE Operator</h5>
+<p>SGX applications need access to the Intel SGX driver. We provide an SGX device plugin for Kubernetes, which lets you request the SGX driver through the <code>resource.limits</code> field (just like CPU or RAM). The device plugin handles different driver versions transparently, and also allows your applications to run unprivileged (which is always good for security).</p>
+<blockquote>
+<p><strong>NOTE</strong>: For IAS drivers, it can be quite difficult to get SGX to run: Please use DCAP-capable servers instead.</p>
+</blockquote>
+<p>To install the SGX device plugin on your Kubernetes cluster, you can use the SCONE Operator. The SCONE Kubernetes Operator automates the management of SCONE-related services. Once deployed, it will install both the SGX device plugin and the Local Attestation Service (LAS), futher required for remote attestation.</p>
+<p>The SCONE Operator can be easily installed with:</p>
+<pre class="highlight"><code class="language-bash">export SCONE_REGISTRY_USERNAME=&lt;YOUR-SCONTAIN-REGISTRY-USERNAME&gt;
+export SCONE_REGISTRY_EMAIL=&lt;YOUR-EMAIL-THAT-YOU-REGISTERED-AT-SCONTAIN-REGISTRY&gt;
+export SCONE_REGISTRY_ACCESS_TOKEN=&lt;YOUR-SCONTAIN-REGISTRY-TOKEN&gt;
+export DCAP_KEY=&lt;YOUR-DCAP-KEY&gt;
+export SCONE_VERSION=5.9.0-rc.9
+
+curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/$SCONE_VERSION/operator_controller | bash -s - \
+  --plugin --reconcile --update --secret-operator --verbose \
+  --username $SCONE_REGISTRY_USERNAME \
+  --access-token $SCONE_REGISTRY_ACCESS_TOKEN \
+  --email $SCONE_REGISTRY_EMAIL \
+  --dcap-api $DCAP_KEY \
+  --set-version $SCONE_VERSION</code></pre>
+<p>Please refer to <a href="https://sconedocs.github.io/1_scone_operator">SCONE Operator user manual</a> for more details.</p>
 <blockquote>
 <p><strong>NOTE</strong>: If you don't have Intel SGX in your cluster, you can run SCONE in simulated mode by setting the environment variable <code>SCONE_MODE=sim</code>. Intel SGX security guarantees do not apply in this case.</p>
 </blockquote>
-<h5 id="set-yourself-a-workspace">Set yourself a workspace</h5>
-<p>A lot of files are created through this tutorial, and they have to be somewhere. Choose whatever directory you want to run the commands below, but it might be a good idea to create a temporary one:</p>
-<pre class="highlight"><code class="language-bash">cd $(mktemp -d)</code></pre>
-<p>We use the following base image:</p>
-<pre class="highlight"><code class="language-bash">export BASE_IMAGE=registry.scontain.com/sconecuratedimages/kubernetes:python-3.7.3-alpine3.10-scone5.6.0</code></pre>
-<p>Have fun!</p>
 <h5 id="set-a-configuration-and-attestation-service-cas">Set a Configuration and Attestation Service (CAS)</h5>
-<p>When remote attestation enters the scene, you will need a CAS to provide attestation, configuration and secrets. Export now the address of your CAS. If you don't have your own CAS, use our <a href="https://sconedocs.github.io/public-CAS/">public one</a> at scone-cas.cf:</p>
-<pre class="highlight"><code class="language-bash">export SCONE_CAS_ADDR=scone-cas.cf</code></pre>
-<p>Now, generate client certificates (needed to submit a new policy (a.k.a. session) to CAS):</p>
-<pre class="highlight"><code class="language-bash">mkdir -p conf
-if [[ ! -f conf/client.crt || ! -f conf/client-key.key  ]] ; then
-    openssl req -x509 -newkey rsa:4096 -out conf/client.crt -keyout conf/client-key.key  -days 31 -nodes -sha256 -subj "/C=US/ST=Dresden/L=Saxony/O=Scontain/OU=Org/CN=www.scontain.com" -reqexts SAN -extensions SAN -config &lt;(cat /etc/ssl/openssl.cnf \
-&lt;(printf '[SAN]\nsubjectAltName=DNS:www.scontain.com'))
-fi</code></pre>
-<p>Create a <a href="https://sconedocs.github.io/namespace/">CAS namespace</a> for your sessions.</p>
-<pre class="highlight"><code class="language-bash">export NS=HelloWorld-$RANDOM-$RANDOM
-cat &gt; namespace.yaml &lt;&lt;EOF
-name: $NS
-version: "0.3"
+<p>When remote attestation enters the scene, you will also need a CAS to provide attestation, configuration and secrets. To set a CAS in the cluster you should run:</p>
+<pre class="highlight"><code class="language-bash">kubectl provision cas cas -n hello-scone</code></pre>
+<p>This tutorial assumes that at the end of this step you should have a cluster with a dedicated <code>hello-scone</code> namespace, the SCONE Operator installed (including the SGX device plugin and LAS), and a CAS running.</p>
+<pre class="highlight"><code class="language-console">$ kubectl get cas -n hello-scone 
 
-access_policy:
-  read:
-   - CREATOR
-  update:
-   - CREATOR
-  create_sessions:
-   - CREATOR
-
-EOF
-curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @namespace.yaml -X POST https://$SCONE_CAS_ADDR:8081/v1/sessions</code></pre>
+NAME   STATUS    PHASE     PROVISIONED   ATTESTABLE   SNAPSHOTS   MIGRATION   VERSION      AGE
+cas    HEALTHY   HEALTHY   Yes           Yes          Persisted   3/3         5.9.0-rc.9   7m27s</code></pre>
 <h3 id="hello-world">Hello World!</h3>
 <p>Let's start by writing a simple Python webserver: it only returns the message <code>Hello World!</code> and the value of the environment variable <code>GREETING</code>.</p>
 <pre class="highlight"><code class="language-bash">mkdir -p app
@@ -4330,17 +4324,35 @@ print("Starting server")
 
 httpd.serve_forever()
 EOF</code></pre>
-<p>To build this application with SCONE, simply use our Python 3.7 curated image as base. The Python interpreter will run inside of an enclave!</p>
-<pre class="highlight"><code class="language-bash">cat &gt; Dockerfile &lt;&lt; EOF
+<p>To build this application with SCONE, simply use our Python curated image as base. The Python interpreter will run inside of an enclave!</p>
+<pre class="highlight"><code class="language-bash">export BASE_IMAGE="registry.scontain.com/sconecuratedimages/python:3.10.6-alpine3.16-scone5.9.0"
+
+cat &gt; Dockerfile &lt;&lt; EOF
 FROM $BASE_IMAGE
 EXPOSE 8080
 COPY app /app
 CMD [ "python3", "/app/server.py" ]
 EOF</code></pre>
-<p>Set the name of the image. <strong>You must have push permissions to the choosen repo!</strong> If you already have an image, skip the building process.</p>
-<pre class="highlight"><code class="language-bash">export IMAGE=registry.scontain.com/sconecuratedimages/kubernetes:hello-k8s-scone0.1
+<p>Set the name of the image. <strong>You must have push permissions to the chosen repo!</strong> If you already have an image, skip the building process.</p>
+<pre class="highlight"><code class="language-bash">export IMAGE=&lt;YOUR REGISTRY&gt;/&lt;YOUR REPO&gt;:hello-k8s-scone0.1
 docker build --pull . -t $IMAGE &amp;&amp; docker push $IMAGE</code></pre>
 <p>Deploying the application with Kubernetes is also simple: we just need a deployment and a service exposing it.</p>
+<blockquote>
+<p><strong>NOTE</strong>: If your image is stored in a private registry, don't forget to configure the secrets to pull it in your Kubernetes manifest. Take the command below in the terminal.
+<pre class="highlight"><code class="language-bash">kubectl create secret docker-registry k8s-scone-demo-pull-secrets \
+  --docker-server="&lt;YOUR REGISTRY&gt;" \
+  --docker-username="&lt;YOUR REGISTRY USERNAME&gt;" \
+  --docker-password="&lt;YOUR REGISTRY ACCESS TOKEN&gt;" \
+  --docker-email="&lt;YOUR REGISTRY EMAIL&gt;" \
+  --namespace hello-scone</code></pre>
+And modify <strong>all</strong> the application Kubernetes manifest below adding the section <code>imagePullSecrets</code>.
+<pre class="highlight"><code class="language-yaml">spec:
+  containers:
+  - name: hello-world
+    ...
+  imagePullSecrets:
+  - name: k8s-scone-demo-pull-secrets</code></pre></p>
+</blockquote>
 <p>Write the Kubernetes manifests:</p>
 <pre class="highlight"><code class="language-bash">cat &gt; app.yaml &lt;&lt; EOF
 apiVersion: apps/v1
@@ -4364,6 +4376,8 @@ spec:
         ports:
         - containerPort: 8080
         env:
+        - name: SCONE_ALLOW_DLOPEN
+          value: "2"
         - name: GREETING
           value: howdy!
         resources:
@@ -4383,10 +4397,13 @@ spec:
   selector:
     run: hello-world
 EOF</code></pre>
+<blockquote>
+<p><strong>NOTE</strong>: <code>SCONE_ALLOW_DLOPEN="2"</code> should only be used for debugging. It allows loading of unauthenticated, unencrypted libraries after startup (e.g., Python modules). For production, use <code>SCONE_ALLOW_DLOPEN="1"</code> or leave it undefined. <strong>Never</strong> use <code>"2"</code> in production.</p>
+</blockquote>
 <p>Now, submit the manifests to the Kubernetes API, using <code>kubectl</code> command:</p>
 <pre class="highlight"><code class="language-bash">kubectl create -f app.yaml -n hello-scone</code></pre>
 <p>Now that everything is deployed, you can access your Python app running on your cluster. Forward your local <code>8080</code> port to the service port:</p>
-<pre class="highlight"><code class="language-bash">kubectl port-forward svc/hello-world 8080:8080 -n hello-scone</code></pre>
+<pre class="highlight"><code class="language-bash">kubectl port-forward svc/hello-world 8080:8080 -n hello-scone &amp;</code></pre>
 <p>The application will be available at your <a href="http://localhost:8080">http://localhost:8080</a>:</p>
 <pre class="highlight"><code class="language-bash">$ curl localhost:8080
 Hello World!
@@ -4394,18 +4411,16 @@ $GREETING is: howdy!</code></pre>
 <h3 id="run-with-remote-attestation">Run with remote attestation</h3>
 <p>SCONE provides a remote attestation feature, so you make sure your application is running unmodified. It's also possible to have secrets and configuration delivered directly to the attested enclave!</p>
 <p>The remote attestation is provided by two components: LAS (local attestation service, runs on the cluster) and CAS (a trusted service that runs elsewhere. We provide a public one in scone-cas.cf).</p>
-<p>You can deploy LAS to your cluster through our LAS Helm chart:</p>
-<pre class="highlight"><code class="language-bash">helm install las sconeapps/las</code></pre>
 <p>To setup remote attestation, you will need a session file and the <code>MRENCLAVE</code>, which is a unique signature of your application. Extract <code>MRENCLAVE</code> of your application by running its container with the environment variable <code>SCONE_HASH</code> set to <code>1</code>:</p>
-<pre class="highlight"><code class="language-bash">MRENCLAVE=$(docker run -i --rm -e "SCONE_HASH=1" $IMAGE)</code></pre>
+<pre class="highlight"><code class="language-bash">MRENCLAVE=$(docker run -i --rm -e "SCONE_HASH=1" -e "SCONE_ALLOW_DLOPEN=2" $IMAGE)</code></pre>
 <p>Then create a session file. Please note that we are also defining a secret <code>GREETING</code>. Only the <code>MRENCLAVES</code> registered in this session file will be allowed to see such secret.</p>
 <pre class="highlight"><code class="language-bash">cat &gt; session.yaml &lt;&lt; EOF
-name: $NS/hello-k8s-scone
-version: "0.3"
+name: hello-k8s-scone
+version: "0.3.11"
 
 security:
   attestation:
-    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed]
+    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed, insecure-configuration]
     ignore_advisories: "*"
 
 services:
@@ -4416,8 +4431,10 @@ services:
      environment:
         GREETING: hello from SCONE!!!
 EOF</code></pre>
-<p>Now, <a href="https://sconedocs.github.io/cas_blender_example/">post the session file</a> to your CAS of choice:</p>
-<pre class="highlight"><code class="language-bash">curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session.yaml -X POST https://$SCONE_CAS_ADDR:8081/v1/sessions</code></pre>
+<p>Now, <a href="https://sconedocs.github.io/cas_blender_example/">post the session file</a> to your CAS:</p>
+<pre class="highlight"><code class="language-bash">kubectl port-forward sts/cas 8081:8081 -n hello-scone &amp;
+scone cas attest 127.0.0.1:8081 --accept-group-out-of-date --accept-sw-hardening-needed --accept-configuration-needed --allow-cas-owner-secret-access --isvprodid 41316 --retries 10 --isvsvn 5 --mrsigner 195e5a6df987d6a515dd083750c1ea352283f8364d3ec9142b0d593988c6ed2d
+scone session create --cas 127.0.0.1:8081 session.yaml</code></pre>
 <p>Once you submit the session file, you just need to inject the CAS address into your Deployment manifest. To showcase that, we're creating a new Deployment:</p>
 <pre class="highlight"><code class="language-bash">cat &gt; attested-app.yaml &lt;&lt; EOF
 apiVersion: apps/v1
@@ -4442,13 +4459,15 @@ spec:
         - containerPort: 8080
         env:
         - name: SCONE_CAS_ADDR
-          value: $SCONE_CAS_ADDR
+          value: cas.hello-scone
         - name: SCONE_CONFIG_ID
-          value: $NS/hello-k8s-scone/application
+          value: hello-k8s-scone/application
         - name: SCONE_LAS_ADDR
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
+        - name: SCONE_ALLOW_DLOPEN
+          value: "2"
         resources:
           limits:
             sgx.intel.com/enclave: 1
@@ -4466,18 +4485,18 @@ spec:
   selector:
     run: attested-hello-world
 EOF</code></pre>
-<p><strong>NOTE</strong>: The environment defined in the Kubernetes manifest won't be considered once your app is attested. The environment will be retrieved from your session file.</p>
+<p><strong>NOTE</strong>: The environment variables defined in the Kubernetes manifest won't be considered once your app is attested. The environment will be retrieved from your session file.</p>
 <p>Deploy your attested app:</p>
 <pre class="highlight"><code class="language-bash">kubectl create -f attested-app.yaml -n hello-scone</code></pre>
 <p>Once again, forward your local port 8082 to the service port:</p>
-<pre class="highlight"><code class="language-bash">kubectl port-forward svc/attested-hello-world 8082:8080 -n hello-scone</code></pre>
+<pre class="highlight"><code class="language-bash">kubectl port-forward svc/attested-hello-world 8082:8080 -n hello-scone &amp;</code></pre>
 <p>The attested application will be available at your <a href="http://localhost:8082">http://localhost:8082</a>:</p>
 <pre class="highlight"><code class="language-bash">$ curl localhost:8082
 Hello World!
 $GREETING is: hello from SCONE!!!</code></pre>
 <h3 id="tls-with-certificates-auto-generated-by-cas">TLS with certificates auto-generated by CAS</h3>
 <p>The CAS service can also generate secrets and certificates automatically. Combined with access policies, it means that such auto-generated secrets and certificates will be seen only by certain applications. No human (e.g. a system operator) will ever see them: they only exist inside of SGX enclaves.</p>
-<p>To showcase such feature, let's use the same application as last example. But now, we serve the traffic over TLS, and we let CAS generate the server certificates.</p>
+<p>To showcase such feature, let's use the same application as the last example. But now, we serve the traffic over TLS, and we let CAS generate the server certificates.</p>
 <p>Start by rewriting our application to serve with TLS:</p>
 <pre class="highlight"><code class="language-bash">cat &gt; app/server-tls.py &lt;&lt; EOF
 from http.server import HTTPServer
@@ -4515,18 +4534,16 @@ COPY app /app
 CMD [ "python3" ]
 EOF</code></pre>
 <p>Build the updated image:</p>
-<pre class="highlight"><code class="language-bash">export IMAGE=registry.scontain.com/sconecuratedimages/kubernetes:hello-k8s-scone0.2
+<pre class="highlight"><code class="language-bash">export IMAGE=&lt;YOUR REGISTRY&gt;/&lt;YOUR REPO&gt;:hello-k8s-scone0.2
 docker build --pull . -t $IMAGE &amp;&amp; docker push $IMAGE</code></pre>
-<p>The magic is done in the session file. First, extract the <code>MRENCLAVE</code> again:</p>
-<pre class="highlight"><code class="language-bash">MRENCLAVE=$(docker run -i --rm -e "SCONE_HASH=1" $IMAGE)</code></pre>
-<p>Now, create a Session file to be submitted to CAS. The certificates are defined in the <code>secrets</code> field, and are injected into the filesystem through <code>images.injection_files</code>:</p>
+<p>The magic is done in the session file. The certificates are defined in the <code>secrets</code> field, and are injected into the filesystem through <code>images.injection_files</code>:</p>
 <pre class="highlight"><code class="language-bash">cat &gt; session-tls-certs.yaml &lt;&lt; EOF
-name: $NS/hello-k8s-scone-tls-certs
-version: "0.3"
+name: hello-k8s-scone-tls-certs
+version: "0.3.11"
 
 security:
   attestation:
-    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed]
+    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed, insecure-configuration]
     ignore_advisories: "*"
 
 services:
@@ -4553,8 +4570,8 @@ secrets:
      kind: x509
      private_key: SERVER_KEY
 EOF</code></pre>
-<p><a href="https://sconedocs.github.io/cas_blender_example/">Post the session file</a> to your CAS of choice:</p>
-<pre class="highlight"><code class="language-bash">curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session-tls-certs.yaml -X POST https://$SCONE_CAS_ADDR:8081/session</code></pre>
+<p><a href="https://sconedocs.github.io/cas_blender_example/">Post the session file</a> to your CAS:</p>
+<pre class="highlight"><code class="language-bash">scone session create --cas 127.0.0.1:8081 session-tls-certs.yaml</code></pre>
 <p>The steps to run your app are similar to before: let's create a Kubernetes manifest and submit it.</p>
 <pre class="highlight"><code class="language-bash">cat &gt; attested-app-tls-certs.yaml &lt;&lt; EOF
 apiVersion: apps/v1
@@ -4579,13 +4596,15 @@ spec:
         - containerPort: 4443
         env:
         - name: SCONE_CAS_ADDR
-          value: $SCONE_CAS_ADDR
+          value: cas.hello-scone
         - name: SCONE_CONFIG_ID
-          value: $NS/hello-k8s-scone-tls-certs/application
+          value: hello-k8s-scone-tls-certs/application
         - name: SCONE_LAS_ADDR
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
+        - name: SCONE_ALLOW_DLOPEN
+          value: "2"
         resources:
           limits:
             sgx.intel.com/enclave: 1
@@ -4605,7 +4624,7 @@ spec:
 EOF</code></pre>
 <pre class="highlight"><code class="language-bash">kubectl create -f attested-app-tls-certs.yaml -n hello-scone</code></pre>
 <p>Now it's time to access your app. Again, forward the traffic to its service:</p>
-<pre class="highlight"><code class="language-bash">kubectl port-forward svc/attested-hello-world-tls-certs 8083:4443 -n hello-scone</code></pre>
+<pre class="highlight"><code class="language-bash">kubectl port-forward svc/attested-hello-world-tls-certs 8083:4443 -n hello-scone &amp;</code></pre>
 <p>And send a request:</p>
 <pre class="highlight"><code class="language-bash">$ curl -k https://localhost:8083
 Hello World!
@@ -4640,24 +4659,21 @@ COPY app_image /
 CMD [ "python3" ]
 EOF</code></pre>
 <p>Choose the new image name and build it:</p>
-<pre class="highlight"><code class="language-bash">export IMAGE=registry.scontain.com/sconecuratedimages/kubernetes:hello-k8s-scone0.3
+<pre class="highlight"><code class="language-bash">export IMAGE=&lt;YOUR REGISTRY&gt;/&lt;YOUR REPO&gt;:hello-k8s-scone0.3
 docker build --pull . -t $IMAGE &amp;&amp; docker push $IMAGE</code></pre>
 <h5 id="run-in-kubernetes">Run in Kubernetes</h5>
-<p>Time to deploy our server to Kubernetes. Let's setup the attestation first, so we make sure that only our application (identified by its <code>MRENCLAVE</code>) will have access to the secrets to read the encrypted filesystem, as well as our secret greeting.</p>
-<p>Extract the <code>MRENCLAVE</code>:</p>
-<pre class="highlight"><code class="language-bash">MRENCLAVE=$(docker run -i --rm -e "SCONE_HASH=1" $IMAGE)</code></pre>
-<p>Extract <code>SCONE_FSPF_KEY</code> and <code>SCONE_FSPF_TAG</code>:</p>
+<p>Time to deploy our server to Kubernetes. Let's setup the attestation first, extract <code>SCONE_FSPF_KEY</code> and <code>SCONE_FSPF_TAG</code>:</p>
 <pre class="highlight"><code class="language-bash">export SCONE_FSPF_KEY=$(cat app/keytag | awk '{print $11}')
 export SCONE_FSPF_TAG=$(cat app/keytag | awk '{print $9}')
 export SCONE_FSPF=/fspf.pb</code></pre>
 <p>Create a session file:</p>
 <pre class="highlight"><code class="language-bash">cat &gt; session-tls.yaml &lt;&lt; EOF
-name: $NS/hello-k8s-scone-tls
-version: "0.3"
+name: hello-k8s-scone-tls
+version: "0.3.11"
 
 security:
   attestation:
-    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed]
+    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed, insecure-configuration]
     ignore_advisories: "*"
 
 services:
@@ -4687,8 +4703,8 @@ secrets:
      kind: x509
      private_key: SERVER_KEY
 EOF</code></pre>
-<p><a href="https://sconedocs.github.io/cas_blender_example/">Post the session file</a> to your CAS of choice:</p>
-<pre class="highlight"><code class="language-bash">curl -k -s --cert conf/client.crt --key conf/client-key.key --data-binary @session-tls.yaml -X POST https://$SCONE_CAS_ADDR:8081/session</code></pre>
+<p><a href="https://sconedocs.github.io/cas_blender_example/">Post the session file</a> to your CAS:</p>
+<pre class="highlight"><code class="language-bash">scone session create --cas 127.0.0.1:8081 session-tls.yaml</code></pre>
 <p>Create the manifest and submit it to your Kubernetes cluster:</p>
 <pre class="highlight"><code class="language-bash">cat &gt; attested-app-tls.yaml &lt;&lt; EOF
 apiVersion: apps/v1
@@ -4713,13 +4729,15 @@ spec:
         - containerPort: 4443
         env:
         - name: SCONE_CAS_ADDR
-          value: $SCONE_CAS_ADDR
+          value: cas.hello-scone
         - name: SCONE_CONFIG_ID
-          value: $NS/hello-k8s-scone-tls/application
+          value: hello-k8s-scone-tls/application
         - name: SCONE_LAS_ADDR
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
+        - name: SCONE_ALLOW_DLOPEN
+          value: "2"
         resources:
           limits:
             sgx.intel.com/enclave: 1
@@ -4739,7 +4757,7 @@ spec:
 EOF</code></pre>
 <pre class="highlight"><code class="language-bash">kubectl create -f attested-app-tls.yaml -n hello-scone</code></pre>
 <p>Time to access your app. Forward the traffic to its service:</p>
-<pre class="highlight"><code class="language-bash">kubectl port-forward svc/attested-hello-world-tls 8084:4443 -n hello-scone</code></pre>
+<pre class="highlight"><code class="language-bash">kubectl port-forward svc/attested-hello-world-tls 8084:4443 -n hello-scone &amp;</code></pre>
 <p>And send a request:</p>
 <pre class="highlight"><code class="language-bash">$ curl -k https://localhost:8084
 Hello World!
