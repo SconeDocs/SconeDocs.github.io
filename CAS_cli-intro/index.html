@@ -4280,7 +4280,7 @@ If the attestation is successful, and the contacted CAS has the expected signer 
 <p>Example attestation command:</p>
 <pre class="highlight"><code class="language-bash">scone cas attest cas.example.com</code></pre>
 <p>Additional command line switches allow relaxing the security policy, e.g. by allowing CAS to run on a machine with hyperthreading enabled (<code>-C</code>) or running on older, less secure SGX hardware (<code>-G</code>). Use <code>scone cas attest --help</code> for a full list of options.</p>
-<p>If the database encryption key was injected by the CAS owner (see <a href="#cas-database-encryption-key-injection">CAS Database Encryption Key Injection</a>), attestation will be refused by default, because the CAS owner is granted access to all session secrets. If this does not violate your security policy, you can attest such a CAS by adding the argument <code>--allow-cas-owner-secret-access</code>.</p>
+<p>If the database encryption key was injected by the CAS owner (see <a href="./#cas-database-encryption-key-injection">CAS Database Encryption Key Injection</a>), attestation will be refused by default, because the CAS owner is granted access to all session secrets. If this does not violate your security policy, you can attest such a CAS by adding the argument <code>--allow-cas-owner-secret-access</code>.</p>
 <p>The first attested CAS will be used as the default CAS when performing CAS-related operations, such as creating sessions. Multiple CASes may be attested at the same time, though. <code>scone cas list</code> gives an overview and <code>scone cas set-default</code> allows switching to another default CAS.</p>
 <h3 id="attesting-specific-cas-versions">Attesting Specific CAS Versions</h3>
 <p>By default, the CLI verifies that the running CAS software has the same or a newer security version (<code>ISVSVN</code>) as the CLI itself. There are two options to attest older or specific versions of CAS:</p>
@@ -4326,7 +4326,7 @@ Further, <code>scone cas attest</code> can take the expected public key hash of 
 <li><code>--token e59a91c9dbf4538f32c4f20668bdbc08</code>: A Provisioning Token. It can be found on the CAS console or log. This ensures that only the rightful owner can supply a CAS configuration.</li>
 <li><code>with-attestation</code>: Attest the CAS. This ensures that the CAS is running in a secure enclave before transferring the confidential configuration.</li>
 </ul>
-<p>Similar options as for <code>scone cas attest</code> can be specified. Use <code>scone cas provision with-attestation --help</code> for a full list of options. It is also possible to specify a custom <code>--identity</code> (see <a href="#user-identity">User Identity</a>). Attesting a specific CAS software version is possible by appending an expected enclave measurement, like <code>with-attestation 8acd90af546bf50277ecef0e482e478b30cb8f9a7f6f55bb35ee1beebfc65000</code></p>
+<p>Similar options as for <code>scone cas attest</code> can be specified. Use <code>scone cas provision with-attestation --help</code> for a full list of options. It is also possible to specify a custom <code>--identity</code> (see <a href="./#user-identity">User Identity</a>). Attesting a specific CAS software version is possible by appending an expected enclave measurement, like <code>with-attestation 8acd90af546bf50277ecef0e482e478b30cb8f9a7f6f55bb35ee1beebfc65000</code></p>
 <p>Once successfully provisioned,</p>
 <ul>
 <li>the CAS will be added to the list of attested CAS instances,</li>
@@ -4340,7 +4340,7 @@ Further, <code>scone cas attest</code> can take the expected public key hash of 
 <p>CAS always encrypts its database.
 By default, a secure encryption key is generated on enclave startup. 
 This key is bound to the executing platform/machine, and not accessible outside the enclave, protecting CAS and session secrets.
-It is possible to make the encryption key available to equally trustworthy CAS instances on other machines, see <a href="#cas-backup">CAS Backup</a>.
+It is possible to make the encryption key available to equally trustworthy CAS instances on other machines, see <a href="./#cas-backup">CAS Backup</a>.
 In some scenarios, it may be necessary to inject a database key in order to allow the CAS owner to inspect the database manually.
 This is possible during initial CAS provisioning, using the <code>--database-key</code> argument. Example:</p>
 <pre class="highlight"><code class="language-bash">scone cas provision cas.example.com -c 42ku6fcMt8fzj8br84Xg1ZmForSJDTuj6wt1pURRcYpVzJiCSL --config-file cas-config.toml --token e59a91c9dbf4538f32c4f20668bdbc08 --database-key cfadf5e00443f15e4670e253e353dda80eac0b1295903fdc96339554a78cde0a with-attestation</code></pre>
@@ -4372,7 +4372,7 @@ Therefore, one cannot extract the stored data from a SSD of a failed machine, or
 <p>CAS' backup feature prevents such scenarios as it enables multiple CAS on different machines to decrypt the CAS database encryption key.
 This works by encrypting the database encryption key individually for all CASes that are supposed to have access.
 Consequently, the primary CAS needs to learn about all of those CASes using a procedure we call <code>backup registration</code>.</p>
-<p>To register a backup CAS, make sure you own the primary CAS (see <a href="#cas-provisioning-and-configuration">CAS provisioning and configuration</a>) and that both, the primary and the supposed backup CAS, are available/running (the backup CAS does not need to be provisioned) and execute the <code>register-backup</code> command:</p>
+<p>To register a backup CAS, make sure you own the primary CAS (see <a href="./#cas-provisioning-and-configuration">CAS provisioning and configuration</a>) and that both, the primary and the supposed backup CAS, are available/running (the backup CAS does not need to be provisioned) and execute the <code>register-backup</code> command:</p>
 <pre class="highlight"><code class="language-bash">scone cas register-backup backup-cas-address</code></pre>
 <p>If the command succeeds, the backup CAS gained access to the database.
 The primary CAS will accept any backup CAS with the same SGX signer identity (MRSIGNER), same SGX product ID (ISVPRODID), the same or higher SGX security version number (ISVSVN) and the same, or better SGX TCB state.</p>

@@ -4508,7 +4508,7 @@ http {
          content: $$SCONE::FASTAPI_CLIENT_CERT.crt$$
        - path: /etc/nginx/fastapi-client.key
          content: $$SCONE::FASTAPI_CLIENT_CERT.key$$</code></pre>
-<p>To ensure that the SCONE CAS supplying these policies is authentic, we typically attest the SCONE CAS before uploading any policies using the <a href="https://sconedocs.github.io/aks/flask_demo/helm_cas/#attesting-scone-cas">SCONE CAS CLI</a>.</p>
+<p>To ensure that the SCONE CAS supplying these policies is authentic, we typically attest the SCONE CAS before uploading any policies using the <a href="../helm_cas/#attesting-scone-cas">SCONE CAS CLI</a>.</p>
 <h2 id="binary-fs-for-fastapi">Binary FS for FastAPI</h2>
 <p>As we mentioned before, we secure our FastAPI server using the <code>binary-fs</code>. We use the tool while building the initial Docker image. We seperate this process in three stages. In the first stage, we apply the <code>binaryfs</code> command to create a file system <code>.c</code> file. In the second stage, we compile the <code>.c</code> file into an <code>.so</code> file using the <code>scone gcc</code>. In the third stage, we link the generated <code>.so</code> file into the binary using <code>patchelf</code>. We apply these stages in the Dockerfile as follows:</p>
 <pre class="highlight"><code class="language-Dockerfile"># First stage: apply the binary-fs

@@ -4368,7 +4368,7 @@ To prevent this kind of manipulation the pwd of a SCONE service has to be specif
 - The allowed character may be further restricted by the used file system.</p>
 </div>
 <h3 id="image">Image</h3>
-<p>A service can optionally use an image, which has to be specified as part of the session (see Section <a href="#images">Images</a>).</p>
+<p>A service can optionally use an image, which has to be specified as part of the session (see Section <a href="./#images">Images</a>).</p>
 <pre class="highlight"><code class="language-yaml">services:
   - name: my_service
     image_name: my_image</code></pre>
@@ -4503,7 +4503,7 @@ Instead, a secret injection file allows to specify a placeholder for the passwor
 <pre class="highlight"><code class="language-text">[client]
 user=mysqluser
 password=$$SCONE::mysqlpass$$</code></pre>
-<p>The path to this configuration file must be specified as part of an image (see <a href="#images">Images</a>). The corresponding session would look like this:</p>
+<p>The path to this configuration file must be specified as part of an image (see <a href="./#images">Images</a>). The corresponding session would look like this:</p>
 <pre class="highlight"><code class="language-yaml">services:
   - name: my_database_client
     image_name: my_db_client_image
@@ -4553,7 +4553,7 @@ secrets:
       - database_client
       - another_client</code></pre>
 <p>Furthermore, the export might be restricted to certain instances of the importing session.
-For more details, see the concrete format by which other sessions can be referenced in <a href="#referencing-other-sessions">Referencing Other Sessions</a>.</p>
+For more details, see the concrete format by which other sessions can be referenced in <a href="./#referencing-other-sessions">Referencing Other Sessions</a>.</p>
 <p>The database client, on the other hand, would import it and could use it in their session as if it was their own certificate:</p>
 <pre class="highlight"><code class="language-yaml">name: database_client
 
@@ -4570,7 +4570,7 @@ secrets:
     kind: ascii
     value: "ce29906ee68a580410f0d41c67984ff7b384310e84dadf2b07c21252aa01fe1f"
     export_public: true</code></pre>
-<p>This hash can be used in another session's access control policy through secret substitution (see <a href="#access-control">Access Control</a>):</p>
+<p>This hash can be used in another session's access control policy through secret substitution (see <a href="./#access-control">Access Control</a>):</p>
 <pre class="highlight"><code class="language-yaml">name: checked_session
 
 secrets:
@@ -4606,10 +4606,10 @@ In short: secret values which were generated as part of the old session will be 
 <p>Secret migration also takes place when using a different session description language version (e.g. 0.1 -&gt; 0.2)!
 For details, see <a href="../session_secret/#secret-migration">the session secrets migration documentation</a>.</p>
 <h2 id="volumes">Volumes</h2>
-<p>Similar to Docker, the <code>volumes</code> keyword allows to specify file system regions that can be mounted into the file system in addition to the regions specified by the main file system protection file of a service. Each volume has an arbitrary but unique <code>name</code>. In order to grant services access to a volume, it first has to be included in an image (see section <a href="#images">Images</a>). Subsequently, the image can be specified for a service (see section <a href="#service-description">Service Description</a>), and all image-defined volumes will be mounted automatically.</p>
+<p>Similar to Docker, the <code>volumes</code> keyword allows to specify file system regions that can be mounted into the file system in addition to the regions specified by the main file system protection file of a service. Each volume has an arbitrary but unique <code>name</code>. In order to grant services access to a volume, it first has to be included in an image (see section <a href="./#images">Images</a>). Subsequently, the image can be specified for a service (see section <a href="./#service-description">Service Description</a>), and all image-defined volumes will be mounted automatically.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The volume <code>name</code> is not the volume's mount point. The latter is defined as part of an <a href="#images">image</a>.</p>
+<p>The volume <code>name</code> is not the volume's mount point. The latter is defined as part of an <a href="./#images">image</a>.</p>
 </div>
 <p>Each volume can have a file system protection file key (<code>fspf_key</code>) and file system protection file tag (<code>fspf_tag</code>):</p>
 <pre class="highlight"><code class="language-yaml">volumes:
@@ -4631,16 +4631,16 @@ For details, see <a href="../session_secret/#secret-migration">the session secre
     export:
       - another-session
       - foobar:668e9aaba22c7631bbcc89b627d77e53539bcaade9e7c2c08242f56aab272088</code></pre>
-<p>The concrete format by which other sessions can be referenced is described in section <a href="#referencing-other-sessions">Referencing Other Sessions</a>.</p>
+<p>The concrete format by which other sessions can be referenced is described in section <a href="./#referencing-other-sessions">Referencing Other Sessions</a>.</p>
 <p>Similarly, volumes may be imported from another session (in which case fspf key/tag and export list must be omitted):</p>
 <pre class="highlight"><code class="language-yaml">volumes:
   - name: my_database
     import: the_exporting_session</code></pre>
 <h2 id="images">Images</h2>
-<p>The <code>images</code> keyword allows specifying images usable by services (see section <a href="#service-description">Service Description</a>). Each image has an arbitrary but unique <code>name</code>:</p>
+<p>The <code>images</code> keyword allows specifying images usable by services (see section <a href="./#service-description">Service Description</a>). Each image has an arbitrary but unique <code>name</code>:</p>
 <pre class="highlight"><code class="language-yaml">images:
   - name: my_image</code></pre>
-<p>Images may define access to <a href="#volumes">volumes</a>, by referencing a previously declared volume's <code>name</code> and giving it a mount point (<code>path</code>):</p>
+<p>Images may define access to <a href="./#volumes">volumes</a>, by referencing a previously declared volume's <code>name</code> and giving it a mount point (<code>path</code>):</p>
 <pre class="highlight"><code class="language-yaml">volumes:
   - name: my_database
 
@@ -4663,7 +4663,7 @@ images:
           [client]
           user=mysqluser
           password=$$SCONE::mysqlpass$$</code></pre>
-<p>For details, refer to section <a href="#secret-injection-files">Secret Injection Files</a>.</p>
+<p>For details, refer to section <a href="./#secret-injection-files">Secret Injection Files</a>.</p>
 <h2 id="access-control">Access Control</h2>
 <p>Any operation on a session description requires permission. If the entity requesting a certain operation is not explicitly permitted to perform said operation, the request will fail. <code>access_policy</code> keyword allows to specify lists of entities that are allowed to perform the following operations:</p>
 <ul>
@@ -4734,7 +4734,7 @@ images:
     - NONE</code></pre>
 <p>This policy will allow read requests from the creator, a user whose public certificate has hash <code>1809fafa119b97db77a43562c5241b3db33d21a85516e35ebe0a19bf0e3d29ee</code>, a user whose certificate is specified in the session description and a user whose credential is taken from the secret named <code>remote_validation_service</code> (which may be imported from another session). No one is allowed to update the session description.</p>
 <h2 id="referencing-other-sessions">Referencing Other Sessions</h2>
-<p>In some cases it may be necessary to reference other sessions, e.g. when exporting or importing <a href="#volumes">volumes</a> or <a href="#secret-sharing">secrets</a>. This is possible using the given session ID format:</p>
+<p>In some cases it may be necessary to reference other sessions, e.g. when exporting or importing <a href="./#volumes">volumes</a> or <a href="./#secret-sharing">secrets</a>. This is possible using the given session ID format:</p>
 <p><code>&lt;session name&gt;[:&lt;session hash&gt;]</code></p>
 <p>Access to/from remote sessions will be verified according to this ID. The hash part is optional.</p>
 <p>Examples:</p>
