@@ -1,0 +1,279 @@
+# tutorial
+
+## setup
+
+docker rmi sconecuratedimages/muslgcc
+docker rmi sconecuratedimages/crosscompilers:runtime
+docker rmi sconecuratedimages/crosscompilers
+docker rmi sconecuratedimages/crosscompilers:gcc-sim
+docker rmi sconecuratedimages/helloworld
+
+## screencast
+asciinema rec --title="Scone Tutorial" --max-wait=1
+
+docker pull sconecuratedimages/muslgcc
+
+docker pull sconecuratedimages/crosscompilers:runtime
+
+docker pull sconecuratedimages/crosscompilers
+
+docker pull sconecuratedimages/crosscompilers:gcc-sim
+
+docker pull sconecuratedimages/helloworld
+
+ls /dev/isgx 
+
+docker run sconecuratedimages/helloworld
+
+docker image ls sconecuratedimages/*
+
+git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
+
+cd SCONE_TUTORIAL/HelloWorld/
+
+gcc hello_world.c  -o native_hello_world
+
+./native_hello_world
+
+docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers:gcc-sim sgxmusl-sim-gcc hello_world.c  -o sim_hello_world
+
+./sim_hello_world
+
+docker run --rm --device=/dev/isgx -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers scone-gcc hello_world.c  -o sgx_hello_world
+
+./sgx_hello_world
+
+docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_world.c -o dyn_hello_world
+
+docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc ./dyn_hello_world
+
+docker run --rm  -v "$PWD":/usr/src/myapp -e SCONE_ALPINE=1 -e SCONE_VERSION=1 sconecuratedimages/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
+
+docker run --cap-add SYS_PTRACE -it --rm --device=/dev/isgx -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world > strace.log
+
+head strace.log
+
+
+# Curated Images
+
+asciinema rec --title="Scone Curated Images" --max-wait=1
+
+docker pull sconecuratedimages/muslgcc
+
+docker pull sconecuratedimages/crosscompilers:runtime
+
+docker pull sconecuratedimages/crosscompilers:gcc-sim
+
+docker pull sconecuratedimages/helloworld
+
+docker run sconecuratedimages/helloworld
+
+
+
+
+
+
+# SCONE Create Image
+
+## setup
+
+rm -rf SCONE_TUTORIAL
+
+##docker login
+
+## screencast
+
+asciinema rec --title="Scone Create Image" --max-wait=1
+
+git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
+
+cd SCONE_TUTORIAL/CreateImage
+
+export TAG="latest"
+export IMAGE_NAME="sconecuratedimages/helloworld"
+
+docker pull sconecuratedimages/crosscompilers
+
+CONTAINER_ID=`docker run -d -it --device=/dev/isgx  -v $(pwd):/mnt sconecuratedimages/crosscompilers bash -c "
+set -e
+printf 'Q 1\ne 0 0 0\ns 1 0 0\n' > /etc/sgx-musl.conf
+scone-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
+"`
+
+IMAGE_ID=$(docker commit -p -c 'CMD /usr/local/bin/sgx_hello_world' $CONTAINER_ID $IMAGE_NAME:$TAG)
+
+docker run -it --device=/dev/isgx $IMAGE_NAME:$TAG
+
+docker push $IMAGE_NAME:$TAG
+
+
+
+
+
+
+# SCONE Dockerfile
+
+## setup
+
+rm -rf SCONE_TUTORIAL
+
+## screencast
+
+asciinema rec --title="Scone Dockerfile Example" --max-wait=1
+
+ls /dev/isgx 
+
+git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
+
+cd SCONE_TUTORIAL/DLDockerFile
+
+
+cat hello_again.c
+
+# generate dynamically linked binary
+
+docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp sconecuratedimages/muslgcc gcc  hello_again.c -o dyn_hello_again
+
+# building image with Dockerfile
+
+cat Dockerfile
+
+export TAG="dynamic"
+export FULLTAG="sconecuratedimages/helloworld:$TAG"
+
+
+docker build --pull -t $FULLTAG .
+
+# run binary in enclave 
+
+docker run -it sconecuratedimages/helloworld:dynamic
+
+# publish
+
+docker push $FULLTAG
+
+
+
+
+
+# SCONE Dockerfile
+
+## setup
+
+rm -rf SCONE_TUTORIAL
+
+## screencast
+
+asciinema rec --title="Scone Dockerfile Static Binary" --max-wait=1
+
+ls /dev/isgx 
+
+git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git
+
+cd SCONE_TUTORIAL/DockerFile
+
+
+cat hello_again.c
+
+cat Dockerfile
+
+
+export TAG="again"
+
+export FULLTAG="sconecuratedimages/helloworld:$TAG"
+
+docker build --pull -t $FULLTAG .
+
+docker run -it $FULLTAG
+
+docker run -it $FULLTAG ldd /hello/again
+
+docker push $FULLTAG
+
+
+
+
+
+asciinema rec --title="Scone File Protection" --max-wait=1  FSPF_screencast
+
+
+docker run -it -v $PWD:/mnt sconecuratedimages/crosscompilers
+
+mkdir -p /example
+# where native files would be written
+mkdir -p /example/plain/
+# where we store the encrypted files
+mkdir -p /example/protected
+
+# the following might be externally mounted
+cd /example
+scone fspf --help
+# create an empty file system protection file
+scone fspf create --help
+scone fspf create /example/fspf.first
+
+scone fspf addr --help
+# by default make all file changes ephemeral
+scone fspf addr /example/fspf.first / -e --ephemeral
+# add an encrypted region
+scone fspf addr  /example/fspf.first /example/plain  --encrypted  --kernel /example/protected
+cone fspf addf --help
+scone fspf addf /example/fspf.first /example/plain /example/protected
+
+T=`scone fspf encrypt /example/fspf.first`
+export SCONE_FSPF_TAG=`echo $T | awk -- '{print $9}'`
+export SCONE_FSPF_KEY=`echo $T | awk -- '{print $11}'`
+
+echo $SCONE_FSPF_TAG
+echo $SCONE_FSPF_KEY
+
+cat > example.c << EOF
+#include <stdio.h>
+
+int main() {
+    FILE *fp = fopen("/example/plain/protected.txt", "w");
+    fprintf(fp, "protected\n");
+    fclose(fp);
+
+    fp = fopen("/example/notprotected.txt", "w");
+    fprintf(fp, "not protected\n");
+    fclose(fp);
+}
+EOF
+
+gcc example.c -o native
+./native
+cat  /example/plain/protected.txt 
+cat  /example/notprotected.txt 
+
+rm -f /example/plain/protected.txt
+rm -f /example/notprotected.txt 
+
+cat > /etc/sgx-musl.conf << EOF
+Q 4
+e -1 0 0
+s -1 0 0
+e -1 1 0
+s -1 1 0
+e -1 2 0
+s -1 2 0
+e -1 3 0
+s -1 3 0
+EOF
+
+scone gcc example.c -o sgxbin
+SCONE_VERSION=1 ./sgxbin 
+
+cat  /example/plain/protected.txt 
+cat  /example/notprotected.txt 
+
+rm -f /example/plain/protected.txt
+rm -f /example/notprotected.txt 
+
+
+export SCONE_FSPF=/example/fspf.first
+
+SCONE_VERSION=1 ./sgxbin 
+cat  /example/protected/pf.txt 
+cat  /example/notprotected/pf.txt
+

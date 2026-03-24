@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>404 - Not found</title>
+    <!-- Built-time style injection avoids hardcoding fingerprinted CSS asset names. -->
+    <link rel="stylesheet" href="../assets/stylesheets/main.2d9f7617.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+          
+          
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"PT Sans";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/custom.css">
+    
+      <link rel="stylesheet" href="../css/extra.css">
+    
+      <link rel="stylesheet" href="../css/tooltips.css">
+    
+      <link rel="stylesheet" href="../styles/extra.css">
+    
+    
+    <!-- Built-time script injection keeps version-prefix handling in sync with versions.yml. -->
+        <script>
+      // GitHub Pages serves the root 404 for unknown paths. We use that as a
+      // fallback entrypoint: if an unversioned path exists under /latest/,
+      // redirect there; otherwise keep the real 404 page visible.
+      const knownPrefixes = ["6.0", "7.0", "latest"];
+      const path = window.location.pathname;
+      const trimmedPath = path.replace(/^\/+/u, "");
+      const pathSegments = trimmedPath.split("/").filter(Boolean);
+      const firstSegment = pathSegments[0] || "";
+
+      async function maybeRedirect() {
+        if (knownPrefixes.includes(firstSegment)) {
+          return;
+        }
+
+        const candidates = new Set([path]);
+        if (!path.endsWith("/") && !/\.[^/]+$/u.test(path)) {
+          candidates.add(`${path}/`);
+        }
+        if (path !== "/" && path.endsWith("/")) {
+          candidates.add(path.slice(0, -1));
+        }
+
+        try {
+          // latest-paths.json is generated at build time from the rendered
+          // /latest tree. It lets us distinguish "missing version prefix" from
+          // "page truly does not exist" before redirecting.
+          const response = await fetch("/latest-paths.json", { cache: "no-store" });
+          if (!response.ok) {
+            return;
+          }
+          const latestPaths = new Set(await response.json());
+          const match = Array.from(candidates).find(candidate => latestPaths.has(candidate));
+          if (!match) {
+            return;
+          }
+          const encodedPath = match.split("/").map(segment => encodeURIComponent(segment)).join("/");
+          window.location.replace(`/latest${encodedPath}${window.location.search}${window.location.hash}`);
+        } catch (_error) {
+          return;
+        }
+      }
+
+      maybeRedirect();
+    </script>
+
+  </head>
+  <body dir="ltr" data-md-color-scheme="" data-md-color-primary="white" data-md-color-accent="purple">
+    <main style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; box-sizing: border-box;">
+      <div style="width: 100%; max-width: 42rem;">
+        <!-- Built-time content injection reuses the shared theme 404 content partial. -->
+        <section class="md-typeset" style="text-align: center; padding: 4rem 0;">
+  <div>
+    <h1><strong>404 - Not found</strong></h1>
+    <p>The page you requested does not exist in this documentation version.</p>
+    <p>
+      <a href="/latest/">
+        Go to docs home
+      </a>
+    </p>
+  </div>
+</section>
+
+      </div>
+    </main>
+  </body>
+</html>
