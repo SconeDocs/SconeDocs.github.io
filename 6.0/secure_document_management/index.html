@@ -4350,8 +4350,8 @@
 <ul>
 <li>A <span data-tooltip="An open source container orchestration platform. More information at
 https://kubernetes.io/">Kubernetes</span> cluster</li>
-<li><a href="https://sconedocs.github.io/helm/">Helm setup</a> was performed</li>
-<li>Either the <a href="https://sconedocs.github.io/sgxinstall/">SCONE SGX Plugin</a> or the Azure SGX Plugin is installed.</li>
+<li><a href="https://sconedocs.github.io/6.0/helm/">Helm setup</a> was performed</li>
+<li>Either the <a href="https://sconedocs.github.io/6.0/sgxinstall/">SCONE SGX Plugin</a> or the Azure SGX Plugin is installed.</li>
 </ul>
 </div>
 <h2 id="azure-kubernetes-services-aks">Azure Kubernetes Services (AKS)</h2>
@@ -4383,9 +4383,9 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 </ul>
 <p>We execute the Python service within an enclave, thus ensuring that even privileged adversaries with root access cannot read the contents of the documents from the Python process.</p>
 <h4 id="binary-file-system">Binary File system</h4>
-<p>This FastAPI service employs the new SCONE features <code>binary-fs</code>. We thereby bind the file system of the service to the binary. Among other security advantages, the MRENCLAVE of the service reflects this inclusion of the file system. Thus, we can verify that the Python service is indeed running the code we expect it to run. For more information, please refer to <a href="https://sconedocs.github.io/binary_fs/">https://sconedocs.github.io/binary_fs/</a>.</p>
+<p>This FastAPI service employs the new SCONE features <code>binary-fs</code>. We thereby bind the file system of the service to the binary. Among other security advantages, the MRENCLAVE of the service reflects this inclusion of the file system. Thus, we can verify that the Python service is indeed running the code we expect it to run. For more information, please refer to <a href="https://sconedocs.github.io/6.0/binary_fs/">https://sconedocs.github.io/6.0/binary_fs/</a>.</p>
 <h2 id="secure-mariadb">Secure MariaDB</h2>
-<p>We store the documents and user authentication information in a secure MariaDB, which we also run inside of an enclave. Further, we ensure its memory remains encrypted. As such, the documents and login data users store inside the database remain secure. We further elaborate on the database in <a href="https://sconedocs.github.io/helm/">this section</a>.</p>
+<p>We store the documents and user authentication information in a secure MariaDB, which we also run inside of an enclave. Further, we ensure its memory remains encrypted. As such, the documents and login data users store inside the database remain secure. We further elaborate on the database in <a href="https://sconedocs.github.io/6.0/helm/">this section</a>.</p>
 <h2 id="secure-memcached-rate-limiter">Secure Memcached Rate Limiter</h2>
 <p>To ensure that our MariaDB is not overloaded by excess requests, we limit requests per user using a Memcached service. We thereby ensure that a user can make at most 10 requests per minute. If the user's requests exceed that limit, we do not serve requests to their corresponding IP address for the remainder of the minute. We implement this limiter by storing the user's IP and their number of requests in a key/value pair in the Memcached service in our <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/fastapi-setup/rest_api.py">Python program</a>: <code>mc_client.set(key=client_ip, value=1, expire=60)</code>. Upon a request, we increment the key/value pair using Memcached's <code>incr</code> command: <code>mc_client.incr(key=client_ip, value=1)</code>. If this value exceeds 10, we do not serve the requests. The key value pair expires after 60 seconds.</p>
 <p>As we attribute the IP of a user to Personally Identifiable Information (PII), we have to protect this data. We ensure this protection by running the Memcached inside of an enclave.</p>
@@ -4404,7 +4404,7 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <p><center>
 <img alt="Certificates" src="../img/secure-doc-manager-key-distribution.svg#fullwidth" />
 </center></p>
-<p>We provision these certificates using <a href="https://sconedocs.github.io/CAS_session_lang_0_3/">SCONE policies</a>. We now illustrate the use of the policies for certificate provisioning by inspecting the <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/nginx_session.yml">NGINX policy</a>.</p>
+<p>We provision these certificates using <a href="https://sconedocs.github.io/6.0/CAS_session_lang_0_3/">SCONE policies</a>. We now illustrate the use of the policies for certificate provisioning by inspecting the <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/nginx_session.yml">NGINX policy</a>.</p>
 <pre class="highlight"><code class="language-yaml">secrets:
   # nginx - fastapi tls
   - name: FASTAPI_CLIENT_CERT
@@ -4502,7 +4502,7 @@ http {
     private_key: FASTAPI_CA_KEY
     export:
     - session: $NGINX_SESSION # export the session CA certificate to upload session</code></pre>
-<p>We thereby replace <code>$NGINX_SESSION</code> with the policy name of the NGINX. For increased security, we can also specify the corresponding <a href="https://sconedocs.github.io/CAS_session_lang_0_3/#session-description-hash">session hash</a>. In this scenario, the policies are on the same <a href="https://sconedocs.github.io/helm_cas/">SCONE CAS</a>. In more complex cases, the policies can be stored on different <a href="https://sconedocs.github.io/helm_cas/">SCONE CAS</a>.</p>
+<p>We thereby replace <code>$NGINX_SESSION</code> with the policy name of the NGINX. For increased security, we can also specify the corresponding <a href="https://sconedocs.github.io/6.0/CAS_session_lang_0_3/#session-description-hash">session hash</a>. In this scenario, the policies are on the same <a href="https://sconedocs.github.io/6.0/helm_cas/">SCONE CAS</a>. In more complex cases, the policies can be stored on different <a href="https://sconedocs.github.io/6.0/helm_cas/">SCONE CAS</a>.</p>
 <p>The NGINX can then import the FastAPI CA certificate, client certificate and private key, as we saw before:</p>
 <pre class="highlight"><code class="language-yaml">secrets:
   # nginx - fastapi tls
@@ -4599,7 +4599,7 @@ cd secure-doc-management</code></pre>
 <h2 id="execution-on-a-kubernetes-cluster">Execution on a Kubernetes Cluster</h2>
 <p>We intend this example to be run on a Kubernetes cluster.</p>
 <h3 id="install-scone-services">Install SCONE Services</h3>
-<p>Get access to <code>SconeApps</code> (see <a href="https://sconedocs.github.io/helm/">https://sconedocs.github.io/helm/</a>):</p>
+<p>Get access to <code>SconeApps</code> (see <a href="https://sconedocs.github.io/6.0/helm/">https://sconedocs.github.io/6.0/helm/</a>):</p>
 <pre class="highlight"><code class="language-bash">helm repo add sconeapps https://${GH_TOKEN}@raw.githubusercontent.com/scontain/SconeApps/master/
 helm repo update</code></pre>
 <p>Give SconeApps access to the private docker images (see <a href="../helm/">SconeApps</a>):</p>

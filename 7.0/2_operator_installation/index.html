@@ -4344,7 +4344,7 @@
 
 
 <h1 id="deploying-reconciling-the-scone-operator">Deploying &amp; Reconciling the SCONE Operator</h1>
-<p>The <a href="https://sconedocs.github.io/1_scone_operator/">SCONE Kubernetes operator</a> facilitates a declarative description of SCONE-related custom resources. These custom resources include</p>
+<p>The <a href="https://sconedocs.github.io/7.0/1_scone_operator/">SCONE Kubernetes operator</a> facilitates a declarative description of SCONE-related custom resources. These custom resources include</p>
 <ul>
 <li>SCONE CAS (<code>cas.services.scone.cloud</code>): deploys a high-availability CAS using a primary/backup approach.</li>
 <li>SCONE LAS (<code>las.base.scone.cloud</code>): deploys local attestation service on all SGX-capable nodes of a Kubernetes cluster,</li>
@@ -4359,7 +4359,7 @@
 <ul>
 <li>the SCONE operator, and </li>
 <li>LAS, SGXPlugin, as well as </li>
-<li>our <a href="https://sconedocs.github.io/5_kubectl/"><code>kubectl provision</code> plugin</a></li>
+<li>our <a href="https://sconedocs.github.io/7.0/5_kubectl/"><code>kubectl provision</code> plugin</a></li>
 </ul>
 <p>The SCONE operator consists of</p>
 <ul>
@@ -4376,7 +4376,7 @@
 export REGISTRY_ACCESS_TOKEN=&lt;your-access-toke&gt; # read access token
 export REGISTRY_EMAIL=&lt;your-email&gt; # email address of the service account
 export DCAP_KEY="00000000000000000000000000000000" # replace by your Intel DCAP API - keep as is on Azure</code></pre>
-<p>You can get the DCAP API Key from <a href="https://api.portal.trustedservices.intel.com/provisioning-certification">Intel</a>. Your access token needs to be able to read the registry: for more details, please see the section <a href="https://sconedocs.github.io/registry/#create-an-access-token">Create an Access Token</a>.</p>
+<p>You can get the DCAP API Key from <a href="https://api.portal.trustedservices.intel.com/provisioning-certification">Intel</a>. Your access token needs to be able to read the registry: for more details, please see the section <a href="https://sconedocs.github.io/7.0/registry/#create-an-access-token">Create an Access Token</a>.</p>
 <p>You can now deploy or update the SCONE operator as follows:</p>
 <pre class="highlight"><code class="language-bash">export VERSION=5.8.1 # SCONE version of your choice
 curl -fsSL https://raw.githubusercontent.com/scontain/SH/master/$VERSION/operator_controller | bash -s - --reconcile --update --plugin --verbose --dcap-api "$DCAP_KEY" --secret-operator  --username $REGISTRY_USERNAME --access-token $REGISTRY_ACCESS_TOKEN --email $REGISTRY_EMAIL</code></pre>
@@ -4408,7 +4408,7 @@ By setting flag <code>--reconcile</code>, the operator deploys and reconciles th
 <p><code>--no-sgxplugin</code>: in case another plugin is already installed in the cluster, set flag <code>--no-sgxplugin</code>.</p>
 </li>
 </ul>
-<p>Typically, you want to keep all versions the same. Upgrading of the SCONE operator, SCONE SGXPlugin, and the SCONE LAS can be done via the operator controller using flag <code>--update</code>.  A SCONE CAS needs to be updated using our <a href="https://sconedocs.github.io/5_kubectl/"><code>kubectl provision</code> plugin</a>.  </p>
+<p>Typically, you want to keep all versions the same. Upgrading of the SCONE operator, SCONE SGXPlugin, and the SCONE LAS can be done via the operator controller using flag <code>--update</code>.  A SCONE CAS needs to be updated using our <a href="https://sconedocs.github.io/7.0/5_kubectl/"><code>kubectl provision</code> plugin</a>.  </p>
 <h2 id="operator-controller-reference">Operator Controller Reference</h2>
 <pre class="highlight"><code class="language-text">Usage:
   operator_controller [OPTIONS]
@@ -4437,7 +4437,7 @@ Options:
     --username REGISTRY_USERNAME
                   To create/update/fix the pull secrets ('sconeapps' and 'scone-operator-pull'),
                   one needs to specify the user name, access token, and email of the registry.
-                  Signup for an account: https://sconedocs.github.io/registry/
+                  Signup for an account: https://sconedocs.github.io/7.0/registry/
     --access-token REGISTRY_ACCESS_TOKEN
                   The access token of the pull secret.
     --email REGISTRY_EMAIL
@@ -4511,10 +4511,10 @@ You can overwrite the defaults by exporting these environment variables before e
 <h3 id="pull-secret">Pull Secret</h3>
 <div class="admonition note">
 <p class="admonition-title">Pull Secret</p>
-<p>Authorization is required to pull container images from private registries. It would be best if you created the <a href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/" title="Kubernetes documentation">Kubernetes secrets</a> <code>scone-operator-pull</code> and <code>sconeapps</code> with the <a href="https://sconedocs.github.io/registry/#create-an-access-token">required credentials</a> in the namespace <code>scone-system</code>.</p>
+<p>Authorization is required to pull container images from private registries. It would be best if you created the <a href="https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/" title="Kubernetes documentation">Kubernetes secrets</a> <code>scone-operator-pull</code> and <code>sconeapps</code> with the <a href="https://sconedocs.github.io/7.0/registry/#create-an-access-token">required credentials</a> in the namespace <code>scone-system</code>.</p>
 </div>
 <p>The SCONE operator image is stored in a private Docker Hub repo. Hence, to deploy this image, one needs to pass the image pull credentials to Kubernetes. To do so, you must create the Kubernetes secret <code>scone-operator-pull</code>.</p>
-<p>You could first define your credentials which include the generation of an access token to  <a href="https://sconedocs.github.io/registry/#create-an-access-token"><code>read_registry</code></a> and set environment variables:</p>
+<p>You could first define your credentials which include the generation of an access token to  <a href="https://sconedocs.github.io/7.0/registry/#create-an-access-token"><code>read_registry</code></a> and set environment variables:</p>
 <pre class="highlight"><code class="language-bash">export REGISTRY_USERNAME=&lt;your-name&gt; # username of the registry service account
 export REGISTRY_ACCESS_TOKEN=&lt;your-access-toke&gt; # read access token
 export REGISTRY_EMAIL=&lt;your-email&gt; # email address of the service account</code></pre>
