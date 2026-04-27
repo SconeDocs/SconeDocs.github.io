@@ -4226,22 +4226,23 @@
 <li>SCONE LAS running on the cluster. <a href="../helm_las/">Learn more</a>.</li>
 </ul>
 <h2 id="tldr">TL;DR</h2>
-<pre class="highlight"><code class="language-bash">git clone https://github.com/scontain/microservices-demo -b sconify
-cd microservices-demo
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/scontain/microservices-demo<span class="w"> </span>-b<span class="w"> </span>sconify
+<span class="nb">cd</span><span class="w"> </span>microservices-demo
 
-# Specify the registry to which the confidential images will be pushed.
-# You must be logged in and have push permission.
-export IMAGE_REPOSITORY="docker.io/myrepo/online-boutique"
-# Configure Kubernetes namespace (required here so that the in-cluster
-# DNS names of the microservices are part of the security policies).
-export K8S_NAMESPACE="default"
+<span class="c1"># Specify the registry to which the confidential images will be pushed.</span>
+<span class="c1"># You must be logged in and have push permission.</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">IMAGE_REPOSITORY</span><span class="o">=</span><span class="s2">&quot;docker.io/myrepo/online-boutique&quot;</span>
+<span class="c1"># Configure Kubernetes namespace (required here so that the in-cluster</span>
+<span class="c1"># DNS names of the microservices are part of the security policies).</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K8S_NAMESPACE</span><span class="o">=</span><span class="s2">&quot;default&quot;</span>
 ./sconify-all.sh
 
-# Configure an imagePullSecret for Kubernetes, if necessary.
-export K8S_IMAGE_PULL_SECRET="sconeapps"
-# Configure which SGX device plugin you want to use ("scone", "azure" or "disabled")
-export K8S_DEVICE_PLUGIN="azure"
-./deploy-all.sh</code></pre>
+<span class="c1"># Configure an imagePullSecret for Kubernetes, if necessary.</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K8S_IMAGE_PULL_SECRET</span><span class="o">=</span><span class="s2">&quot;sconeapps&quot;</span>
+<span class="c1"># Configure which SGX device plugin you want to use (&quot;scone&quot;, &quot;azure&quot; or &quot;disabled&quot;)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K8S_DEVICE_PLUGIN</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span>
+./deploy-all.sh
+</code></pre></div>
 <h2 id="one-step-image-transformation">One-step image transformation</h2>
 <p>SCONE is a lift-and-shift framework for confidential containers. With that in mind, we support a one-step transformation process for standard containers (i.e., not confidential) into confidential containers. We call the process <code>sconify</code> (<a href="../sconify/">learn more</a>). This means that existing code and workflows (e.g., CI/CD pipelines) can benefit from SCONE guarantees with little-to-no effort.</p>
 <div class="admonition note">
@@ -4253,9 +4254,10 @@ export K8S_DEVICE_PLUGIN="azure"
 <p>SCONE support for <a href="../mono/">C#</a>. For this reason, <code>sconify-image</code> does not support C# yet, and we provide a pre-built image for the C# service of the demo, <code>cartservice</code>, with SCONE. Check <code>src/cartservice/sconify.sh</code> and <code>policies/cartservice.yaml</code> for more information.</p>
 </div>
 <p>Compared to the original repository, the following directories are modified. Note that no source code changes are performed.</p>
-<pre class="highlight"><code class="language-bash">policies/       # Code to create a CAS namespace and creating policies for services that are not sconified (redis, cartservice)
-release/charts/ # Helm charts for services that not sconified (redis, cartservice). Generated Helm charts are saved here too
-src/            # Original source code, sconify.sh scripts and alternative Dockerfiles (if necessary)</code></pre>
+<div class="highlight"><pre><span></span><code>policies/<span class="w">       </span><span class="c1"># Code to create a CAS namespace and creating policies for services that are not sconified (redis, cartservice)</span>
+release/charts/<span class="w"> </span><span class="c1"># Helm charts for services that not sconified (redis, cartservice). Generated Helm charts are saved here too</span>
+src/<span class="w">            </span><span class="c1"># Original source code, sconify.sh scripts and alternative Dockerfiles (if necessary)</span>
+</code></pre></div>
 <p>In this example, we have an online boutique composed of the following services (the description was taken from the original repository):</p>
 <table>
 <thead>
@@ -4327,13 +4329,14 @@ src/            # Original source code, sconify.sh scripts and alternative Docke
 <li>Generate Helm charts (or Kubernetes manifests).</li>
 </ol>
 <p>You can trigger the sconification of a single service by running their own <code>sconify.sh</code>. To transform all services at once, run <code>sconify-all.sh</code>, which simply loops through all services and calls their <code>sconify.sh</code> script.</p>
-<pre class="highlight"><code class="language-bash"># Specify the registry to which the confidential images will be pushed.
-# You must be logged in and have push permission.
-export IMAGE_REPOSITORY="docker.io/myrepo/online-boutique"
-# Configure Kubernetes namespace (required here so that the in-cluster
-# DNS names of the microservices are part of the security policies).
-export K8S_NAMESPACE="default"
-./sconify-all.sh</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1"># Specify the registry to which the confidential images will be pushed.</span>
+<span class="c1"># You must be logged in and have push permission.</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">IMAGE_REPOSITORY</span><span class="o">=</span><span class="s2">&quot;docker.io/myrepo/online-boutique&quot;</span>
+<span class="c1"># Configure Kubernetes namespace (required here so that the in-cluster</span>
+<span class="c1"># DNS names of the microservices are part of the security policies).</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K8S_NAMESPACE</span><span class="o">=</span><span class="s2">&quot;default&quot;</span>
+./sconify-all.sh
+</code></pre></div>
 <p>This will transform all images, and now the generated Helm charts will be in <code>release/charts</code>.</p>
 <p><code>sconify-all.sh</code> supports the following environment variables:</p>
 <table>
@@ -4414,29 +4417,31 @@ export K8S_NAMESPACE="default"
 </tbody>
 </table>
 <p>To deploy the services to an <a href="../aks_setup/">AKS cluster</a>, for example, run:</p>
-<pre class="highlight"><code class="language-bash"># Configure an imagePullSecret for Kubernetes, if necessary.
-export K8S_IMAGE_PULL_SECRET="sconeapps"
-# Configure which SGX device plugin you want to use ("scone", "azure" or "disabled")
-export K8S_DEVICE_PLUGIN="azure"
-# Configure Service type of "frontend", i.e., how to expose it (LoadBalancer or NodePort)
-export K8S_FRONTEND_SERVICE_TYPE="LoadBalancer"
-./deploy-all.sh</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1"># Configure an imagePullSecret for Kubernetes, if necessary.</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K8S_IMAGE_PULL_SECRET</span><span class="o">=</span><span class="s2">&quot;sconeapps&quot;</span>
+<span class="c1"># Configure which SGX device plugin you want to use (&quot;scone&quot;, &quot;azure&quot; or &quot;disabled&quot;)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K8S_DEVICE_PLUGIN</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span>
+<span class="c1"># Configure Service type of &quot;frontend&quot;, i.e., how to expose it (LoadBalancer or NodePort)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K8S_FRONTEND_SERVICE_TYPE</span><span class="o">=</span><span class="s2">&quot;LoadBalancer&quot;</span>
+./deploy-all.sh
+</code></pre></div>
 <p>After all charts are deployed, you can see their pods running:</p>
-<pre class="highlight"><code class="language-bash">$ kubectl get pods
-NAME                                                              READY   STATUS                       RESTARTS   AGE
-adservice-sconify-adservice-5c5d79cd5-hmpmv                       1/1     Running                      0          7m44s
-cartservice-sconify-cartservice-557767665f-79ltl                  1/1     Running                      0          7m39s
-checkoutservice-sconify-checkoutservice-69cbcc9cf6-rsbpv          1/1     Running                      0          7m33s
-currencyservice-sconify-currencyservice-d7cb458db-vtwqq           1/1     Running                      0          7m28s
-emailservice-sconify-emailservice-84fb77d787-6gbhh                1/1     Running                      0          7m22s
-frontend-sconify-frontend-77fdf9d665-mb2wh                        1/1     Running                      0          6m54s
-las-49fzx                                                         1/1     Running                      0          8h
-las-gjgr8                                                         1/1     Running                      0          8h
-paymentservice-sconify-paymentservice-79cd585dc9-nzqk5            1/1     Running                      0          7m17s
-productcatalogservice-sconify-productcatalogservice-75bfc9pxbtg   1/1     Running                      0          7m11s
-recommendationservice-sconify-recommendationservice-5c9bcbpghkm   1/1     Running                      0          7m5s
-redis-cart-69b6f44897-nn45s                                       1/1     Running                      0          7m50s
-shippingservice-sconify-shippingservice-68d544fcdc-v4h5g          1/1     Running                      0          7m</code></pre>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods
+NAME<span class="w">                                                              </span>READY<span class="w">   </span>STATUS<span class="w">                       </span>RESTARTS<span class="w">   </span>AGE
+adservice-sconify-adservice-5c5d79cd5-hmpmv<span class="w">                       </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m44s
+cartservice-sconify-cartservice-557767665f-79ltl<span class="w">                  </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m39s
+checkoutservice-sconify-checkoutservice-69cbcc9cf6-rsbpv<span class="w">          </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m33s
+currencyservice-sconify-currencyservice-d7cb458db-vtwqq<span class="w">           </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m28s
+emailservice-sconify-emailservice-84fb77d787-6gbhh<span class="w">                </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m22s
+frontend-sconify-frontend-77fdf9d665-mb2wh<span class="w">                        </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>6m54s
+las-49fzx<span class="w">                                                         </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>8h
+las-gjgr8<span class="w">                                                         </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>8h
+paymentservice-sconify-paymentservice-79cd585dc9-nzqk5<span class="w">            </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m17s
+productcatalogservice-sconify-productcatalogservice-75bfc9pxbtg<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m11s
+recommendationservice-sconify-recommendationservice-5c9bcbpghkm<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m5s
+redis-cart-69b6f44897-nn45s<span class="w">                                       </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m50s
+shippingservice-sconify-shippingservice-68d544fcdc-v4h5g<span class="w">          </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">                      </span><span class="m">0</span><span class="w">          </span>7m
+</code></pre></div>
 <p>You can now access the online boutique by fetching the <code>frontend</code> service address. If you set <code>K8S_FRONTEND_SERVICE_TYPE</code> to <code>LoadBalancer</code>, you should see the <code>EXTERNAL-IP</code> field populated for the <code>frontendservice</code>.</p>
 
               
@@ -4543,8 +4548,6 @@ shippingservice-sconify-shippingservice-68d544fcdc-v4h5g          1/1     Runnin
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

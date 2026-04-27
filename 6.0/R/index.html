@@ -4158,13 +4158,15 @@
 </div>
 <h2 id="image">Image</h2>
 <p>You can pull this image as follows:</p>
-<pre class="highlight"><code class="language-bash">docker pull registry.scontain.com/sconecuratedimages/apps:R</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>registry.scontain.com/sconecuratedimages/apps:R
+</code></pre></div>
 <h2 id="running-r">Running R</h2>
 <p>First, we determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>. To start R, just execute:</p>
-<pre class="highlight"><code class="language-bash">determine_sgx_device
-docker run $MOUNT_SGXDEVICE -it --rm registry.scontain.com/sconecuratedimages/apps:R</code></pre>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+docker<span class="w"> </span>run<span class="w"> </span><span class="nv">$MOUNT_SGXDEVICE</span><span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>registry.scontain.com/sconecuratedimages/apps:R
+</code></pre></div>
 <p>This will output something like this:</p>
-<pre class="highlight"><code class="language-text">export SCONE_QUEUES=4
+<div class="highlight"><pre><span></span><code>export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -4188,73 +4190,78 @@ Enclave hash: 71e730d77fcae6fd37b80cd8669f2d75b8e58dbba80afa48929ae817bf263bb0
 Warning message:
 failed to set alternate signal stack
 
-R version 3.5.0 (2018-04-23) -- "Joy in Playing"
+R version 3.5.0 (2018-04-23) -- &quot;Joy in Playing&quot;
 Copyright (C) 2018 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)</code></pre>
+Platform: x86_64-pc-linux-gnu (64-bit)
+</code></pre></div>
 <h2 id="example">Example</h2>
 <p>Execute some first <strong>R</strong> program (taken from <a href="http://www.rexamples.com">www.rexamples.com</a>):</p>
-<pre class="highlight"><code class="language-R">a &lt;- 42
-A &lt;- a * 2  # R is case sensitive
-print(a)
-cat(A, "\n") # "84" is concatenated with "\n"
-if(A&gt;a) # true, 84 &gt; 42
-{
-  cat(A, "&gt;", a, "\n")
-} </code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">a</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">42</span>
+<span class="n">A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">2</span><span class="w">  </span><span class="c1"># R is case sensitive</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1"># &quot;84&quot; is concatenated with &quot;\n&quot;</span>
+<span class="kr">if</span><span class="p">(</span><span class="n">A</span><span class="o">&gt;</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="c1"># true, 84 &gt; 42</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nf">cat</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&gt;&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;\n&quot;</span><span class="p">)</span>
+<span class="p">}</span><span class="w"> </span>
+</code></pre></div>
 <p>This will result in an output:</p>
-<pre class="highlight"><code class="language-R">84 &gt; 42</code></pre>
+<div class="highlight"><pre><span></span><code><span class="m">84</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">42</span>
+</code></pre></div>
 <h2 id="example-2">Example 2</h2>
 <p>A somewhat more complex example from <a href="http://www.rexamples.com">www.rexamples.com</a>:</p>
-<pre class="highlight"><code class="language-R">#utility functions
+<div class="highlight"><pre><span></span><code><span class="c1">#utility functions</span>
 
-readinteger &lt;- function()
-{ 
-  n &lt;- readline(prompt="Enter an integer: ")
-  if(!grepl("^[0-9]+$",n))
-  {
-    return(readinteger())
-  }
-  return(as.integer(n))
-}
+<span class="n">readinteger</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<span class="p">{</span><span class="w"> </span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">readline</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="s">&quot;Enter an integer: &quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="p">(</span><span class="o">!</span><span class="nf">grepl</span><span class="p">(</span><span class="s">&quot;^[0-9]+$&quot;</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">return</span><span class="p">(</span><span class="nf">readinteger</span><span class="p">())</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kr">return</span><span class="p">(</span><span class="nf">as.integer</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="p">}</span>
 
-# real program start here
+<span class="c1"># real program start here</span>
 
-num &lt;- round(runif(1) * 100, digits = 0)
-guess &lt;- -1
+<span class="n">num</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="nf">runif</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span>
+<span class="n">guess</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">-1</span>
 
-cat("Guess a number between 0 and 100.\n")
+<span class="nf">cat</span><span class="p">(</span><span class="s">&quot;Guess a number between 0 and 100.\n&quot;</span><span class="p">)</span>
 
-while(guess != num)
-{ 
-  guess &lt;- readinteger()
-  if (guess == num)
-  {
-    cat("Congratulations,", num, "is right.\n")
-  }
-  else if (guess &lt; num)
-  {
-    cat("It's bigger!\n")
-  }
-  else if(guess &gt; num)
-  {
-    cat("It's smaller!\n")
-  }
-}</code></pre>
+<span class="kr">while</span><span class="p">(</span><span class="n">guess</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">num</span><span class="p">)</span>
+<span class="p">{</span><span class="w"> </span>
+<span class="w">  </span><span class="n">guess</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">readinteger</span><span class="p">()</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="n">guess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">num</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nf">cat</span><span class="p">(</span><span class="s">&quot;Congratulations,&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;is right.\n&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kr">else</span><span class="w"> </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="n">guess</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nf">cat</span><span class="p">(</span><span class="s">&quot;It&#39;s bigger!\n&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kr">else</span><span class="w"> </span><span class="kr">if</span><span class="p">(</span><span class="n">guess</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">num</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nf">cat</span><span class="p">(</span><span class="s">&quot;It&#39;s smaller!\n&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>This will result in an otherput as follows:</p>
-<pre class="highlight"><code class="language-text">Enter an integer: 50
-It's bigger!
+<div class="highlight"><pre><span></span><code>Enter an integer: 50
+It&#39;s bigger!
 Enter an integer: 75
-It's bigger!
+It&#39;s bigger!
 Enter an integer: 87
-It's smaller!
+It&#39;s smaller!
 Enter an integer: 82
-It's smaller!
+It&#39;s smaller!
 Enter an integer: 78
-It's bigger!
+It&#39;s bigger!
 Enter an integer: 80
-It's bigger!
+It&#39;s bigger!
 Enter an integer: 81
-Congratulations, 81 is right.</code></pre>
+Congratulations, 81 is right.
+</code></pre></div>
 <h2 id="screencast">Screencast</h2>
 <script id="asciicast-285921" src="https://asciinema.org/a/285921.js" async></script>
 
@@ -4362,8 +4369,6 @@ Congratulations, 81 is right.</code></pre>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

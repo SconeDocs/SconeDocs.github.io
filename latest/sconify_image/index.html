@@ -4115,22 +4115,27 @@
  Moreover, this code does not attest the SCONE CAS, i.e., the SCONE Configuration and Attestation service.</p>
 </div>
 <p>You can clone the code of this example as follows:</p>
-<pre class="highlight"><code>git clone https://github.com/scontain/sconify_image.git
-cd sconify_image</code></pre>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/scontain/sconify_image.git
+cd sconify_image
+</code></pre></div>
 <h3 id="stage-one-native-image-generation">Stage One: Native Image Generation</h3>
 <p>We generate our native image with the help of a Dockerfile by executing:</p>
-<pre class="highlight"><code class="language-bash">./create_native_image.sh</code></pre>
+<div class="highlight"><pre><span></span><code>./create_native_image.sh
+</code></pre></div>
 <p>You could try out this image by running</p>
-<pre class="highlight"><code class="language-bash">docker-compose --file native-docker-compose.yml up</code></pre>
+<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>--file<span class="w"> </span>native-docker-compose.yml<span class="w"> </span>up
+</code></pre></div>
 <p>You can now submit requests as follows:</p>
-<pre class="highlight"><code class="language-bash">export URL=https://api:4996
- curl -k -X POST ${URL}/patient/patient_3 -d "fname=Jane&amp;lname=Doe&amp;address='123 Main Street'&amp;city=Richmond&amp;state=Washington&amp;ssn=123-223-2345&amp;email=nr@aaa.com&amp;dob=01/01/2010&amp;contactphone=123-234-3456&amp;drugallergies='Sulpha, Penicillin, Tree Nut'&amp;preexistingconditions='diabetes, hypertension, asthma'&amp;dateadmitted=01/05/2010&amp;insurancedetails='Primera Blue Cross'" --resolve api:4996:127.0.0.1
-curl -k -X GET ${URL}/patient/patient_3 --resolve api:4996:127.0.0.1</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">URL</span><span class="o">=</span>https://api:4996
+<span class="w"> </span>curl<span class="w"> </span>-k<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="si">${</span><span class="nv">URL</span><span class="si">}</span>/patient/patient_3<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;fname=Jane&amp;lname=Doe&amp;address=&#39;123 Main Street&#39;&amp;city=Richmond&amp;state=Washington&amp;ssn=123-223-2345&amp;email=nr@aaa.com&amp;dob=01/01/2010&amp;contactphone=123-234-3456&amp;drugallergies=&#39;Sulpha, Penicillin, Tree Nut&#39;&amp;preexistingconditions=&#39;diabetes, hypertension, asthma&#39;&amp;dateadmitted=01/05/2010&amp;insurancedetails=&#39;Primera Blue Cross&#39;&quot;</span><span class="w"> </span>--resolve<span class="w"> </span>api:4996:127.0.0.1
+curl<span class="w"> </span>-k<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span><span class="si">${</span><span class="nv">URL</span><span class="si">}</span>/patient/patient_3<span class="w"> </span>--resolve<span class="w"> </span>api:4996:127.0.0.1
+</code></pre></div>
 <h2 id="stage-two-encrypted-image">Stage Two: Encrypted Image</h2>
 <p>We now transform the native image that we generated in stage one, into a new encrypted image in which the application runs inside of an SGX enclave.</p>
 <h3 id="determine-directories-that-we-need-to-encrypt">Determine directories that we need to encrypt</h3>
 <p>One can use a dynamic analyis approach to determine which directories are accessed by the application:</p>
-<pre class="highlight"><code class="language-bash">docker run --init --cap-add=SYS_PTRACE -it --rm  native_flask_restapi_image  timeout  30 sh -c "apk add --no-cache strace ; strace python3 /app/rest_api.py" &gt; strace.log</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--init<span class="w"> </span>--cap-add<span class="o">=</span>SYS_PTRACE<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w">  </span>native_flask_restapi_image<span class="w">  </span>timeout<span class="w">  </span><span class="m">30</span><span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;apk add --no-cache strace ; strace python3 /app/rest_api.py&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>strace.log
+</code></pre></div>
 <p>One can see that the application access the following directories:</p>
 <ul>
 <li><code>/usr/local/lib</code></li>
@@ -4141,59 +4146,67 @@ curl -k -X GET ${URL}/patient/patient_3 --resolve api:4996:127.0.0.1</code></pre
 <p>We provide a default security policy template (see file <code>session-template.yml</code>). In this example, we need to provide the application, i.e., flask, with a certificate and a private key. We added two <code>hooks</code> in the default policy to 1) define secrets in the policy, and 2) <em>inject</em> these files in the filesystem of the application, i.e., they are only visible to the application after successfully attesting the application.</p>
 <p>We define for our application  a TLS certificate (<code>flask</code>) and a private key (<code>flask_key</code>). Note that we specify a <strong>DNS</strong> name <code>api</code>, i.e., clients need to access this service as <code>https://api</code>. To generate
 a certificate, we require a CA (Certification Authority). Hence, we generate a CA (<code>api_ca_cert</code>) and the private key of the CA (<code>api_ca_key</code>).</p>
-<pre class="highlight"><code class="language-bash">export SECRETS=$(cat &lt;&lt;EOF
-secrets:
-    - name: api_ca_key
-      kind: private-key
-    - name: api_ca_cert
-      kind: x509-ca
-      export_public: true
-      private_key: api_ca_key
-    - name: flask_key
-      kind: private-key
-    - name: flask
-      kind: x509
-      private_key: flask_key
-      issuer: api_ca_cert
-      dns:
-        - api
-EOF
-)</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">SECRETS</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">secrets:</span>
+<span class="s">    - name: api_ca_key</span>
+<span class="s">      kind: private-key</span>
+<span class="s">    - name: api_ca_cert</span>
+<span class="s">      kind: x509-ca</span>
+<span class="s">      export_public: true</span>
+<span class="s">      private_key: api_ca_key</span>
+<span class="s">    - name: flask_key</span>
+<span class="s">      kind: private-key</span>
+<span class="s">    - name: flask</span>
+<span class="s">      kind: x509</span>
+<span class="s">      private_key: flask_key</span>
+<span class="s">      issuer: api_ca_cert</span>
+<span class="s">      dns:</span>
+<span class="s">        - api</span>
+<span class="s">EOF</span>
+<span class="k">)</span>
+</code></pre></div>
 <p>The certificate and the private key need to be made available to the program - which expects
 these at paths <code>/tls/flask.crt</code> and <code>/tls/flask.key</code>, respectively. Hence,
 we inject these secrets into files:</p>
-<pre class="highlight"><code class="language-bash">export INJECTED_FILES=$(cat &lt;&lt;EOF
-     injection_files:
-        - path: "/tls/flask.crt"
-          content: \$\$SCONE::flask.crt\$\$
-        - path: "/tls/flask.key"
-          content: "\$\$SCONE::flask.key\$\$"
-EOF
-)</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">INJECTED_FILES</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">     injection_files:</span>
+<span class="s">        - path: &quot;/tls/flask.crt&quot;</span>
+<span class="s">          content: \$\$SCONE::flask.crt\$\$</span>
+<span class="s">        - path: &quot;/tls/flask.key&quot;</span>
+<span class="s">          content: &quot;\$\$SCONE::flask.key\$\$&quot;</span>
+<span class="s">EOF</span>
+<span class="k">)</span>
+</code></pre></div>
 <h3 id="generate-the-encrypted-image">Generate the encrypted image</h3>
 <p>We define some environment variables to sconify the image</p>
 <ul>
 <li>The name of the container image that was created by <code>./create_native_image.sh</code>:</li>
 </ul>
-<pre class="highlight"><code class="language-bash">export NATIVE_IMAGE="native_flask_restapi_image"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">NATIVE_IMAGE</span><span class="o">=</span><span class="s2">&quot;native_flask_restapi_image&quot;</span>
+</code></pre></div>
 <ul>
 <li>The name of the generated encrypted container image:</li>
 </ul>
-<pre class="highlight"><code class="language-bash">export IMAGE="flask_restapi_image"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;flask_restapi_image&quot;</span>
+</code></pre></div>
 <ul>
 <li>We use a public SCONE CAS to store the session policies</li>
 </ul>
-<pre class="highlight"><code class="language-bash">export SCONE_CAS_ADDR="scone-cas.cf"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;scone-cas.cf&quot;</span>
+</code></pre></div>
 <ul>
 <li>we define a random namespace for this policy:</li>
 </ul>
-<pre class="highlight"><code class="language-bash">export NAMESPACE="my_namespace-$RANDOM"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">NAMESPACE</span><span class="o">=</span><span class="s2">&quot;my_namespace-</span><span class="nv">$RANDOM</span><span class="s2">&quot;</span>
+</code></pre></div>
 <ul>
 <li>we define the binary that needs to be sconified:</li>
 </ul>
-<pre class="highlight"><code class="language-bash">export BINARY="/usr/local/bin/python"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">BINARY</span><span class="o">=</span><span class="s2">&quot;/usr/local/bin/python&quot;</span>
+</code></pre></div>
 <p>Now, we can create the encrypted image, instantiate policy template and upload the policy in one step:</p>
-<pre class="highlight"><code class="language-bash">export SESSION=$(./sconify_image --namespace=$NAMESPACE --name=flask --from=$NATIVE_IMAGE --to=$IMAGE --cas=$SCONE_CAS_ADDR --dir="/home" --dir="/usr/local/lib" --dir="/app" --dir="/usr/lib/python3.7"  --binary=$BINARY --create-namespace)</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">SESSION</span><span class="o">=</span><span class="k">$(</span>./sconify_image<span class="w"> </span>--namespace<span class="o">=</span><span class="nv">$NAMESPACE</span><span class="w"> </span>--name<span class="o">=</span>flask<span class="w"> </span>--from<span class="o">=</span><span class="nv">$NATIVE_IMAGE</span><span class="w"> </span>--to<span class="o">=</span><span class="nv">$IMAGE</span><span class="w"> </span>--cas<span class="o">=</span><span class="nv">$SCONE_CAS_ADDR</span><span class="w"> </span>--dir<span class="o">=</span><span class="s2">&quot;/home&quot;</span><span class="w"> </span>--dir<span class="o">=</span><span class="s2">&quot;/usr/local/lib&quot;</span><span class="w"> </span>--dir<span class="o">=</span><span class="s2">&quot;/app&quot;</span><span class="w"> </span>--dir<span class="o">=</span><span class="s2">&quot;/usr/lib/python3.7&quot;</span><span class="w">  </span>--binary<span class="o">=</span><span class="nv">$BINARY</span><span class="w"> </span>--create-namespace<span class="k">)</span>
+</code></pre></div>
 <p>Environment variable SESSION will contain the name of the session, which in this case would be "$NAMESPACE-flask" because we set the name of the session to be <code>flask</code> by passing argument <code>--name=flask</code>.</p>
 <div class="admonition info">
 <p class="admonition-title">Sconification of binary</p>
@@ -4201,12 +4214,14 @@ EOF
 </div>
 <h3 id="step-3-execute-encrypted-image">STEP 3: Execute Encrypted Image</h3>
 <p>We show how to run this locally by executing. We first determine the SGX device name of the local computer and export a few SCONE environment variables to start the enclave:</p>
-<pre class="highlight"><code class="language-bash">export DEVICE=$(./determine_sgx_device)
-export SCONE_HEAP=1G
-export SCONE_STACK=4M
-export SCONE_ALLOW_DLOPEN=2</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">DEVICE</span><span class="o">=</span><span class="k">$(</span>./determine_sgx_device<span class="k">)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HEAP</span><span class="o">=</span>1G
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_STACK</span><span class="o">=</span>4M
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span><span class="m">2</span>
+</code></pre></div>
 <p>and then we run the encrypted image using <code>docker-compose</code>:</p>
-<pre class="highlight"><code class="language-bash">docker-compose up</code></pre>
+<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up
+</code></pre></div>
 <p>We show next how to run a little more elaborated version on AKS.</p>
 
               
@@ -4278,8 +4293,6 @@ export SCONE_ALLOW_DLOPEN=2</code></pre>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

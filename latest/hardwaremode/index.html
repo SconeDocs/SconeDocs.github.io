@@ -4117,8 +4117,9 @@ Actually, the only change is to <strong>give the container access to the SGX dev
 <h2 id="detailed-description">Detailed Description</h2>
 <p>We first need to start a container which includes the SCONE crosscompiler and
 give the container access to the Intel SGX driver. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>:</p>
-<pre class="highlight"><code class="language-bash">determine_sgx_device
-docker run $MOUNT_SGXDEVICE -it registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+docker<span class="w"> </span>run<span class="w"> </span><span class="nv">$MOUNT_SGXDEVICE</span><span class="w"> </span>-it<span class="w"> </span>registry.scontain.com/sconecuratedimages/crosscompilers
+</code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">The docker engine and the Intel SGX driver must be installed.</p>
 <p>Read about how to <a href="../dockerinstall/">install a docker engine</a> and to <a href="../sgxinstall/">install the Intel SGX driver</a>.
@@ -4128,25 +4129,29 @@ If your hosts have already a Intel SGX driver installed, you are all set.
 Hardware mode is only supported in Linux, since the Intel SGX driver is only available on Linux.</p>
 </div>
 <p>Now execute the following command inside the container to create the hello world program:</p>
-<pre class="highlight"><code class="language-C">cat &gt; helloworld.c &lt;&lt; EOF
-#include &lt;stdio.h&gt;
-int main() {
-    printf("Hello World\n");
-}
-EOF</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">cat</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">helloworld</span><span class="p">.</span><span class="n">c</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">EOF</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hello World</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">EOF</span>
+</code></pre></div>
 <p>Compile the program with:
-<pre class="highlight"><code class="language-bash">gcc -o helloworld helloworld.c</code></pre></p>
+<div class="highlight"><pre><span></span><code>gcc<span class="w"> </span>-o<span class="w"> </span>helloworld<span class="w"> </span>helloworld.c
+</code></pre></div></p>
 <p>You can run this program:</p>
-<pre class="highlight"><code class="language-bash">./helloworld</code></pre>
+<div class="highlight"><pre><span></span><code>./helloworld
+</code></pre></div>
 <p>This will print <em>Hello World</em>. </p>
 <p>Since we  have given the container access to the SGX driver, this runs in <strong>hardware mode</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Use this mode only for development and debugging</p>
 <p>The program <strong>runs inside of a hardware enclave</strong>. However, the enclave is in debug mode, i.e., one can actually introspect the content of the enclave.</p>
 </div>
-<pre class="highlight"><code class="language-bash">SCONE_VERSION=1 ./helloworld</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>./helloworld
+</code></pre></div>
 <p>This will print something like:</p>
-<pre class="highlight"><code class="language-text">export SCONE_QUEUES=4
+<div class="highlight"><pre><span></span><code>export SCONE_QUEUES=4
 export SCONE_SLOTS=256
 export SCONE_SIGPIPE=0
 export SCONE_MMAP32BIT=0
@@ -4166,20 +4171,24 @@ Branch: master
 Configure options: --enable-shared --enable-debug --prefix=/mnt/ssd/franz/subtree-scone2/built/cross-compiler/x86_64-linux-musl
 
 Enclave hash: 9d601c360ce9b6100e35dc42ec2800c1c20478328a0d4450d8d5163c00289dea
-Hello World</code></pre>
+Hello World
+</code></pre></div>
 <p>The output shows that SCONE is running in <strong>hardware mode</strong>: <em>export SCONE_MODE=hw</em></p>
 <h2 id="background-info">Background Info</h2>
 <p>For ease of use, we create all Docker images such that applications run inside of enclaves if enclaves are available (<a href="../SCONE_ENV#run-mode"><strong>AUTO</strong> mode</a>). If SGX is not available, they run in simulation mode, i.e., outside of an enclave but all SCONE software is running. To disable simulation mode, you can set environment variable <strong>SCONE_MODE=HW</strong>:</p>
-<pre class="highlight"><code class="language-bash">docker run $MOUNT_SGXDEVICE -e "SCONE_MODE=HW" -it registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="nv">$MOUNT_SGXDEVICE</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;SCONE_MODE=HW&quot;</span><span class="w"> </span>-it<span class="w"> </span>registry.scontain.com/sconecuratedimages/crosscompilers
+</code></pre></div>
 <p>If you would start your container in hardware mode but forget to give it access to the sgx device, i.e.,</p>
-<pre class="highlight"><code class="language-bash">docker run -e "SCONE_MODE=HW" -it registry.scontain.com/sconecuratedimages/crosscompilers</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;SCONE_MODE=HW&quot;</span><span class="w"> </span>-it<span class="w"> </span>registry.scontain.com/sconecuratedimages/crosscompilers
+</code></pre></div>
 <p>compilation of the <em>helloworld</em> will succeed  but running the <em>helloworld</em> program will fail:</p>
-<pre class="highlight"><code class="language-text">bash-4.4# echo $SCONE_MODE
+<div class="highlight"><pre><span></span><code>bash-4.4# echo $SCONE_MODE
 HW
 bash-4.4# ls -l /dev/isgx
 ls: /dev/isgx: No such file or directory
 bash-4.4# ./helloworld
-[SCONE|ERROR] ./tools/starter-exec.c:993:_dl_main(): Could not create enclave: Error opening SGX device</code></pre>
+[SCONE|ERROR] ./tools/starter-exec.c:993:_dl_main(): Could not create enclave: Error opening SGX device
+</code></pre></div>
 <p>When running your software in operations, you would force the programs to run inside of enclaves: this can be enforced with the help of SCONE <a href="../cas_intro/">configuration and attestation service</a>. </p>
 <div class="admonition info">
 <p class="admonition-title">Environment Variables</p>
@@ -4290,8 +4299,6 @@ bash-4.4# ./helloworld
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

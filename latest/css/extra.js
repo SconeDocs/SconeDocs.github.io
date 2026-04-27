@@ -32,7 +32,7 @@
                 return;
             }
 
-            selector = document.querySelector(".md-version");
+            selector = link.closest(".md-version");
             if (!selector) {
                 return;
             }
@@ -51,6 +51,40 @@
         });
     }
 
+    function move_version_selector_to_active_header_topic() {
+        var selector = document.querySelector(".md-version"),
+            title = document.querySelector("[data-md-component='header-title']"),
+            topics,
+            activeTopic;
+
+        if (!selector || !title) {
+            return;
+        }
+
+        topics = title.querySelectorAll(".md-header__topic");
+        if (topics.length < 2) {
+            return;
+        }
+
+        activeTopic = title.getAttribute("data-md-state") === "active"
+            ? topics[1]
+            : topics[0];
+
+        if (selector.parentNode !== activeTopic) {
+            activeTopic.appendChild(selector);
+        }
+    }
+
+    function keep_version_selector_visible_on_scroll() {
+        move_version_selector_to_active_header_topic();
+        if (!window.addEventListener) {
+            return;
+        }
+
+        window.addEventListener("scroll", move_version_selector_to_active_header_topic, { passive: true });
+        window.addEventListener("resize", move_version_selector_to_active_header_topic);
+    }
+
     function onReady(fn) {
         if (document.addEventListener) {
             document.addEventListener('DOMContentLoaded', fn);
@@ -65,5 +99,6 @@
     onReady(function(){
         clipboard_init();
         version_selector_init();
+        keep_version_selector_visible_on_scroll();
     });
 })(document);

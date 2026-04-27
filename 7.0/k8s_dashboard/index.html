@@ -4135,24 +4135,29 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 </div>
 <h2 id="installation">Installation</h2>
 <p>Install the dashboard with <code>kubectl</code>:</p>
-<pre class="highlight"><code class="language-bash">kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+</code></pre></div>
 <p>Start the <code>kubectl</code> proxy:</p>
-<pre class="highlight"><code class="language-bash">kubectl proxy</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>proxy
+</code></pre></div>
 <p>The dashboard can now be viewed at:</p>
 <p><a href="http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/">http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/</a></p>
 <p>You need a token to use the dashboard. You can create the token to be able to log into the dashboard as follows:</p>
 <ul>
 <li>Create a Cluster Admin service account (if you have not done so)</li>
 </ul>
-<pre class="highlight"><code class="language-bash">kubectl create serviceaccount dashboard -n default</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>create<span class="w"> </span>serviceaccount<span class="w"> </span>dashboard<span class="w"> </span>-n<span class="w"> </span>default
+</code></pre></div>
 <ul>
 <li>Add the cluster binding rules to your dashboard account</li>
 </ul>
-<pre class="highlight"><code class="language-bash">kubectl create clusterrolebinding dashboard-admin -n default --clusterrole=cluster-admin --serviceaccount=default:dashboard</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>create<span class="w"> </span>clusterrolebinding<span class="w"> </span>dashboard-admin<span class="w"> </span>-n<span class="w"> </span>default<span class="w"> </span>--clusterrole<span class="o">=</span>cluster-admin<span class="w"> </span>--serviceaccount<span class="o">=</span>default:dashboard
+</code></pre></div>
 <ul>
 <li>Get the token</li>
 </ul>
-<pre class="highlight"><code class="language-bash">kubectl get secret $(kubectl get serviceaccount dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>get<span class="w"> </span>secret<span class="w"> </span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>serviceaccount<span class="w"> </span>dashboard<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.secrets[0].name}&quot;</span><span class="k">)</span><span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s2">&quot;{.data.token}&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64<span class="w"> </span>--decode
+</code></pre></div>
 <h2 id="application-monitoring">Application Monitoring</h2>
 <p>In the Kubernetes dashboard you can monitor various workload characteristics and identify issues in the workload. Like in this case, some services did not start:</p>
 <p><center>
@@ -4263,8 +4268,6 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

@@ -4114,88 +4114,97 @@
 <p>During the installation, we will attest and verify the SCONE Quoting Enclaves and the SCONE CAS to ensure that we can trust the enclaves. </p>
 <h2 id="example">Example</h2>
 <p>We use the simple <code>print-arg-env</code> application to show how to perform platform-based attestation:</p>
-<pre class="highlight"><code class="language-bash">cat &gt; print-arg-env.c &lt;&lt;EOF
-#include &lt;stdio.h&gt;
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>&gt;<span class="w"> </span>print-arg-env.c<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">#include &lt;stdio.h&gt;</span>
 
-extern char **__environ;
+<span class="s">extern char **__environ;</span>
 
-int main (int argc, char **argv) {
-    printf("argv:");
-    for (int i = 0; i &lt; argc; i++) {
-        printf(" %s", argv[i]);
-    }
-    printf("\n");
+<span class="s">int main (int argc, char **argv) {</span>
+<span class="s">    printf(&quot;argv:&quot;);</span>
+<span class="s">    for (int i = 0; i &lt; argc; i++) {</span>
+<span class="s">        printf(&quot; %s&quot;, argv[i]);</span>
+<span class="s">    }</span>
+<span class="s">    printf(&quot;\n&quot;);</span>
 
-    char** envp = __environ;
-    printf("environ:\n");
-    while (*envp != NULL) {
-        printf("%s\n", *envp);
-        envp++;
-    }
-    return 42;
-}
-EOF</code></pre>
+<span class="s">    char** envp = __environ;</span>
+<span class="s">    printf(&quot;environ:\n&quot;);</span>
+<span class="s">    while (*envp != NULL) {</span>
+<span class="s">        printf(&quot;%s\n&quot;, *envp);</span>
+<span class="s">        envp++;</span>
+<span class="s">    }</span>
+<span class="s">    return 42;</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <p>We use the function <a href="../sgxinstall/#determine-sgx-device"><code>determine_sgx_device</code></a> to determine the name of the SGX device. We pass the SGX device to the cross-compiler container:</p>
-<pre class="highlight"><code class="language-bash">determine_sgx_device
-docker run $MOUNT_SGXDEVICE --network=host -it -v `pwd`:/work registry.scontain.com/sconecuratedimages/crosscompilers bash</code></pre>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+docker<span class="w"> </span>run<span class="w"> </span><span class="nv">$MOUNT_SGXDEVICE</span><span class="w"> </span>--network<span class="o">=</span>host<span class="w"> </span>-it<span class="w"> </span>-v<span class="w"> </span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/work<span class="w"> </span>registry.scontain.com/sconecuratedimages/crosscompilers<span class="w"> </span>bash
+</code></pre></div>
 <p>Inside the container, we first compile the program with the help of the cross-compiler:</p>
-<pre class="highlight"><code class="language-bash">scone-gcc /work/print-arg-env.c -g -O3 -o /work/scone-print-arg-env
+<div class="highlight"><pre><span></span><code>scone-gcc<span class="w"> </span>/work/print-arg-env.c<span class="w"> </span>-g<span class="w"> </span>-O3<span class="w"> </span>-o<span class="w"> </span>/work/scone-print-arg-env
 
-cd /work</code></pre>
+<span class="nb">cd</span><span class="w"> </span>/work
+</code></pre></div>
 <p>You need to create a file <code>identity.pem</code> with the signer key outside of this container:  see Section <a href="../scone-signer-example/">scone-signer-example</a> for details. After copying <code>identity.pem</code> into the container, we sign the program for production as follows:</p>
-<pre class="highlight"><code class="language-bash">scone-signer sign --production scone-print-arg-env -k identity.pem </code></pre>
+<div class="highlight"><pre><span></span><code>scone-signer<span class="w"> </span>sign<span class="w"> </span>--production<span class="w"> </span>scone-print-arg-env<span class="w"> </span>-k<span class="w"> </span>identity.pem<span class="w"> </span>
+</code></pre></div>
 <p>We determine <code>MRENCLAVE</code> of the program:</p>
-<pre class="highlight"><code class="language-bash">export MRENCLAVE=`SCONE_HASH=1 ./scone-print-arg-env`
-echo MRENCLAVE of scone-print-arg-env is $MRENCLAVE
-````
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">MRENCLAVE</span><span class="o">=</span><span class="sb">`</span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>./scone-print-arg-env<span class="sb">`</span>
+<span class="nb">echo</span><span class="w"> </span>MRENCLAVE<span class="w"> </span>of<span class="w"> </span>scone-print-arg-env<span class="w"> </span>is<span class="w"> </span><span class="nv">$MRENCLAVE</span>
+<span class="sb">````</span>
 
-We assume we have a local CAS that we need to attest first. In this demo, we assume we can initially attest and verify the CAS:   
+We<span class="w"> </span>assume<span class="w"> </span>we<span class="w"> </span>have<span class="w"> </span>a<span class="w"> </span><span class="nb">local</span><span class="w"> </span>CAS<span class="w"> </span>that<span class="w"> </span>we<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span>attest<span class="w"> </span>first.<span class="w"> </span>In<span class="w"> </span>this<span class="w"> </span>demo,<span class="w"> </span>we<span class="w"> </span>assume<span class="w"> </span>we<span class="w"> </span>can<span class="w"> </span>initially<span class="w"> </span>attest<span class="w"> </span>and<span class="w"> </span>verify<span class="w"> </span>the<span class="w"> </span>CAS:<span class="w">   </span>
 
-```bash
-export SCONE_CAS_ADDR=172.17.0.1
-scone cas attest $SCONE_CAS_ADDR</code></pre>
+<span class="sb">```</span>bash
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="m">172</span>.17.0.1
+scone<span class="w"> </span>cas<span class="w"> </span>attest<span class="w"> </span><span class="nv">$SCONE_CAS_ADDR</span>
+</code></pre></div>
 <p>We need to determine the public keys of the SCONE QEs. We explain in Section <a href="../helm_las/#determining-the-platform-ids">Determining the Platform IDs</a> how to determine these in the context of Kubernetes clusters:</p>
-<pre class="highlight"><code class="language-bash">export PLATFORM=...</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">PLATFORM</span><span class="o">=</span>...
+</code></pre></div>
 <p>We can now create a SCONE policy that uses the platform-based attestation. We need to declare that we trust the SCONE QEs. Moreover, we only permit the enclave to run on one of the platforms of these trusted QEs:</p>
-<pre class="highlight"><code class="language-bash">export PREDECESSOR="~"
-export SESSION=secure-arguments-example-$RANDOM-$RANDOM
-echo $SESSION
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">PREDECESSOR</span><span class="o">=</span><span class="s2">&quot;~&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SESSION</span><span class="o">=</span>secure-arguments-example-<span class="nv">$RANDOM</span>-<span class="nv">$RANDOM</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$SESSION</span>
 
-cat &gt; session.yml &lt;&lt;EOF
-name: $SESSION
-version: 0.3
-predecessor: $PREDECESSOR
+cat<span class="w"> </span>&gt;<span class="w"> </span>session.yml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">name: $SESSION</span>
+<span class="s">version: 0.3</span>
+<span class="s">predecessor: $PREDECESSOR</span>
 
-security:
-  attestation:
-    trusted_scone_qe_pubkeys: ["$PLATFORM"]
+<span class="s">security:</span>
+<span class="s">  attestation:</span>
+<span class="s">    trusted_scone_qe_pubkeys: [&quot;$PLATFORM&quot;]</span>
 
-services:
-   - name: scone-print-arg-env
-     attestation:
-       mrenclave: [$MRENCLAVE]
-     platforms: [$PLATFORM]
-     command: ./scone-print-arg-env arg1 arg2 arg3
-     environment:
-        SCONE_MODE: hw
-        SCONE_LOG: ERROR
-        env1: running
-        env2: in
-        env3: env3
-     pwd: /
-EOF
-export SCONE_LAS_ADDR=172.17.0.1
-export PREDECESSOR=$(scone session create session.yml)</code></pre>
+<span class="s">services:</span>
+<span class="s">   - name: scone-print-arg-env</span>
+<span class="s">     attestation:</span>
+<span class="s">       mrenclave: [$MRENCLAVE]</span>
+<span class="s">     platforms: [$PLATFORM]</span>
+<span class="s">     command: ./scone-print-arg-env arg1 arg2 arg3</span>
+<span class="s">     environment:</span>
+<span class="s">        SCONE_MODE: hw</span>
+<span class="s">        SCONE_LOG: ERROR</span>
+<span class="s">        env1: running</span>
+<span class="s">        env2: in</span>
+<span class="s">        env3: env3</span>
+<span class="s">     pwd: /</span>
+<span class="s">EOF</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_LAS_ADDR</span><span class="o">=</span><span class="m">172</span>.17.0.1
+<span class="nb">export</span><span class="w"> </span><span class="nv">PREDECESSOR</span><span class="o">=</span><span class="k">$(</span>scone<span class="w"> </span>session<span class="w"> </span>create<span class="w"> </span>session.yml<span class="k">)</span>
+</code></pre></div>
 <p>We can now execute the program as follows:</p>
-<pre class="highlight"><code class="language-bash">SCONE_CONFIG_ID=$SESSION/scone-print-arg-env ./scone-print-arg-env</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">SCONE_CONFIG_ID</span><span class="o">=</span><span class="nv">$SESSION</span>/scone-print-arg-env<span class="w"> </span>./scone-print-arg-env
+</code></pre></div>
 <p>The output would look as follows:</p>
-<pre class="highlight"><code class="language-text">argv: ./scone-print-arg-env arg1 arg2 arg3
+<div class="highlight"><pre><span></span><code>argv: ./scone-print-arg-env arg1 arg2 arg3
 environ:
 env1=running
 env2=in
 SCONE_MODE=hw
 SCONE_LOG=ERROR
-env3=enclave</code></pre>
+env3=enclave
+</code></pre></div>
 
               
             </article>
@@ -4301,8 +4310,6 @@ env3=enclave</code></pre>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

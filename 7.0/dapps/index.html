@@ -4442,8 +4442,8 @@ a security policies.  We call such a security policy a  <strong>session</strong>
 </center></p>
 <p>To address this issue, we provide a way to have individually encrypted volumes for each session. In other words, each client of a trusted DApp can customize the image by providing input and output volumes and only the instance of this client can access these volumes. <strong>No other client nor the image generator can access the keys and hence, these volumes</strong>.</p>
 <p>A client generates these keys (in the CLI). A <strong>session</strong> specifies these keys. A session is typically derived from a <strong>session template</strong> (more about session language <a href="../CAS_session_lang_0_3/">here</a>). The session template of the <strong>copy DApp</strong> looks like this:</p>
-<pre class="highlight"><code class="language-yml">name: $SESSION
-version: "0.3"
+<div class="highlight"><pre><span></span><code>name: $SESSION
+version: &quot;0.3&quot;
 
 services:
    - name: application
@@ -4473,7 +4473,8 @@ images:
 security:
   attestation:
     tolerate: [debug-mode, hyperthreading, outdated-tcb]
-    ignore_advisories: "*"</code></pre>
+    ignore_advisories: &quot;*&quot;
+</code></pre></div>
 <p>Note that in most cases you can start from a generic session template and you do not need to worry about the syntax and all the details of session descriptions.
 The session templates of trusted DApps look very similar to the session template above.
 The three differences are that</p>
@@ -4484,26 +4485,28 @@ The three differences are that</p>
 </ul>
 <h2 id="building-an-dapp">Building an DApp</h2>
 <p>The <a href="https://github.com/scontain/copy_dapp">source code of this application</a>, you can retrieve from</p>
-<pre class="highlight"><code class="language-bash">git clone https://github.com/scontain/copy_dapp.git
-cd copy_dapp</code></pre>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/scontain/copy_dapp.git
+<span class="nb">cd</span><span class="w"> </span>copy_dapp
+</code></pre></div>
 <p>The source code of the trusted copy DApp is file <a href="https://github.com/scontain/copy_dapp/blob/master/copy_files.c"><em>copy_files.c</em></a>.</p>
 <p>We build this program with the help of the standard
 <strong>gcc</strong> that is part of Alpine Linux (see the Dockerfile below). For convenience,
 we provide an Alpine image (i.e., registry.scontain.com/sconecuratedimages/muslgcc) that has <strong>gcc</strong> preinstalled.</p>
-<p><pre class="highlight"><code class="language-Dockerfile">FROM registry.scontain.com/sconecuratedimages/muslgcc
+<p><div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/muslgcc</span>
 
-COPY copy_files.c  /
+<span class="k">COPY</span><span class="w"> </span>copy_files.c<span class="w">  </span>/
 
-# compile with vanilla gcc
-RUN gcc -Wall copy_files.c -o /copy_files
+<span class="c"># compile with vanilla gcc</span>
+<span class="k">RUN</span><span class="w"> </span>gcc<span class="w"> </span>-Wall<span class="w"> </span>copy_files.c<span class="w"> </span>-o<span class="w"> </span>/copy_files
 
-FROM registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime
+<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime</span>
 
-COPY --from=0 /copy_files /application
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span><span class="m">0</span><span class="w"> </span>/copy_files<span class="w"> </span>/application
 
-RUN apk add curl bash unzip zip
+<span class="k">RUN</span><span class="w"> </span>apk<span class="w"> </span>add<span class="w"> </span>curl<span class="w"> </span>bash<span class="w"> </span>unzip<span class="w"> </span>zip
 
-ENTRYPOINT ["/application.sh"]</code></pre>
+<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/application.sh&quot;</span><span class="p">]</span>
+</code></pre></div>
 To run the application inside of an enclave, we need the SCONE
 runtime environment. This runtime is part of image <strong>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime</strong>.
 Moreover, this image contains a script <strong>/application.sh</strong> that pulls
@@ -4515,7 +4518,8 @@ is built by the script <code>build-image.sh</code>. This script also determines
 <h2 id="testing">Testing</h2>
 <p>We now show how to test the trusted copy DApp. After building the image
 by executing</p>
-<pre class="highlight"><code class="language-bash">./build-image.sh</code></pre>
+<div class="highlight"><pre><span></span><code>./build-image.sh
+</code></pre></div>
 <p>We can execute this image on an SGX-capable host. This host has to have the SCONE local attestation service (LAS) and Docker installed. We describe in the <a href="../sgxinstall/">installation section</a> on how to install SGX driver and how to install LAS <a href="../LASIntro/">here</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Compatibility of LAS and CAS</p>
@@ -4528,100 +4532,113 @@ We create an INPUTS directory and store files there.
 We also create OUTPUTS directory, KEYS directory to hold generated keys and ZIP
 to hold temporary files. We also copy the session template generated when building the
 container image.</p>
-<pre class="highlight"><code class="language-bash">mkdir -p EXAMPLE
-cd EXAMPLE
-mkdir -p KEYS INPUTS OUTPUTS ZIP
-echo "Hello world" &gt; INPUTS/f1.txt
-echo "Hello together" &gt; INPUTS/f2.txt
-cp ../copy_dapp.yml KEYS/</code></pre>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>EXAMPLE
+<span class="nb">cd</span><span class="w"> </span>EXAMPLE
+mkdir<span class="w"> </span>-p<span class="w"> </span>KEYS<span class="w"> </span>INPUTS<span class="w"> </span>OUTPUTS<span class="w"> </span>ZIP
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello world&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>INPUTS/f1.txt
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello together&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>INPUTS/f2.txt
+cp<span class="w"> </span>../copy_dapp.yml<span class="w"> </span>KEYS/
+</code></pre></div>
 <h3 id="step-1">Step 1</h3>
 <p>We encrypt these files and push the zipped up files for now to <strong>free.keep.sh</strong>.</p>
 <p>Let's execute the first step of encrypting the files and pushing these to the transfer service:</p>
-<pre class="highlight"><code class="language-bash">CMD=$(docker run -t --rm -v $PWD/KEYS:/conf -v $PWD/INPUTS:/inputs registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli encryptedpush --application registry.scontain.com/sconecuratedimages/dapps:copy_demo -t /conf/copy_dapp.yml)
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">CMD</span><span class="o">=</span><span class="k">$(</span>docker<span class="w"> </span>run<span class="w"> </span>-t<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>/KEYS:/conf<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>/INPUTS:/inputs<span class="w"> </span>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli<span class="w"> </span>encryptedpush<span class="w"> </span>--application<span class="w"> </span>registry.scontain.com/sconecuratedimages/dapps:copy_demo<span class="w"> </span>-t<span class="w"> </span>/conf/copy_dapp.yml<span class="k">)</span>
+</code></pre></div>
 <p>Let's look at the output:</p>
-<pre class="highlight"><code class="language-bash">echo $CMD</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="nv">$CMD</span>
+</code></pre></div>
 <p>should result in an output like:</p>
-<pre class="highlight"><code class="language-bash"> --sessionID 84424401249649941281869427/application --secretManagementService 150.165.85.86 --url https://free.keep.sh/NKHVjALFjubbHUNs/scone-upload.zip</code></pre>
+<div class="highlight"><pre><span></span><code><span class="w"> </span>--sessionID<span class="w"> </span><span class="m">84424401249649941281869427</span>/application<span class="w"> </span>--secretManagementService<span class="w"> </span><span class="m">150</span>.165.85.86<span class="w"> </span>--url<span class="w"> </span>https://free.keep.sh/NKHVjALFjubbHUNs/scone-upload.zip
+</code></pre></div>
 <p>You can look in your browser at the URL to see the uploaded files!</p>
 <h3 id="step-2">Step 2</h3>
 <p>Before running this application on the iExec platform, we might
 want to test it on some SGX-capable host.</p>
 <p>Ensure that the newest image is loaded on <strong>host</strong>. This step is only needed if it is expected that the image has changed
 since <strong>docker run</strong> does not pull/update the image.</p>
-<pre class="highlight"><code class="language-bash">ssh $host docker pull registry.scontain.com/sconecuratedimages/dapps:copy_demo</code></pre>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span><span class="nv">$host</span><span class="w"> </span>docker<span class="w"> </span>pull<span class="w"> </span>registry.scontain.com/sconecuratedimages/dapps:copy_demo
+</code></pre></div>
 <p>Ensure that you are executing a bash shell (execute <code>bash</code>).
 We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.
 Now, execute the command on <strong>host</strong> and we ask it to be pushed to <strong>free.keep.sh</strong>:</p>
-<pre class="highlight"><code class="language-bash">determine_sgx_device
-URL=$(ssh $host docker run -t $MOUNT_SGXDEVICE --network host --rm registry.scontain.com/sconecuratedimages/dapps:copy_demo ${CMD//[$'\t\r\n']}  --push free.keep.sh)</code></pre>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+<span class="nv">URL</span><span class="o">=</span><span class="k">$(</span>ssh<span class="w"> </span><span class="nv">$host</span><span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-t<span class="w"> </span><span class="nv">$MOUNT_SGXDEVICE</span><span class="w"> </span>--network<span class="w"> </span>host<span class="w"> </span>--rm<span class="w"> </span>registry.scontain.com/sconecuratedimages/dapps:copy_demo<span class="w"> </span><span class="si">${</span><span class="nv">CMD</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span><span class="w">  </span>--push<span class="w"> </span>free.keep.sh<span class="k">)</span>
+</code></pre></div>
 <p>Let's look at the output:</p>
-<pre class="highlight"><code class="language-bash">echo $URL</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="nv">$URL</span>
+</code></pre></div>
 <p>this results in an output like:</p>
-<pre class="highlight"><code class="language-bash">https://free.keep.sh/0JitkN1PLHDHba1X/outputs.zip</code></pre>
+<div class="highlight"><pre><span></span><code>https://free.keep.sh/0JitkN1PLHDHba1X/outputs.zip
+</code></pre></div>
 <p>You can now download this (if running a <strong>bash</strong> shell) </p>
-<pre class="highlight"><code class="language-bash">curl -L --output ZIP/encryptedOutputFiles.zip ${URL//[$'\t\r\n']}</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-L<span class="w"> </span>--output<span class="w"> </span>ZIP/encryptedOutputFiles.zip<span class="w"> </span><span class="si">${</span><span class="nv">URL</span><span class="p">//[</span><span class="s1">$&#39;\t\r\n&#39;</span><span class="p">]</span><span class="si">}</span>
+</code></pre></div>
 <h3 id="step-3">Step 3</h3>
-<pre class="highlight"><code class="language-bash">docker run -t --rm -v $PWD/KEYS:/conf -v $PWD/ZIP:/encryptedOutputs -v $PWD/OUTPUTS:/decryptedOutputs registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli decrypt</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-t<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>/KEYS:/conf<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>/ZIP:/encryptedOutputs<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>/OUTPUTS:/decryptedOutputs<span class="w"> </span>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli<span class="w"> </span>decrypt
+</code></pre></div>
 <p>We can now look at the files in OUTPUTS directory:</p>
-<pre class="highlight"><code class="language-bash">cat OUTPUTS/f1.txt</code></pre>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>OUTPUTS/f1.txt
+</code></pre></div>
 <p>results in  <code>Hello world</code> and</p>
-<pre class="highlight"><code class="language-bash">cat OUTPUTS/f2.txt</code></pre>
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>OUTPUTS/f2.txt
+</code></pre></div>
 <p>results in  <code>Hello together</code>.</p>
 <h2 id="clis">CLIs</h2>
 <p>Now that you know how our example works, it is time to present you CLIs that we ship with our images. These CLIs have enough options that you can configure them in according to your needs.</p>
 <p>A CLI included into <strong>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_cli</strong>
-<pre class="highlight"><code class="language-bash">scone.sh: a utility to either push encrypted files or decrypt result files
-(C) Scontain.com, 2023. See https://sconedocs.github.io
+<div class="highlight"><pre><span></span><code>scone.sh:<span class="w"> </span>a<span class="w"> </span>utility<span class="w"> </span>to<span class="w"> </span>either<span class="w"> </span>push<span class="w"> </span>encrypted<span class="w"> </span>files<span class="w"> </span>or<span class="w"> </span>decrypt<span class="w"> </span>result<span class="w"> </span>files
+<span class="o">(</span>C<span class="o">)</span><span class="w"> </span>Scontain.com,<span class="w"> </span><span class="m">2023</span>.<span class="w"> </span>See<span class="w"> </span>https://sconedocs.github.io
 
-Usage: decrypt [options]
-     --help   This usage statement
+Usage:<span class="w"> </span>decrypt<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+<span class="w">     </span>--help<span class="w">   </span>This<span class="w"> </span>usage<span class="w"> </span>statement
 
-Encrypt mode:
-  encryptedpush  --inputDataFolder  PATH  --application APP
-     -a, --application  APP
-           name of remote application that should be executed
-     -s, --secretManagementService ADDRESS
-           IP address or name of SCONE secret management service [default 150.165.85.86]
-     -t, --sessiontemplate PATH
-           read session template from local path like /conf/sessiontemplate
-     -r,  --remoteFileSystem TRANSFER
-           hostname and port of service used to transfer files [default: free.keep.sh]
-     -k, --insecure
-           permits insecure SSL connections with remoteFileSystem
-     -v,  --verbose
-           print progress messages
-     --help
-           encryptedpush usage statement
+Encrypt<span class="w"> </span>mode:
+<span class="w">  </span>encryptedpush<span class="w">  </span>--inputDataFolder<span class="w">  </span>PATH<span class="w">  </span>--application<span class="w"> </span>APP
+<span class="w">     </span>-a,<span class="w"> </span>--application<span class="w">  </span>APP
+<span class="w">           </span>name<span class="w"> </span>of<span class="w"> </span>remote<span class="w"> </span>application<span class="w"> </span>that<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>executed
+<span class="w">     </span>-s,<span class="w"> </span>--secretManagementService<span class="w"> </span>ADDRESS
+<span class="w">           </span>IP<span class="w"> </span>address<span class="w"> </span>or<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>SCONE<span class="w"> </span>secret<span class="w"> </span>management<span class="w"> </span>service<span class="w"> </span><span class="o">[</span>default<span class="w"> </span><span class="m">150</span>.165.85.86<span class="o">]</span>
+<span class="w">     </span>-t,<span class="w"> </span>--sessiontemplate<span class="w"> </span>PATH
+<span class="w">           </span><span class="nb">read</span><span class="w"> </span>session<span class="w"> </span>template<span class="w"> </span>from<span class="w"> </span><span class="nb">local</span><span class="w"> </span>path<span class="w"> </span>like<span class="w"> </span>/conf/sessiontemplate
+<span class="w">     </span>-r,<span class="w">  </span>--remoteFileSystem<span class="w"> </span>TRANSFER
+<span class="w">           </span>hostname<span class="w"> </span>and<span class="w"> </span>port<span class="w"> </span>of<span class="w"> </span>service<span class="w"> </span>used<span class="w"> </span>to<span class="w"> </span>transfer<span class="w"> </span>files<span class="w"> </span><span class="o">[</span>default:<span class="w"> </span>free.keep.sh<span class="o">]</span>
+<span class="w">     </span>-k,<span class="w"> </span>--insecure
+<span class="w">           </span>permits<span class="w"> </span>insecure<span class="w"> </span>SSL<span class="w"> </span>connections<span class="w"> </span>with<span class="w"> </span>remoteFileSystem
+<span class="w">     </span>-v,<span class="w">  </span>--verbose
+<span class="w">           </span>print<span class="w"> </span>progress<span class="w"> </span>messages
+<span class="w">     </span>--help
+<span class="w">           </span>encryptedpush<span class="w"> </span>usage<span class="w"> </span>statement
 
-  Example: encryptedpush --application blender
+<span class="w">  </span>Example:<span class="w"> </span>encryptedpush<span class="w"> </span>--application<span class="w"> </span>blender
 
-Decrypt mode:
-  decrypt
-     --help
-           decrypt usage statement
+Decrypt<span class="w"> </span>mode:
+<span class="w">  </span>decrypt
+<span class="w">     </span>--help
+<span class="w">           </span>decrypt<span class="w"> </span>usage<span class="w"> </span>statement
 
-  Example: decrypt</code></pre></p>
+<span class="w">  </span>Example:<span class="w"> </span>decrypt
+</code></pre></div></p>
 <p>And a CLI included into <strong>registry.scontain.com/sconecuratedimages/dapps:copy_dapp_runtime</strong></p>
-<pre class="highlight"><code class="language-bash">application.sh a utility to demonstrate how to push volumes to remote applications
-(C) Scontain.com, 2021. See https://sconedocs.github.io
+<div class="highlight"><pre><span></span><code>application.sh<span class="w"> </span>a<span class="w"> </span>utility<span class="w"> </span>to<span class="w"> </span>demonstrate<span class="w"> </span>how<span class="w"> </span>to<span class="w"> </span>push<span class="w"> </span>volumes<span class="w"> </span>to<span class="w"> </span>remote<span class="w"> </span>applications
+<span class="o">(</span>C<span class="o">)</span><span class="w"> </span>Scontain.com,<span class="w"> </span><span class="m">2021</span>.<span class="w"> </span>See<span class="w"> </span>https://sconedocs.github.io
 
-     -s, --secretManagementService ADDRESS
-           IP address or name of SCONE secret management service [default ]
-     -u, --url URL
-           read session template from local path like /conf/sessiontemplate
-     -p,  --push TRANSFER_SERVICE
-           hostname and port of service used to push encrypted output files [default: free.keep.sh]
-     -s,  --sessionID SESSION
-           ID of the session uploaded to secretManagementService
-     -k, --insecure
-           permits insecure SSL connections with TRANSFER_SERVICE
-     -v,  --verbose
-           print progress messages
-     --help
-           application.sh usage statement
+<span class="w">     </span>-s,<span class="w"> </span>--secretManagementService<span class="w"> </span>ADDRESS
+<span class="w">           </span>IP<span class="w"> </span>address<span class="w"> </span>or<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>SCONE<span class="w"> </span>secret<span class="w"> </span>management<span class="w"> </span>service<span class="w"> </span><span class="o">[</span>default<span class="w"> </span><span class="o">]</span>
+<span class="w">     </span>-u,<span class="w"> </span>--url<span class="w"> </span>URL
+<span class="w">           </span><span class="nb">read</span><span class="w"> </span>session<span class="w"> </span>template<span class="w"> </span>from<span class="w"> </span><span class="nb">local</span><span class="w"> </span>path<span class="w"> </span>like<span class="w"> </span>/conf/sessiontemplate
+<span class="w">     </span>-p,<span class="w">  </span>--push<span class="w"> </span>TRANSFER_SERVICE
+<span class="w">           </span>hostname<span class="w"> </span>and<span class="w"> </span>port<span class="w"> </span>of<span class="w"> </span>service<span class="w"> </span>used<span class="w"> </span>to<span class="w"> </span>push<span class="w"> </span>encrypted<span class="w"> </span>output<span class="w"> </span>files<span class="w"> </span><span class="o">[</span>default:<span class="w"> </span>free.keep.sh<span class="o">]</span>
+<span class="w">     </span>-s,<span class="w">  </span>--sessionID<span class="w"> </span>SESSION
+<span class="w">           </span>ID<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>session<span class="w"> </span>uploaded<span class="w"> </span>to<span class="w"> </span>secretManagementService
+<span class="w">     </span>-k,<span class="w"> </span>--insecure
+<span class="w">           </span>permits<span class="w"> </span>insecure<span class="w"> </span>SSL<span class="w"> </span>connections<span class="w"> </span>with<span class="w"> </span>TRANSFER_SERVICE
+<span class="w">     </span>-v,<span class="w">  </span>--verbose
+<span class="w">           </span>print<span class="w"> </span>progress<span class="w"> </span>messages
+<span class="w">     </span>--help
+<span class="w">           </span>application.sh<span class="w"> </span>usage<span class="w"> </span>statement
 
-  Example: application.sh --sessionID 60534003595811684552131953/application --secretManagementService 150.165.85.86  --url https://free.keep.sh/KmdrBEvGKM66Jd04/scone-upload.zip --push free.keep.sh</code></pre>
+<span class="w">  </span>Example:<span class="w"> </span>application.sh<span class="w"> </span>--sessionID<span class="w"> </span><span class="m">60534003595811684552131953</span>/application<span class="w"> </span>--secretManagementService<span class="w"> </span><span class="m">150</span>.165.85.86<span class="w">  </span>--url<span class="w"> </span>https://free.keep.sh/KmdrBEvGKM66Jd04/scone-upload.zip<span class="w"> </span>--push<span class="w"> </span>free.keep.sh
+</code></pre></div>
 
               
             </article>
@@ -4727,8 +4744,6 @@ Decrypt mode:
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

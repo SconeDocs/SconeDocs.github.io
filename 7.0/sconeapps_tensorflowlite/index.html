@@ -4192,26 +4192,30 @@
 <h4 id="add-the-repo">Add the repo</h4>
 <p>If you haven't yet, please add this repo to Helm.</p>
 <p>To deploy TensorFlow Lite with the default parameters to your Kubernetes cluster:</p>
-<pre class="highlight"><code class="language-bash">helm install my-tensorflowlite sconeapps/tensorflowlite</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>my-tensorflowlite<span class="w"> </span>sconeapps/tensorflowlite
+</code></pre></div>
 <p>See your deployed pods by running <code>kubectl get pods | grep my-tensorflowlite</code>.</p>
 <h4 id="sgx-device">SGX device</h4>
 <p>By default, this helm chart uses the <a href="../helm_sgxdevplugin/">SCONE SGX Plugin</a>. Hence, it sets the resource limits of CAS as follows:</p>
-<pre class="highlight"><code class="language-yaml">resources:
-  limits:
-    sgx.intel.com/enclave: 1</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">resources</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">sgx.intel.com/enclave</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</code></pre></div>
 <p>Alternatively, set <code>useSGXDevPlugin</code> to <code>azure</code> (e.g., <code>--useSGXDevPlugin=azure</code>) to support Azure's SGX Device Plugin. Since Azure requires the amount of EPC memory allocated to your application to be specified, the parameter <code>sgxEpcMem</code> (SGX EPC memory in MiB) becomes required too (e.g., <code>--set useSGXDevPlugin=azure --set sgxEpcMem=16</code>).</p>
 <p>In case you do not want to use the SGX plugin, you can remove the resource limit and explicitly mount the local SGX device into your container by setting:</p>
-<pre class="highlight"><code class="language-yaml">extraVolumes:
-  - name: dev-isgx
-    hostPath:
-      path: /dev/isgx
+<div class="highlight"><pre><span></span><code><span class="nt">extraVolumes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-isgx</span>
+<span class="w">    </span><span class="nt">hostPath</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span>
 
-extraVolumeMounts:
-  - name: dev-isgx
-    path: /dev/isgx</code></pre>
+<span class="nt">extraVolumeMounts</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-isgx</span>
+<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/isgx</span>
+</code></pre></div>
 <p>Please note that mounting the local SGX device into your container requires privileged mode, which will grant your container access to ALL host devices. To enable privileged mode, set <code>securityContext</code>:</p>
-<pre class="highlight"><code class="language-yaml">securityContext:
-  privileged: true</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">securityContext</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">privileged</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
 
               
             </article>
@@ -4317,8 +4321,6 @@ extraVolumeMounts:
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

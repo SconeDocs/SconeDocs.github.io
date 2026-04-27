@@ -4171,9 +4171,11 @@
 </div>
 <h2 id="pulling-las-image">Pulling LAS Image</h2>
 <p>To start LAS, you first pull LAS to your local registry. To do so, please set the environment variable <code>LAS</code> to the image repository to which we have given you access. The standard LAS image name is defined as follows:</p>
-<pre class="highlight"><code class="language-bash">export LAS=registry.scontain.com/scone.cloud/las</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">LAS</span><span class="o">=</span>registry.scontain.com/scone.cloud/las
+</code></pre></div>
 <p>Pull the image from the Scontain registry like this:</p>
-<pre class="highlight"><code class="language-bash">docker pull $LAS</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span><span class="nv">$LAS</span>
+</code></pre></div>
 <p>If this fails, ensure that you are logged into docker (via <code>docker login</code>) and that we
 granted you access to that image.</p>
 <h3 id="determining-the-sgx-device">Determining the SGX device</h3>
@@ -4181,35 +4183,41 @@ granted you access to that image.</p>
 software, you could use the bash function <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>. It sets the environment variable <code>SGXDEVICE</code> to the device that needs to be mounted.</p>
 <h3 id="starting-and-stopping-las">Starting and Stopping LAS</h3>
 <p>The easiest way to start LAS is to use a simple Docker compose file. Please create a separate directory for that:</p>
-<pre class="highlight"><code class="language-bash">mkdir -p LAS
-cd LAS</code></pre>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>LAS
+<span class="nb">cd</span><span class="w"> </span>LAS
+</code></pre></div>
 <p>Create the following compose file:</p>
-<pre class="highlight"><code class="language-bash">determine_sgx_device
-cat &gt; docker-compose.yml &lt;&lt;EOF
-version: '3.2'
-services:
-    las:
-        image: $LAS
-        devices:
-          - "$SGXDEVICE:$SGXDEVICE"
-        restart: on-failure
-        ports:
-          - target: 18766
-            published: 18766
-            protocol: tcp
-            mode: host
-EOF</code></pre>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+cat<span class="w"> </span>&gt;<span class="w"> </span>docker-compose.yml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">version: &#39;3.2&#39;</span>
+<span class="s">services:</span>
+<span class="s">    las:</span>
+<span class="s">        image: $LAS</span>
+<span class="s">        devices:</span>
+<span class="s">          - &quot;$SGXDEVICE:$SGXDEVICE&quot;</span>
+<span class="s">        restart: on-failure</span>
+<span class="s">        ports:</span>
+<span class="s">          - target: 18766</span>
+<span class="s">            published: 18766</span>
+<span class="s">            protocol: tcp</span>
+<span class="s">            mode: host</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <p>Now start LAS in the background as follows:</p>
-<pre class="highlight"><code class="language-bash">docker-compose up -d las</code></pre>
+<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>las
+</code></pre></div>
 <p>By executing</p>
-<pre class="highlight"><code class="language-bash">docker-compose logs las</code></pre>
+<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>logs<span class="w"> </span>las
+</code></pre></div>
 <p>You will see the output of LAS.</p>
 <p>You can check if LAS is still running by executing the following:</p>
-<pre class="highlight"><code class="language-bash">docker-compose up -d las</code></pre>
+<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>las
+</code></pre></div>
 <p>This will result in an output like</p>
 <p><code>las_las_1 is up-to-date</code></p>
 <p>You can stop LAS by executing the following:</p>
-<pre class="highlight"><code class="language-bash">docker-compose stop</code></pre>
+<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>stop
+</code></pre></div>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>You might need to run the LAS container <code>--privileged</code> if the user executing LAS is not a member of group <code>sgx_prv</code>. </p>
 
@@ -4317,8 +4325,6 @@ EOF</code></pre>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

@@ -4120,64 +4120,74 @@
 <h1 id="scone-hello-world">SCONE Hello World</h1>
 <h3 id="install-sgxmusl-cross-compiler-image">Install sgxmusl cross compiler image</h3>
 <p>Ensure that you installed the various CAS_session_lang_0_3/crosscompilers container image:</p>
-<pre class="highlight"><code class="language-bash">&gt; docker image ls CAS_session_lang_0_3/*
-REPOSITORY                          TAG                    IMAGE ID            CREATED             SIZE
-CAS_session_lang_0_3/crosscompilers   latest                 dff7975b7f32        7 hours ago         1.57GB
-CAS_session_lang_0_3/crosscompilers   scone                  dff7975b7f32        7 hours ago         1.57GB</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>image<span class="w"> </span>ls<span class="w"> </span>CAS_session_lang_0_3/*
+REPOSITORY<span class="w">                          </span>TAG<span class="w">                    </span>IMAGE<span class="w"> </span>ID<span class="w">            </span>CREATED<span class="w">             </span>SIZE
+CAS_session_lang_0_3/crosscompilers<span class="w">   </span>latest<span class="w">                 </span>dff7975b7f32<span class="w">        </span><span class="m">7</span><span class="w"> </span>hours<span class="w"> </span>ago<span class="w">         </span><span class="m">1</span>.57GB
+CAS_session_lang_0_3/crosscompilers<span class="w">   </span>scone<span class="w">                  </span>dff7975b7f32<span class="w">        </span><span class="m">7</span><span class="w"> </span>hours<span class="w"> </span>ago<span class="w">         </span><span class="m">1</span>.57GB
+</code></pre></div>
 <p>If the cross compiler image is not yet installed, read Section <a href="../SCONE_Curated_Images/">SCONE Curated Container Images</a> to learn how to install the SCONE cross compiler image.</p>
 <p>If the docker command fails, please ensure that docker is indeed installed (<a href="../dockerinstall/">docker installation</a>). Also, on some systems you might need to use <code>sudo</code> to run docker commands <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
 <h2 id="install-the-tutorial">Install the tutorial</h2>
 <p>Clone the tutorial:</p>
-<pre class="highlight"><code class="language-bash">&gt; git clone https://github.com/christoffetzer/SCONE_TUTORIAL.git</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/christoffetzer/SCONE_TUTORIAL.git
+</code></pre></div>
 <h2 id="native-hello-world">Native Hello World</h2>
 <p>Ensure that <em>hello world</em> runs natively on your machine:</p>
-<pre class="highlight"><code class="language-bash">&gt; cd SCONE_TUTORIAL/HelloWorld/
-&gt; gcc hello_world.c  -o native_hello_world
-&gt; ./native_hello_world
-Hello World</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>SCONE_TUTORIAL/HelloWorld/
+&gt;<span class="w"> </span>gcc<span class="w"> </span>hello_world.c<span class="w">  </span>-o<span class="w"> </span>native_hello_world
+&gt;<span class="w"> </span>./native_hello_world
+Hello<span class="w"> </span>World
+</code></pre></div>
 <p>Note that the generated executable, i.e., <em>sim_hello_world</em>, will only run on Linux.</p>
 <h2 id="statically-linked-hello-world">Statically-Linked Hello World</h2>
 <p>The default cross compiler variant that runs <em>hello world</em> inside of an enclave is <em>scone gcc</em> and you can find this in container <em>CAS_session_lang_0_3/crosscompilers</em>.
 This variant requires access to the SGX device.
 We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<pre class="highlight"><code class="language-bash">&gt; docker run --rm $MOUNT_SGXDEVICE -v "$PWD":/usr/src/myapp -w /usr/src/myapp CAS_session_lang_0_3/crosscompilers scone-gcc hello_world.c  -o sgx_hello_world</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="nv">$MOUNT_SGXDEVICE</span><span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp<span class="w"> </span>-w<span class="w"> </span>/usr/src/myapp<span class="w"> </span>CAS_session_lang_0_3/crosscompilers<span class="w"> </span>scone-gcc<span class="w"> </span>hello_world.c<span class="w">  </span>-o<span class="w"> </span>sgx_hello_world
+</code></pre></div>
 <p>This generates a statically linked binary. However, as we mentioned above, the binary looks like a dynamically
 linked binary since it is wrapped in a dynamically linked loader program:</p>
-<pre class="highlight"><code class="language-bash">&gt; ldd ./sgx_hello_world 
-    linux-vdso.so.1 =&gt;  (0x00007ffcf73ad000)
-    libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f7c2a0e9000)
-    libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f7c29d1f000)
-    /lib64/ld-linux-x86-64.so.2 (0x00007f7c2a306000)</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>ldd<span class="w"> </span>./sgx_hello_world<span class="w"> </span>
+<span class="w">    </span>linux-vdso.so.1<span class="w"> </span><span class="o">=</span>&gt;<span class="w">  </span><span class="o">(</span>0x00007ffcf73ad000<span class="o">)</span>
+<span class="w">    </span>libpthread.so.0<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>/lib/x86_64-linux-gnu/libpthread.so.0<span class="w"> </span><span class="o">(</span>0x00007f7c2a0e9000<span class="o">)</span>
+<span class="w">    </span>libc.so.6<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>/lib/x86_64-linux-gnu/libc.so.6<span class="w"> </span><span class="o">(</span>0x00007f7c29d1f000<span class="o">)</span>
+<span class="w">    </span>/lib64/ld-linux-x86-64.so.2<span class="w"> </span><span class="o">(</span>0x00007f7c2a306000<span class="o">)</span>
+</code></pre></div>
 <p>Ensure that file <em>/etc/sgx-musl.conf</em> exists. If not, store some default file like:</p>
-<pre class="highlight"><code class="language-bash">&gt; printf "Q 1\ne 0 0 0\ns 1 0 0\n" | sudo tee /etc/sgx-musl.conf</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;Q 1\ne 0 0 0\ns 1 0 0\n&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/sgx-musl.conf
+</code></pre></div>
 <p>To run <em>sgx_hello_world</em>, in an enclave, just execute:</p>
-<pre class="highlight"><code class="language-bash">&gt; ./sgx_hello_world
-Hello World</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>./sgx_hello_world
+Hello<span class="w"> </span>World
+</code></pre></div>
 <p>To see some more debug messages, set environment variable <em>SCONE_VERSION=1</em>:</p>
-<pre class="highlight"><code class="language-bash">&gt; SCONE_VERSION=1 ./sgx_hello_world
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-export SCONE_SSPINS=100
-export SCONE_SSLEEP=4000
-export SCONE_KERNEL=0
-export SCONE_HEAP=67108864
-export SCONE_CONFIG=/etc/sgx-musl.conf
-export SCONE_MODE=hw
-export SCONE_SGXBOUNDS=no
-export SCONE_ALLOW_DLOPEN=no
-Revision: 9b355b99170ad434010353bb9f4dca24e532b1b7
-Branch: master
-Configure options: --enable-file-prot --enable-shared --enable-debug --prefix=/scone/src/built/cross-compiler/x86_64-linux-musl
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>./sgx_hello_world
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">67108864</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_MODE</span><span class="o">=</span>hw
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SGXBOUNDS</span><span class="o">=</span>no
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_ALLOW_DLOPEN</span><span class="o">=</span>no
+Revision:<span class="w"> </span>9b355b99170ad434010353bb9f4dca24e532b1b7
+Branch:<span class="w"> </span>master
+Configure<span class="w"> </span>options:<span class="w"> </span>--enable-file-prot<span class="w"> </span>--enable-shared<span class="w"> </span>--enable-debug<span class="w"> </span>--prefix<span class="o">=</span>/scone/src/built/cross-compiler/x86_64-linux-musl
 
-Hello World</code></pre>
+Hello<span class="w"> </span>World
+</code></pre></div>
 <p>The debug outputs <strong>SCONE_MODE=hw</strong> shows that <em>sgx_hello_world</em> runs in hardware mode, i.e., inside an SGX enclave.</p>
 <p><strong>Note.</strong> The compilation as well as the hello world program will fail in case you do not have an SGX driver installed.</p>
 <h2 id="dynamically-linked-hello-world">Dynamically-Linked Hello World</h2>
-<pre class="highlight"><code class="language-bash">&gt; docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp CAS_session_lang_0_3/muslgcc gcc  hello_world.c -o dyn_hello_world</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp<span class="w"> </span>-w<span class="w"> </span>/usr/src/myapp<span class="w"> </span>CAS_session_lang_0_3/muslgcc<span class="w"> </span>gcc<span class="w">  </span>hello_world.c<span class="w"> </span>-o<span class="w"> </span>dyn_hello_world
+</code></pre></div>
 <p>To run this natively, just execute the following:</p>
-<pre class="highlight"><code class="language-bash">&gt; docker run --rm  -v "$PWD":/usr/src/myapp -w /usr/src/myapp CAS_session_lang_0_3/muslgcc ./dyn_hello_world</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp<span class="w"> </span>-w<span class="w"> </span>/usr/src/myapp<span class="w"> </span>CAS_session_lang_0_3/muslgcc<span class="w"> </span>./dyn_hello_world
+</code></pre></div>
 <p>To run a dynamically-linked binary in an enclave, you need to run this in a special runtime environment. In this environment you can ask binaries to run inside of enclaves by setting environment <em>SCONE_ALPINE=1</em>. To indicate that we are indeed running inside an enclave, we ask to issue some debug messages from inside the enclave by setting environment variable <em>SCONE_VERSION=1</em>:</p>
 <h3 id="hardware-mode-vs-simulation-mode">Hardware Mode vs Simulation Mode</h3>
 <p>For debugging, we support three different modes for execution: <em>hardware, simulation, and automatic</em>:</p>
@@ -4194,69 +4204,74 @@ Hello World</code></pre>
 </ul>
 <p><strong>NOTE</strong>: In production mode, you must only permit running in hardware mode. Scone ensures this with the help of <em>remote attestation</em>: the SCONE configuration and attestation service (CAS) will only provide configuration information and secrets to an application only after it has proven (with the help of SGX CPU extensions) that it is indeed running inside an SGX enclave.</p>
 <h3 id="execution-on-an-sgx-capable-machine">Execution on an SGX-capable machine</h3>
-<pre class="highlight"><code class="language-bash">&gt; docker run --rm  -v "$PWD":/usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALPINE=1 -e SCONE_VERSION=1 CAS_session_lang_0_3/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-export SCONE_SSPINS=100
-export SCONE_SSLEEP=4000
-export SCONE_KERNEL=0
-export SCONE_HEAP=67108864
-export SCONE_CONFIG=/etc/sgx-musl.conf
-export SCONE_MODE=hw
-Configure parameters: 
-1.1.15
-Hello World</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_MODE</span><span class="o">=</span>HW<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>CAS_session_lang_0_3/crosscompilers:runtime<span class="w"> </span>/usr/src/myapp/dyn_hello_world
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">67108864</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_MODE</span><span class="o">=</span>hw
+Configure<span class="w"> </span>parameters:<span class="w"> </span>
+<span class="m">1</span>.1.15
+Hello<span class="w"> </span>World
+</code></pre></div>
 <h3 id="execution-on-a-non-sgx-machine">Execution on a non-SGX machine</h3>
 <p>If you run this inside a container without access to SGX (/dev/isgx), for example, when running on a Mac, you will see the following error message:</p>
-<pre class="highlight"><code class="language-bash">&gt; docker run --rm  -v "$PWD":/usr/src/myapp -e SCONE_MODE=HW -e SCONE_ALPINE=1 -e SCONE_VERSION=1 CAS_session_lang_0_3/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
-[Error] Could not create enclave: Error opening SGX device</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_MODE</span><span class="o">=</span>HW<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>CAS_session_lang_0_3/crosscompilers:runtime<span class="w"> </span>/usr/src/myapp/dyn_hello_world
+<span class="o">[</span>Error<span class="o">]</span><span class="w"> </span>Could<span class="w"> </span>not<span class="w"> </span>create<span class="w"> </span>enclave:<span class="w"> </span>Error<span class="w"> </span>opening<span class="w"> </span>SGX<span class="w"> </span>device
+</code></pre></div>
 <p>You could run this in simulation mode as follows:</p>
-<pre class="highlight"><code class="language-bash">&gt; docker run --rm  -v "$PWD":/usr/src/myapp -e SCONE_MODE=SIM -e SCONE_ALPINE=1 -e SCONE_VERSION=1 CAS_session_lang_0_3/crosscompilers:runtime /usr/src/myapp/dyn_hello_world
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-export SCONE_SSPINS=100
-export SCONE_SSLEEP=4000
-export SCONE_KERNEL=0
-export SCONE_HEAP=67108864
-export SCONE_CONFIG=/etc/sgx-musl.conf
-export SCONE_MODE=sim
-Configure parameters: 
-1.1.15
-Hello World</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_MODE</span><span class="o">=</span>SIM<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>CAS_session_lang_0_3/crosscompilers:runtime<span class="w"> </span>/usr/src/myapp/dyn_hello_world
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">67108864</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_MODE</span><span class="o">=</span>sim
+Configure<span class="w"> </span>parameters:<span class="w"> </span>
+<span class="m">1</span>.1.15
+Hello<span class="w"> </span>World
+</code></pre></div>
 <p>Alternatively, you could run this program in automatic mode:</p>
-<pre class="highlight"><code class="language-bash">&gt; docker run --rm  -v "$PWD":/usr/src/myapp -e SCONE_MODE=AUTO -e SCONE_ALPINE=1 -e SCONE_VERSION=1 CAS_session_lang_0_3/crosscompilers:runtime 
-export SCONE_QUEUES=4
-export SCONE_SLOTS=256
-export SCONE_SIGPIPE=0
-export SCONE_MMAP32BIT=0
-export SCONE_SSPINS=100
-export SCONE_SSLEEP=4000
-export SCONE_KERNEL=0
-export SCONE_HEAP=67108864
-export SCONE_CONFIG=/etc/sgx-musl.conf
-export SCONE_MODE=sim
-Configure parameters:
-1.1.15
-HelloWorld</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_MODE</span><span class="o">=</span>AUTO<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_ALPINE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_VERSION</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>CAS_session_lang_0_3/crosscompilers:runtime<span class="w"> </span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_QUEUES</span><span class="o">=</span><span class="m">4</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SLOTS</span><span class="o">=</span><span class="m">256</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SIGPIPE</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_MMAP32BIT</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SSPINS</span><span class="o">=</span><span class="m">100</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_SSLEEP</span><span class="o">=</span><span class="m">4000</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_KERNEL</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HEAP</span><span class="o">=</span><span class="m">67108864</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_CONFIG</span><span class="o">=</span>/etc/sgx-musl.conf
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_MODE</span><span class="o">=</span>sim
+Configure<span class="w"> </span>parameters:
+<span class="m">1</span>.1.15
+HelloWorld
+</code></pre></div>
 <h2 id="run-strace">Run STRACE</h2>
 <p>Lets see how we can trace the program. Say, you have compile the program as shown above. After that you enter a cross compiler container and strace hello world as follows:</p>
-<pre class="highlight"><code class="language-bash">&gt; docker run --cap-add SYS_PTRACE -it --rm $MOUNT_SGXDEVICE -v "$PWD":/usr/src/myapp -w /usr/src/myapp CAS_session_lang_0_3/crosscompilers strace  -f /usr/src/myapp/sgx_hello_world &gt; strace.log
-Hello World
-head strace.log
-execve("/usr/src/myapp/sgx_hello_world", ["/usr/src/myapp/sgx_hello_world"], [/* 10 vars */]) = 0
-brk(NULL)                               = 0x10e8000
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f17f07f1000
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=18506, ...}) = 0
-mmap(NULL, 18506, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f17f07ec000
-close(3)                                = 0
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>--cap-add<span class="w"> </span>SYS_PTRACE<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span><span class="nv">$MOUNT_SGXDEVICE</span><span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">&quot;</span>:/usr/src/myapp<span class="w"> </span>-w<span class="w"> </span>/usr/src/myapp<span class="w"> </span>CAS_session_lang_0_3/crosscompilers<span class="w"> </span>strace<span class="w">  </span>-f<span class="w"> </span>/usr/src/myapp/sgx_hello_world<span class="w"> </span>&gt;<span class="w"> </span>strace.log
+Hello<span class="w"> </span>World
+head<span class="w"> </span>strace.log
+execve<span class="o">(</span><span class="s2">&quot;/usr/src/myapp/sgx_hello_world&quot;</span>,<span class="w"> </span><span class="o">[</span><span class="s2">&quot;/usr/src/myapp/sgx_hello_world&quot;</span><span class="o">]</span>,<span class="w"> </span><span class="o">[</span>/*<span class="w"> </span><span class="m">10</span><span class="w"> </span>vars<span class="w"> </span>*/<span class="o">])</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+brk<span class="o">(</span>NULL<span class="o">)</span><span class="w">                               </span><span class="o">=</span><span class="w"> </span>0x10e8000
+access<span class="o">(</span><span class="s2">&quot;/etc/ld.so.nohwcap&quot;</span>,<span class="w"> </span>F_OK<span class="o">)</span><span class="w">      </span><span class="o">=</span><span class="w"> </span>-1<span class="w"> </span>ENOENT<span class="w"> </span><span class="o">(</span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory<span class="o">)</span>
+mmap<span class="o">(</span>NULL,<span class="w"> </span><span class="m">8192</span>,<span class="w"> </span>PROT_READ<span class="p">|</span>PROT_WRITE,<span class="w"> </span>MAP_PRIVATE<span class="p">|</span>MAP_ANONYMOUS,<span class="w"> </span>-1,<span class="w"> </span><span class="m">0</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0x7f17f07f1000
+access<span class="o">(</span><span class="s2">&quot;/etc/ld.so.preload&quot;</span>,<span class="w"> </span>R_OK<span class="o">)</span><span class="w">      </span><span class="o">=</span><span class="w"> </span>-1<span class="w"> </span>ENOENT<span class="w"> </span><span class="o">(</span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory<span class="o">)</span>
+open<span class="o">(</span><span class="s2">&quot;/etc/ld.so.cache&quot;</span>,<span class="w"> </span>O_RDONLY<span class="p">|</span>O_CLOEXEC<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span>
+fstat<span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="o">{</span><span class="nv">st_mode</span><span class="o">=</span>S_IFREG<span class="p">|</span><span class="m">0644</span>,<span class="w"> </span><span class="nv">st_size</span><span class="o">=</span><span class="m">18506</span>,<span class="w"> </span>...<span class="o">})</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+mmap<span class="o">(</span>NULL,<span class="w"> </span><span class="m">18506</span>,<span class="w"> </span>PROT_READ,<span class="w"> </span>MAP_PRIVATE,<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="m">0</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0x7f17f07ec000
+close<span class="o">(</span><span class="m">3</span><span class="o">)</span><span class="w">                                </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+access<span class="o">(</span><span class="s2">&quot;/etc/ld.so.nohwcap&quot;</span>,<span class="w"> </span>F_OK<span class="o">)</span><span class="w">      </span><span class="o">=</span><span class="w"> </span>-1<span class="w"> </span>ENOENT<span class="w"> </span><span class="o">(</span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory<span class="o">)</span>
+</code></pre></div>
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ"><img alt="asciicast" src="https://asciinema.org/a/Qq3TvvFkRndWstBNsP0TnMAdZ.svg" /></a></p>
 <div class="footnote">
@@ -4337,8 +4352,6 @@ access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)<
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

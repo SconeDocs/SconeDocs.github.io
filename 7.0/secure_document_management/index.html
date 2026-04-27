@@ -4371,11 +4371,12 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <h2 id="azure-kubernetes-services-aks">Azure Kubernetes Services (AKS)</h2>
 <p>You can run this demo on AKS. To set up the necessary infrastructure on AKS, you need to start a local attestations service:
 (you may have to change the tags according to your AKS Nodes)</p>
-<pre class="highlight"><code class="language-bash">helm install las sconeapps/las \
-        --set useSGXDevPlugin=azure \
-        --set sgxEpcMem=8 \
-        --set image=registry.scontain.com/sconecuratedimages/kubernetes:las \
-        --set nodeSelector.agentpool="confcompool1"</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>las<span class="w"> </span>sconeapps/las<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--set<span class="w"> </span><span class="nv">useSGXDevPlugin</span><span class="o">=</span>azure<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--set<span class="w"> </span><span class="nv">sgxEpcMem</span><span class="o">=</span><span class="m">8</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--set<span class="w"> </span><span class="nv">image</span><span class="o">=</span>registry.scontain.com/sconecuratedimages/kubernetes:las<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--set<span class="w"> </span>nodeSelector.agentpool<span class="o">=</span><span class="s2">&quot;confcompool1&quot;</span>
+</code></pre></div>
 <h2 id="tldr">TL;DR</h2>
 <ul>
 <li>please, register an account with the <a href="https://gitlab.scontain.com/">SCONE registry</a></li>
@@ -4419,53 +4420,55 @@ https://kubernetes.io/">Kubernetes</span> cluster</li>
 <img alt="Certificates" src="../img/secure-doc-manager-key-distribution.svg#fullwidth" />
 </center></p>
 <p>We provision these certificates using <a href="https://sconedocs.github.io/7.0/CAS_session_lang_0_3/">SCONE policies</a>. We now illustrate the use of the policies for certificate provisioning by inspecting the <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/nginx_session.yml">NGINX policy</a>.</p>
-<pre class="highlight"><code class="language-yaml">secrets:
-  # nginx - fastapi tls
-  - name: FASTAPI_CLIENT_CERT
-    import:
-      session: $FASTAPI_SESSION
-      secret: FASTAPI_CLIENT_CERT
-  - name: FASTAPI_CA_CERT
-    import:
-      session: $FASTAPI_SESSION
-      secret: FASTAPI_CA_CERT
-  # specific for nginx - client tls
-  - name: server-key # automatically generate SERVER server certificate
-    kind: private-key
-  - name: server # automatically generate SERVER server certificate
-    private_key: server-key
-    issuer: SERVER_CA_CERT
-    kind: x509
-    dns:
-    - $NGINX_HOST
-    - secure-doc-management
-  - name: SERVER_CA_KEY # export session CA certificate as SERVER CA certificate
-    kind: private-key
-  - name: SERVER_CA_CERT # export session CA certificate as SERVER CA certificate
-    kind: x509-ca
-    common_name: SERVER_CA
-    private_key: SERVER_CA_KEY
-    export_public: true</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># nginx - fastapi tls</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CLIENT_CERT</span>
+<span class="w">    </span><span class="nt">import</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$FASTAPI_SESSION</span>
+<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CLIENT_CERT</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA_CERT</span>
+<span class="w">    </span><span class="nt">import</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$FASTAPI_SESSION</span>
+<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA_CERT</span>
+<span class="w">  </span><span class="c1"># specific for nginx - client tls</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server-key</span><span class="w"> </span><span class="c1"># automatically generate SERVER server certificate</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server</span><span class="w"> </span><span class="c1"># automatically generate SERVER server certificate</span>
+<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server-key</span>
+<span class="w">    </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA_CERT</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509</span>
+<span class="w">    </span><span class="nt">dns</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$NGINX_HOST</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secure-doc-management</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA_KEY</span><span class="w"> </span><span class="c1"># export session CA certificate as SERVER CA certificate</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA_CERT</span><span class="w"> </span><span class="c1"># export session CA certificate as SERVER CA certificate</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509-ca</span>
+<span class="w">    </span><span class="nt">common_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA</span>
+<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA_KEY</span>
+<span class="w">    </span><span class="nt">export_public</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
 <p>In the first section, <code># nginx - fastapi tls</code>, the NGINX session imports the client and the server CA certificates from the FastAPI session. It thereby uses the CA certificate to identify the FastAPI service, and identifies itself to the service using the client certificates.</p>
 <p>In the second section, <code># (...) nginx - client tls</code>, we issue server certificates for the NGINX. For the NGINX Server CA certificate, we set <code>export_public: true</code>. This settings allows users to extract the CA certificate corresponding to this policy, thus enabling them to verify the NGINX server.</p>
 <p>To make the certificates available to the NGINX service, we inject the certificates into the NGINX file system. We specify this injection in the <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/nginx_session.yml">NGINX policy</a> using the previous SCONE policy secrets as follows:</p>
-<pre class="highlight"><code class="language-yaml">images:
-  - name: nginx_image
-    injection_files:
-       # nginx - fastapi tls
-       - path: /etc/nginx/fastapi-ca.crt
-         content: $$SCONE::FASTAPI_CA_CERT.chain$$
-       - path: /etc/nginx/fastapi-client.crt
-         content: $$SCONE::FASTAPI_CLIENT_CERT.crt$$
-       - path: /etc/nginx/fastapi-client.key
-         content: $$SCONE::FASTAPI_CLIENT_CERT.key$$
-       # specific for nginx - client tls
-       - path: /etc/nginx/server.crt
-         content: $$SCONE::server.crt$$
-       - path: /etc/nginx/server.key
-         content: $$SCONE::server.key$$</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">images</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx_image</span>
+<span class="w">    </span><span class="nt">injection_files</span><span class="p">:</span>
+<span class="w">       </span><span class="c1"># nginx - fastapi tls</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/nginx/fastapi-ca.crt</span>
+<span class="w">         </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::FASTAPI_CA_CERT.chain$$</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/nginx/fastapi-client.crt</span>
+<span class="w">         </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::FASTAPI_CLIENT_CERT.crt$$</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/nginx/fastapi-client.key</span>
+<span class="w">         </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::FASTAPI_CLIENT_CERT.key$$</span>
+<span class="w">       </span><span class="c1"># specific for nginx - client tls</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/nginx/server.crt</span>
+<span class="w">         </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::server.crt$$</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/nginx/server.key</span>
+<span class="w">         </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::server.key$$</span>
+</code></pre></div>
 <p>The NGINX can then access these injected files as normal files, e.g., in its configuration:
-<pre class="highlight"><code class="language-conf">events {}
+<div class="highlight"><pre><span></span><code>events {}
 http {
     server {
         listen 443 ssl;
@@ -4482,197 +4485,214 @@ http {
             proxy_ssl_session_reuse         on;
         }
     }
-}</code></pre></p>
+}
+</code></pre></div></p>
 <h2 id="tls-based-mutual-attestation">TLS-Based Mutual Attestation</h2>
 <p>As we observed in the previous section, we encrypt the communication between the NGINX and the FastAPI using TLS, enabled by SCONE policies. The NGINX and FastAPI policies thereby export the necessary certificates to each other by referencing each other in their policies. They thereby <em>attest</em> each other. They achieve this attestation by verifying the policies that they reference in their own policy. Furthermore, they check that the corresponding service satisfies all requirements specified in the service's policy.</p>
 <p>We can easily enforce mutual attestation using TLS client authentication. We illustrate this attestation with the <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/fastapi_session.yml">FastAPI's policy</a>, which ensures TLS-based attestation between itself and the NGINX service. This FastAPI policy generates a FastAPI CA certificate (<code>FASTAPI_CA_CERT</code>) and a FastAPI server certificate (<code>fastapi</code>) as well as a corresponding FastAPI client certificate (<code>FASTAPI_CLIENT_CERT</code>) and client key (<code>FASTAPI_CLIENT_KEY</code>). The policy exports this certificate and private key to the NGINX policy.</p>
-<pre class="highlight"><code class="language-yaml">secrets:
-  ...
-  # specific for fastapi - nginx tls
-  - name: fastapi-key # automatically generate FASTAPI server certificate
-    kind: private-key
-  - name: fastapi # automatically generate FASTAPI server certificate
-    private_key: fastapi-key
-    issuer: FASTAPI_CA_CERT
-    kind: x509
-    dns:
-    - $FASTAPI_HOST
-  - name: FASTAPI_CLIENT_KEY
-    kind: private-key
-    export:
-    - session: $NGINX_SESSION
-  - name: FASTAPI_CLIENT_CERT # automatically generate client certificate
-    private_key: FASTAPI_CLIENT_KEY
-    issuer: FASTAPI_CA_CERT
-    common_name: FASTAPI_CLIENT_CERT
-    kind: x509
-    export:
-    - session: $NGINX_SESSION # export client cert/key to upload session
-  - name: FASTAPI_CA_KEY # export session CA certificate as FASTAPI CA certificate
-    kind: private-key
-  - name: FASTAPI_CA_CERT # export session CA certificate as FASTAPI CA certificate
-    kind: x509-ca
-    common_name: FASTAPI_CA
-    private_key: FASTAPI_CA_KEY
-    export:
-    - session: $NGINX_SESSION # export the session CA certificate to upload session</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain"># specific for fastapi - nginx tls</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">- name</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fastapi-key</span><span class="w"> </span><span class="c1"># automatically generate FASTAPI server certificate</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fastapi</span><span class="w"> </span><span class="c1"># automatically generate FASTAPI server certificate</span>
+<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fastapi-key</span>
+<span class="w">    </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA_CERT</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509</span>
+<span class="w">    </span><span class="nt">dns</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$FASTAPI_HOST</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CLIENT_KEY</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span>
+<span class="w">    </span><span class="nt">export</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$NGINX_SESSION</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CLIENT_CERT</span><span class="w"> </span><span class="c1"># automatically generate client certificate</span>
+<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CLIENT_KEY</span>
+<span class="w">    </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA_CERT</span>
+<span class="w">    </span><span class="nt">common_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CLIENT_CERT</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509</span>
+<span class="w">    </span><span class="nt">export</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$NGINX_SESSION</span><span class="w"> </span><span class="c1"># export client cert/key to upload session</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA_KEY</span><span class="w"> </span><span class="c1"># export session CA certificate as FASTAPI CA certificate</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA_CERT</span><span class="w"> </span><span class="c1"># export session CA certificate as FASTAPI CA certificate</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509-ca</span>
+<span class="w">    </span><span class="nt">common_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA</span>
+<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA_KEY</span>
+<span class="w">    </span><span class="nt">export</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$NGINX_SESSION</span><span class="w"> </span><span class="c1"># export the session CA certificate to upload session</span>
+</code></pre></div>
 <p>We thereby replace <code>$NGINX_SESSION</code> with the policy name of the NGINX. For increased security, we can also specify the corresponding <a href="https://sconedocs.github.io/7.0/CAS_session_lang_0_3/#session-description-hash">session hash</a>. In this scenario, the policies are on the same <a href="https://sconedocs.github.io/7.0/helm_cas/">SCONE CAS</a>. In more complex cases, the policies can be stored on different <a href="https://sconedocs.github.io/7.0/helm_cas/">SCONE CAS</a>.</p>
 <p>The NGINX can then import the FastAPI CA certificate, client certificate and private key, as we saw before:</p>
-<pre class="highlight"><code class="language-yaml">secrets:
-  # nginx - fastapi tls
-  - name: FASTAPI_CLIENT_CERT
-    import:
-      session: $FASTAPI_SESSION
-      secret: FASTAPI_CLIENT_CERT
-  - name: FASTAPI_CA_CERT
-    import:
-      session: $FASTAPI_SESSION
-      secret: FASTAPI_CA_CERT
-  # specific for nginx - client tls
-  - name: server-key # automatically generate SERVER server certificate
-    kind: private-key
-  - name: server # automatically generate SERVER server certificate
-    private_key: server-key
-    issuer: SERVER_CA_CERT
-    kind: x509
-    dns:
-    - $NGINX_HOST
-    - secure-doc-management
-  - name: SERVER_CA_KEY # export session CA certificate as SERVER CA certificate
-    kind: private-key
-  - name: SERVER_CA_CERT # export session CA certificate as SERVER CA certificate
-    kind: x509-ca
-    common_name: SERVER_CA
-    private_key: SERVER_CA_KEY
-    export_public: true</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">secrets</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># nginx - fastapi tls</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CLIENT_CERT</span>
+<span class="w">    </span><span class="nt">import</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$FASTAPI_SESSION</span>
+<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CLIENT_CERT</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA_CERT</span>
+<span class="w">    </span><span class="nt">import</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">session</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$FASTAPI_SESSION</span>
+<span class="w">      </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FASTAPI_CA_CERT</span>
+<span class="w">  </span><span class="c1"># specific for nginx - client tls</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server-key</span><span class="w"> </span><span class="c1"># automatically generate SERVER server certificate</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server</span><span class="w"> </span><span class="c1"># automatically generate SERVER server certificate</span>
+<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server-key</span>
+<span class="w">    </span><span class="nt">issuer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA_CERT</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509</span>
+<span class="w">    </span><span class="nt">dns</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$NGINX_HOST</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secure-doc-management</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA_KEY</span><span class="w"> </span><span class="c1"># export session CA certificate as SERVER CA certificate</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">private-key</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA_CERT</span><span class="w"> </span><span class="c1"># export session CA certificate as SERVER CA certificate</span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x509-ca</span>
+<span class="w">    </span><span class="nt">common_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA</span>
+<span class="w">    </span><span class="nt">private_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SERVER_CA_KEY</span>
+<span class="w">    </span><span class="nt">export_public</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
 <p><code>$FASTAPI_SESSION</code> is the exporting policy of the FastAPI. The NGINX can then use these exported secrets, as we also saw before:</p>
-<pre class="highlight"><code class="language-yaml">images:
-  - name: nginx_image
-    injection_files:
-       # nginx - fastapi tls
-       - path: /etc/nginx/fastapi-ca.crt
-         content: $$SCONE::FASTAPI_CA_CERT.chain$$
-       - path: /etc/nginx/fastapi-client.crt
-         content: $$SCONE::FASTAPI_CLIENT_CERT.crt$$
-       - path: /etc/nginx/fastapi-client.key
-         content: $$SCONE::FASTAPI_CLIENT_CERT.key$$</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nt">images</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx_image</span>
+<span class="w">    </span><span class="nt">injection_files</span><span class="p">:</span>
+<span class="w">       </span><span class="c1"># nginx - fastapi tls</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/nginx/fastapi-ca.crt</span>
+<span class="w">         </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::FASTAPI_CA_CERT.chain$$</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/nginx/fastapi-client.crt</span>
+<span class="w">         </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::FASTAPI_CLIENT_CERT.crt$$</span>
+<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/nginx/fastapi-client.key</span>
+<span class="w">         </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$$SCONE::FASTAPI_CLIENT_CERT.key$$</span>
+</code></pre></div>
 <p>To ensure that the SCONE CAS supplying these policies is authentic, we typically attest the SCONE CAS before uploading any policies using the <a href="../helm_cas/#attesting-scone-cas">SCONE CAS CLI</a>.</p>
 <h2 id="binary-fs-for-fastapi">Binary FS for FastAPI</h2>
 <p>As we mentioned before, we secure our FastAPI server using the <code>binary-fs</code>. We use the tool while building the initial Docker image. We seperate this process in three stages. In the first stage, we apply the <code>binaryfs</code> command to create a file system <code>.c</code> file. In the second stage, we compile the <code>.c</code> file into an <code>.so</code> file using the <code>scone gcc</code>. In the third stage, we link the generated <code>.so</code> file into the binary using <code>patchelf</code>. We apply these stages in the Dockerfile as follows:</p>
-<pre class="highlight"><code class="language-Dockerfile"># First stage: apply the binary-fs
-FROM sconecuratedimages/apps:python-3.7.3-alpine3.10 AS binary-fs
+<div class="highlight"><pre><span></span><code><span class="c"># First stage: apply the binary-fs</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">sconecuratedimages/apps:python-3.7.3-alpine3.10</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">binary-fs</span>
 
-COPY rest_api.py /.
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
-
-
-# here we apply the binary-fs command to create the file system .c file
-RUN rm /usr/lib/python3.7/config-3.7m-x86_64-linux-gnu/libpython3.7m.a &amp;&amp; \
-    SCONE_MODE=auto scone binaryfs / /binary-fs.c -v \
-        --include '/usr/lib/python3.7/*' \
-        --include /lib/libssl.so.1.1 \
-        --include /lib/libcrypto.so.1.1 \
-        --include '/lib/libz.so.1*' \
-        --include '/usr/lib/libbz2.so.1*' \
-        --include '/usr/lib/libsqlite3.so.0*' \
-        --include '/usr/lib/libev.so.4*' \
-        --include '/usr/lib/libffi.so.6*' \
-        --include '/usr/lib/libexpat.so.1*' \
-        --include /rest_api.py
+<span class="k">COPY</span><span class="w"> </span>rest_api.py<span class="w"> </span>/.
+<span class="k">COPY</span><span class="w"> </span>requirements.txt<span class="w"> </span>requirements.txt
+<span class="k">RUN</span><span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 
 
-# Second stage: compile the binary fs
-FROM registry.scontain.com/sconecuratedimages/crosscompilers:alpine-scone5 as crosscompiler
-
-COPY --from=binary-fs /binary-fs.c /.
-
-RUN scone gcc /binary-fs.c -O0 -shared -o /libbinary-fs.so
-
-
-# Third stage: patch the binary-fs into the enclave executable
-FROM registry.scontain.com/sconecuratedimages/apps:python-3.7.3-alpine3.10
-
-COPY --from=crosscompiler /libbinary-fs.so /.
-
-RUN apk add --no-cache patchelf &amp;&amp; \
-    patchelf --add-needed libbinary-fs.so `which python3` &amp;&amp; \
-    apk del patchelf
+<span class="c"># here we apply the binary-fs command to create the file system .c file</span>
+<span class="k">RUN</span><span class="w"> </span>rm<span class="w"> </span>/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu/libpython3.7m.a<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">SCONE_MODE</span><span class="o">=</span>auto<span class="w"> </span>scone<span class="w"> </span>binaryfs<span class="w"> </span>/<span class="w"> </span>/binary-fs.c<span class="w"> </span>-v<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span><span class="s1">&#39;/usr/lib/python3.7/*&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span>/lib/libssl.so.1.1<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span>/lib/libcrypto.so.1.1<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span><span class="s1">&#39;/lib/libz.so.1*&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span><span class="s1">&#39;/usr/lib/libbz2.so.1*&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span><span class="s1">&#39;/usr/lib/libsqlite3.so.0*&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span><span class="s1">&#39;/usr/lib/libev.so.4*&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span><span class="s1">&#39;/usr/lib/libffi.so.6*&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span><span class="s1">&#39;/usr/lib/libexpat.so.1*&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--include<span class="w"> </span>/rest_api.py
 
 
-ENV SCONE_HEAP=512M
-ENV SCONE_LOG=debug
-ENV LD_LIBRARY_PATH="/"
+<span class="c"># Second stage: compile the binary fs</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/crosscompilers:alpine-scone5</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s">crosscompiler</span>
+
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>binary-fs<span class="w"> </span>/binary-fs.c<span class="w"> </span>/.
+
+<span class="k">RUN</span><span class="w"> </span>scone<span class="w"> </span>gcc<span class="w"> </span>/binary-fs.c<span class="w"> </span>-O0<span class="w"> </span>-shared<span class="w"> </span>-o<span class="w"> </span>/libbinary-fs.so
 
 
-CMD sh -c "python3 /rest_api.py"</code></pre>
+<span class="c"># Third stage: patch the binary-fs into the enclave executable</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">registry.scontain.com/sconecuratedimages/apps:python-3.7.3-alpine3.10</span>
+
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>crosscompiler<span class="w"> </span>/libbinary-fs.so<span class="w"> </span>/.
+
+<span class="k">RUN</span><span class="w"> </span>apk<span class="w"> </span>add<span class="w"> </span>--no-cache<span class="w"> </span>patchelf<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>patchelf<span class="w"> </span>--add-needed<span class="w"> </span>libbinary-fs.so<span class="w"> </span><span class="sb">`</span>which<span class="w"> </span>python3<span class="sb">`</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>apk<span class="w"> </span>del<span class="w"> </span>patchelf
+
+
+<span class="k">ENV</span><span class="w"> </span><span class="nv">SCONE_HEAP</span><span class="o">=</span>512M
+<span class="k">ENV</span><span class="w"> </span><span class="nv">SCONE_LOG</span><span class="o">=</span>debug
+<span class="k">ENV</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">&quot;/&quot;</span>
+
+
+<span class="k">CMD</span><span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;python3 /rest_api.py&quot;</span>
+</code></pre></div>
 <p>The binary also requires certain <code>/etc/</code> files for networking within the cluster, e.g., <code>/etc/resolv.conf</code>. Currently, we simply inject these files into the confidential service using the FastAPI's <a href="https://gitlab.scontain.com/community/secure-doc-management/-/blob/master/policy-setup/fastapi_session.yml">policy</a>.</p>
 <p>The source code of this example is available on our repository- ask us for permission, and then continue with the following commands:</p>
-<pre class="highlight"><code class="language-bash">git clone https://gitlab.scontain.com/community/secure-doc-management.git
-cd secure-doc-management</code></pre>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://gitlab.scontain.com/community/secure-doc-management.git
+<span class="nb">cd</span><span class="w"> </span>secure-doc-management
+</code></pre></div>
 <h2 id="execution-on-a-kubernetes-cluster">Execution on a Kubernetes Cluster</h2>
 <p>We intend this example to be run on a Kubernetes cluster.</p>
 <h3 id="install-scone-services">Install SCONE Services</h3>
 <p>Get access to <code>SconeApps</code> (see <a href="https://sconedocs.github.io/7.0/helm/">https://sconedocs.github.io/7.0/helm/</a>):</p>
-<pre class="highlight"><code class="language-bash">helm repo add sconeapps https://${GH_TOKEN}@raw.githubusercontent.com/scontain/SconeApps/master/
-helm repo update</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>repo<span class="w"> </span>add<span class="w"> </span>sconeapps<span class="w"> </span>https://<span class="si">${</span><span class="nv">GH_TOKEN</span><span class="si">}</span>@raw.githubusercontent.com/scontain/SconeApps/master/
+helm<span class="w"> </span>repo<span class="w"> </span>update
+</code></pre></div>
 <p>Give SconeApps access to the private docker images (see <a href="../helm/">SconeApps</a>):</p>
-<pre class="highlight"><code class="language-bash">export SCONE_HUB_USERNAME=...
-export SCONE_HUB_ACCESS_TOKEN=...
-export SCONE_HUB_EMAIL=...
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span>...
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span>...
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span>...
 
-kubectl create secret docker-registry sconeapps --docker-server=registry.scontain.com --docker-username=$SCONE_HUB_USERNAME --docker-password=$SCONE_HUB_ACCESS_TOKEN --docker-email=$SCONE_HUB_EMAIL</code></pre>
+kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>docker-registry<span class="w"> </span>sconeapps<span class="w"> </span>--docker-server<span class="o">=</span>registry.scontain.com<span class="w"> </span>--docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span><span class="w"> </span>--docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="w"> </span>--docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
+</code></pre></div>
 <p>Start Local Attestation Service (LAS) on Azure (we use a remote CAS in this case):</p>
-<pre class="highlight"><code class="language-bash"># nodeSelector may have to be adjusted according to your nodes
-helm install las sconeapps/las \
-        --set useSGXDevPlugin=azure \
-        --set sgxEpcMem=8 \
-        --set image=registry.scontain.com/sconecuratedimages/kubernetes:las-scone5 \
-        --set nodeSelector.agentpool="confcompool1"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1"># nodeSelector may have to be adjusted according to your nodes</span>
+helm<span class="w"> </span>install<span class="w"> </span>las<span class="w"> </span>sconeapps/las<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--set<span class="w"> </span><span class="nv">useSGXDevPlugin</span><span class="o">=</span>azure<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--set<span class="w"> </span><span class="nv">sgxEpcMem</span><span class="o">=</span><span class="m">8</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--set<span class="w"> </span><span class="nv">image</span><span class="o">=</span>registry.scontain.com/sconecuratedimages/kubernetes:las-scone5<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--set<span class="w"> </span>nodeSelector.agentpool<span class="o">=</span><span class="s2">&quot;confcompool1&quot;</span>
+</code></pre></div>
 <p>To setup on a vanilla Kubernetes cluster:</p>
-<pre class="highlight"><code class="language-bash">helm install las sconeapps/las --set service.hostPort=true
-helm install sgxdevplugin sconeapps/sgxdevplugin</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>las<span class="w"> </span>sconeapps/las<span class="w"> </span>--set<span class="w"> </span>service.hostPort<span class="o">=</span><span class="nb">true</span>
+helm<span class="w"> </span>install<span class="w"> </span>sgxdevplugin<span class="w"> </span>sconeapps/sgxdevplugin
+</code></pre></div>
 <h3 id="run-the-application">Run the Application</h3>
 <p>Start by by specifying Docker image repositories to which you may push:</p>
-<pre class="highlight"><code class="language-bash">export MARIADB_TARGET_IMAGE=your/repo:mariadb-protected
-export MEMCACHED_TARGET_IMAGE=your/repo:memcached-tls-protected
-export NGINX_TARGET_IMAGE=your/repo:nginx-proxy-server-protected</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">MARIADB_TARGET_IMAGE</span><span class="o">=</span>your/repo:mariadb-protected
+<span class="nb">export</span><span class="w"> </span><span class="nv">MEMCACHED_TARGET_IMAGE</span><span class="o">=</span>your/repo:memcached-tls-protected
+<span class="nb">export</span><span class="w"> </span><span class="nv">NGINX_TARGET_IMAGE</span><span class="o">=</span>your/repo:nginx-proxy-server-protected
+</code></pre></div>
 <p>Then use the Helm chart in <code>./secure-doc-management</code> to deploy the application to a Kubernetes cluster. We strongly recommend using the script:</p>
-<pre class="highlight"><code class="language-bash">export NAMESPACE=&lt;your_kubernetes_namespace&gt; # e.g. default
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">NAMESPACE</span><span class="o">=</span>&lt;your_kubernetes_namespace&gt;<span class="w"> </span><span class="c1"># e.g. default</span>
 ./setup-secure-doc-management.sh
 
-# without Azure:
-# export USE_AZURE=false; ./setup-secure-doc-management.sh</code></pre>
+<span class="c1"># without Azure:</span>
+<span class="c1"># export USE_AZURE=false; ./setup-secure-doc-management.sh</span>
+</code></pre></div>
 <!-- *NOTE:* Setting `service.type=LoadBalancer` will allow the application to get traffic from the internet (through a managed LoadBalancer). -->
 
 <!-- TODO setup load balancer -->
 
 <h3 id="test-the-application">Test the Application</h3>
 <p>After all resources are <code>Running</code>, you can test the API via Helm:</p>
-<pre class="highlight"><code class="language-bash">helm test secure-doc-management</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>secure-doc-management
+</code></pre></div>
 <p>Helm will run a pod with a couple of pre-set queries to check if the API is working properly.</p>
 <h3 id="access-the-application">Access the Application</h3>
 <p>For ease of use, we access the application within the cluster through a client pod, which the helm charts also deploys.</p>
-<pre class="highlight"><code class="language-bash">kubectl exec --stdin --tty $(kubectl get pods --selector=app.kubernetes.io/name=client-scone -o jsonpath='{.items[*].metadata.name}') -- /bin/bash</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--stdin<span class="w"> </span>--tty<span class="w"> </span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>--selector<span class="o">=</span>app.kubernetes.io/name<span class="o">=</span>client-scone<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.items[*].metadata.name}&#39;</span><span class="k">)</span><span class="w"> </span>--<span class="w"> </span>/bin/bash
+</code></pre></div>
 <p>The IP of the host is stored under <code>$NGINX_HOST</code> in the pod. The pod has also retrieved the certificate of the application beforehand, in <code>/tmp/nginx-ca.crt</code>. The exact commands to establish the secure communication with the application are:</p>
-<pre class="highlight"><code class="language-sh">echo "Attest SCONE CAS"
-scone cas attest --accept-configuration-needed --accept-group-out-of-date --only_for_testing-debug --only_for_testing-ignore-signer $SCONE_CAS_ADDR $CAS_MRENCLAVE
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Attest SCONE CAS&quot;</span>
+scone<span class="w"> </span>cas<span class="w"> </span>attest<span class="w"> </span>--accept-configuration-needed<span class="w"> </span>--accept-group-out-of-date<span class="w"> </span>--only_for_testing-debug<span class="w"> </span>--only_for_testing-ignore-signer<span class="w"> </span><span class="nv">$SCONE_CAS_ADDR</span><span class="w"> </span><span class="nv">$CAS_MRENCLAVE</span>
 
-echo "Get SCONE CAS CACERT"
-scone cas show-certificate $SCONE_CAS_ADDR &gt; /tmp/scone-ca.crt
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Get SCONE CAS CACERT&quot;</span>
+scone<span class="w"> </span>cas<span class="w"> </span>show-certificate<span class="w"> </span><span class="nv">$SCONE_CAS_ADDR</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/scone-ca.crt
 
-echo "Get nginx public CACERT from CAS REST API"
-echo -e $(curl --cacert /tmp/scone-ca.crt https://$SCONE_CAS_ADDR:8081/v1/values/session=$NGINX_CONFIG_ID,secret=SERVER_CA_CERT | jq '.value') | head -c -2 | tail -c +2 &gt; /tmp/nginx-ca.crt</code></pre>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Get nginx public CACERT from CAS REST API&quot;</span>
+<span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="k">$(</span>curl<span class="w"> </span>--cacert<span class="w"> </span>/tmp/scone-ca.crt<span class="w"> </span>https://<span class="nv">$SCONE_CAS_ADDR</span>:8081/v1/values/session<span class="o">=</span><span class="nv">$NGINX_CONFIG_ID</span>,secret<span class="o">=</span>SERVER_CA_CERT<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.value&#39;</span><span class="k">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-c<span class="w"> </span>-2<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-c<span class="w"> </span>+2<span class="w"> </span>&gt;<span class="w"> </span>/tmp/nginx-ca.crt
+</code></pre></div>
 <p>Now, from within the pod, you can perform queries such as:</p>
-<pre class="highlight"><code class="language-bash">curl --cacert /tmp/nginx-ca.crt -ubobross:password123 -X GET https://$NGINX_HOST/users/create_account
-curl --cacert /tmp/nginx-ca.crt -ubobross:password123 -X POST -H "Content-Type: application/json" -d '{"record_id":"31","content":"Ever make mistakes in life? Lets make them birds. Yeah, theyre birds now."}' https://$NGINX_HOST/documents/create_document
-curl --cacert /tmp/nginx-ca.crt -ubobross:password123 -X GET https://secure-doc-management-nginx-scone/documents/31</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>--cacert<span class="w"> </span>/tmp/nginx-ca.crt<span class="w"> </span>-ubobross:password123<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>https://<span class="nv">$NGINX_HOST</span>/users/create_account
+curl<span class="w"> </span>--cacert<span class="w"> </span>/tmp/nginx-ca.crt<span class="w"> </span>-ubobross:password123<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;record_id&quot;:&quot;31&quot;,&quot;content&quot;:&quot;Ever make mistakes in life? Lets make them birds. Yeah, theyre birds now.&quot;}&#39;</span><span class="w"> </span>https://<span class="nv">$NGINX_HOST</span>/documents/create_document
+curl<span class="w"> </span>--cacert<span class="w"> </span>/tmp/nginx-ca.crt<span class="w"> </span>-ubobross:password123<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>https://secure-doc-management-nginx-scone/documents/31
+</code></pre></div>
 <h3 id="clean-up">Clean Up</h3>
 <p>To uninstall the charts we installed during this demo, execute:</p>
-<pre class="highlight"><code class="language-bash">helm uninstall las
-helm uninstall secure-doc-management
-# if you are not using Azure:
-# helm uninstall sgxdevplugin</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>uninstall<span class="w"> </span>las
+helm<span class="w"> </span>uninstall<span class="w"> </span>secure-doc-management
+<span class="c1"># if you are not using Azure:</span>
+<span class="c1"># helm uninstall sgxdevplugin</span>
+</code></pre></div>
 
               
             </article>
@@ -4778,8 +4798,6 @@ helm uninstall secure-doc-management
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

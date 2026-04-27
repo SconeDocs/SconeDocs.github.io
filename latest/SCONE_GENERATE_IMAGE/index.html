@@ -4069,30 +4069,38 @@
 Clone the SCONE_TUTORIAL before you start creating a <em>hello world</em> image.</p>
 <h2 id="generate-helloworld-image">Generate HelloWorld image</h2>
 <p>We generate a <em>hello world</em> container image. </p>
-<pre class="highlight"><code class="language-bash">&gt; cd SCONE_TUTORIAL/CreateImage</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>SCONE_TUTORIAL/CreateImage
+</code></pre></div>
 <p>You can either execute all step manually by copy&amp;pasting all instructions or you can just execute
-<pre class="highlight"><code class="language-bash">&gt; docker login
-&gt; sudo ./Dockerfile.sh</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span>docker<span class="w"> </span>login
+&gt;<span class="w"> </span>sudo<span class="w"> </span>./Dockerfile.sh
+</code></pre></div>
 and watch the outputs.</p>
 <p>Please change the image name to a repository on docker hub to which you can write:</p>
-<pre class="highlight"><code class="language-bash">&gt; export TAG="latest"
-&gt; export IMAGE_NAME="registry.scontain.com/sconecuratedimages/helloworld"</code></pre>
+<div class="highlight"><pre><span></span><code>&gt;<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">TAG</span><span class="o">=</span><span class="s2">&quot;latest&quot;</span>
+&gt;<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">IMAGE_NAME</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/sconecuratedimages/helloworld&quot;</span>
+</code></pre></div>
 <p>We generate container and compile hello world inside of this container with the help of our standard SCONE cross compiler. We determine which SGX device to mount with function  <a href="../sgxinstall/#determine-sgx-device">determine_sgx_device</a>.</p>
-<pre class="highlight"><code class="language-bash">determine_sgx_device
-CONTAINER_ID=`docker run -d -it $MOUNT_SGXDEVICE  -v $(pwd):/mnt registry.scontain.com/sconecuratedimages/crosscompilers bash -c "
-set -e
-printf 'Q 1\ne 0 0 0\ns 1 0 0\n' &gt; /etc/sgx-musl.conf
-sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
-"`</code></pre>
+<div class="highlight"><pre><span></span><code>determine_sgx_device
+<span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="sb">`</span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-it<span class="w"> </span><span class="nv">$MOUNT_SGXDEVICE</span><span class="w">  </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/mnt<span class="w"> </span>registry.scontain.com/sconecuratedimages/crosscompilers<span class="w"> </span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">set -e</span>
+<span class="s2">printf &#39;Q 1\ne 0 0 0\ns 1 0 0\n&#39; &gt; /etc/sgx-musl.conf</span>
+<span class="s2">sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world</span>
+<span class="s2">&quot;</span><span class="sb">`</span>
+</code></pre></div>
 <p>Note that above will fail if you do not have access to the SGX device <em>/dev/isgx</em>.</p>
 <p>Turn the container into an image:</p>
-<pre class="highlight"><code class="language-bash">IMAGE_ID=$(docker commit -p -c 'CMD sgx_hello_world' $CONTAINER_ID $IMAGE_NAME:$TAG)</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">IMAGE_ID</span><span class="o">=</span><span class="k">$(</span>docker<span class="w"> </span>commit<span class="w"> </span>-p<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;CMD sgx_hello_world&#39;</span><span class="w"> </span><span class="nv">$CONTAINER_ID</span><span class="w"> </span><span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span><span class="k">)</span>
+</code></pre></div>
 <p>You can run this image by executing:</p>
-<pre class="highlight"><code class="language-bash">sudo docker run $MOUNT_SGXDEVICE $IMAGE_NAME:$TAG</code></pre>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span><span class="nv">$MOUNT_SGXDEVICE</span><span class="w"> </span><span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
+</code></pre></div>
 <p>You can push this image to Docker. However, ensure that you first login to docker:</p>
-<pre class="highlight"><code class="language-bash">sudo docker login</code></pre>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>login
+</code></pre></div>
 <p>before you push the image to docker hub:</p>
-<pre class="highlight"><code class="language-bash">sudo docker push $IMAGE_NAME:$TAG</code></pre>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>docker<span class="w"> </span>push<span class="w"> </span><span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
+</code></pre></div>
 <p>Note: this will fail in case you do not have the permission to push to this repository. </p>
 <h2 id="screencast">Screencast</h2>
 <p><a href="https://asciinema.org/a/xM4VAixy6QqsjstCtpW88KIHg"><img alt="asciicast" src="https://asciinema.org/a/xM4VAixy6QqsjstCtpW88KIHg.svg" /></a></p>
@@ -4166,8 +4174,6 @@ sgxmusl-hw-async-gcc /mnt/hello_world.c  -o /usr/local/bin/sgx_hello_world
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

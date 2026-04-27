@@ -4346,32 +4346,33 @@
 <h2 id="cas-helm-chart">CAS Helm Chart</h2>
 <p>To install the SCONE CAS Helm chart to a Kubernetes cluster, make sure to <a href="https://sconedocs.github.io/7.0/helm/">add the Helm repository <code>sconeapps</code></a> first. Check the <a href="https://github.com/scontain/sconeapps/tree/master/charts/cas">Helm chart documentation</a> to learn more about the supported parameters.</p>
 <p>Example (Azure):</p>
-<pre class="highlight"><code class="language-bash"># Get latest chart versions.
-helm repo update
+<div class="highlight"><pre><span></span><code><span class="c1"># Get latest chart versions.</span>
+helm<span class="w"> </span>repo<span class="w"> </span>update
 
-# Create an imagePullSecret named "sconeapps" so you can pull private images from Scontain's registry.
-export SCONE_HUB_USERNAME="&lt;GitLab username&gt;"
-export SCONE_HUB_ACCESS_TOKEN="&lt;GitLab token&gt;"
-export SCONE_HUB_EMAIL="&lt;GitLab email&gt;"
-kubectl create secret docker-registry sconeapps --docker-server=registry.scontain.com --docker-username=$SCONE_HUB_USERNAME --docker-password=$SCONE_HUB_ACCESS_TOKEN --docker-email=$SCONE_HUB_EMAIL
+<span class="c1"># Create an imagePullSecret named &quot;sconeapps&quot; so you can pull private images from Scontain&#39;s registry.</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HUB_USERNAME</span><span class="o">=</span><span class="s2">&quot;&lt;GitLab username&gt;&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HUB_ACCESS_TOKEN</span><span class="o">=</span><span class="s2">&quot;&lt;GitLab token&gt;&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_HUB_EMAIL</span><span class="o">=</span><span class="s2">&quot;&lt;GitLab email&gt;&quot;</span>
+kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>docker-registry<span class="w"> </span>sconeapps<span class="w"> </span>--docker-server<span class="o">=</span>registry.scontain.com<span class="w"> </span>--docker-username<span class="o">=</span><span class="nv">$SCONE_HUB_USERNAME</span><span class="w"> </span>--docker-password<span class="o">=</span><span class="nv">$SCONE_HUB_ACCESS_TOKEN</span><span class="w"> </span>--docker-email<span class="o">=</span><span class="nv">$SCONE_HUB_EMAIL</span>
 
-# Install LAS for Azure.
-helm install las sconeapps/las \
-    --set image="registry.scontain.com/sconecuratedimages/kubernetes:las.microsoft-azure-scone5.7.0" \
-    --set useSGXDevPlugin="azure"
+<span class="c1"># Install LAS for Azure.</span>
+helm<span class="w"> </span>install<span class="w"> </span>las<span class="w"> </span>sconeapps/las<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span><span class="nv">image</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/sconecuratedimages/kubernetes:las.microsoft-azure-scone5.7.0&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span><span class="nv">useSGXDevPlugin</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span>
 
-# Set the CAS image.
-CAS_PROD_IMAGE="&lt;production CAS image&gt;"
+<span class="c1"># Set the CAS image.</span>
+<span class="nv">CAS_PROD_IMAGE</span><span class="o">=</span><span class="s2">&quot;&lt;production CAS image&gt;&quot;</span>
 
-# Install CAS to cluster: configure the production image, persistence using Azure "managed"
-# storage class, the Azure SGX device plugin and with a load balancer exposing this CAS
-# to the external world.
-helm install cas sconeapps/cas \
-    --set image="$CAS_PROD_IMAGE" \
-    --set persistence.enabled=true \
-    --set persistence.storageClass="managed" \
-    --set useSGXDevPlugin="azure" \
-    --set service.type="LoadBalancer"</code></pre>
+<span class="c1"># Install CAS to cluster: configure the production image, persistence using Azure &quot;managed&quot;</span>
+<span class="c1"># storage class, the Azure SGX device plugin and with a load balancer exposing this CAS</span>
+<span class="c1"># to the external world.</span>
+helm<span class="w"> </span>install<span class="w"> </span>cas<span class="w"> </span>sconeapps/cas<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span><span class="nv">image</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_PROD_IMAGE</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span>persistence.enabled<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span>persistence.storageClass<span class="o">=</span><span class="s2">&quot;managed&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span><span class="nv">useSGXDevPlugin</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--set<span class="w"> </span>service.type<span class="o">=</span><span class="s2">&quot;LoadBalancer&quot;</span>
+</code></pre></div>
 <h2 id="operating-cas">Operating CAS</h2>
 <p>This section shows to provision a production CAS. Provisioning allows the CAS owner to claim ownership and to provide the initial configuration for CAS. Check our documentation to learn more about <a href="https://sconedocs.github.io/7.0/CAS_config/">CAS configuration</a> and <a href="https://sconedocs.github.io/7.0/CAS_cli-intro/#cas-provisioning-and-configuration">how to operate CAS</a>.</p>
 <h3 id="provisioning">Provisioning</h3>
@@ -4379,70 +4380,76 @@ helm install cas sconeapps/cas \
 <li>Specify your DCAP subscription key.</li>
 </ul>
 <p><img alt="💡" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/1f4a1.svg" title=":bulb:" /> This sample uses the LAS image crafted for Azure. This image ships with a QPL that is able to fetch the required PCK certificates correctly. In this scenario, a valid DCAP subscription key is not required, and you can specify a dummy one:</p>
-<pre class="highlight"><code class="language-bash">DCAP_SUBSCRIPTION_KEY="00000000000000000000000000000000"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">DCAP_SUBSCRIPTION_KEY</span><span class="o">=</span><span class="s2">&quot;00000000000000000000000000000000&quot;</span>
+</code></pre></div>
 <ul>
 <li>Retrieve the relevant CAS information for remote attestation: MrEnclave, MrSigner, ISVSVN and ISVPRODID.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">CAS_MRENCLAVE="$(docker run -t --rm -e SCONE_HASH=1 $CAS_PROD_IMAGE | grep -oe "[0-9a-f]\{64\}")"
-CAS_MRSIGNER="$(docker run -t --rm --entrypoint bash $CAS_PROD_IMAGE -c "scone-signer info /usr/local/bin/cas | grep MRSIGNER" | grep -oe "[0-9a-f]\{64\}")"
-CAS_ISVPRODID="$(docker run -t --rm --entrypoint bash $CAS_PROD_IMAGE -c "scone-signer info /usr/local/bin/cas" | grep "ISV Product ID" | awk ' { print $4 } ' | grep -oe "[0-9]\{5\}" -m 1 )"
-CAS_ISVSVN="$(docker run -t --rm --entrypoint bash $CAS_PROD_IMAGE -c "scone-signer info /usr/local/bin/cas" | grep "ISV SVN" | awk ' { print $3 } ' | grep -oe [0-9] -m 1)"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">CAS_MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>docker<span class="w"> </span>run<span class="w"> </span>-t<span class="w"> </span>--rm<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">$CAS_PROD_IMAGE</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-oe<span class="w"> </span><span class="s2">&quot;[0-9a-f]\{64\}&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="nv">CAS_MRSIGNER</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>docker<span class="w"> </span>run<span class="w"> </span>-t<span class="w"> </span>--rm<span class="w"> </span>--entrypoint<span class="w"> </span>bash<span class="w"> </span><span class="nv">$CAS_PROD_IMAGE</span><span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;scone-signer info /usr/local/bin/cas | grep MRSIGNER&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-oe<span class="w"> </span><span class="s2">&quot;[0-9a-f]\{64\}&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="nv">CAS_ISVPRODID</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>docker<span class="w"> </span>run<span class="w"> </span>-t<span class="w"> </span>--rm<span class="w"> </span>--entrypoint<span class="w"> </span>bash<span class="w"> </span><span class="nv">$CAS_PROD_IMAGE</span><span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;scone-signer info /usr/local/bin/cas&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;ISV Product ID&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39; { print $4 } &#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-oe<span class="w"> </span><span class="s2">&quot;[0-9]\{5\}&quot;</span><span class="w"> </span>-m<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="nv">CAS_ISVSVN</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>docker<span class="w"> </span>run<span class="w"> </span>-t<span class="w"> </span>--rm<span class="w"> </span>--entrypoint<span class="w"> </span>bash<span class="w"> </span><span class="nv">$CAS_PROD_IMAGE</span><span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;scone-signer info /usr/local/bin/cas&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;ISV SVN&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39; { print $3 } &#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-oe<span class="w"> </span><span class="o">[</span><span class="m">0</span>-9<span class="o">]</span><span class="w"> </span>-m<span class="w"> </span><span class="m">1</span><span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
 <ul>
 <li>Retrieve the CAS key hash and provisioning token from the CAS pod logs.</li>
 </ul>
 <p><img alt="⚠️" class="emojione" src="https://cdnjs.cloudflare.com/ajax/libs/emojione/2.2.7/assets/svg/26a0.svg" title=":warning:" /> The following commands assume that the CAS pod is named <code>cas-0</code>.</p>
-<pre class="highlight"><code class="language-bash">export CAS_KEY_HASH=$(kubectl logs cas-0 | grep "CAS key hash" | awk ' { print $7 } ')
-export CAS_PROVISIONING_TOKEN=$(kubectl logs cas-0 | grep "CAS provisioning token" | awk ' { print $7 } ')
-export SCONE_CAS_ADDR=$(kubectl get svc --namespace default cas --template "{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}")
-mkdir -p owner-config
-cat &gt; owner-config/config.toml &lt;&lt;EOF
-[api_identity]
-common_name = "mycas"
-alt_names = ["mycas", "cas", "cas.default", "localhost", "$SCONE_CAS_ADDR"]
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">CAS_KEY_HASH</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>logs<span class="w"> </span>cas-0<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;CAS key hash&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39; { print $7 } &#39;</span><span class="k">)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CAS_PROVISIONING_TOKEN</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>logs<span class="w"> </span>cas-0<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;CAS provisioning token&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39; { print $7 } &#39;</span><span class="k">)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>svc<span class="w"> </span>--namespace<span class="w"> </span>default<span class="w"> </span>cas<span class="w"> </span>--template<span class="w"> </span><span class="s2">&quot;{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}&quot;</span><span class="k">)</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>owner-config
+cat<span class="w"> </span>&gt;<span class="w"> </span>owner-config/config.toml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">[api_identity]</span>
+<span class="s">common_name = &quot;mycas&quot;</span>
+<span class="s">alt_names = [&quot;mycas&quot;, &quot;cas&quot;, &quot;cas.default&quot;, &quot;localhost&quot;, &quot;$SCONE_CAS_ADDR&quot;]</span>
 
-[dcap]
-subscription_key = "$DCAP_SUBSCRIPTION_KEY"
-EOF</code></pre>
+<span class="s">[dcap]</span>
+<span class="s">subscription_key = &quot;$DCAP_SUBSCRIPTION_KEY&quot;</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <ul>
 <li>The CAS owner is identified by a PKCS#8 private key. This identity gives the owner powers to upgrade and perform backups. The key must be protected, and can be generated as follows:</li>
 </ul>
-<pre class="highlight"><code class="language-bash">mkdir -p identity
-openssl genrsa -out identity/keypair.pem 2048
-openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in identity/keypair.pem -out identity/pkcs8.key</code></pre>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>identity
+openssl<span class="w"> </span>genrsa<span class="w"> </span>-out<span class="w"> </span>identity/keypair.pem<span class="w"> </span><span class="m">2048</span>
+openssl<span class="w"> </span>pkcs8<span class="w"> </span>-topk8<span class="w"> </span>-inform<span class="w"> </span>PEM<span class="w"> </span>-outform<span class="w"> </span>PEM<span class="w"> </span>-nocrypt<span class="w"> </span>-in<span class="w"> </span>identity/keypair.pem<span class="w"> </span>-out<span class="w"> </span>identity/pkcs8.key
+</code></pre></div>
 <ul>
 <li>Start a SCONE CLI container locally to provision CAS and create policies.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">docker run -it --rm \
-    --network=host \
-    -v $PWD/identity:/identity \
-    -v $PWD/owner-config:/owner-config \
-    -e SCONE_CLI_CONFIG="/identity/config.json" \
-    -e CAS_KEY_HASH="$CAS_KEY_HASH" \
-    -e CAS_PROVISIONING_TOKEN="$CAS_PROVISIONING_TOKEN" \
-    -e CAS_MRENCLAVE="$CAS_MRENCLAVE" \
-    -e CAS_MRSIGNER="$CAS_MRSIGNER" \
-    -e CAS_ISVSVN="$CAS_ISVSVN" \
-    -e CAS_ISVPRODID="$CAS_ISVPRODID" \
-    -e SCONE_CAS_ADDR="$SCONE_CAS_ADDR" \
-    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--network<span class="o">=</span>host<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$PWD</span>/identity:/identity<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$PWD</span>/owner-config:/owner-config<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">SCONE_CLI_CONFIG</span><span class="o">=</span><span class="s2">&quot;/identity/config.json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_KEY_HASH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_KEY_HASH</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_PROVISIONING_TOKEN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_PROVISIONING_TOKEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_MRENCLAVE</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_MRSIGNER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_MRSIGNER</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_ISVSVN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVSVN</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_ISVPRODID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVPRODID</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5
+</code></pre></div>
 <ul>
 <li>Inside of the SCONE CLI container, provision CAS. The owner identity and CLI configuration will be persisted to your local machine (at <code>./identity/config.json</code>).</li>
 </ul>
-<pre class="highlight"><code class="language-bash">$ scone cas provision $SCONE_CAS_ADDR \
-    -c $CAS_KEY_HASH \
-    --token $CAS_PROVISIONING_TOKEN \
-    --config-file /owner-config/config.toml \
-    with-attestation -CS --mrenclave $CAS_MRENCLAVE --mrsigner $CAS_MRSIGNER --isvprodid $CAS_ISVPRODID --isvsvn $CAS_ISVSVN
-This command will provision and claim ownership of a CAS.
-    The ownership will be bound to the cryptographic identity used during this provisioning.
-    Holding the owner identity is necessary to change CAS settings, register backups and upgrade to new CAS versions.
-    Please be sure to store the owner identity securely.
-    Note: If no identity is specified on the command line, the identity stored in the CLI configuration file is used.
-This tool seems to run inside of a container.
-    Please be extra careful that the owner identity is not lost when when the container is removed!
-CAS owner configuration contains DCAP API credentials. Going to attempt to attest CAS using DCAP quote.
-CAS localhost at https://localhost:8081/ is trustworthy
-Done, CAS configuration was successfully provisioned. You are now owner of the CAS.</code></pre>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>scone<span class="w"> </span>cas<span class="w"> </span>provision<span class="w"> </span><span class="nv">$SCONE_CAS_ADDR</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-c<span class="w"> </span><span class="nv">$CAS_KEY_HASH</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--token<span class="w"> </span><span class="nv">$CAS_PROVISIONING_TOKEN</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--config-file<span class="w"> </span>/owner-config/config.toml<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>with-attestation<span class="w"> </span>-CS<span class="w"> </span>--mrenclave<span class="w"> </span><span class="nv">$CAS_MRENCLAVE</span><span class="w"> </span>--mrsigner<span class="w"> </span><span class="nv">$CAS_MRSIGNER</span><span class="w"> </span>--isvprodid<span class="w"> </span><span class="nv">$CAS_ISVPRODID</span><span class="w"> </span>--isvsvn<span class="w"> </span><span class="nv">$CAS_ISVSVN</span>
+This<span class="w"> </span><span class="nb">command</span><span class="w"> </span>will<span class="w"> </span>provision<span class="w"> </span>and<span class="w"> </span>claim<span class="w"> </span>ownership<span class="w"> </span>of<span class="w"> </span>a<span class="w"> </span>CAS.
+<span class="w">    </span>The<span class="w"> </span>ownership<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>bound<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>cryptographic<span class="w"> </span>identity<span class="w"> </span>used<span class="w"> </span>during<span class="w"> </span>this<span class="w"> </span>provisioning.
+<span class="w">    </span>Holding<span class="w"> </span>the<span class="w"> </span>owner<span class="w"> </span>identity<span class="w"> </span>is<span class="w"> </span>necessary<span class="w"> </span>to<span class="w"> </span>change<span class="w"> </span>CAS<span class="w"> </span>settings,<span class="w"> </span>register<span class="w"> </span>backups<span class="w"> </span>and<span class="w"> </span>upgrade<span class="w"> </span>to<span class="w"> </span>new<span class="w"> </span>CAS<span class="w"> </span>versions.
+<span class="w">    </span>Please<span class="w"> </span>be<span class="w"> </span>sure<span class="w"> </span>to<span class="w"> </span>store<span class="w"> </span>the<span class="w"> </span>owner<span class="w"> </span>identity<span class="w"> </span>securely.
+<span class="w">    </span>Note:<span class="w"> </span>If<span class="w"> </span>no<span class="w"> </span>identity<span class="w"> </span>is<span class="w"> </span>specified<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span><span class="nb">command</span><span class="w"> </span>line,<span class="w"> </span>the<span class="w"> </span>identity<span class="w"> </span>stored<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>CLI<span class="w"> </span>configuration<span class="w"> </span>file<span class="w"> </span>is<span class="w"> </span>used.
+This<span class="w"> </span>tool<span class="w"> </span>seems<span class="w"> </span>to<span class="w"> </span>run<span class="w"> </span>inside<span class="w"> </span>of<span class="w"> </span>a<span class="w"> </span>container.
+<span class="w">    </span>Please<span class="w"> </span>be<span class="w"> </span>extra<span class="w"> </span>careful<span class="w"> </span>that<span class="w"> </span>the<span class="w"> </span>owner<span class="w"> </span>identity<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>lost<span class="w"> </span>when<span class="w"> </span>when<span class="w"> </span>the<span class="w"> </span>container<span class="w"> </span>is<span class="w"> </span>removed!
+CAS<span class="w"> </span>owner<span class="w"> </span>configuration<span class="w"> </span>contains<span class="w"> </span>DCAP<span class="w"> </span>API<span class="w"> </span>credentials.<span class="w"> </span>Going<span class="w"> </span>to<span class="w"> </span>attempt<span class="w"> </span>to<span class="w"> </span>attest<span class="w"> </span>CAS<span class="w"> </span>using<span class="w"> </span>DCAP<span class="w"> </span>quote.
+CAS<span class="w"> </span>localhost<span class="w"> </span>at<span class="w"> </span>https://localhost:8081/<span class="w"> </span>is<span class="w"> </span>trustworthy
+Done,<span class="w"> </span>CAS<span class="w"> </span>configuration<span class="w"> </span>was<span class="w"> </span>successfully<span class="w"> </span>provisioned.<span class="w"> </span>You<span class="w"> </span>are<span class="w"> </span>now<span class="w"> </span>owner<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>CAS.
+</code></pre></div>
 <h2 id="using-cas">Using CAS</h2>
 <p>This section shows how to use CAS with a sample applications. We submit policies to CAS and then run the applications with remote attestation on Kubernetes.</p>
 <p>Examples:</p>
@@ -4455,215 +4462,227 @@ Done, CAS configuration was successfully provisioned. You are now owner of the C
 <ul>
 <li>Retrieve the MrEnclave of the application.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">IMAGE="registry.scontain.com/examples/quickstart/hello-world-python:scone5.7.0"
-MRENCLAVE="$(docker run -it --rm -e SCONE_HASH=1 $IMAGE | grep -oe "[0-9a-f]\{64\}")"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/examples/quickstart/hello-world-python:scone5.7.0&quot;</span>
+<span class="nv">MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">$IMAGE</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-oe<span class="w"> </span><span class="s2">&quot;[0-9a-f]\{64\}&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
 <ul>
 <li>Create a policy file.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">mkdir -p policies client
-USER_ID="$RANDOM$RANDOM"
-cat &gt; policies/hello-world.yaml &lt;&lt;EOF
-name: hello-world-python-$USER_ID
-version: "0.3"
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>policies<span class="w"> </span>client
+<span class="nv">USER_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$RANDOM$RANDOM</span><span class="s2">&quot;</span>
+cat<span class="w"> </span>&gt;<span class="w"> </span>policies/hello-world.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">name: hello-world-python-$USER_ID</span>
+<span class="s">version: &quot;0.3&quot;</span>
 
-security:
-  attestation:
-    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed]
-    ignore_advisories: "*"
+<span class="s">security:</span>
+<span class="s">  attestation:</span>
+<span class="s">    tolerate: [debug-mode, hyperthreading, outdated-tcb, software-hardening-needed]</span>
+<span class="s">    ignore_advisories: &quot;*&quot;</span>
 
-services:
-   - name: application
-     mrenclaves: [$MRENCLAVE]
-     command: python3 /app/hello-world.py
-     pwd: /
-     environment:
-        SECRET: "s3cr3t-from-policy"
-        SCONE_LOG: "error"
-EOF</code></pre>
+<span class="s">services:</span>
+<span class="s">   - name: application</span>
+<span class="s">     mrenclaves: [$MRENCLAVE]</span>
+<span class="s">     command: python3 /app/hello-world.py</span>
+<span class="s">     pwd: /</span>
+<span class="s">     environment:</span>
+<span class="s">        SECRET: &quot;s3cr3t-from-policy&quot;</span>
+<span class="s">        SCONE_LOG: &quot;error&quot;</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <ul>
 <li>Submit a policy to CAS.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">docker run -it --rm \
-    --network=host \
-    -v $PWD/policies:/policies \
-    -v $PWD/client:/root/.cas \
-    -e SCONE_CAS_ADDR="$SCONE_CAS_ADDR" \
-    -e CAS_MRENCLAVE="$CAS_MRENCLAVE" \
-    -e CAS_MRSIGNER="$CAS_MRSIGNER" \
-    -e CAS_ISVPRODID="$CAS_ISVPRODID" \
-    -e CAS_ISVSVN="$CAS_ISVSVN" \
-    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--network<span class="o">=</span>host<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$PWD</span>/policies:/policies<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$PWD</span>/client:/root/.cas<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_MRENCLAVE</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_MRSIGNER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_MRSIGNER</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_ISVPRODID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVPRODID</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_ISVSVN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVSVN</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5
+</code></pre></div>
 <p>Inside of the SCONE CLI container, run:</p>
-<pre class="highlight"><code class="language-bash"># Attest CAS.
-scone cas attest -CS $SCONE_CAS_ADDR --mrenclave $CAS_MRENCLAVE --mrsigner $CAS_MRSIGNER --isvprodid $CAS_ISVPRODID --isvsvn $CAS_ISVSVN
-# Create policy.
-scone session create /policies/hello-world.yaml</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1"># Attest CAS.</span>
+scone<span class="w"> </span>cas<span class="w"> </span>attest<span class="w"> </span>-CS<span class="w"> </span><span class="nv">$SCONE_CAS_ADDR</span><span class="w"> </span>--mrenclave<span class="w"> </span><span class="nv">$CAS_MRENCLAVE</span><span class="w"> </span>--mrsigner<span class="w"> </span><span class="nv">$CAS_MRSIGNER</span><span class="w"> </span>--isvprodid<span class="w"> </span><span class="nv">$CAS_ISVPRODID</span><span class="w"> </span>--isvsvn<span class="w"> </span><span class="nv">$CAS_ISVSVN</span>
+<span class="c1"># Create policy.</span>
+scone<span class="w"> </span>session<span class="w"> </span>create<span class="w"> </span>/policies/hello-world.yaml
+</code></pre></div>
 <p>Exit the SCONE CLI container.</p>
 <h4 id="deploy-and-attest-the-application">Deploy and attest the application</h4>
 <ul>
 <li>Run the application.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">cat &gt; hello-world.yaml &lt;&lt;EOF
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: hello-world
-spec:
-  template:
-    spec:
-      restartPolicy: Never
-      imagePullSecrets:
-      - name: sconeapps
-      containers:
-      - name: hello-world
-        image: $IMAGE
-        imagePullPolicy: Always
-        env:
-        - name: SECRET
-          value: s3cr3t-from-untrusted-k8s
-        - name: SCONE_CAS_ADDR
-          value: $SCONE_CAS_ADDR
-        - name: SCONE_CONFIG_ID
-          value: hello-world-python-$USER_ID/application
-        - name: SCONE_LAS_ADDR
-          valueFrom:
-            fieldRef:
-              fieldPath: status.hostIP
-        resources:
-          limits:
-            sgx.intel.com/enclave: 1
-EOF
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>&gt;<span class="w"> </span>hello-world.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">apiVersion: batch/v1</span>
+<span class="s">kind: Job</span>
+<span class="s">metadata:</span>
+<span class="s">  name: hello-world</span>
+<span class="s">spec:</span>
+<span class="s">  template:</span>
+<span class="s">    spec:</span>
+<span class="s">      restartPolicy: Never</span>
+<span class="s">      imagePullSecrets:</span>
+<span class="s">      - name: sconeapps</span>
+<span class="s">      containers:</span>
+<span class="s">      - name: hello-world</span>
+<span class="s">        image: $IMAGE</span>
+<span class="s">        imagePullPolicy: Always</span>
+<span class="s">        env:</span>
+<span class="s">        - name: SECRET</span>
+<span class="s">          value: s3cr3t-from-untrusted-k8s</span>
+<span class="s">        - name: SCONE_CAS_ADDR</span>
+<span class="s">          value: $SCONE_CAS_ADDR</span>
+<span class="s">        - name: SCONE_CONFIG_ID</span>
+<span class="s">          value: hello-world-python-$USER_ID/application</span>
+<span class="s">        - name: SCONE_LAS_ADDR</span>
+<span class="s">          valueFrom:</span>
+<span class="s">            fieldRef:</span>
+<span class="s">              fieldPath: status.hostIP</span>
+<span class="s">        resources:</span>
+<span class="s">          limits:</span>
+<span class="s">            sgx.intel.com/enclave: 1</span>
+<span class="s">EOF</span>
 
-# Deploy to Kubernetes.
-kubectl apply -f hello-world.yaml
+<span class="c1"># Deploy to Kubernetes.</span>
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>hello-world.yaml
 
-# Check application logs.
-kubectl logs job/hello-world</code></pre>
+<span class="c1"># Check application logs.</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>job/hello-world
+</code></pre></div>
 <p>You should expect the following logs:</p>
-<pre class="highlight"><code class="language-bash">Hello Confidential World with SCONE!
-The value of the env. var. SECRET is: 's3cr3t-from-policy'</code></pre>
+<div class="highlight"><pre><span></span><code>Hello<span class="w"> </span>Confidential<span class="w"> </span>World<span class="w"> </span>with<span class="w"> </span>SCONE!
+The<span class="w"> </span>value<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>env.<span class="w"> </span>var.<span class="w"> </span>SECRET<span class="w"> </span>is:<span class="w"> </span><span class="s1">&#39;s3cr3t-from-policy&#39;</span>
+</code></pre></div>
 <p>Notice that the value of <code>SECRET</code> is <code>s3cret-from-policy</code> as defined in the policy. The value defined in the Kubernetes manifest <code>s3cr3t-from-untrusted-k8s</code> is ignored, since the Kubernetes cluster is potentially untrusted.</p>
 <h3 id="example-2-redis-production-enclave">Example 2: Redis (production enclave)</h3>
 <h4 id="creating-policies_1">Creating policies</h4>
 <ul>
 <li>Retrieve the MrEnclave of the application.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">IMAGE="registry.scontain.com/cicd/redis:latest"
-MRENCLAVE="$(docker run -it --rm -e SCONE_HASH=1 $IMAGE | grep -oe "[0-9a-f]\{64\}")"</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;registry.scontain.com/cicd/redis:latest&quot;</span>
+<span class="nv">MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-e<span class="w"> </span><span class="nv">SCONE_HASH</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">$IMAGE</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-oe<span class="w"> </span><span class="s2">&quot;[0-9a-f]\{64\}&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
 <ul>
 <li>Create a policy file.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">mkdir -p policies
-USER_ID="$RANDOM$RANDOM"
-cat &gt; policies/redis.yaml &lt;&lt;EOF
-name: redis-$USER_ID
-version: "0.3"
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>policies
+<span class="nv">USER_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$RANDOM$RANDOM</span><span class="s2">&quot;</span>
+cat<span class="w"> </span>&gt;<span class="w"> </span>policies/redis.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">name: redis-$USER_ID</span>
+<span class="s">version: &quot;0.3&quot;</span>
 
-security:
-  attestation:
-    tolerate: [hyperthreading, outdated-tcb, software-hardening-needed]
+<span class="s">security:</span>
+<span class="s">  attestation:</span>
+<span class="s">    tolerate: [hyperthreading, outdated-tcb, software-hardening-needed]</span>
 
-services:
-   - name: server
-     mrenclaves: [$MRENCLAVE]
-     command: redis-server
-     pwd: /
-     environment:
-        SCONE_LOG: "error"
-EOF</code></pre>
+<span class="s">services:</span>
+<span class="s">   - name: server</span>
+<span class="s">     mrenclaves: [$MRENCLAVE]</span>
+<span class="s">     command: redis-server</span>
+<span class="s">     pwd: /</span>
+<span class="s">     environment:</span>
+<span class="s">        SCONE_LOG: &quot;error&quot;</span>
+<span class="s">EOF</span>
+</code></pre></div>
 <ul>
 <li>Submit a policy to CAS.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">docker run -it --rm \
-    --network=host \
-    -v $PWD/policies:/policies \
-    -v $PWD/client:/root/.cas \
-    -e SCONE_CAS_ADDR="$SCONE_CAS_ADDR" \
-    -e CAS_MRENCLAVE="$CAS_MRENCLAVE" \
-    -e CAS_MRSIGNER="$CAS_MRSIGNER" \
-    -e CAS_ISVPRODID="$CAS_ISVPRODID" \
-    -e CAS_ISVSVN="$CAS_ISVSVN" \
-    registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5</code></pre>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--network<span class="o">=</span>host<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$PWD</span>/policies:/policies<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$PWD</span>/client:/root/.cas<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">SCONE_CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SCONE_CAS_ADDR</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_MRENCLAVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_MRENCLAVE</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_MRSIGNER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_MRSIGNER</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_ISVPRODID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVPRODID</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-e<span class="w"> </span><span class="nv">CAS_ISVSVN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CAS_ISVSVN</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>registry.scontain.com/sconecuratedimages/sconecli:alpine3.10-scone5
+</code></pre></div>
 <p>Inside of the SCONE CLI container, run:</p>
-<pre class="highlight"><code class="language-bash"># Attest CAS.
-scone cas attest -CS $SCONE_CAS_ADDR --mrenclave $CAS_MRENCLAVE --mrsigner $CAS_MRSIGNER --isvprodid $CAS_ISVPRODID --isvsvn $CAS_ISVSVN
-# Create policy.
-scone session create /policies/redis.yaml</code></pre>
+<div class="highlight"><pre><span></span><code><span class="c1"># Attest CAS.</span>
+scone<span class="w"> </span>cas<span class="w"> </span>attest<span class="w"> </span>-CS<span class="w"> </span><span class="nv">$SCONE_CAS_ADDR</span><span class="w"> </span>--mrenclave<span class="w"> </span><span class="nv">$CAS_MRENCLAVE</span><span class="w"> </span>--mrsigner<span class="w"> </span><span class="nv">$CAS_MRSIGNER</span><span class="w"> </span>--isvprodid<span class="w"> </span><span class="nv">$CAS_ISVPRODID</span><span class="w"> </span>--isvsvn<span class="w"> </span><span class="nv">$CAS_ISVSVN</span>
+<span class="c1"># Create policy.</span>
+scone<span class="w"> </span>session<span class="w"> </span>create<span class="w"> </span>/policies/redis.yaml
+</code></pre></div>
 <p>Exit the SCONE CLI container.</p>
 <h4 id="deploy-and-attest-redis">Deploy and attest Redis</h4>
 <ul>
 <li>Run the application.</li>
 </ul>
-<pre class="highlight"><code class="language-bash">cat &gt; redis.yaml &lt;&lt;EOF
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: redis
-spec:
-  selector:
-    matchLabels:
-      run: redis
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        run: redis
-    spec:
-      imagePullSecrets:
-        - name: sconeapps
-      containers:
-      - name: redis
-        image: $IMAGE
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 6379
-        env:
-        - name: SCONE_LOG
-          value: error
-        - name: SCONE_CAS_ADDR
-          value: $SCONE_CAS_ADDR
-        - name: SCONE_CONFIG_ID
-          value: redis-$USER_ID/server
-        - name: SCONE_LAS_ADDR
-          valueFrom:
-            fieldRef:
-              fieldPath: status.hostIP
-        resources:
-          limits:
-            sgx.intel.com/enclave: 1
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: redis
-  labels:
-    run: redis
-spec:
-  ports:
-  - port: 6379
-    protocol: TCP
-  selector:
-    run: redis
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>&gt;<span class="w"> </span>redis.yaml<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">apiVersion: apps/v1</span>
+<span class="s">kind: Deployment</span>
+<span class="s">metadata:</span>
+<span class="s">  name: redis</span>
+<span class="s">spec:</span>
+<span class="s">  selector:</span>
+<span class="s">    matchLabels:</span>
+<span class="s">      run: redis</span>
+<span class="s">  replicas: 1</span>
+<span class="s">  template:</span>
+<span class="s">    metadata:</span>
+<span class="s">      labels:</span>
+<span class="s">        run: redis</span>
+<span class="s">    spec:</span>
+<span class="s">      imagePullSecrets:</span>
+<span class="s">        - name: sconeapps</span>
+<span class="s">      containers:</span>
+<span class="s">      - name: redis</span>
+<span class="s">        image: $IMAGE</span>
+<span class="s">        imagePullPolicy: Always</span>
+<span class="s">        ports:</span>
+<span class="s">        - containerPort: 6379</span>
+<span class="s">        env:</span>
+<span class="s">        - name: SCONE_LOG</span>
+<span class="s">          value: error</span>
+<span class="s">        - name: SCONE_CAS_ADDR</span>
+<span class="s">          value: $SCONE_CAS_ADDR</span>
+<span class="s">        - name: SCONE_CONFIG_ID</span>
+<span class="s">          value: redis-$USER_ID/server</span>
+<span class="s">        - name: SCONE_LAS_ADDR</span>
+<span class="s">          valueFrom:</span>
+<span class="s">            fieldRef:</span>
+<span class="s">              fieldPath: status.hostIP</span>
+<span class="s">        resources:</span>
+<span class="s">          limits:</span>
+<span class="s">            sgx.intel.com/enclave: 1</span>
+<span class="s">---</span>
+<span class="s">apiVersion: v1</span>
+<span class="s">kind: Service</span>
+<span class="s">metadata:</span>
+<span class="s">  name: redis</span>
+<span class="s">  labels:</span>
+<span class="s">    run: redis</span>
+<span class="s">spec:</span>
+<span class="s">  ports:</span>
+<span class="s">  - port: 6379</span>
+<span class="s">    protocol: TCP</span>
+<span class="s">  selector:</span>
+<span class="s">    run: redis</span>
 
-EOF
+<span class="s">EOF</span>
 
-# Deploy to Kubernetes.
-kubectl apply -f redis.yaml
+<span class="c1"># Deploy to Kubernetes.</span>
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>redis.yaml
 
-# Check application logs.
-kubectl logs deploy/redis -f</code></pre>
+<span class="c1"># Check application logs.</span>
+kubectl<span class="w"> </span>logs<span class="w"> </span>deploy/redis<span class="w"> </span>-f
+</code></pre></div>
 <p>You should expect the Redis server to be up:</p>
-<pre class="highlight"><code class="language-text">1:C 03 Aug 2022 16:43:35.565 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+<div class="highlight"><pre><span></span><code>1:C 03 Aug 2022 16:43:35.565 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
 1:C 03 Aug 2022 16:43:35.565 # Redis version=6.2.7, bits=64, commit=00000000, modified=0, pid=1, just started
 1:C 03 Aug 2022 16:43:35.565 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
 1:M 03 Aug 2022 16:43:35.566 # You requested maxclients of 10000 requiring at least 10032 max file descriptors.
-1:M 03 Aug 2022 16:43:35.566 # Server can't set maximum open files to 10032 because of OS error: Operation not permitted.
-1:M 03 Aug 2022 16:43:35.566 # Current maximum open files is 4096. maxclients has been reduced to 4064 to compensate for low ulimit. If you need higher maxclients increase 'ulimit -n'.
+1:M 03 Aug 2022 16:43:35.566 # Server can&#39;t set maximum open files to 10032 because of OS error: Operation not permitted.
+1:M 03 Aug 2022 16:43:35.566 # Current maximum open files is 4096. maxclients has been reduced to 4064 to compensate for low ulimit. If you need higher maxclients increase &#39;ulimit -n&#39;.
 1:M 03 Aug 2022 16:43:35.566 * monotonic clock: POSIX clock_gettime
-1:M 03 Aug 2022 16:43:35.568 # A key '__redis__compare_helper' was added to Lua globals which is not on the globals allow list nor listed on the deny list.
+1:M 03 Aug 2022 16:43:35.568 # A key &#39;__redis__compare_helper&#39; was added to Lua globals which is not on the globals allow list nor listed on the deny list.
 1:M 03 Aug 2022 16:43:35.568 * Running mode=standalone, port=6379.
 1:M 03 Aug 2022 16:43:35.569 # Server initialized
-1:M 03 Aug 2022 16:43:35.606 * Ready to accept connections</code></pre>
+1:M 03 Aug 2022 16:43:35.606 * Ready to accept connections
+</code></pre></div>
 
               
             </article>
@@ -4769,8 +4788,6 @@ kubectl logs deploy/redis -f</code></pre>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

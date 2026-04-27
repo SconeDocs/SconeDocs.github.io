@@ -4287,30 +4287,38 @@
 <p>If you haven't yet, please add this repo to Helm.</p>
 <h4 id="create-a-kubernetes-namespace-for-teemon">Create a Kubernetes namespace for TEEMON</h4>
 <p>You need to create a Kubernetes namespace for TEEMON. You can use one of our sample manifests to create namespace <code>teemon</code> and label it to automatically inject image pull secret <code>sconeapss</code> in this namespace:</p>
-<pre class="highlight"><code class="language-bash">kubectl apply -f https://raw.githubusercontent.com/scontain/operator-samples/main/namespace-teemon.yaml</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>https://raw.githubusercontent.com/scontain/operator-samples/main/namespace-teemon.yaml
+</code></pre></div>
 <h4 id="set-grafana-credentials">Set Grafana credentials</h4>
 <p>By default, Grafana will create the user <code>admin</code> and use Kubernetes secret <code>teemon-grafana</code> as the password. You can create the user and password as follows:</p>
-<pre class="highlight"><code class="language-bash">kubectl create secret generic teemon-grafana --namespace teemon \
-  --from-literal=user=admin \
-  --from-literal=password='ChangeThisPassword'</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>teemon-grafana<span class="w"> </span>--namespace<span class="w"> </span>teemon<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">user</span><span class="o">=</span>admin<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s1">&#39;ChangeThisPassword&#39;</span>
+</code></pre></div>
 <h4 id="install-the-chart">Install the chart</h4>
 <p>Use Helm to install TeeMon and all of its components (cAdvisor, SGX exporter, eBPF exporter, Prometheus and Grafana) in your cluster. We are deploying a Helm release called <code>teemon</code>, with default parameters:</p>
-<pre class="highlight"><code class="language-bash">helm install teemon sconeapps/teemon --namespace teemon</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>teemon<span class="w"> </span>sconeapps/teemon<span class="w"> </span>--namespace<span class="w"> </span>teemon
+</code></pre></div>
 <h4 id="customize-the-deploy">Customize the deploy</h4>
 <p>Helm allows you to configure different deploy parameters to adapt TeeMon to your needs (e.g. disable components, customize service ports, change service images). The default values are specified in <code>teemon/values.yaml</code>. You can customize this file or even have multiple files, each one defining a scenario, e.g.:</p>
-<pre class="highlight"><code class="language-bash">helm install my-production-teemon sconeapps/teemon -f /path/to/values-production.yaml</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>my-production-teemon<span class="w"> </span>sconeapps/teemon<span class="w"> </span>-f<span class="w"> </span>/path/to/values-production.yaml
+</code></pre></div>
 <p>You can also customize the deploy by passing <code>--set parameter=value</code> arguments to <code>helm install</code> command:</p>
-<pre class="highlight"><code class="language-bash">helm install my-custom-teemon sconeapps/teemon --set cadvisor.enabled=false --set grafana.service.nodePort=31197</code></pre>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>my-custom-teemon<span class="w"> </span>sconeapps/teemon<span class="w"> </span>--set<span class="w"> </span>cadvisor.enabled<span class="o">=</span><span class="nb">false</span><span class="w"> </span>--set<span class="w"> </span>grafana.service.nodePort<span class="o">=</span><span class="m">31197</span>
+</code></pre></div>
 <p>Have a look at the <a href="./#parameters">Parameters</a> section for a complete list of parameters this chart supports.</p>
 <h3 id="data-source">Data Source</h3>
 <p>This chart automatically deploys a Prometheus service that collects metrics. These metrics are accessible by Grafana via this URL:</p>
-<pre class="highlight"><code class="language-bash">http://teemon-prometheus-server.teemon.svc.cluster.local</code></pre>
+<div class="highlight"><pre><span></span><code>http://teemon-prometheus-server.teemon.svc.cluster.local
+</code></pre></div>
 <h3 id="grafana-and-prometheus-dashboards">Grafana and Prometheus Dashboards</h3>
 <p>You can connect to the Prometheus dashboard using verb <code>port-forward</code>:</p>
-<pre class="highlight"><code class="language-bash">kubectl port-forward service/teemon-prometheus-server  8082:80  --namespace teemon</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>port-forward<span class="w"> </span>service/teemon-prometheus-server<span class="w">  </span><span class="m">8082</span>:80<span class="w">  </span>--namespace<span class="w"> </span>teemon
+</code></pre></div>
 <p>You can now view the Prometheus dashboard in your browser on <code>localhost:8082</code>.</p>
 <p>You can connect to the Grafana dashboard using verb <code>port-forward</code>:</p>
-<pre class="highlight"><code class="language-bash">kubectl port-forward service/teemon-grafana  8091:3000  --namespace teemon</code></pre>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>port-forward<span class="w"> </span>service/teemon-grafana<span class="w">  </span><span class="m">8091</span>:3000<span class="w">  </span>--namespace<span class="w"> </span>teemon
+</code></pre></div>
 <p>You can now view the Grafana dashboard in your browser on <code>localhost:8091</code>.</p>
 <h3 id="dashboards">Dashboards</h3>
 <p>You can view the Grafana dashboards in your browser as described above. You fist need to log into Grafana using the user <code>admin</code> and the password that you stored in the secret <code>teemon-grafana</code> (see above). The Grafana login screen looks something like this:</p>
@@ -4628,8 +4636,6 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>

@@ -4207,7 +4207,7 @@
 <li><code>command</code>:  this is the command line. This is protected to ensure that an adversary cannot change the arguments of our program. Changing the arguments would permit the adversary, for example, to print the value of the environment variables.</li>
 <li><code>copy</code>: a list of files or directories to copy into the image.</li>
 </ul>
-<pre class="highlight"><code class="language-yml">apiVersion: scone/5.8
+<div class="highlight"><pre><span></span><code>apiVersion: scone/5.8
 kind: genservice
 
 # define environment variables
@@ -4221,7 +4221,7 @@ environment:
     - name: SCONE_LOG
       value: error
     - name: API_PASSWORD
-      value: "$$SCONE::password$$"  # get from CAS
+      value: &quot;$$SCONE::password$$&quot;  # get from CAS
   global:     # values defined/overwritten in Meshfile
     - name: API_USER  # get value from Meshfile
 
@@ -4239,7 +4239,8 @@ build:
   pwd: /python
   command: python3 print_env.py
   copy:
-    - print_env.py</code></pre>
+    - print_env.py
+</code></pre></div>
 <p><img alt="Confidential Secret Generation" src="../generateSecrets.png" /></p>
 <blockquote>
 <p><strong>NOTE:</strong> You do not need a service manifest for
@@ -4260,14 +4261,14 @@ Typically, we use a secret called <code>sconeapps</code>,</p>
 <li><code>name</code>: is a unique name of this service</li>
 <li><code>image</code>: is the name of the image.</li>
 </ul>
-<pre class="highlight"><code class="language-yml">apiVersion: scone/5.8
+<div class="highlight"><pre><span></span><code>apiVersion: scone/5.8
 kind: mesh
 
 cas:
   - name: cas # cas used to store the policy of this application
-    alias: ["image", "security", "access", "attestation"] # use alias in case CAS instance has multiple roles
+    alias: [&quot;image&quot;, &quot;security&quot;, &quot;access&quot;, &quot;attestation&quot;] # use alias in case CAS instance has multiple roles
     cas_url: edge.scone-cas.cf  # exported as {{cas_cas_cas_url}}
-    tolerance: "--only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S"
+    tolerance: &quot;--only_for_testing-trust-any --only_for_testing-debug  --only_for_testing-ignore-signer -C -G -S&quot;
 
 policy:
   namespace: myPythonApp    # namespace on CAS instance `cas`
@@ -4283,7 +4284,8 @@ env:
 
 services:
   - name: pythonapp
-    image: registry.scontain.com/cicd/python_hello_user:latest</code></pre>
+    image: registry.scontain.com/cicd/python_hello_user:latest
+</code></pre></div>
 <h2 id="artifacts">Artifacts</h2>
 <p>We use different services to store the generated artifacts:</p>
 <ul>
@@ -4402,8 +4404,6 @@ services:
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../../css/extra.js"></script>
-      
-        <script src="../../search/main.js"></script>
       
     
   </body>

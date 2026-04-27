@@ -4139,19 +4139,19 @@
 
 <h1 id="node-example-with-attestation-and-secret-provisioning">Node Example with Attestation and Secret Provisioning</h1>
 <p>We show how to inject keys (<code>/tls/key.pem</code>) and certificate (<code>'/tls/cert.pem</code>) in a simple node program with a SCONE policy:</p>
-<pre class="highlight"><code class="language-node">var express = require('express');
-const https = require("https"),
-fs = require("fs");
+<div class="highlight"><pre><span></span><code>var express = require(&#39;express&#39;);
+const https = require(&quot;https&quot;),
+fs = require(&quot;fs&quot;);
 
-console.log('Example tls app start!');
-console.log('read the secret :'+process.env.GREETING)
+console.log(&#39;Example tls app start!&#39;);
+console.log(&#39;read the secret :&#39;+process.env.GREETING)
 
-const keyFilePath = '/tls/key.pem';
-const certFilePath = '/tls/cert.pem';
+const keyFilePath = &#39;/tls/key.pem&#39;;
+const certFilePath = &#39;/tls/cert.pem&#39;;
 
 
-var privateKey  = fs.readFileSync(keyFilePath, 'utf8');
-var certificate = fs.readFileSync(certFilePath, 'utf8');
+var privateKey  = fs.readFileSync(keyFilePath, &#39;utf8&#39;);
+var certificate = fs.readFileSync(certFilePath, &#39;utf8&#39;);
 
 var credentials = {key: privateKey, cert: certificate};
 
@@ -4159,20 +4159,21 @@ var app = express();
 var httpsServer = https.createServer(credentials, app);
 
 
-app.get('/', function (req, res) {
-  console.log('scone mode is :'+process.env.GREETING)
-  res.send('Hello World!' + process.env.GREETING);
+app.get(&#39;/&#39;, function (req, res) {
+  console.log(&#39;scone mode is :&#39;+process.env.GREETING)
+  res.send(&#39;Hello World!&#39; + process.env.GREETING);
 });
 
 httpsServer.listen(443, function () {
-  console.log('Example tls app listening on port 443!');
-  console.log('scone mode is :'+process.env.GREETING)
-  console.log('Ok.');
-});</code></pre>
+  console.log(&#39;Example tls app listening on port 443!&#39;);
+  console.log(&#39;scone mode is :&#39;+process.env.GREETING)
+  console.log(&#39;Ok.&#39;);
+});
+</code></pre></div>
 <p>A policy template defines a private key and a certificate that is signed with a CA certificate
 that is also created in this policy. We set the DNS name of the certifcate to <code>app</code>. We define a secret <code>GREETING: "Hello NodeJS"</code> as an environment variable passed to <code>app</code>. In this policy, we assume that our development machine has not seen many firmware updates recently:</p>
-<pre class="highlight"><code class="language-yml">name: $NODE_SESSION
-version: "0.3"
+<div class="highlight"><pre><span></span><code>name: $NODE_SESSION
+version: &quot;0.3&quot;
 
 # Access control:
 #   - only the data owner (CREATOR) can read or update the session
@@ -4191,8 +4192,8 @@ services:
      command: node /app/app.js
      environment:
       SCONE_MODE: hw
-      SCONE_LOG: "7"
-      GREETING: "Hello NodeJS"
+      SCONE_LOG: &quot;7&quot;
+      GREETING: &quot;Hello NodeJS&quot;
      pwd: /
 
 images:
@@ -4224,46 +4225,56 @@ secrets:
 security:
   attestation:
     tolerate: [debug-mode, hyperthreading, insecure-igpu, outdated-tcb]
-    ignore_advisories: ["INTEL-SA-00076", "INTEL-SA-00088", "INTEL-SA-00106", "INTEL-SA-00115", "INTEL-SA-00135", "INTEL-SA-00203", "INTEL-SA-00161", "INTEL-SA-00220", "INTEL-SA-00270", "INTEL-SA-00293", "INTEL-SA-00320", "INTEL-SA-00329", "INTEL-SA-00233", "INTEL-SA-00220", "INTEL-SA-00270", "INTEL-SA-00293", "INTEL-SA-00320", "INTEL-SA-00329"]</code></pre>
+    ignore_advisories: [&quot;INTEL-SA-00076&quot;, &quot;INTEL-SA-00088&quot;, &quot;INTEL-SA-00106&quot;, &quot;INTEL-SA-00115&quot;, &quot;INTEL-SA-00135&quot;, &quot;INTEL-SA-00203&quot;, &quot;INTEL-SA-00161&quot;, &quot;INTEL-SA-00220&quot;, &quot;INTEL-SA-00270&quot;, &quot;INTEL-SA-00293&quot;, &quot;INTEL-SA-00320&quot;, &quot;INTEL-SA-00329&quot;, &quot;INTEL-SA-00233&quot;, &quot;INTEL-SA-00220&quot;, &quot;INTEL-SA-00270&quot;, &quot;INTEL-SA-00293&quot;, &quot;INTEL-SA-00320&quot;, &quot;INTEL-SA-00329&quot;]
+</code></pre></div>
 <p>We need to set the <code>MRENCLAVE</code> and the name of the policy (<code>NODE_SESSION</code>) before we upload the session to a CAS instance. To simplify this upload and running of the node application, we pushed the code to github. Just clone it and enter the newly cloned directory</p>
-<pre class="highlight"><code class="language-bash">git clone https://github.com/scontain/node_example.git
-cd node_example</code></pre>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/scontain/node_example.git
+<span class="nb">cd</span><span class="w"> </span>node_example
+</code></pre></div>
 <p>We need to set some environment variables and upload our session:</p>
-<pre class="highlight"><code class="language-bash">export CAS_ADDR="4-2-1.scone-cas.cf" # we use a public SCONE CAS to store the session policies
-export IMAGE="sconecuratedimages/apps:node-10.14-alpine"
-unset NODE_SESSION
-export NODE_SESSION=$(./upload_session --template=nodejs-template.yml --session=nodejs-session.yml  --image=$IMAGE --cas=$CAS_ADDR)
-export DEVICE=$(./determine_sgx_device) # determine the SGX device of the local computer</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">CAS_ADDR</span><span class="o">=</span><span class="s2">&quot;4-2-1.scone-cas.cf&quot;</span><span class="w"> </span><span class="c1"># we use a public SCONE CAS to store the session policies</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">IMAGE</span><span class="o">=</span><span class="s2">&quot;sconecuratedimages/apps:node-10.14-alpine&quot;</span>
+<span class="nb">unset</span><span class="w"> </span>NODE_SESSION
+<span class="nb">export</span><span class="w"> </span><span class="nv">NODE_SESSION</span><span class="o">=</span><span class="k">$(</span>./upload_session<span class="w"> </span>--template<span class="o">=</span>nodejs-template.yml<span class="w"> </span>--session<span class="o">=</span>nodejs-session.yml<span class="w">  </span>--image<span class="o">=</span><span class="nv">$IMAGE</span><span class="w"> </span>--cas<span class="o">=</span><span class="nv">$CAS_ADDR</span><span class="k">)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">DEVICE</span><span class="o">=</span><span class="k">$(</span>./determine_sgx_device<span class="k">)</span><span class="w"> </span><span class="c1"># determine the SGX device of the local computer</span>
+</code></pre></div>
 <p>and then run locally by executing</p>
-<pre class="highlight"><code class="language-bash">docker-compose up</code></pre>
+<div class="highlight"><pre><span></span><code>docker-compose<span class="w"> </span>up
+</code></pre></div>
 <p>This will print some log messages and eventually print</p>
-<pre class="highlight"><code class="language-txt">node_1  | Example tls app start!
+<div class="highlight"><pre><span></span><code>node_1  | Example tls app start!
 node_1  | read the secret :Hello NodeJS
 node_1  | Example tls app listening on port 443!
 node_1  | scone mode is :Hello NodeJS
-node_1  | Ok.</code></pre>
+node_1  | Ok.
+</code></pre></div>
 <p>indicating that the <code>app</code> is ready to process requests.</p>
 <h2 id="client-request">Client Request</h2>
 <p>Execute client request via https:</p>
-<pre class="highlight"><code class="language-bash">curl -k https://localhost:443</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-k<span class="w"> </span>https://localhost:443
+</code></pre></div>
 <p>The output will be:</p>
-<pre class="highlight"><code class="language-text">Hello World!Hello NodeJS</code></pre>
+<div class="highlight"><pre><span></span><code>Hello World!Hello NodeJS
+</code></pre></div>
 <p>Note that '-k' is the insecure mode and if we drop this option, the output will look like this:</p>
-<pre class="highlight"><code class="language-txt">curl https://localhost:443
+<div class="highlight"><pre><span></span><code>curl https://localhost:443
 
 curl: (60) SSL certificate problem: unable to get local issuer certificate
 More details here: https://curl.haxx.se/docs/sslcerts.html
 
 curl failed to verify the legitimacy of the server and therefore could not
 establish a secure connection to it. To learn more about this situation and
-how to fix it, please visit the web page mentioned above.</code></pre>
+how to fix it, please visit the web page mentioned above.
+</code></pre></div>
 <p>Let's fix this warning and by doing so we also <strong>attest</strong> the node service.</p>
 <h2 id="get-ca-certificate-used-to-sign-certificate-of-node-app">Get CA Certificate used to sign certificate of node app</h2>
 <p>Retrieve the exported ca certificate with curl from CAS. Note that we told CAS to export the  CA certifcate by setting <code>export_public: true</code>in the policy. We store the certificate in file `ca-cert':</p>
-<pre class="highlight"><code class="language-bash">export ca_cert=$(curl -k https://${CAS_ADDR}:8081/v1/values/session=$NODE_SESSION | jq ".values.api_ca_cert.value" | tr -d \" )
-printf "\n$ca_cert" &gt; ca_cert</code></pre>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">ca_cert</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-k<span class="w"> </span>https://<span class="si">${</span><span class="nv">CAS_ADDR</span><span class="si">}</span>:8081/v1/values/session<span class="o">=</span><span class="nv">$NODE_SESSION</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s2">&quot;.values.api_ca_cert.value&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="se">\&quot;</span><span class="w"> </span><span class="k">)</span>
+<span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;\n</span><span class="nv">$ca_cert</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>ca_cert
+</code></pre></div>
 <p>We can now use this ca certificate to verify the certificate from our application:</p>
-<pre class="highlight"><code class="language-bash">curl --capath "$(pwd)" --cacert ca_cert --verbose https://app:443 --resolve app:443:127.0.0.1</code></pre>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>--capath<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>--cacert<span class="w"> </span>ca_cert<span class="w"> </span>--verbose<span class="w"> </span>https://app:443<span class="w"> </span>--resolve<span class="w"> </span>app:443:127.0.0.1
+</code></pre></div>
 <h2 id="notes">Notes</h2>
 <ul>
 <li>
@@ -4381,8 +4392,6 @@ printf "\n$ca_cert" &gt; ca_cert</code></pre>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
       
         <script src="../css/extra.js"></script>
-      
-        <script src="../search/main.js"></script>
       
     
   </body>
