@@ -66,6 +66,98 @@
         }
     }
 
+    function bind_tooltip_layer() {
+        var tooltip = document.createElement("div"),
+            activeElement = null,
+            margin = 16,
+            gap = 10,
+            arrowInset = 12;
+
+        tooltip.className = "mdx-tooltip";
+        document.body.appendChild(tooltip);
+
+        function hideTooltip() {
+            activeElement = null;
+            tooltip.classList.remove("mdx-tooltip--active");
+        }
+
+        function showTooltip(element) {
+            var rect, tooltipRect, viewportWidth, viewportHeight, left, top, arrowLeft;
+
+            if (!element) {
+                return;
+            }
+
+            activeElement = element;
+            tooltip.textContent = element.getAttribute("data-tooltip") || "";
+            tooltip.classList.remove("mdx-tooltip--active");
+            tooltip.style.left = "0px";
+            tooltip.style.top = "0px";
+            tooltip.style.setProperty("--mdx-tooltip-arrow-left", "50%");
+
+            rect = element.getBoundingClientRect();
+            viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+            viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+            tooltip.classList.add("mdx-tooltip--active");
+            tooltipRect = tooltip.getBoundingClientRect();
+            tooltip.setAttribute(
+                "data-placement",
+                viewportHeight - rect.bottom >= tooltipRect.height + gap || viewportHeight - rect.bottom >= rect.top
+                    ? "bottom"
+                    : "top"
+            );
+
+            left = Math.max(
+                margin,
+                Math.min(
+                    rect.left + rect.width / 2 - tooltipRect.width / 2,
+                    viewportWidth - tooltipRect.width - margin
+                )
+            );
+
+            top = tooltip.getAttribute("data-placement") === "bottom"
+                ? rect.bottom + gap
+                : rect.top - tooltipRect.height - gap;
+            top = Math.max(margin, Math.min(top, viewportHeight - tooltipRect.height - margin));
+            arrowLeft = Math.max(
+                arrowInset,
+                Math.min(rect.left + rect.width / 2 - left, tooltipRect.width - arrowInset)
+            );
+
+            tooltip.style.left = left + "px";
+            tooltip.style.top = top + "px";
+            tooltip.style.setProperty("--mdx-tooltip-arrow-left", arrowLeft + "px");
+        }
+
+        document.addEventListener("mouseenter", function (event) {
+            showTooltip(event.target.closest("[data-tooltip]"));
+        }, true);
+        document.addEventListener("focusin", function (event) {
+            showTooltip(event.target.closest("[data-tooltip]"));
+        });
+        document.addEventListener("mouseleave", function (event) {
+            if (event.target.closest("[data-tooltip]")) {
+                hideTooltip();
+            }
+        }, true);
+        document.addEventListener("focusout", function (event) {
+            if (event.target.closest("[data-tooltip]")) {
+                hideTooltip();
+            }
+        });
+        window.addEventListener("scroll", function () {
+            showTooltip(activeElement);
+        }, { passive: true });
+        window.addEventListener("resize", function () {
+            showTooltip(activeElement);
+        });
+
+        if (typeof document$ !== "undefined" && document$.subscribe) {
+            document$.subscribe(hideTooltip);
+        }
+    }
+
     function onReady(fn) {
         if (document.addEventListener) {
             document.addEventListener("DOMContentLoaded", fn);
@@ -81,5 +173,6 @@
     onReady(function () {
         version_selector_init();
         bind_version_selector_refresh();
+        bind_tooltip_layer();
     });
 })(document);
